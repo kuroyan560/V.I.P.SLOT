@@ -59,14 +59,8 @@
     <Filter Include="src\user\Game">
       <UniqueIdentifier>{498d1364-9bd0-40b4-bd1d-98daa3ac4ca2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\user\Enemy">
-      <UniqueIdentifier>{6deebad1-61c6-42c4-bffb-6efc20964ef3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\engine\ユーザー向け\Collision">
       <UniqueIdentifier>{226ed961-4357-402e-b741-74cace9cdbe6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\user\Effect">
-      <UniqueIdentifier>{09de12f2-4801-4db7-956b-a4351608d029}</UniqueIdentifier>
     </Filter>
     <Filter Include="magic_enum">
       <UniqueIdentifier>{d1bfd7f6-cf1e-46ca-93cb-22664d23c726}</UniqueIdentifier>
@@ -76,15 +70,6 @@
     </Filter>
     <Filter Include="dxcompiler">
       <UniqueIdentifier>{a8455d30-a8a2-4533-b4e7-d426564b0614}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\user\System">
-      <UniqueIdentifier>{f48f958f-1c84-4e5c-bd55-73694eef5b90}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\user\Player\Ability">
-      <UniqueIdentifier>{ea0c8c71-264b-4332-858e-723f5c5ad07d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\user\Terrian">
-      <UniqueIdentifier>{756f3f7a-b279-4f15-be97-a0928a5c21b9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -156,9 +141,6 @@
     </ClCompile>
     <ClCompile Include="lib\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\main.cpp">
-      <Filter>src\engine</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\Common\KuroFunc.cpp">
       <Filter>src\engine\Common</Filter>
@@ -232,26 +214,11 @@
     <ClCompile Include="src\engine\ModelAnimator.cpp">
       <Filter>src\engine\レンダリング関連\レンダーオブジェクト\モデル情報</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\Player.cpp">
-      <Filter>src\user\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\user\PlayerCamera.cpp">
-      <Filter>src\user\Player</Filter>
-    </ClCompile>
     <ClCompile Include="src\user\GameManager.cpp">
       <Filter>src\user\Game</Filter>
     </ClCompile>
     <ClCompile Include="src\user\GameScene.cpp">
       <Filter>src\user\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\user\Enemy.cpp">
-      <Filter>src\user\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="src\user\EnemyBreed.cpp">
-      <Filter>src\user\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="src\user\EnemyManager.cpp">
-      <Filter>src\user\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\Collider.cpp">
       <Filter>src\engine\ユーザー向け\Collision</Filter>
@@ -262,14 +229,8 @@
     <ClCompile Include="src\engine\ImguiDebugInterface.cpp">
       <Filter>src\engine\ユーザー向け</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\PlayerAttack.cpp">
-      <Filter>src\user\Player</Filter>
-    </ClCompile>
     <ClCompile Include="src\engine\NoiseGenerator.cpp">
       <Filter>src\engine\フレームワーク</Filter>
-    </ClCompile>
-    <ClCompile Include="src\user\HitEffect.cpp">
-      <Filter>src\user\Effect</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\LightBloomDevice.cpp">
       <Filter>src\engine\レンダリング関連</Filter>
@@ -283,35 +244,8 @@
     <ClCompile Include="src\user\ControllerConfig.cpp">
       <Filter>src\user\Game</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\PlayerStatus.cpp">
-      <Filter>src\user\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\user\HitParticle.cpp">
-      <Filter>src\user\Effect</Filter>
-    </ClCompile>
     <ClCompile Include="src\engine\DrawFuncBillBoard.cpp">
       <Filter>src\engine\ユーザー向け\描画便利関数\BillBoard</Filter>
-    </ClCompile>
-    <ClCompile Include="src\user\ActPoint.cpp">
-      <Filter>src\user\System</Filter>
-    </ClCompile>
-    <ClCompile Include="src\user\MarkingSystem.cpp">
-      <Filter>src\user\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\user\RushSystem.cpp">
-      <Filter>src\user\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="src\user\AbilitySystem.cpp">
-      <Filter>src\user\Player\Ability</Filter>
-    </ClCompile>
-    <ClCompile Include="src\user\HealAbility.cpp">
-      <Filter>src\user\Player\Ability</Filter>
-    </ClCompile>
-    <ClCompile Include="src\user\PrecisionAimAbility.cpp">
-      <Filter>src\user\Player\Ability</Filter>
-    </ClCompile>
-    <ClCompile Include="src\user\Ability.cpp">
-      <Filter>src\user\Player\Ability</Filter>
     </ClCompile>
     <ClCompile Include="src\user\ColliderWithFloor.cpp">
       <Filter>src\user</Filter>
@@ -319,11 +253,8 @@
     <ClCompile Include="src\user\LevelParameters.cpp">
       <Filter>src\user</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\TerrianManager.cpp">
-      <Filter>src\user\Terrian</Filter>
-    </ClCompile>
-    <ClCompile Include="src\user\TerrianParts.cpp">
-      <Filter>src\user\Terrian</Filter>
+    <ClCompile Include="src\engine\main.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -501,26 +432,11 @@
     <ClInclude Include="src\engine\ModelAnimator.h">
       <Filter>src\engine\レンダリング関連\レンダーオブジェクト\モデル情報</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\Player.h">
-      <Filter>src\user\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\PlayerCamera.h">
-      <Filter>src\user\Player</Filter>
-    </ClInclude>
     <ClInclude Include="src\user\GameManager.h">
       <Filter>src\user\Game</Filter>
     </ClInclude>
     <ClInclude Include="src\user\GameScene.h">
       <Filter>src\user\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\Enemy.h">
-      <Filter>src\user\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\EnemyBreed.h">
-      <Filter>src\user\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\EnemyManager.h">
-      <Filter>src\user\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\Collider.h">
       <Filter>src\engine\ユーザー向け\Collision</Filter>
@@ -534,14 +450,8 @@
     <ClInclude Include="src\engine\ImguiDebugInterface.h">
       <Filter>src\engine\ユーザー向け</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\PlayerAttack.h">
-      <Filter>src\user\Player</Filter>
-    </ClInclude>
     <ClInclude Include="src\engine\NoiseGenerator.h">
       <Filter>src\engine\フレームワーク</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\HitEffect.h">
-      <Filter>src\user\Effect</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\LightBloomDevice.h">
       <Filter>src\engine\レンダリング関連</Filter>
@@ -555,12 +465,6 @@
     <ClInclude Include="src\user\ControllerConfig.h">
       <Filter>src\user\Game</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\PlayerStatus.h">
-      <Filter>src\user\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\HitParticle.h">
-      <Filter>src\user\Effect</Filter>
-    </ClInclude>
     <ClInclude Include="src\engine\DrawFuncBillBoard.h">
       <Filter>src\engine\ユーザー向け\描画便利関数\BillBoard</Filter>
     </ClInclude>
@@ -573,38 +477,11 @@
     <ClInclude Include="lib\dxcompiler\inc\dxcapi.h">
       <Filter>dxcompiler</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\ActPoint.h">
-      <Filter>src\user\System</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\MarkingSystem.h">
-      <Filter>src\user\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\RushSystem.h">
-      <Filter>src\user\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\AbilitySystem.h">
-      <Filter>src\user\Player\Ability</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\HealAbility.h">
-      <Filter>src\user\Player\Ability</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\PrecisionAimAbility.h">
-      <Filter>src\user\Player\Ability</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\Ability.h">
-      <Filter>src\user\Player\Ability</Filter>
-    </ClInclude>
     <ClInclude Include="src\user\ColliderWithFloor.h">
       <Filter>src\user</Filter>
     </ClInclude>
     <ClInclude Include="src\user\LevelParameters.h">
       <Filter>src\user</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\TerrianManager.h">
-      <Filter>src\user\Terrian</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\TerrianParts.h">
-      <Filter>src\user\Terrian</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

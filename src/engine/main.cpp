@@ -28,10 +28,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
 	//ÉGÉìÉWÉìê›íË=====================
 	EngineOption engineOption;
-	engineOption.m_windowName = "BlitzAutomatica";
+	engineOption.m_windowName = "V.I.P.SLOT";
 	engineOption.m_windowSize = { 1280,720 };
 	engineOption.m_iconPath = nullptr;
-	engineOption.m_backBuffClearColor = Color(23, 14, 41, 255);
+	engineOption.m_backBuffClearColor = Color(0, 0, 0, 0);
 	engineOption.m_useHDR = false;
 	engineOption.m_frameRate = 60;
 

@@ -216,30 +216,12 @@
     <ClCompile Include="src\engine\Swapchain.cpp" />
     <ClCompile Include="src\engine\UsersInput.cpp" />
     <ClCompile Include="src\engine\WinApp.cpp" />
-    <ClCompile Include="src\user\Ability.cpp" />
-    <ClCompile Include="src\user\AbilitySystem.cpp" />
-    <ClCompile Include="src\user\ActPoint.cpp" />
     <ClCompile Include="src\user\BasicDraw.cpp" />
     <ClCompile Include="src\user\ColliderWithFloor.cpp" />
-    <ClCompile Include="src\user\Enemy.cpp" />
-    <ClCompile Include="src\user\EnemyBreed.cpp" />
-    <ClCompile Include="src\user\EnemyManager.cpp" />
     <ClCompile Include="src\user\GameManager.cpp" />
     <ClCompile Include="src\user\GameScene.cpp" />
-    <ClCompile Include="src\user\HealAbility.cpp" />
-    <ClCompile Include="src\user\HitEffect.cpp" />
-    <ClCompile Include="src\user\HitParticle.cpp" />
     <ClCompile Include="src\user\LevelParameters.cpp" />
-    <ClCompile Include="src\user\MarkingSystem.cpp" />
-    <ClCompile Include="src\user\Player.cpp" />
-    <ClCompile Include="src\user\PlayerAttack.cpp" />
-    <ClCompile Include="src\user\PlayerCamera.cpp" />
     <ClCompile Include="src\user\ControllerConfig.cpp" />
-    <ClCompile Include="src\user\PlayerStatus.cpp" />
-    <ClCompile Include="src\user\PrecisionAimAbility.cpp" />
-    <ClCompile Include="src\user\RushSystem.cpp" />
-    <ClCompile Include="src\user\TerrianManager.cpp" />
-    <ClCompile Include="src\user\TerrianParts.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\dxcompiler\inc\d3d12shader.h" />
@@ -311,30 +293,12 @@
     <ClInclude Include="src\engine\Swapchain.h" />
     <ClInclude Include="src\engine\UsersInput.h" />
     <ClInclude Include="src\engine\WinApp.h" />
-    <ClInclude Include="src\user\Ability.h" />
-    <ClInclude Include="src\user\AbilitySystem.h" />
-    <ClInclude Include="src\user\ActPoint.h" />
     <ClInclude Include="src\user\BasicDraw.h" />
     <ClInclude Include="src\user\ColliderWithFloor.h" />
-    <ClInclude Include="src\user\Enemy.h" />
-    <ClInclude Include="src\user\EnemyBreed.h" />
-    <ClInclude Include="src\user\EnemyManager.h" />
     <ClInclude Include="src\user\GameManager.h" />
     <ClInclude Include="src\user\GameScene.h" />
-    <ClInclude Include="src\user\HealAbility.h" />
-    <ClInclude Include="src\user\HitEffect.h" />
-    <ClInclude Include="src\user\HitParticle.h" />
     <ClInclude Include="src\user\LevelParameters.h" />
-    <ClInclude Include="src\user\MarkingSystem.h" />
-    <ClInclude Include="src\user\Player.h" />
-    <ClInclude Include="src\user\PlayerAttack.h" />
-    <ClInclude Include="src\user\PlayerCamera.h" />
     <ClInclude Include="src\user\ControllerConfig.h" />
-    <ClInclude Include="src\user\PlayerStatus.h" />
-    <ClInclude Include="src\user\PrecisionAimAbility.h" />
-    <ClInclude Include="src\user\RushSystem.h" />
-    <ClInclude Include="src\user\TerrianManager.h" />
-    <ClInclude Include="src\user\TerrianParts.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="lib\DirectXTex\DirectXTex_Desktop_2019_Win10.vcxproj">

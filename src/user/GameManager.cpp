@@ -1,6 +1,5 @@
 #include "GameManager.h"
 #include"imguiApp.h"
-#include"Player.h"
 
 GameManager::GameManager()
 {
@@ -18,7 +17,7 @@ void GameManager::Update()
 
 void GameManager::ImGuiDebug(UsersInput& Input)
 {
-	m_controllerConfig.ImguiDebug(Input);
+	//m_controllerConfig.ImguiDebug(Input);
 
 	ImGui::Begin("GameManager");
 
@@ -28,11 +27,6 @@ void GameManager::ImGuiDebug(UsersInput& Input)
 	ImGui::Separator();
 
 /*--- ŠÂ‹« ---*/
-	//d—Í
-	ImGui::InputFloat("Gravity", &m_gravity);
-
-	ImGui::Separator();
-
 
 /*--- ƒJƒƒ‰‘I‘ğ ---*/
 	ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(250, 100), ImGuiWindowFlags_NoTitleBar);

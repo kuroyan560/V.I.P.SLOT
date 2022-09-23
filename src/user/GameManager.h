@@ -11,21 +11,20 @@ class UsersInput;
 
 class GameManager : public Singleton<GameManager>
 {
+public:
+	//デバッグカメラキー
+	const std::string m_debugCamKey = "DebugCam";
+
+private:
 	friend class Singleton<GameManager>;
 	GameManager();
 
 	//デバッグ描画フラグ
 	bool m_debugDraw = true;
 
-	//デバッグカメラキー
-	const std::string m_debugCamKey = "DebugCam";
-
 	//デバッグ用カメラ
 	DebugCamera m_debugCam;
 
-	//重力
-	float m_gravity = -0.05f;
-	
 	//カメラ配列
 	std::string m_nowCamKey = m_debugCamKey;
 	std::map<std::string, std::weak_ptr<Camera>>m_cameras;
@@ -59,7 +58,6 @@ public:
 	ControllerConfig& GetControllerConfig() { return m_controllerConfig; }
 
 /*--- 環境 ---*/
-	const float& GetGravity() { return m_gravity; }
 
 /*--- その他 ---*/
 	//デバッグ描画フラグゲッタ
