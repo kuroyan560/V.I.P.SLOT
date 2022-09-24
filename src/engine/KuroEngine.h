@@ -129,10 +129,10 @@ public:
 	//ゲーム終了
 	void GameEnd() { m_end = true; }
 	//シーンチェンジ
-	void ChangeScene(const int &SceneNum, SceneTransition *SceneTransition)
+	void ChangeScene(const int &SceneNum, SceneTransition& SceneTransition)
 	{
 		m_nextScene = SceneNum;
-		m_nowSceneTransition = SceneTransition;
+		m_nowSceneTransition = &SceneTransition;
 		m_nowSceneTransition->Start();
 	}
 
