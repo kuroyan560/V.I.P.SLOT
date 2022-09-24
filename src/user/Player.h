@@ -2,6 +2,7 @@
 #include<string>
 #include<memory>
 #include"Vec.h"
+#include"Angle.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -11,14 +12,19 @@ class Player
 	//モデルオブジェクト
 	std::shared_ptr<ModelObject>m_modelObj;
 
-	//スタート位置
+	//初期位置
 	Vec3<float>m_startPos = { 0,0,-20 };
 
-	//移動
-	Vec3<float>m_move = { 0,0,0 };
+	//座標角度（０でスロット正面）
+	Angle m_posAngle;
+
+	//座標角移動量
+	Angle m_moveAngle;
 
 	//落下速度
 	float m_fallSpeed;
+	//落下加速度
+	float m_fallAccel;
 
 	//接地フラグ
 	bool m_isOnGround;

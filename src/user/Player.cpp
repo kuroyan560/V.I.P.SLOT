@@ -13,11 +13,14 @@ void Player::Init()
 	//スタート位置に移動
 	m_modelObj->m_transform.SetPos(m_startPos);
 
-	//移動速度
-	m_move = { 0,0,0 };
+	//座標角度初期化
+	m_posAngle = Angle(0);
+
+	//座標角移動量初期化
+	m_moveAngle = Angle(0);
 
 	//落下速度初期化
-	m_fallSpeed = 0.0f;
+	m_fallAccel = 0.0f;
 
 	//接地フラグ初期化
 	m_isOnGround = true;
@@ -41,56 +44,63 @@ void Player::Update()
 
 //入力情報を元に操作
 	//横移動
-	const float MOVE_SPEED = 0.3f;
+	const Angle ANGLE_SPEED = Angle::ConvertToRadian(0.85f);
 	const float MOVE_LERP_RATE = 0.3f;
 	if (0.0f < stickVec.x)
 	{
-		m_move.x = KuroMath::Lerp(m_move.x, MOVE_SPEED, MOVE_LERP_RATE);
+		m_moveAngle = KuroMath::Lerp(m_moveAngle, -ANGLE_SPEED, MOVE_LERP_RATE);
 	}
 	else if (stickVec.x < 0.0f)
 	{
-		m_move.x = KuroMath::Lerp(m_move.x, -MOVE_SPEED, MOVE_LERP_RATE);
+		m_moveAngle = KuroMath::Lerp(m_moveAngle, ANGLE_SPEED, MOVE_LERP_RATE);
 	}
 	else
 	{
-		m_move.x = KuroMath::Lerp(m_move.x, 0.0f, MOVE_LERP_RATE);
+		m_moveAngle = KuroMath::Lerp(m_moveAngle, 0.0f, MOVE_LERP_RATE);
 	}
 
 	//ジャンプ
 	const float JUMP_POWER = 0.62f;
 	if (jumpTrigger && m_isOnGround)
 	{
-		m_fallSpeed += JUMP_POWER;
+		m_fallAccel = JUMP_POWER;
 		m_isOnGround = false;
 	}
 
-	//落下（ジャンプ中と落下中で重力変化、素早くジャンプ → ゆっくり降下）
-	m_move.y += m_fallSpeed;
+	//落下加速
+	m_fallSpeed += m_fallAccel;
+
+	//落下速度計算（ジャンプ中と落下中で重力変化、素早くジャンプ → ゆっくり降下）
 	const float STRONG_GRAVITY = 0.34f;
 	const float WEAK_GRAVITY = 0.00005f;
-	if (0.0f < m_fallSpeed)
+	if (0.0f < m_fallAccel)
 	{
-		m_fallSpeed -= STRONG_GRAVITY;
+		m_fallAccel -= STRONG_GRAVITY;
 	}
 	else
 	{
-		m_fallSpeed -= WEAK_GRAVITY;
+		m_fallAccel -= WEAK_GRAVITY;
 	}
-
-	//落下速度加減
+	//落下加速度下限
 	const float FALL_SPEED_MIN = -0.2f;
-	if (m_fallSpeed < FALL_SPEED_MIN)m_fallSpeed = FALL_SPEED_MIN;
+	if (m_fallAccel < FALL_SPEED_MIN)m_fallAccel = FALL_SPEED_MIN;
 
-	//移動量加算
+	//現在の座標取得
 	auto pos = m_modelObj->m_transform.GetPos();
-	pos += m_move;
+	//落下を反映
+	pos.y += m_fallSpeed;
+	//横移動の反映
+	m_posAngle += m_moveAngle;
+	auto xzPos = KuroMath::TransformVec3(m_startPos, { 0,1,0 }, m_posAngle);
+	pos.x = xzPos.x;
+	pos.z = xzPos.z;
 
 	//押し戻し
 	if (pos.y < 0.0f)
 	{
 		pos.y = 0.0f;
+		m_fallAccel = 0.0f;
 		m_fallSpeed = 0.0f;
-		m_move.y = 0.0f;
 		m_isOnGround = true;
 	}
 
