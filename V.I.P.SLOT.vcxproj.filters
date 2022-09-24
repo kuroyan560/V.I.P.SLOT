@@ -71,6 +71,9 @@
     <Filter Include="dxcompiler">
       <UniqueIdentifier>{a8455d30-a8a2-4533-b4e7-d426564b0614}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\user\Scene">
+      <UniqueIdentifier>{df5b8cbe-7f20-40ad-a5a4-531e61397f08}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\D3D12App.cpp">
@@ -217,9 +220,6 @@
     <ClCompile Include="src\user\GameManager.cpp">
       <Filter>src\user\Game</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\GameScene.cpp">
-      <Filter>src\user\Game</Filter>
-    </ClCompile>
     <ClCompile Include="src\engine\Collider.cpp">
       <Filter>src\engine\ユーザー向け\Collision</Filter>
     </ClCompile>
@@ -255,6 +255,18 @@
     </ClCompile>
     <ClCompile Include="src\engine\main.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\Player.cpp">
+      <Filter>src\user\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\RenderTargetManager.cpp">
+      <Filter>src\user</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\GameScene.cpp">
+      <Filter>src\user\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\TitleScene.cpp">
+      <Filter>src\user\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -435,9 +447,6 @@
     <ClInclude Include="src\user\GameManager.h">
       <Filter>src\user\Game</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\GameScene.h">
-      <Filter>src\user\Game</Filter>
-    </ClInclude>
     <ClInclude Include="src\engine\Collider.h">
       <Filter>src\engine\ユーザー向け\Collision</Filter>
     </ClInclude>
@@ -482,6 +491,18 @@
     </ClInclude>
     <ClInclude Include="src\user\LevelParameters.h">
       <Filter>src\user</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Player.h">
+      <Filter>src\user\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\RenderTargetManager.h">
+      <Filter>src\user</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\GameScene.h">
+      <Filter>src\user\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\TitleScene.h">
+      <Filter>src\user\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -222,6 +222,9 @@
     <ClCompile Include="src\user\GameScene.cpp" />
     <ClCompile Include="src\user\LevelParameters.cpp" />
     <ClCompile Include="src\user\ControllerConfig.cpp" />
+    <ClCompile Include="src\user\Player.cpp" />
+    <ClCompile Include="src\user\RenderTargetManager.cpp" />
+    <ClCompile Include="src\user\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\dxcompiler\inc\d3d12shader.h" />
@@ -299,6 +302,9 @@
     <ClInclude Include="src\user\GameScene.h" />
     <ClInclude Include="src\user\LevelParameters.h" />
     <ClInclude Include="src\user\ControllerConfig.h" />
+    <ClInclude Include="src\user\Player.h" />
+    <ClInclude Include="src\user\RenderTargetManager.h" />
+    <ClInclude Include="src\user\TitleScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="lib\DirectXTex\DirectXTex_Desktop_2019_Win10.vcxproj">
