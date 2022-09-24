@@ -25,9 +25,6 @@ GameScene::GameScene()
 	//スロットマシン生成
 	m_slotMachineObj = std::make_shared<ModelObject>("resource/user/model/", "slotMachine.glb");
 
-	//コイン投入口生成
-	m_coinPortObj = std::make_shared<ModelObject>("resource/user/model/", "port.glb");
-
 	//背景画像読み込み
 	m_backGround = D3D12App::Instance()->GenerateTextureBuffer("resource/user/img/backGround.png");
 
@@ -70,7 +67,6 @@ void GameScene::OnDraw()
 
 	DrawFunc3D::DrawNonShadingModel(m_squareFloorObj, *m_gameCam->GetFrontCam(), 1.0f, AlphaBlendMode_None);
 	DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *m_gameCam->GetBackCam(), 1.0f, AlphaBlendMode_None);
-	DrawFunc3D::DrawNonShadingModel(m_coinPortObj, *m_gameCam->GetBackCam(), 1.0f, AlphaBlendMode_None);
 
 	m_player->Draw(m_ligMgr, m_gameCam->GetFrontCam());
 

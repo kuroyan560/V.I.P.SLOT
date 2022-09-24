@@ -20,9 +20,6 @@ class GameScene : public BaseScene
 	//スロットマシン
 	std::shared_ptr<ModelObject>m_slotMachineObj;
 
-	//コイン投入口
-	std::shared_ptr<ModelObject>m_coinPortObj;
-
 	//背景画像
 	std::shared_ptr<TextureBuffer>m_backGround;
 	
