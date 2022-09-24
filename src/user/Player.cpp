@@ -1,6 +1,7 @@
 #include "Player.h"
 #include"Object.h"
 #include"UsersInput.h"
+#include"ConstParameters.h"
 
 Player::Player()
 {
@@ -11,7 +12,7 @@ Player::Player()
 void Player::Init()
 {
 	//スタート位置に移動
-	m_modelObj->m_transform.SetPos(m_startPos);
+	m_modelObj->m_transform.SetPos(ConstParameter::Player::INIT_POS);
 
 	//移動速度
 	m_move = { 0,0,0 };
@@ -41,45 +42,39 @@ void Player::Update()
 
 //入力情報を元に操作
 	//横移動
-	const float MOVE_SPEED = 0.3f;
-	const float MOVE_LERP_RATE = 0.3f;
 	if (0.0f < stickVec.x)
 	{
-		m_move.x = KuroMath::Lerp(m_move.x, MOVE_SPEED, MOVE_LERP_RATE);
+		m_move.x = KuroMath::Lerp(m_move.x, ConstParameter::Player::MOVE_SPEED, ConstParameter::Player::MOVE_LERP_RATE);
 	}
 	else if (stickVec.x < 0.0f)
 	{
-		m_move.x = KuroMath::Lerp(m_move.x, -MOVE_SPEED, MOVE_LERP_RATE);
+		m_move.x = KuroMath::Lerp(m_move.x, -ConstParameter::Player::MOVE_SPEED, ConstParameter::Player::MOVE_LERP_RATE);
 	}
 	else
 	{
-		m_move.x = KuroMath::Lerp(m_move.x, 0.0f, MOVE_LERP_RATE);
+		m_move.x = KuroMath::Lerp(m_move.x, 0.0f, ConstParameter::Player::MOVE_LERP_RATE);
 	}
 
 	//ジャンプ
-	const float JUMP_POWER = 0.62f;
 	if (jumpTrigger && m_isOnGround)
 	{
-		m_fallSpeed += JUMP_POWER;
+		m_fallSpeed += ConstParameter::Player::JUMP_POWER;
 		m_isOnGround = false;
 	}
 
 	//落下（ジャンプ中と落下中で重力変化、素早くジャンプ → ゆっくり降下）
 	m_move.y += m_fallSpeed;
-	const float STRONG_GRAVITY = 0.34f;
-	const float WEAK_GRAVITY = 0.00005f;
 	if (0.0f < m_fallSpeed)
 	{
-		m_fallSpeed -= STRONG_GRAVITY;
+		m_fallSpeed -= ConstParameter::Player::STRONG_GRAVITY;
 	}
 	else
 	{
-		m_fallSpeed -= WEAK_GRAVITY;
+		m_fallSpeed -= ConstParameter::Player::WEAK_GRAVITY;
 	}
 
 	//落下速度加減
-	const float FALL_SPEED_MIN = -0.2f;
-	if (m_fallSpeed < FALL_SPEED_MIN)m_fallSpeed = FALL_SPEED_MIN;
+	if (m_fallSpeed < ConstParameter::Player::FALL_SPEED_MIN)m_fallSpeed = ConstParameter::Player::FALL_SPEED_MIN;
 
 	//移動量加算
 	auto pos = m_modelObj->m_transform.GetPos();

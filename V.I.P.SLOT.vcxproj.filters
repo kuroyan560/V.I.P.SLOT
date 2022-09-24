@@ -486,5 +486,8 @@
     <ClInclude Include="src\user\GameCamera.h">
       <Filter>src\user\Game</Filter>
     </ClInclude>
+    <ClInclude Include="src\user\ConstParameters.h">
+      <Filter>src\user\Game</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

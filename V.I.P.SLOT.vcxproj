@@ -294,6 +294,7 @@
     <ClInclude Include="src\engine\UsersInput.h" />
     <ClInclude Include="src\engine\WinApp.h" />
     <ClInclude Include="src\user\BasicDraw.h" />
+    <ClInclude Include="src\user\ConstParameters.h" />
     <ClInclude Include="src\user\GameCamera.h" />
     <ClInclude Include="src\user\GameScene.h" />
     <ClInclude Include="src\user\Player.h" />

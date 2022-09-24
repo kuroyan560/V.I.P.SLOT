@@ -7,6 +7,7 @@
 #include"DrawFunc2D.h"
 #include"DrawFunc3D.h"
 #include"GameCamera.h"
+#include"ConstParameters.h"
 
 GameScene::GameScene()
 {
@@ -18,6 +19,8 @@ GameScene::GameScene()
 
 	//床生成
 	m_squareFloorObj = std::make_shared<ModelObject>("resource/user/model/", "floor_square.glb");
+	m_squareFloorObj->m_transform.SetPos(ConstParameter::Player::INIT_POS);	//プレイヤー初期位置に合わせる
+	m_squareFloorObj->GetTransformBuff();	//マッピングのためバッファ呼び出し
 
 	//スロットマシン生成
 	m_slotMachineObj = std::make_shared<ModelObject>("resource/user/model/", "slotMachine.glb");
@@ -36,7 +39,6 @@ void GameScene::OnInitialize()
 {
 	//プレイヤー初期化
 	m_player->Init();
-	m_squareFloorObj->m_transform.SetPos(m_player->m_startPos);
 
 	//カメラ初期化
 	m_gameCam->Init();

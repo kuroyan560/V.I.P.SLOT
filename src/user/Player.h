@@ -21,9 +21,6 @@ class Player
 	bool m_isOnGround;
 
 public:
-	//スタート位置
-	const Vec3<float>m_startPos = { 0,0,-20 };
-
 	Player();
 	//初期化
 	void Init();
