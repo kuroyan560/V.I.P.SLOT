@@ -4,6 +4,11 @@
 //調整用パラメータ
 namespace ConstParameter
 {
+	namespace Environment
+	{
+		const float FIELD_WIDTH_HALF = 30.0f;
+	}
+
 	namespace Player
 	{
 		const Vec3<float>INIT_POS = { 0,0,-20 };

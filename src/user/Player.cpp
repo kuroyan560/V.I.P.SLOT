@@ -80,13 +80,25 @@ void Player::Update()
 	auto pos = m_modelObj->m_transform.GetPos();
 	pos += m_move;
 
-	//押し戻し
+	//押し戻し（床）
 	if (pos.y < 0.0f)
 	{
 		pos.y = 0.0f;
 		m_fallSpeed = 0.0f;
 		m_move.y = 0.0f;
 		m_isOnGround = true;
+	}
+
+	//押し戻し（ステージ端）
+	if (pos.x < -ConstParameter::Environment::FIELD_WIDTH_HALF)
+	{
+		pos.x = -ConstParameter::Environment::FIELD_WIDTH_HALF;
+		m_move.x = 0.0f;
+	}
+	else if(ConstParameter::Environment::FIELD_WIDTH_HALF < pos.x)
+	{
+		pos.x = ConstParameter::Environment::FIELD_WIDTH_HALF;
+		m_move.x = 0.0f;
 	}
 
 	//更新した座標の反映
