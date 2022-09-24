@@ -14,6 +14,9 @@ class Player
 	//スタート位置
 	Vec3<float>m_startPos = { 0,0,-20 };
 
+	//移動
+	Vec3<float>m_move = { 0,0,0 };
+
 public:
 	Player();
 	//初期化

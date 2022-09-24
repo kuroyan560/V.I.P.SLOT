@@ -12,6 +12,9 @@ void Player::Init()
 {
 	//スタート位置に移動
 	m_modelObj->m_transform.SetPos(m_startPos);
+
+	//移動速度
+	m_move = { 0,0,0 };
 }
 
 void Player::Update()
@@ -31,22 +34,27 @@ void Player::Update()
 	//LBボタン（BET）入力
 
 //入力情報を元に操作
-	//現在の座標取得
-	auto pos = m_modelObj->m_transform.GetPos();
 
 	//移動
 	const float MOVE_SPEED = 0.3f;
+	const float MOVE_LERP_RATE = 0.3f;
 	if (0.0f < stickVec.x)
 	{
-		pos.x += MOVE_SPEED;
+		m_move.x = KuroMath::Lerp(m_move.x, MOVE_SPEED, MOVE_LERP_RATE);
 	}
 	else if (stickVec.x < 0.0f)
 	{
-		pos.x -= MOVE_SPEED;
+		m_move.x = KuroMath::Lerp(m_move.x, -MOVE_SPEED, MOVE_LERP_RATE);
+	}
+	else
+	{
+		m_move.x = KuroMath::Lerp(m_move.x, 0.0f, MOVE_LERP_RATE);
 	}
 
-	//操作後の座標を反映
-	m_modelObj->m_transform.SetPos(pos);
+	//現在の座標取得
+	auto pos = m_modelObj->m_transform.GetPos();
+	//移動量を加算して反映
+	m_modelObj->m_transform.SetPos(pos + m_move);
 }
 
 #include"DrawFunc3D.h"
