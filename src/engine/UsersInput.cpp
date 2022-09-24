@@ -378,12 +378,6 @@ Vec2<float> UsersInput::GetLeftStickVec(const int& ControllerIdx, const Vec2<flo
 	return result.GetNormal();
 }
 
-Vec2<float> UsersInput::GetLeftStickVecRawFuna(const int& ControllerIdx) const
-{
-	const float INPUT_MAX = 32767.0f;
-	return Vec2<float>(static_cast<float>(m_xinputState[ControllerIdx].Gamepad.sThumbLX) / INPUT_MAX, static_cast<float>(-m_xinputState[ControllerIdx].Gamepad.sThumbLY) / INPUT_MAX);
-}
-
 Vec2<float> UsersInput::GetRightStickVec(const int& ControllerIdx, const Vec2<float>& DeadRate)const
 {
 	Vec2<float>result(static_cast<float>(m_xinputState[ControllerIdx].Gamepad.sThumbRX), static_cast<float>(-m_xinputState[ControllerIdx].Gamepad.sThumbRY));

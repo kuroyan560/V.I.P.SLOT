@@ -123,7 +123,6 @@ public:
 
 	//デッドゾーン判定の度合い(1.0fだとデフォルト採用)
 	Vec2<float>GetLeftStickVec(const int& ControllerIdx, const Vec2<float>& DeadRate = { 1.0f,1.0f })const;
-	Vec2<float>GetLeftStickVecRawFuna(const int& ControllerIdx)const;	// 生の値が欲しくて追加しました！10Daysが終わったら消してください！
 	Vec2<float>GetRightStickVec(const int& ControllerIdx, const Vec2<float>& DeadRate = { 1.0f,1.0f })const;
 	// "Power" must fit between 0.0f and 1.0f.
 	void ShakeController(const int& ControllerIdx, const float& Power, const int& Span);
