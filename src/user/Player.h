@@ -17,6 +17,12 @@ class Player
 	//移動
 	Vec3<float>m_move = { 0,0,0 };
 
+	//落下速度
+	float m_fallSpeed;
+
+	//接地フラグ
+	bool m_isOnGround;
+
 public:
 	Player();
 	//初期化
