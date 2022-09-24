@@ -244,9 +244,6 @@
     <ClCompile Include="src\engine\DrawFuncBillBoard.cpp">
       <Filter>src\engine\ユーザー向け\描画便利関数\BillBoard</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\ColliderWithFloor.cpp">
-      <Filter>src\user</Filter>
-    </ClCompile>
     <ClCompile Include="src\user\LevelParameters.cpp">
       <Filter>src\user</Filter>
     </ClCompile>
@@ -482,9 +479,6 @@
     </ClInclude>
     <ClInclude Include="lib\dxcompiler\inc\dxcapi.h">
       <Filter>dxcompiler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\ColliderWithFloor.h">
-      <Filter>src\user</Filter>
     </ClInclude>
     <ClInclude Include="src\user\LevelParameters.h">
       <Filter>src\user</Filter>
