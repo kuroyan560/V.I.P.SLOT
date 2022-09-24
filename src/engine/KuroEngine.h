@@ -39,14 +39,16 @@ class SceneTransition
 protected:
 	bool m_nowTrans = false;
 	virtual void OnStart() { }
-	virtual bool OnUpdate() { m_nowTrans = false; return true; }
-	virtual void OnDraw() {}
 public:
 	virtual ~SceneTransition() {}
-	void Start() { m_nowTrans = true; OnStart(); }	//シーン遷移スタート
-	bool Update() { return OnUpdate(); }	//シーンを切り替えるタイミングでtrueを返す
-	void Draw() { OnDraw(); }
-	bool Finish() { return !m_nowTrans; }	//シーン遷移が完全に終了したか
+	//シーン遷移スタート
+	void Start() { m_nowTrans = true; OnStart(); }	
+	//シーンを切り替えるタイミングでtrueを返す
+	virtual bool Update() { m_nowTrans = false; return true; }
+	//シーン遷移描画
+	virtual void Draw() {}
+	//シーン遷移が完全に終了したか
+	bool Finish() { return !m_nowTrans; }
 };
 
 //アプリの初期設定
