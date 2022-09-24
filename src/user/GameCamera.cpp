@@ -8,18 +8,17 @@ GameCamera::GameCamera()
 
 void GameCamera::Init()
 {
-	//ƒfƒtƒHƒ‹ƒg‚ÌˆÊ’u‚ÆŽ‹–ìŠp‚Å‰Šú‰»
-	m_backGroundCam->SetAngleOfView(Angle(m_defaultCapeView));
-	m_backGroundCam->SetPos(m_defaultPos);
+	//”wŒiƒJƒƒ‰
+	m_backGroundCam->SetAngleOfView(Angle(m_backDefaultCapeView));
+	m_backGroundCam->SetPos(m_backDefaultPos);
+	m_backGroundCam->SetTarget({ 0.0f,m_backTargetHeight,0.0f });
 
-	//’†‰›‚ðŒü‚­
-	m_backGroundCam->SetTarget({ 0.0f,m_defaultPos.y + 2.0f,0.0f });
-
+	//‘OŒiƒJƒƒ‰
+	m_frontCam->SetAngleOfView(Angle(m_frontDefaultCapeView));
+	m_frontCam->SetPos(m_frontDefaultPos);
+	m_frontCam->SetTarget({ 0.0f,m_frontTargetHeight,0.0f });
 }
 
 void GameCamera::Update()
 {
-	m_frontCam->SetAngleOfView(Angle(m_defaultCapeView));
-	m_frontCam->SetPos({ 0.0f,6.4f,-59.0f });
-	m_frontCam->SetTarget({ 0.0f,m_frontCam->GetPos().y + 7.0f,0.0f});
 }
