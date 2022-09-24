@@ -611,8 +611,8 @@ void Importer::LoadGLTFPrimitive(ModelMesh& ModelMesh, const Microsoft::glTF::Me
 		int jid0 = 4 * vertIdx, jid1 = 4 * vertIdx + 1, jid2 = 4 * vertIdx + 2, jid3 = 4 * vertIdx + 3;
 
 		ModelMesh::Vertex vertex;
-		vertex.pos = { vertPos[vid0],vertPos[vid1],vertPos[vid2] };
-		vertex.normal = { vertNrm[vid0],vertNrm[vid1],vertNrm[vid2] };
+		vertex.pos = { -vertPos[vid0],vertPos[vid1],vertPos[vid2] };
+		vertex.normal = { -vertNrm[vid0],vertNrm[vid1],vertNrm[vid2] };
 		vertex.uv = { vertUV[tid0],vertUV[tid1] };
 
 		if (!vertWeight.empty())
@@ -659,8 +659,8 @@ void Importer::LoadGLTFPrimitive(ModelMesh& ModelMesh, const Microsoft::glTF::Me
 	auto idxCount = accIndex.count;
 	for (int i = 0; i < idxCount; i += 3)
 	{
-		ModelMesh.mesh->indices.emplace_back(static_cast<unsigned int>(indices[i]));
 		ModelMesh.mesh->indices.emplace_back(static_cast<unsigned int>(indices[i + 1]));
+		ModelMesh.mesh->indices.emplace_back(static_cast<unsigned int>(indices[i]));
 		ModelMesh.mesh->indices.emplace_back(static_cast<unsigned int>(indices[i + 2]));
 	}
 }
