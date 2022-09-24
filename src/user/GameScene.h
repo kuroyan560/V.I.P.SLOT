@@ -3,6 +3,7 @@
 class Player;
 class LightManager;
 class ModelObject;
+class TextureBuffer;
 
 class GameScene : public BaseScene
 {
@@ -20,6 +21,9 @@ class GameScene : public BaseScene
 
 	//ƒRƒCƒ““Š“üŒû
 	std::shared_ptr<ModelObject>m_coinPortObj;
+
+	//”wŒi‰æ‘œ
+	std::shared_ptr<TextureBuffer>m_backGround;
 
 public:
 	GameScene();

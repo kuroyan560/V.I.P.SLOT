@@ -5,6 +5,7 @@
 #include"RenderTargetManager.h"
 #include"LightManager.h"
 #include"Object.h"
+#include"DrawFunc2D.h"
 #include"DrawFunc3D.h"
 
 GameScene::GameScene()
@@ -23,6 +24,9 @@ GameScene::GameScene()
 
 	//ÉRÉCÉììäì¸å˚ê∂ê¨
 	m_coinPortObj = std::make_shared<ModelObject>("resource/user/model/", "port.glb");
+
+	//îwåiâÊëúì«Ç›çûÇ›
+	m_backGround = D3D12App::Instance()->GenerateTextureBuffer("resource/user/img/backGround.png");
 }
 
 void GameScene::OnInitialize()
@@ -53,6 +57,8 @@ void GameScene::OnDraw()
 
 	rtMgr.Clear();
 	rtMgr.Set(true, { DRAW_TARGET_TAG::BACK_BUFF });
+
+	DrawFunc2D::DrawGraph({ 0,0 }, m_backGround, 1.0f, AlphaBlendMode_None);
 
 	DrawFunc3D::DrawNonShadingModel(m_floorObj, *nowCam, 1.0f, AlphaBlendMode_None);
 	DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *nowCam, 1.0f, AlphaBlendMode_None);
