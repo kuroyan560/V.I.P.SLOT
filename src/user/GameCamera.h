@@ -7,7 +7,7 @@ class GameCamera
 	std::shared_ptr<Camera>m_cam;
 
 	//À•W
-	Vec3<float>m_defaultPos = { 0.0f,6.0f,-50.0f };
+	Vec3<float>m_defaultPos = { 0.0f,3.0f,-50.0f };
 
 	//‹–ìŠp
 	int m_defaultCapeView = 45;

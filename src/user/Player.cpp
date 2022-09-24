@@ -9,6 +9,8 @@ Player::Player()
 
 void Player::Init()
 {
+	//スタート位置に移動
+	m_modelObj->m_transform.SetPos(m_startPos);
 }
 
 void Player::Update()

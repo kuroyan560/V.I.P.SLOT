@@ -7,9 +7,12 @@ GameCamera::GameCamera()
 
 void GameCamera::Init()
 {
+	//デフォルトの位置と視野角で初期化
 	m_cam->SetAngleOfView(Angle(m_defaultCapeView));
 	m_cam->SetPos(m_defaultPos);
-	m_cam->SetTarget({ 0.0f,m_defaultPos.y,0.0f });
+
+	//中央を向く
+	m_cam->SetTarget({ 0.0f,m_defaultPos.y + 2.0f,0.0f });
 }
 
 void GameCamera::Update()
