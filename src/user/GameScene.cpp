@@ -1,5 +1,4 @@
 #include "GameScene.h"
-#include"GameManager.h"
 #include"Collider.h"
 #include"Player.h"
 #include"RenderTargetManager.h"
@@ -18,7 +17,7 @@ GameScene::GameScene()
 	m_ligMgr = std::make_shared<LightManager>();
 
 	//床生成
-	m_floorObj = std::make_shared<ModelObject>("resource/user/model/", "floor.glb");
+	m_squareFloorObj = std::make_shared<ModelObject>("resource/user/model/", "floor_square.glb");
 
 	//スロットマシン生成
 	m_slotMachineObj = std::make_shared<ModelObject>("resource/user/model/", "slotMachine.glb");
@@ -31,16 +30,13 @@ GameScene::GameScene()
 
 	//ゲームカメラ生成
 	m_gameCam = std::make_shared<GameCamera>();
-	GameManager::Instance()->RegisterCamera(m_gameCamKey, m_gameCam->GetCam());
 }
 
 void GameScene::OnInitialize()
 {
 	//プレイヤー初期化
 	m_player->Init();
-
-	//ゲームカメラに変更
-	GameManager::Instance()->ChangeCamera(m_gameCamKey);
+	m_squareFloorObj->m_transform.SetPos(m_player->m_startPos);
 
 	//カメラ初期化
 	m_gameCam->Init();
@@ -56,9 +52,6 @@ void GameScene::OnUpdate()
 	//カメラ更新
 	m_gameCam->Update();
 
-	//ゲームマネージャ更新
-	GameManager::Instance()->Update();
-
 	//プレイヤー更新
 	m_player->Update();
 }
@@ -66,7 +59,6 @@ void GameScene::OnUpdate()
 
 void GameScene::OnDraw()
 {
-	auto nowCam = GameManager::Instance()->GetNowCamera();
 	auto& rtMgr = *RenderTargetManager::Instance();
 
 	rtMgr.Clear();
@@ -74,24 +66,20 @@ void GameScene::OnDraw()
 
 	DrawFunc2D::DrawGraph({ 0,0 }, m_backGround, 1.0f, AlphaBlendMode_None);
 
-	DrawFunc3D::DrawNonShadingModel(m_floorObj, *nowCam, 1.0f, AlphaBlendMode_None);
-	DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *nowCam, 1.0f, AlphaBlendMode_None);
-	DrawFunc3D::DrawNonShadingModel(m_coinPortObj, *nowCam, 1.0f, AlphaBlendMode_None);
+	DrawFunc3D::DrawNonShadingModel(m_squareFloorObj, *m_gameCam->GetFrontCam(), 1.0f, AlphaBlendMode_None);
+	DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *m_gameCam->GetBackCam(), 1.0f, AlphaBlendMode_None);
+	DrawFunc3D::DrawNonShadingModel(m_coinPortObj, *m_gameCam->GetBackCam(), 1.0f, AlphaBlendMode_None);
 
-	m_player->Draw(m_ligMgr, nowCam);
+	m_player->Draw(m_ligMgr, m_gameCam->GetFrontCam());
 
 	//デバッグ描画
 #ifdef _DEBUG
-	if (GameManager::Instance()->GetDebugDrawFlg())
-	{
-		Collider::DebugDrawAllColliders(*nowCam);
-	}
+	//Collider::DebugDrawAllColliders(*m_gameCam->GetFrontCam());
 #endif
 }
 
 void GameScene::OnImguiDebug()
 {
-	GameManager::Instance()->ImGuiDebug(*UsersInput::Instance());
 }
 
 void GameScene::OnFinalize()

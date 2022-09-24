@@ -218,7 +218,6 @@
     <ClCompile Include="src\engine\WinApp.cpp" />
     <ClCompile Include="src\user\BasicDraw.cpp" />
     <ClCompile Include="src\user\GameCamera.cpp" />
-    <ClCompile Include="src\user\GameManager.cpp" />
     <ClCompile Include="src\user\GameScene.cpp" />
     <ClCompile Include="src\user\LevelParameters.cpp" />
     <ClCompile Include="src\user\Player.cpp" />
@@ -297,7 +296,6 @@
     <ClInclude Include="src\engine\WinApp.h" />
     <ClInclude Include="src\user\BasicDraw.h" />
     <ClInclude Include="src\user\GameCamera.h" />
-    <ClInclude Include="src\user\GameManager.h" />
     <ClInclude Include="src\user\GameScene.h" />
     <ClInclude Include="src\user\LevelParameters.h" />
     <ClInclude Include="src\user\Player.h" />

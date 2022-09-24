@@ -15,7 +15,7 @@ class GameScene : public BaseScene
 	std::shared_ptr<LightManager>m_ligMgr;
 
 	//床
-	std::shared_ptr<ModelObject>m_floorObj;
+	std::shared_ptr<ModelObject>m_squareFloorObj;
 
 	//スロットマシン
 	std::shared_ptr<ModelObject>m_slotMachineObj;
@@ -27,7 +27,8 @@ class GameScene : public BaseScene
 	std::shared_ptr<TextureBuffer>m_backGround;
 	
 	//ゲームカメラ
-	const std::string m_gameCamKey = "GameCamera";
+	const std::string m_backCamKey = "GameCamera - Back";
+	const std::string m_frontCamKey = "GameCamera - Front";
 	std::shared_ptr<GameCamera>m_gameCam;
 
 public:

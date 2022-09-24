@@ -4,7 +4,8 @@
 
 class GameCamera
 {
-	std::shared_ptr<Camera>m_cam;
+	std::shared_ptr<Camera>m_backGroundCam;
+	std::shared_ptr<Camera>m_frontCam;
 
 	//ç¿ïW
 	Vec3<float>m_defaultPos = { 0.0f,3.0f,-50.0f };
@@ -17,5 +18,6 @@ public:
 	void Init();
 	void Update();
 
-	std::shared_ptr<Camera>& GetCam() { return m_cam; }
+	std::shared_ptr<Camera>& GetBackCam() { return m_backGroundCam; }
+	std::shared_ptr<Camera>& GetFrontCam() { return m_frontCam; }
 };
