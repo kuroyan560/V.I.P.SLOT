@@ -221,6 +221,7 @@
     <ClCompile Include="src\user\GameScene.cpp" />
     <ClCompile Include="src\user\Player.cpp" />
     <ClCompile Include="src\user\RenderTargetManager.cpp" />
+    <ClCompile Include="src\user\SlotMachine.cpp" />
     <ClCompile Include="src\user\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -299,6 +300,7 @@
     <ClInclude Include="src\user\GameScene.h" />
     <ClInclude Include="src\user\Player.h" />
     <ClInclude Include="src\user\RenderTargetManager.h" />
+    <ClInclude Include="src\user\SlotMachine.h" />
     <ClInclude Include="src\user\TitleScene.h" />
   </ItemGroup>
   <ItemGroup>

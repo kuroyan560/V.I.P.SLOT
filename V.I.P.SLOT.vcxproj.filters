@@ -74,6 +74,9 @@
     <Filter Include="src\user\Scene">
       <UniqueIdentifier>{df5b8cbe-7f20-40ad-a5a4-531e61397f08}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\user\Slot">
+      <UniqueIdentifier>{3091ca29-979c-40e8-826a-b2a7991154d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\D3D12App.cpp">
@@ -258,6 +261,9 @@
     </ClCompile>
     <ClCompile Include="src\user\GameCamera.cpp">
       <Filter>src\user\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\SlotMachine.cpp">
+      <Filter>src\user\Slot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -488,6 +494,9 @@
     </ClInclude>
     <ClInclude Include="src\user\ConstParameters.h">
       <Filter>src\user\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\SlotMachine.h">
+      <Filter>src\user\Slot</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

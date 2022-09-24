@@ -1,6 +1,7 @@
 #pragma once
 #include"KuroEngine.h"
 class Player;
+class SlotMachine;
 class LightManager;
 class ModelObject;
 class TextureBuffer;
@@ -11,14 +12,14 @@ class GameScene : public BaseScene
 	//プレイヤー
 	std::shared_ptr<Player>m_player;
 
+	//スロットマシン
+	std::shared_ptr<SlotMachine>m_slotMachine;
+
 	//ライトマネージャ
 	std::shared_ptr<LightManager>m_ligMgr;
 
 	//床
 	std::shared_ptr<ModelObject>m_squareFloorObj;
-
-	//スロットマシン
-	std::shared_ptr<ModelObject>m_slotMachineObj;
 
 	//背景画像
 	std::shared_ptr<TextureBuffer>m_backGround;
