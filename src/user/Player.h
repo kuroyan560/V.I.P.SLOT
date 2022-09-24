@@ -11,9 +11,6 @@ class Player
 	//モデルオブジェクト
 	std::shared_ptr<ModelObject>m_modelObj;
 
-	//スタート位置
-	Vec3<float>m_startPos = { 0,0,-20 };
-
 	//移動
 	Vec3<float>m_move = { 0,0,0 };
 
@@ -24,6 +21,9 @@ class Player
 	bool m_isOnGround;
 
 public:
+	//スタート位置
+	const Vec3<float>m_startPos = { 0,0,-20 };
+
 	Player();
 	//初期化
 	void Init();
