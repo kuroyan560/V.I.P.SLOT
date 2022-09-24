@@ -241,9 +241,6 @@
     <ClCompile Include="src\engine\DOF.cpp">
       <Filter>src\engine\レンダリング関連</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\ControllerConfig.cpp">
-      <Filter>src\user\Game</Filter>
-    </ClCompile>
     <ClCompile Include="src\engine\DrawFuncBillBoard.cpp">
       <Filter>src\engine\ユーザー向け\描画便利関数\BillBoard</Filter>
     </ClCompile>
@@ -473,9 +470,6 @@
     </ClInclude>
     <ClInclude Include="src\engine\DOF.h">
       <Filter>src\engine\レンダリング関連</Filter>
-    </ClInclude>
-    <ClInclude Include="src\user\ControllerConfig.h">
-      <Filter>src\user\Game</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\DrawFuncBillBoard.h">
       <Filter>src\engine\ユーザー向け\描画便利関数\BillBoard</Filter>
