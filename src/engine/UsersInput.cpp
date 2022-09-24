@@ -112,19 +112,16 @@ void UsersInput::Update(const HWND& Hwnd, const Vec2<float>& WinSize)
 
 bool UsersInput::KeyOnTrigger(int KeyCode)const
 {
-	return false;
 	return (!m_oldkeys[KeyCode] && m_keys[KeyCode]);
 }
 
 bool UsersInput::KeyInput(int KeyCode)const
 {
-	return false;
 	return m_keys[KeyCode];
 }
 
 bool UsersInput::KeyOffTrigger(int KeyCode)const
 {
-	return false;
 	return (m_oldkeys[KeyCode] && !m_keys[KeyCode]);
 }
 
