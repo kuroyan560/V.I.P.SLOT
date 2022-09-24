@@ -4,6 +4,7 @@ class Player;
 class LightManager;
 class ModelObject;
 class TextureBuffer;
+class GameCamera;
 
 class GameScene : public BaseScene
 {
@@ -24,6 +25,10 @@ class GameScene : public BaseScene
 
 	//”wŒi‰æ‘œ
 	std::shared_ptr<TextureBuffer>m_backGround;
+	
+	//ƒQ[ƒ€ƒJƒƒ‰
+	const std::string m_gameCamKey = "GameCamera";
+	std::shared_ptr<GameCamera>m_gameCam;
 
 public:
 	GameScene();

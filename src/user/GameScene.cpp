@@ -7,6 +7,7 @@
 #include"Object.h"
 #include"DrawFunc2D.h"
 #include"DrawFunc3D.h"
+#include"GameCamera.h"
 
 GameScene::GameScene()
 {
@@ -27,12 +28,22 @@ GameScene::GameScene()
 
 	//背景画像読み込み
 	m_backGround = D3D12App::Instance()->GenerateTextureBuffer("resource/user/img/backGround.png");
+
+	//ゲームカメラ生成
+	m_gameCam = std::make_shared<GameCamera>();
+	GameManager::Instance()->RegisterCamera(m_gameCamKey, m_gameCam->GetCam());
 }
 
 void GameScene::OnInitialize()
 {
 	//プレイヤー初期化
 	m_player->Init();
+
+	//ゲームカメラに変更
+	GameManager::Instance()->ChangeCamera(m_gameCamKey);
+
+	//カメラ初期化
+	m_gameCam->Init();
 }
 
 void GameScene::OnUpdate()
@@ -41,6 +52,9 @@ void GameScene::OnUpdate()
 	{
 		this->Initialize();
 	}
+
+	//カメラ更新
+	m_gameCam->Update();
 
 	//ゲームマネージャ更新
 	GameManager::Instance()->Update();

@@ -268,6 +268,9 @@
     <ClCompile Include="src\user\TitleScene.cpp">
       <Filter>src\user\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\GameCamera.cpp">
+      <Filter>src\user\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -503,6 +506,9 @@
     </ClInclude>
     <ClInclude Include="src\user\TitleScene.h">
       <Filter>src\user\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\GameCamera.h">
+      <Filter>src\user\Game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
