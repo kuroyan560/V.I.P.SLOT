@@ -4,6 +4,8 @@
 #include"Player.h"
 #include"RenderTargetManager.h"
 #include"LightManager.h"
+#include"Object.h"
+#include"DrawFunc3D.h"
 
 GameScene::GameScene()
 {
@@ -12,6 +14,15 @@ GameScene::GameScene()
 
 	//ライトマネージャ生成
 	m_ligMgr = std::make_shared<LightManager>();
+
+	//床生成
+	m_floorObj = std::make_shared<ModelObject>("resource/user/model/", "floor.glb");
+
+	//スロットマシン生成
+	m_slotMachineObj = std::make_shared<ModelObject>("resource/user/model/", "slotMachine.glb");
+
+	//コイン投入口生成
+	m_coinPortObj = std::make_shared<ModelObject>("resource/user/model/", "port.glb");
 }
 
 void GameScene::OnInitialize()
@@ -42,6 +53,11 @@ void GameScene::OnDraw()
 
 	rtMgr.Clear();
 	rtMgr.Set(true, { DRAW_TARGET_TAG::BACK_BUFF });
+
+	DrawFunc3D::DrawNonShadingModel(m_floorObj, *nowCam, 1.0f, AlphaBlendMode_None);
+	DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *nowCam, 1.0f, AlphaBlendMode_None);
+	DrawFunc3D::DrawNonShadingModel(m_coinPortObj, *nowCam, 1.0f, AlphaBlendMode_None);
+
 	m_player->Draw(m_ligMgr, nowCam);
 
 	//デバッグ描画
