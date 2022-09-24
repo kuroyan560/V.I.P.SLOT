@@ -9,11 +9,11 @@ class GameCamera
 
 	//初期座標
 	Vec3<float>m_backDefaultPos = { 0.0f,3.0f,-50.0f };
-	Vec3<float>m_frontDefaultPos = { 0.0f,6.4f,-59.0f };
+	Vec3<float>m_frontDefaultPos = { 0.0f,13.4f,-59.0f };
 
 	//注視点の高さオフセット
 	float m_backTargetHeight = m_backDefaultPos.y + 2.0f;
-	float m_frontTargetHeight = m_frontDefaultPos.y + 7.0f;
+	float m_frontTargetHeight = m_frontDefaultPos.y + 2.0f;
 
 	//視野角
 	int m_backDefaultCapeView = 45;
