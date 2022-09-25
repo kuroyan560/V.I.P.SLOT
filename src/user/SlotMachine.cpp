@@ -197,9 +197,6 @@ void SlotMachine::Reel::Update()
 		m_vOffset += m_spinSpeed;
 	}
 
-	//ループ
-	if (m_vOffset < -1.0f)m_vOffset += 1.0f;
-
 	//リールメッシュに回転を反映
 	SpinAffectUV();
 }
@@ -229,13 +226,21 @@ void SlotMachine::Reel::Stop()
 	//タイマースタート
 	m_timer = 0;
 
-	//小数第１位を丸め込む
-	m_vOffsetFixedStop = roundf(m_vOffset * 10.0f) / 10.0f;
+	//小数第１位を丸め込んで補正（中途半端な位置で止まらないようにする）
+	float tmp = roundf(m_vOffset * 10.0f) / 10.0f;
 
 	//停止位置の絵柄インデックス記録
 	const float vSpan = 1.0f / (m_patternNum - 1);
-	m_nowPatternIdx = m_patternNum + static_cast<int>(m_vOffsetFixedStop / vSpan);
-	printf("%d\n", m_nowPatternIdx);
+	m_nowPatternIdx = m_patternNum + static_cast<int>(tmp / vSpan);
+
+	//絵柄のループ
+	while (m_nowPatternIdx < 0)m_nowPatternIdx += m_patternNum;
+	while (m_patternNum <= m_nowPatternIdx)m_nowPatternIdx -= m_patternNum;
+
+	//停止位置のV値を記録
+	m_vOffsetFixedStop = 1.0f / m_patternNum * m_nowPatternIdx;
+
+	printf("%f,%f,%d\n", m_vOffset, m_vOffsetFixedStop, m_nowPatternIdx);
 }
 
 void SlotMachine::Reel::SpinAffectUV()
