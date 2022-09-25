@@ -114,6 +114,9 @@ void SlotMachine::Reel::Init(std::shared_ptr<TextureBuffer> ReelTex)
 
 	//回転始めフラグリセット
 	m_isStartSpin = false;
+	//回転終了フラグリセット
+	m_isEndSpin = false;
+
 	//タイマーリセット
 	m_timer = -1;
 }
@@ -137,12 +140,34 @@ void SlotMachine::Reel::Update()
 		if (ConstParameter::Slot::UNTIL_MAX_SPEED_TIME < m_timer)
 		{
 			m_isStartSpin = false;	//回転始めフラグを下ろす
-			m_timer = -1;	//タイマーリセット
+			m_timer = -1;				//タイマーリセット
 		}
 	}
+	
+	//回転終了後のリール振動時間
+	const int FINISH_SPIN_TIME = 30;
+	const float FINISH_SPIN_SHAKE_MAX = 0.02f;
+	//回転終了
+	if (m_isEndSpin)
+	{
+		// (0 ~ 1) を (-1 ~1) の範囲に補正して振動量計算
+		float easeRate = KuroMath::Ease(Out, Elastic, m_timer, FINISH_SPIN_TIME, 0.0f, 1.0f) * 2.0f - 2.0f;
+		float shake = FINISH_SPIN_SHAKE_MAX * easeRate;
+		m_vOffset = m_vOffsetFixedStop + shake;
 
+		//振動終了
+		if (FINISH_SPIN_TIME < m_timer)
+		{
+			m_isSpin = false;			//回転終了
+			m_isEndSpin = false;	//回転終了フラグを下ろす
+			m_timer = -1;				//タイマーリセット
+		}
+	}
 	//V回転
-	m_vOffset += m_spinSpeed;
+	else
+	{
+		m_vOffset += m_spinSpeed;
+	}
 
 	//リールメッシュに回転を反映
 	SpinAffectUV();
@@ -160,7 +185,14 @@ void SlotMachine::Reel::Start()
 
 void SlotMachine::Reel::Stop()
 {
-	m_isSpin = false;
+	//回転終了
+	m_isEndSpin = true;
+
+	//タイマースタート
+	m_timer = 0;
+
+	//小数第１位を丸め込む
+	m_vOffsetFixedStop = roundf(m_vOffset * 10.0f) / 10.0f;
 }
 
 void SlotMachine::Reel::SpinAffectUV()

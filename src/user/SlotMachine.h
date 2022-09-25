@@ -38,6 +38,12 @@ class SlotMachine
 
 		//回転始めフラグ（助走？最高速度になるまでの間はStop出来ない）
 		bool m_isStartSpin = false;
+		//回転終了フラグ
+		bool m_isEndSpin = false;
+
+		//リール停止時のVオフセット（中途半端な位置にならないよう補正をかけたもの）
+		float m_vOffsetFixedStop;
+
 		//時間計測
 		int m_timer;
 
