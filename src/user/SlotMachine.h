@@ -28,15 +28,32 @@ class SlotMachine
 		//UV値の初期化値
 		std::vector<float>m_initV;
 
-	public:
 		//回転量（UV値のV）
 		float m_vOffset = 0.0f;
+
+		//回転中か
+		bool m_isSpin = false;
+		//回転速度
+		float m_spinSpeed;
+
+		//回転始めフラグ（助走？最高速度になるまでの間はStop出来ない）
+		bool m_isStartSpin = false;
+		//時間計測
+		int m_timer;
+
+		//回転をUV値に反映
+		void SpinAffectUV();
+		
+	public:
 		//リールメッシュアタッチ
 		void Attach(ModelMesh* ReelMesh);
 		//初期化
 		void Init(std::shared_ptr<TextureBuffer>ReelTex = nullptr);
-		//回転をUV値に反映
-		void SpinAffectUV();
+		//更新（回転）
+		void Update();
+
+		//回転スタート
+		void Start();
 	};
 	std::array<Reel, REEL::NUM>m_reels;
 	
