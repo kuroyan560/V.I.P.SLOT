@@ -38,6 +38,10 @@ namespace ConstParameter
 		const int UNTIL_MAX_SPEED_TIME = 14;
 		//最高回転速度
 		const float MAX_SPIN_SPEED = -0.0065f;
+		//回転終了後のリール振動時間
+		const int FINISH_SPIN_TIME = 30;
+		//回転終了時のリール振動最大
+		const float FINISH_SPIN_SHAKE_MAX = 0.02f;
 	};
 };
 

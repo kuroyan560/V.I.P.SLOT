@@ -144,19 +144,21 @@ void SlotMachine::Reel::Update()
 		}
 	}
 	
-	//‰ñ“]I—¹Œã‚ÌƒŠ[ƒ‹U“®ŠÔ
-	const int FINISH_SPIN_TIME = 30;
-	const float FINISH_SPIN_SHAKE_MAX = 0.02f;
 	//‰ñ“]I—¹
 	if (m_isEndSpin)
 	{
-		// (0 ~ 1) ‚ğ (-1 ~1) ‚Ì”ÍˆÍ‚É•â³‚µ‚ÄU“®—ÊŒvZ
-		float easeRate = KuroMath::Ease(Out, Elastic, m_timer, FINISH_SPIN_TIME, 0.0f, 1.0f) * 2.0f - 2.0f;
-		float shake = FINISH_SPIN_SHAKE_MAX * easeRate;
+		// (0 ~ 1) ‚ğ (-1 ~1) ‚Ì”ÍˆÍ‚É•â³‚µ‚ÄƒC[ƒWƒ“ƒOŒvZ
+		float easeRate = KuroMath::Ease(Out, Elastic, m_timer, 
+			ConstParameter::Slot::FINISH_SPIN_TIME, 0.0f, 1.0f) * 2.0f - 2.0f;
+
+		//‰ñ“]’â~’¼Œã‚ÌU“®—ÊŒvZ
+		float shake = ConstParameter::Slot::FINISH_SPIN_SHAKE_MAX * easeRate;
+
+		//U“®‚µ‚È‚ª‚ç’â~
 		m_vOffset = m_vOffsetFixedStop + shake;
 
 		//U“®I—¹
-		if (FINISH_SPIN_TIME < m_timer)
+		if (ConstParameter::Slot::FINISH_SPIN_TIME < m_timer)
 		{
 			m_isSpin = false;			//‰ñ“]I—¹
 			m_isEndSpin = false;	//‰ñ“]I—¹ƒtƒ‰ƒO‚ğ‰º‚ë‚·
