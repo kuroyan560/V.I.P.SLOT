@@ -28,6 +28,9 @@ class SlotMachine
 		//UV値の初期化値
 		std::vector<float>m_initV;
 
+		//絵柄の数
+		int m_patternNum = 20;
+
 		//回転量（UV値のV）
 		float m_vOffset = 0.0f;
 
@@ -54,7 +57,7 @@ class SlotMachine
 		//リールメッシュアタッチ
 		void Attach(ModelMesh* ReelMesh);
 		//初期化
-		void Init(std::shared_ptr<TextureBuffer>ReelTex = nullptr);
+		void Init(std::shared_ptr<TextureBuffer>ReelTex = nullptr, int PatternNum = 20);
 		//更新（回転）
 		void Update();
 
@@ -64,7 +67,10 @@ class SlotMachine
 		void Stop();
 
 		//回転停止を受け付けているか
-		bool IsCanStop() { return !m_isStartSpin; }
+		bool IsCanStop()const { return !m_isStartSpin; }
+
+		//回転中か
+		const bool& IsSpin()const { return m_isSpin; }
 	};
 	std::array<Reel, REEL::NUM>m_reels;
 

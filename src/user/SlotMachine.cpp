@@ -59,7 +59,7 @@ void SlotMachine::Update()
 			m_lever++;
 		}
 		//各リール停止
-		else if (m_reels[m_lever].IsCanStop())
+		else if (m_lever <= REEL::RIGHT && m_reels[m_lever].IsCanStop())
 		{
 			m_reels[m_lever].Stop();
 			AudioApp::Instance()->PlayWaveDelay(m_reelStopSE);
@@ -67,7 +67,7 @@ void SlotMachine::Update()
 		}
 
 		//全リール停止済
-		if (REEL::RIGHT < m_lever)m_lever = -1;
+		if (REEL::RIGHT < m_lever && !m_reels[REEL::RIGHT].IsSpin())m_lever = -1;
 	}
 }
 
@@ -90,7 +90,7 @@ void SlotMachine::Reel::Attach(ModelMesh* ReelMesh)
 	}
 }
 
-void SlotMachine::Reel::Init(std::shared_ptr<TextureBuffer> ReelTex)
+void SlotMachine::Reel::Init(std::shared_ptr<TextureBuffer> ReelTex, int PatternNum)
 {
 	//リールのメッシュが見つけられていない
 	if (m_meshPtr == nullptr)
@@ -101,6 +101,9 @@ void SlotMachine::Reel::Init(std::shared_ptr<TextureBuffer> ReelTex)
 
 	//リールのテクスチャ指定
 	if (ReelTex)m_meshPtr->material->texBuff[COLOR_TEX] = ReelTex;
+
+	//絵柄の数指定
+	m_patternNum = PatternNum;
 
 	//回転量リセット
 	m_vOffset = 0.0f;
@@ -171,6 +174,9 @@ void SlotMachine::Reel::Update()
 		m_vOffset += m_spinSpeed;
 	}
 
+	//ループ
+	if (m_vOffset < -1.0f)m_vOffset += 1.0f;
+
 	//リールメッシュに回転を反映
 	SpinAffectUV();
 }
@@ -195,6 +201,11 @@ void SlotMachine::Reel::Stop()
 
 	//小数第１位を丸め込む
 	m_vOffsetFixedStop = roundf(m_vOffset * 10.0f) / 10.0f;
+
+	const float V_UFLOAT = 1.0f / (m_patternNum - 1);
+
+	int patternIdx = m_patternNum + static_cast<int>(m_vOffsetFixedStop / V_UFLOAT);
+	printf("%f , %f , %d\n", m_vOffset, m_vOffsetFixedStop, patternIdx);
 }
 
 void SlotMachine::Reel::SpinAffectUV()
