@@ -54,8 +54,20 @@ class SlotMachine
 
 		//回転スタート
 		void Start();
+		//回転ストップ
+		void Stop();
+
+		//回転停止を受け付けているか
+		bool IsCanStop() { return !m_isStartSpin; }
 	};
 	std::array<Reel, REEL::NUM>m_reels;
+
+	//スロットのレバーフラグ（StartかStopか）
+	int m_lever;
+
+	//サウンド
+	int m_spinStartSE;	//回転スタート
+	int m_reelStopSE;		//リールストップ
 	
 public:
 	SlotMachine();

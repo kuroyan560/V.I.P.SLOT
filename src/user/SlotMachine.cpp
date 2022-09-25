@@ -2,6 +2,7 @@
 #include"Object.h"
 #include"Model.h"
 #include"ConstParameters.h"
+#include"AudioApp.h"
 
 SlotMachine::SlotMachine()
 {
@@ -24,12 +25,19 @@ SlotMachine::SlotMachine()
 			}
 		}
 	}
+
+	//サウンド読み込み
+	m_spinStartSE = AudioApp::Instance()->LoadAudio("resource/user/sound/slot_start.wav");
+	m_reelStopSE = AudioApp::Instance()->LoadAudio("resource/user/sound/slot_stop.wav");
 }
 
 void SlotMachine::Init()
 {
 	//リール初期化
 	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Init();
+
+	//レバー初期化
+	m_lever = -1;
 }
 
 //デバッグ用
@@ -40,10 +48,26 @@ void SlotMachine::Update()
 	//リール更新
 	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Update();
 
-	//デバッグ用
+	//レバー操作
 	if (UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::RB))
 	{
-		for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Start();
+		//スロット回転開始
+		if (m_lever == -1)
+		{
+			for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Start();
+			AudioApp::Instance()->PlayWaveDelay(m_spinStartSE);
+			m_lever++;
+		}
+		//各リール停止
+		else if (m_reels[m_lever].IsCanStop())
+		{
+			m_reels[m_lever].Stop();
+			AudioApp::Instance()->PlayWaveDelay(m_reelStopSE);
+			m_lever++;
+		}
+
+		//全リール停止済
+		if (REEL::RIGHT < m_lever)m_lever = -1;
 	}
 }
 
@@ -132,6 +156,11 @@ void SlotMachine::Reel::Start()
 
 	//タイマースタート
 	m_timer = 0;
+}
+
+void SlotMachine::Reel::Stop()
+{
+	m_isSpin = false;
 }
 
 void SlotMachine::Reel::SpinAffectUV()
