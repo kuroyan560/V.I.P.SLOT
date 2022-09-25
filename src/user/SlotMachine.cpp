@@ -80,7 +80,6 @@ void SlotMachine::Update()
 		{
 			m_lever = -1;
 			m_slotWaitTimer = 0;
-			printf("ready slot\n");
 		}
 	}
 }

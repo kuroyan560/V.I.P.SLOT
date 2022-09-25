@@ -148,7 +148,7 @@ void Reel::Stop()
 	//’âŽ~ˆÊ’u‚ÌV’l‚ð‹L˜^
 	m_vOffsetFixedStop = 1.0f / m_patternNum * m_nowPatternIdx;
 
-	printf("%f,%f,%d\n", m_vOffset, m_vOffsetFixedStop, m_nowPatternIdx);
+	printf("ReelStop : %d\n", m_nowPatternIdx + 1);
 }
 
 void Reel::SpinAffectUV()
