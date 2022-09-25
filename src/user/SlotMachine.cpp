@@ -1,6 +1,7 @@
 #include "SlotMachine.h"
 #include"Object.h"
 #include"Model.h"
+#include"ConstParameters.h"
 
 SlotMachine::SlotMachine()
 {
@@ -101,19 +102,15 @@ void SlotMachine::Reel::Update()
 	//タイマー起動中（ -1 でオフ）
 	if (0 <= m_timer)m_timer++;
 
-	//最高速度になるまでの時間
-	const int UNTIL_MAX_SPEED_TIME = 20;
-	//最高回転速度
-	const float MAX_SPIN_SPEED = -0.005f;
-
 	//回転始め
 	if (m_isStartSpin)
 	{
 		//回転速度加速
-		m_spinSpeed = KuroMath::Ease(In, Back, m_timer, UNTIL_MAX_SPEED_TIME, 0.0f, MAX_SPIN_SPEED);
+		m_spinSpeed = KuroMath::Ease(In, Back, m_timer,
+			ConstParameter::Slot::UNTIL_MAX_SPEED_TIME, 0.0f, ConstParameter::Slot::MAX_SPIN_SPEED);
 
 		//最高速度到達
-		if (UNTIL_MAX_SPEED_TIME < m_timer)
+		if (ConstParameter::Slot::UNTIL_MAX_SPEED_TIME < m_timer)
 		{
 			m_isStartSpin = false;	//回転始めフラグを下ろす
 			m_timer = -1;	//タイマーリセット
