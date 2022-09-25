@@ -35,9 +35,9 @@ namespace ConstParameter
 	namespace Slot
 	{
 		//Å‚‘¬“x‚É‚È‚é‚Ü‚Å‚ÌŠÔ
-		const int UNTIL_MAX_SPEED_TIME = 20;
+		const int UNTIL_MAX_SPEED_TIME = 14;
 		//Å‚‰ñ“]‘¬“x
-		const float MAX_SPIN_SPEED = -0.005f;
+		const float MAX_SPIN_SPEED = -0.0065f;
 	};
 };
 
