@@ -34,10 +34,14 @@ namespace ConstParameter
 
 	namespace Slot
 	{
+		//スロットが終わってから次を開始出来るようになるまでの時間
+		const int SLOT_WAIT_TIME = 12;
+
 		//最高速度になるまでの時間
 		const int UNTIL_MAX_SPEED_TIME = 14;
 		//最高回転速度
 		const float MAX_SPIN_SPEED = -0.0065f;
+
 		//回転終了後のリール振動時間
 		const int FINISH_SPIN_TIME = 30;
 		//回転終了時のリール振動最大

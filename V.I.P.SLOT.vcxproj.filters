@@ -265,6 +265,9 @@
     <ClCompile Include="src\user\SlotMachine.cpp">
       <Filter>src\user\Slot</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\Reel.cpp">
+      <Filter>src\user\Slot</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -496,6 +499,9 @@
       <Filter>src\user\Game</Filter>
     </ClInclude>
     <ClInclude Include="src\user\SlotMachine.h">
+      <Filter>src\user\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Reel.h">
       <Filter>src\user\Slot</Filter>
     </ClInclude>
   </ItemGroup>
