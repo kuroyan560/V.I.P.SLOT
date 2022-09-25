@@ -71,14 +71,13 @@ class SlotMachine
 
 		//回転停止を受け付けているか
 		bool IsCanStop()const { return !m_isStartSpin; }
-
-		//回転中か
-		const bool& IsSpin()const { return m_isSpin; }
 	};
 	std::array<Reel, REEL::NUM>m_reels;
 
 	//スロットのレバーフラグ（StartかStopか）
 	int m_lever;
+	//最後のリールを止めてからの時間計測
+	int m_slotWaitTimer;
 
 	//サウンド
 	int m_spinStartSE;	//回転スタート

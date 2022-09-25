@@ -38,6 +38,9 @@ void SlotMachine::Init()
 
 	//レバー初期化
 	m_lever = -1;
+
+	//最後のリールを止めてからの時間計測用タイマーリセット
+	m_slotWaitTimer = 0;
 }
 
 //デバッグ用
@@ -65,9 +68,23 @@ void SlotMachine::Update()
 			AudioApp::Instance()->PlayWaveDelay(m_reelStopSE);
 			m_lever++;
 		}
+	}
 
-		//全リール停止済
-		if (REEL::RIGHT < m_lever && !m_reels[REEL::RIGHT].IsSpin())m_lever = -1;
+	//全リール停止済
+	if (REEL::RIGHT < m_lever)
+	{
+		m_slotWaitTimer++;
+
+		//スロットが終わってから次を開始出来るようになるまでの時間
+		const int SLOT_WAIT_TIME = 12;
+
+		//次のスロット回転可能に
+		if (SLOT_WAIT_TIME < m_slotWaitTimer)
+		{
+			m_lever = -1;
+			m_slotWaitTimer = 0;
+			printf("ready slot\n");
+		}
 	}
 }
 
@@ -119,6 +136,9 @@ void SlotMachine::Reel::Init(std::shared_ptr<TextureBuffer> ReelTex, int Pattern
 	m_isStartSpin = false;
 	//回転終了フラグリセット
 	m_isEndSpin = false;
+
+	//リール停止時のVオフセット（中途半端な位置にならないよう補正をかけたもの）
+	m_vOffsetFixedStop = 0.0f;
 
 	//スロットの絵柄結果
 	m_nowPatternIdx = 0;
@@ -189,12 +209,16 @@ void SlotMachine::Reel::Start()
 	//回転スタート
 	m_isSpin = true;
 	m_isStartSpin = true;
+	m_isEndSpin = false;
 
 	//タイマースタート
 	m_timer = 0;
 
 	//回転中
 	m_nowPatternIdx = -1;
+
+	//振動リセット
+	m_vOffset = m_vOffsetFixedStop;
 }
 
 void SlotMachine::Reel::Stop()
@@ -211,7 +235,7 @@ void SlotMachine::Reel::Stop()
 	//停止位置の絵柄インデックス記録
 	const float vSpan = 1.0f / (m_patternNum - 1);
 	m_nowPatternIdx = m_patternNum + static_cast<int>(m_vOffsetFixedStop / vSpan);
-	printf("\n%d", m_nowPatternIdx);
+	printf("%d\n", m_nowPatternIdx);
 }
 
 void SlotMachine::Reel::SpinAffectUV()
