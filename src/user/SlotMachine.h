@@ -50,6 +50,9 @@ class SlotMachine
 		//時間計測
 		int m_timer;
 
+		//スロット結果の絵柄インデックス
+		int m_nowPatternIdx = 0;
+
 		//回転をUV値に反映
 		void SpinAffectUV();
 		

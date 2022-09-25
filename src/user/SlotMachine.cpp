@@ -120,6 +120,9 @@ void SlotMachine::Reel::Init(std::shared_ptr<TextureBuffer> ReelTex, int Pattern
 	//回転終了フラグリセット
 	m_isEndSpin = false;
 
+	//スロットの絵柄結果
+	m_nowPatternIdx = 0;
+
 	//タイマーリセット
 	m_timer = -1;
 }
@@ -189,6 +192,9 @@ void SlotMachine::Reel::Start()
 
 	//タイマースタート
 	m_timer = 0;
+
+	//回転中
+	m_nowPatternIdx = -1;
 }
 
 void SlotMachine::Reel::Stop()
@@ -202,10 +208,10 @@ void SlotMachine::Reel::Stop()
 	//小数第１位を丸め込む
 	m_vOffsetFixedStop = roundf(m_vOffset * 10.0f) / 10.0f;
 
-	const float V_UFLOAT = 1.0f / (m_patternNum - 1);
-
-	int patternIdx = m_patternNum + static_cast<int>(m_vOffsetFixedStop / V_UFLOAT);
-	printf("%f , %f , %d\n", m_vOffset, m_vOffsetFixedStop, patternIdx);
+	//停止位置の絵柄インデックス記録
+	const float vSpan = 1.0f / (m_patternNum - 1);
+	m_nowPatternIdx = m_patternNum + static_cast<int>(m_vOffsetFixedStop / vSpan);
+	printf("\n%d", m_nowPatternIdx);
 }
 
 void SlotMachine::Reel::SpinAffectUV()
