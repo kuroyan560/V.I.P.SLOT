@@ -2,6 +2,7 @@
 #include<string>
 #include<memory>
 #include"Vec.h"
+#include"CoinVault.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -20,12 +21,20 @@ class Player
 	//接地フラグ
 	bool m_isOnGround;
 
+	//所持金
+	CoinVault m_coinVault;
+
+	//連続BETのスパン
+	int m_betTimer;
+	//BETのSE
+	int m_betSE;
+
 public:
 	Player();
 	//初期化
 	void Init();
 	//更新
-	void Update();
+	void Update(CoinVault& arg_slotCoinVault);
 	//描画
-	void Draw(std::weak_ptr<LightManager>LigMgr, std::weak_ptr<Camera>Cam);
+	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 };

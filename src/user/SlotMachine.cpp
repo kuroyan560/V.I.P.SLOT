@@ -41,6 +41,9 @@ void SlotMachine::Init()
 
 	//最後のリールを止めてからの時間計測用タイマーリセット
 	m_slotWaitTimer = 0;
+
+	//コインリセット
+	m_coinVault.Init(0);
 }
 
 //デバッグ用
@@ -85,7 +88,7 @@ void SlotMachine::Update()
 }
 
 #include"DrawFunc3D.h"
-void SlotMachine::Draw(std::weak_ptr<LightManager> LigMgr, std::weak_ptr<Camera> Cam)
+void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
-	DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *Cam.lock(), 1.0f, AlphaBlendMode_None);
+	DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
 }

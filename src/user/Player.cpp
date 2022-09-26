@@ -2,11 +2,15 @@
 #include"Object.h"
 #include"UsersInput.h"
 #include"ConstParameters.h"
+#include"AudioApp.h"
 
 Player::Player()
 {
 	//モデル読み込み
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "player.glb");
+
+	//BETのSE読み込み
+	m_betSE = AudioApp::Instance()->LoadAudio("resource/user/sound/coin.wav");
 }
 
 void Player::Init()
@@ -22,9 +26,15 @@ void Player::Init()
 
 	//接地フラグ初期化
 	m_isOnGround = true;
+
+	//所持金リセット
+	m_coinVault.Init(300000);
+
+	//連続BETタイマーリセット
+	m_betTimer = 0;
 }
 
-void Player::Update()
+void Player::Update(CoinVault& arg_slotCoinVault)
 {
 //入力情報取得
 	const auto& input = *UsersInput::Instance();
@@ -39,6 +49,7 @@ void Player::Update()
 	const bool shotTrigger = input.ControllerOnTrigger(0, XBOX_BUTTON::X);
 
 	//LBボタン（BET）入力
+	const bool betInput = input.ControllerInput(0, XBOX_BUTTON::LB);
 
 //入力情報を元に操作
 	//横移動
@@ -103,12 +114,38 @@ void Player::Update()
 
 	//更新した座標の反映
 	m_modelObj->m_transform.SetPos(pos);
+
+	//コインのBET
+	if (betInput)
+	{
+		const int BET_SPAN = 3;
+		const int PASS_COIN_NUM = 1;
+
+		//コイン投入
+		if (m_betTimer <= 0)
+		{
+			m_coinVault.Pass(arg_slotCoinVault, PASS_COIN_NUM);
+			m_betTimer = BET_SPAN;
+			AudioApp::Instance()->ChangeVolume(m_betSE, 0.15f);
+			AudioApp::Instance()->PlayWave(m_betSE);
+		}
+		//コイン投入インターバル
+		else
+		{
+			m_betTimer--;
+		}
+	}
+	//次の入力トリガー時は即コイン投入
+	else
+	{
+		m_betTimer = 0;
+	}
 }
 
 #include"DrawFunc3D.h"
-void Player::Draw(std::weak_ptr<LightManager>LigMgr, std::weak_ptr<Camera>Cam)
+void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
 {
 	//DrawFunc3D::DrawADSShadingModel(*LigMgr.lock(), m_modelObj, *Cam.lock(), AlphaBlendMode_None);
-	DrawFunc3D::DrawNonShadingModel(m_modelObj, *Cam.lock(), 1.0f, AlphaBlendMode_None);
+	DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
 
 }

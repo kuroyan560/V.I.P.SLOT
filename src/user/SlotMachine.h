@@ -3,6 +3,7 @@
 #include<array>
 #include<string>
 #include"Reel.h"
+#include"CoinVault.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -28,6 +29,9 @@ class SlotMachine
 	//サウンド
 	int m_spinStartSE;	//回転スタート
 	int m_reelStopSE;		//リールストップ
+
+	//所持金
+	CoinVault m_coinVault;
 	
 public:
 	SlotMachine();
@@ -36,5 +40,8 @@ public:
 	//更新
 	void Update();
 	//描画
-	void Draw(std::weak_ptr<LightManager>LigMgr, std::weak_ptr<Camera>Cam);
+	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
+
+	//所持金ゲッタ
+	CoinVault& GetCoinVault() { return m_coinVault; }
 };
