@@ -77,6 +77,9 @@
     <Filter Include="src\user\Slot">
       <UniqueIdentifier>{3091ca29-979c-40e8-826a-b2a7991154d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\user\Slot\Pattern">
+      <UniqueIdentifier>{0ab9c53f-16d1-422f-ba07-af3ab35a9d2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\D3D12App.cpp">
@@ -266,6 +269,12 @@
       <Filter>src\user\Slot</Filter>
     </ClCompile>
     <ClCompile Include="src\user\Reel.cpp">
+      <Filter>src\user\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\Pattern.cpp">
+      <Filter>src\user\Slot\Pattern</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\PatternManager.cpp">
       <Filter>src\user\Slot</Filter>
     </ClCompile>
   </ItemGroup>
@@ -509,6 +518,12 @@
     </ClInclude>
     <ClInclude Include="src\engine\Timer.h">
       <Filter>src\engine\ユーザー向け</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Pattern.h">
+      <Filter>src\user\Slot\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\PatternManager.h">
+      <Filter>src\user\Slot</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

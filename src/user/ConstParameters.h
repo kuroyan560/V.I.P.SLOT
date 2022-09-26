@@ -43,6 +43,9 @@ namespace ConstParameter
 
 	namespace Slot
 	{
+		//絵柄
+		enum struct PATTERN { DOUBLE, TRIPLE, NUM };
+
 		//スロットが終わってから次を開始出来るようになるまでの時間
 		const int SLOT_WAIT_TIME = 13;
 

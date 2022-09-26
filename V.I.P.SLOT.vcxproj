@@ -219,6 +219,8 @@
     <ClCompile Include="src\user\BasicDraw.cpp" />
     <ClCompile Include="src\user\GameCamera.cpp" />
     <ClCompile Include="src\user\GameScene.cpp" />
+    <ClCompile Include="src\user\Pattern.cpp" />
+    <ClCompile Include="src\user\PatternManager.cpp" />
     <ClCompile Include="src\user\Player.cpp" />
     <ClCompile Include="src\user\Reel.cpp" />
     <ClCompile Include="src\user\RenderTargetManager.cpp" />
@@ -301,6 +303,8 @@
     <ClInclude Include="src\user\ConstParameters.h" />
     <ClInclude Include="src\user\GameCamera.h" />
     <ClInclude Include="src\user\GameScene.h" />
+    <ClInclude Include="src\user\Pattern.h" />
+    <ClInclude Include="src\user\PatternManager.h" />
     <ClInclude Include="src\user\Player.h" />
     <ClInclude Include="src\user\Reel.h" />
     <ClInclude Include="src\user\RenderTargetManager.h" />
