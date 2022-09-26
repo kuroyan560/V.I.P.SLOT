@@ -77,7 +77,7 @@ void GameScene::OnDraw()
 	DrawFunc2D::DrawGraph({ 0,0 }, m_backGround, 1.0f, AlphaBlendMode_None);
 
 	//スロットマシン
-	m_slotMachine->Draw(m_ligMgr, m_gameCam->GetBackCam());
+	m_slotMachine->Draw(m_ligMgr, m_gameCam);
 
 	//床
 	DrawFunc3D::DrawNonShadingModel(m_squareFloorObj, *m_gameCam->GetFrontCam(), 1.0f, AlphaBlendMode_None);

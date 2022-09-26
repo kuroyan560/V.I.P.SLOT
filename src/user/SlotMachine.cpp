@@ -4,6 +4,7 @@
 #include"ConstParameters.h"
 #include"AudioApp.h"
 #include"Importer.h"
+#include"GameCamera.h"
 
 SlotMachine::SlotMachine()
 {
@@ -98,13 +99,9 @@ void SlotMachine::Update()
 	//投げられてからコインがBETされるまでの時間
 	const int UNTIL_BET = 10;
 	//コイン投入口の位置
-	const Vec3<float>PORT_POS = { -10.0f,4.2f,5.0f };
+	const Vec3<float>PORT_POS = { -15.0f,14.0f,-10.0f };
 	for (auto& coin : m_betCoinArray)
 	{
-		Vec3<float>newPos = KuroMath::Lerp(coin.m_emitTransform.GetPos(), PORT_POS, coin.m_timer, UNTIL_BET);
-		coin.m_transform.SetPos(newPos);
-		coin.m_timer++;
-
 		if (UNTIL_BET < coin.m_timer)
 		{
 			//相手からコイン受け取り
@@ -113,6 +110,15 @@ void SlotMachine::Update()
 			//BETに成功
 			coin.m_bet = true;
 		}
+		else
+		{
+			//コインの座標を算出してトランスフォームに適用
+			Vec3<float>newPos = KuroMath::Lerp(coin.m_emitTransform.GetPos(), PORT_POS, coin.m_timer, UNTIL_BET);
+			coin.m_transform.SetPos(newPos);
+		}
+
+		//時間計測
+		coin.m_timer++;
 	}
 
 	//投入口に到達したら削除
@@ -123,15 +129,15 @@ void SlotMachine::Update()
 }
 
 #include"DrawFunc3D.h"
-void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
+void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<GameCamera>arg_gameCam)
 {
-	DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
-	DrawFunc3D::DrawNonShadingModel(m_megaPhoneObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
+	DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *arg_gameCam.lock()->GetBackCam(), 1.0f, AlphaBlendMode_None);
+	DrawFunc3D::DrawNonShadingModel(m_megaPhoneObj, *arg_gameCam.lock()->GetBackCam(), 1.0f, AlphaBlendMode_None);
 
 	//BETされたコインの描画
 	for (auto& coin : m_betCoinArray)
 	{
-		DrawFunc3D::DrawNonShadingModel(m_coinModel, coin.m_transform, *arg_cam.lock(), 1.0f, nullptr, AlphaBlendMode_None);
+		DrawFunc3D::DrawNonShadingModel(m_coinModel, coin.m_transform, *arg_gameCam.lock()->GetFrontCam(), 1.0f, nullptr, AlphaBlendMode_None);
 	}
 }
 

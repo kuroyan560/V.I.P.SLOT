@@ -9,7 +9,7 @@
 class ModelObject;
 class Model;
 class LightManager;
-class Camera;
+class GameCamera;
 
 class SlotMachine
 {
@@ -70,7 +70,7 @@ public:
 	//XV
 	void Update();
 	//•`‰æ
-	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
+	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<GameCamera>arg_gameCam);
 
 	//BETó•t
 	void Bet(CoinVault& arg_otherVault, int arg_coinNum, const Transform& arg_emitTransform);
