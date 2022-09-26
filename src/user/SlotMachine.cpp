@@ -12,7 +12,7 @@ bool SlotMachine::CheckReelPattern()
 
 	//ŠG•¿‚ªˆá‚¦‚Î‰½‚à‚¹‚¸I—¹
 	if (pattern != m_reels[REEL::CENTER].GetNowPattern())return false;
-	if (pattern != m_reels[REEL::CENTER].GetNowPattern())return false;
+	if (pattern != m_reels[REEL::RIGHT].GetNowPattern())return false;
 
 	m_patternMgr.Invoke(pattern);
 }
