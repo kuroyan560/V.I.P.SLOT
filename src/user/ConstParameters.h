@@ -58,8 +58,13 @@ namespace ConstParameter
 
 		//投げられてからコインがBETされるまでの時間
 		const int UNTIL_THROW_COIN_TO_BET = 10;
-		//コイン投入口の位置
-		const Vec3<float>COIN_PORT_POS = { -15.0f,14.0f,-10.0f };
+		//コイン投入口の位置（投げられたコインの向かう先）
+		const Vec3<float>COIN_PORT_POS = { -17.0f,13.0f,-10.0f };
+
+		//メガホン位置
+		const Vec3<float>MEGA_PHONE_POS = { -18.0f,5.0f,20.0f };
+		//BET時のメガホン拡縮スケール
+		const float MEGA_PHONE_EXPAND_SCALE = 1.2f;
 	};
 };
 

@@ -66,6 +66,9 @@ class SlotMachine
 		}
 	};
 	std::forward_list<BetCoin>m_betCoinArray;
+
+	//BET‚ÌƒƒKƒzƒ“Šgk‰‰o
+	Timer m_megaPhoneExpandTimer;
 	
 public:
 	SlotMachine();

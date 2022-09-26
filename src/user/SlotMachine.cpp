@@ -32,6 +32,8 @@ SlotMachine::SlotMachine()
 	m_megaPhoneObj = std::make_shared<ModelObject>("resource/user/model/", "megaPhone.glb");
 	//スロットマシンのトランスフォームを親として登録
 	m_megaPhoneObj->m_transform.SetParent(&m_slotMachineObj->m_transform);
+	//メガホン位置
+	m_megaPhoneObj->m_transform.SetPos(ConstParameter::Slot::MEGA_PHONE_POS);
 
 	//コインモデル読み込み
 	m_coinModel = Importer::Instance()->LoadModel("resource/user/model/", "coin.glb");
@@ -97,6 +99,8 @@ void SlotMachine::Update()
 		}
 	}
 
+	const int MEGA_PHONE_EXPAND_TIME = 60;
+
 	for (auto& coin : m_betCoinArray)
 	{
 		if (coin.m_emitTimer.IsTimeUp())
@@ -106,6 +110,9 @@ void SlotMachine::Update()
 			coin.m_otherVault->Pass(m_coinVault, coin.m_coinNum);
 			//BETに成功
 			coin.m_bet = true;
+
+			//メガホン拡縮
+			m_megaPhoneExpandTimer.Reset(MEGA_PHONE_EXPAND_TIME);
 		}
 
 		//タイマー計測
@@ -121,6 +128,12 @@ void SlotMachine::Update()
 		{
 			return c.m_bet;
 		});
+
+	//メガホン拡縮
+	float megaPhoneScale = KuroMath::Ease(Out, Elastic, m_megaPhoneExpandTimer.GetTimeRate(), 
+		ConstParameter::Slot::MEGA_PHONE_EXPAND_SCALE, 1.0f);
+	m_megaPhoneObj->m_transform.SetScale(megaPhoneScale);
+	m_megaPhoneExpandTimer.UpdateTimer();
 }
 
 #include"DrawFunc3D.h"
