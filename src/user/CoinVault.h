@@ -5,7 +5,7 @@ class CoinVault
 	int m_coin = 0;
 public:
 	//‰Šú‰»
-	void Init(int arg_coinNum = 0) { m_coin = arg_coinNum; }
+	void Set(int arg_coinNum = 0) { m_coin = arg_coinNum; }
 
 	//ƒRƒCƒ“’Ç‰Á
 	void Add(int arg_coinNum)

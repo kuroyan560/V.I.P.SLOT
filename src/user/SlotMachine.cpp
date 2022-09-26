@@ -6,7 +6,18 @@
 #include"Importer.h"
 #include"GameCamera.h"
 
-SlotMachine::SlotMachine()
+bool SlotMachine::CheckReelPattern()
+{
+	const auto& pattern = m_reels[REEL::LEFT].GetNowPattern();
+
+	//絵柄が違えば何もせず終了
+	if (pattern != m_reels[REEL::CENTER].GetNowPattern())return false;
+	if (pattern != m_reels[REEL::CENTER].GetNowPattern())return false;
+
+	m_patternMgr.Invoke(pattern);
+}
+
+SlotMachine::SlotMachine() : m_patternMgr(m_coinVault)
 {
 	//スロットマシン生成
 	m_slotMachineObj = std::make_shared<ModelObject>("resource/user/model/", "slotMachine.glb");
@@ -65,7 +76,7 @@ void SlotMachine::Init()
 	m_slotWaitTimer.Reset(ConstParameter::Slot::SLOT_WAIT_TIME);
 
 	//コインリセット
-	m_coinVault.Init(0);
+	m_coinVault.Set(0);
 
 	//BET中コインリセット
 	m_betCoinArray.clear();
@@ -94,7 +105,9 @@ void SlotMachine::Update()
 		{
 			m_reels[m_lever].Stop();
 			AudioApp::Instance()->PlayWaveDelay(m_reelStopSE);
-			m_lever++;
+
+			//絵柄を確認して全て一緒なら効果発動
+			if (m_lever++ == REEL::RIGHT)CheckReelPattern();
 		}
 	}
 

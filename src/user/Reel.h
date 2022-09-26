@@ -58,4 +58,15 @@ public:
 
 	//‰ñ“]’â~‚ğó‚¯•t‚¯‚Ä‚¢‚é‚©
 	bool IsCanStop()const { return !m_isStartSpin; }
+
+	//Œ»İ‚ÌŠG•¿
+	const PATTERN& GetNowPattern()const
+	{
+		if (m_nowPatternIdx == -1)
+		{
+			printf("Now this reel is spining.");
+			assert(0);
+		}
+		return m_patternArray[m_nowPatternIdx];
+	}
 };

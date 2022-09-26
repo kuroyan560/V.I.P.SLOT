@@ -29,7 +29,7 @@ void Player::Init()
 	m_isOnGround = true;
 
 	//所持金リセット
-	m_coinVault.Init(300000);
+	m_coinVault.Set(300000);
 
 	//BETのスパン計測用タイマー
 	m_betTimer.Reset(0);

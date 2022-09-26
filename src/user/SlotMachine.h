@@ -7,6 +7,7 @@
 #include"Transform.h"
 #include<forward_list>
 #include"Timer.h"
+#include"PatternManager.h"
 class ModelObject;
 class Model;
 class LightManager;
@@ -69,6 +70,12 @@ class SlotMachine
 
 	//BET時のメガホン拡縮演出
 	Timer m_megaPhoneExpandTimer;
+
+	//絵柄の定義クラス
+	PatternManager m_patternMgr;
+
+	//絵柄を確認して全て一緒なら効果発動
+	bool CheckReelPattern();
 	
 public:
 	SlotMachine();
