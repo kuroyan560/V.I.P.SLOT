@@ -121,22 +121,13 @@ void Player::Update(CoinVault& arg_slotCoinVault)
 	//コインのBET
 	if (betInput)
 	{
-		//最高速BETに到達するまでの時間（長押しでだんだんBETの間隔が短くなっていく）
-		const int UNTIL_MAX_SPEED_BET_TIME = 160;
-		//最低速BETのスパン
-		const int BET_SPEED_MAX_SPAN = 3;
-		//最高速BETのスパン
-		const int BET_SPEED_MIN_SPAN = 30;
-		//一度に投入するコインの数
-		const int PASS_COIN_NUM = 1;
-
 		//コイン投入
 		if (m_betTimer <= 0)
 		{
-			m_coinVault.Pass(arg_slotCoinVault, PASS_COIN_NUM);
+			m_coinVault.Pass(arg_slotCoinVault, ConstParameter::Player::PASS_COIN_NUM);
 
-			int betSpan = KuroMath::Lerp(BET_SPEED_MIN_SPAN, BET_SPEED_MAX_SPAN,
-				m_consecutiveBetTimer, UNTIL_MAX_SPEED_BET_TIME);
+			int betSpan = KuroMath::Lerp(ConstParameter::Player::BET_SPEED_MIN_SPAN, ConstParameter::Player::BET_SPEED_MAX_SPAN,
+				m_consecutiveBetTimer, ConstParameter::Player::UNTIL_MAX_SPEED_BET_TIME);
 			m_betTimer = betSpan;
 			AudioApp::Instance()->PlayWave(m_betSE);
 		}
@@ -147,7 +138,7 @@ void Player::Update(CoinVault& arg_slotCoinVault)
 		}
 
 		//連続BETの時間計測
-		if (m_consecutiveBetTimer < UNTIL_MAX_SPEED_BET_TIME)
+		if (m_consecutiveBetTimer < ConstParameter::Player::UNTIL_MAX_SPEED_BET_TIME)
 		{
 			m_consecutiveBetTimer++;
 		}
