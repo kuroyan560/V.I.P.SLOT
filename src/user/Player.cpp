@@ -10,7 +10,7 @@ Player::Player()
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "player.glb");
 
 	//BETのSE読み込み
-	m_betSE = AudioApp::Instance()->LoadAudio("resource/user/sound/coin.wav");
+	m_betSE = AudioApp::Instance()->LoadAudio("resource/user/sound/coin.wav",0.15f);
 }
 
 void Player::Init()
@@ -30,8 +30,11 @@ void Player::Init()
 	//所持金リセット
 	m_coinVault.Init(300000);
 
-	//連続BETタイマーリセット
+	//BETのスパン計測用タイマー
 	m_betTimer = 0;
+
+	//連続BETの計測用タイマー
+	m_consecutiveBetTimer = 0;
 }
 
 void Player::Update(CoinVault& arg_slotCoinVault)
@@ -118,15 +121,23 @@ void Player::Update(CoinVault& arg_slotCoinVault)
 	//コインのBET
 	if (betInput)
 	{
-		const int BET_SPAN = 3;
+		//最高速BETに到達するまでの時間（長押しでだんだんBETの間隔が短くなっていく）
+		const int UNTIL_MAX_SPEED_BET_TIME = 160;
+		//最低速BETのスパン
+		const int BET_SPEED_MAX_SPAN = 3;
+		//最高速BETのスパン
+		const int BET_SPEED_MIN_SPAN = 30;
+		//一度に投入するコインの数
 		const int PASS_COIN_NUM = 1;
 
 		//コイン投入
 		if (m_betTimer <= 0)
 		{
 			m_coinVault.Pass(arg_slotCoinVault, PASS_COIN_NUM);
-			m_betTimer = BET_SPAN;
-			AudioApp::Instance()->ChangeVolume(m_betSE, 0.15f);
+
+			int betSpan = KuroMath::Lerp(BET_SPEED_MIN_SPAN, BET_SPEED_MAX_SPAN,
+				m_consecutiveBetTimer, UNTIL_MAX_SPEED_BET_TIME);
+			m_betTimer = betSpan;
 			AudioApp::Instance()->PlayWave(m_betSE);
 		}
 		//コイン投入インターバル
@@ -134,11 +145,18 @@ void Player::Update(CoinVault& arg_slotCoinVault)
 		{
 			m_betTimer--;
 		}
+
+		//連続BETの時間計測
+		if (m_consecutiveBetTimer < UNTIL_MAX_SPEED_BET_TIME)
+		{
+			m_consecutiveBetTimer++;
+		}
 	}
 	//次の入力トリガー時は即コイン投入
 	else
 	{
 		m_betTimer = 0;
+		m_consecutiveBetTimer = 0;
 	}
 }
 

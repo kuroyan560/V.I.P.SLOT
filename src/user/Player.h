@@ -24,8 +24,10 @@ class Player
 	//所持金
 	CoinVault m_coinVault;
 
-	//連続BETのスパン
+	//BETのスパン計測用タイマー
 	int m_betTimer;
+	//連続BETの計測用タイマー
+	int m_consecutiveBetTimer;
 	//BETのSE
 	int m_betSE;
 
