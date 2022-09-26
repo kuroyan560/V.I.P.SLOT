@@ -31,5 +31,8 @@ public:
 
 		return true;
 	}
+
+	//ƒQƒbƒ^
+	const int& GetNum()const { return m_coin; }
 };
 
