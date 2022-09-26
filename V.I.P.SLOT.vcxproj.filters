@@ -504,5 +504,8 @@
     <ClInclude Include="src\user\Reel.h">
       <Filter>src\user\Slot</Filter>
     </ClInclude>
+    <ClInclude Include="src\user\CoinVault.h">
+      <Filter>src\user\Game</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

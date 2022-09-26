@@ -27,6 +27,8 @@ public:
 		arg_dest.Add(arg_coinNum);
 		this->Add(-arg_coinNum);
 
+		printf("Pass : (from)%d , (to)%d\n", this->m_coin, arg_dest.m_coin);
+
 		return true;
 	}
 };
