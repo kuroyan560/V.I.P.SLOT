@@ -56,7 +56,7 @@ void GameScene::OnUpdate()
 	m_gameCam->Update();
 
 	//プレイヤー更新
-	m_player->Update(m_slotMachine->GetCoinVault());
+	m_player->Update(m_slotMachine);
 
 	//スロットマシン更新
 	m_slotMachine->Update();

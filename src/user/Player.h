@@ -6,6 +6,7 @@
 class ModelObject;
 class LightManager;
 class Camera;
+class SlotMachine;
 
 class Player
 {
@@ -36,7 +37,7 @@ public:
 	//‰Šú‰»
 	void Init();
 	//XV
-	void Update(CoinVault& arg_slotCoinVault);
+	void Update(std::weak_ptr<SlotMachine> arg_slotMachine);
 	//•`‰æ
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 };

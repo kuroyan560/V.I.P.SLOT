@@ -42,6 +42,6 @@ public:
 	//•`‰æ
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 
-	//Š‹àƒQƒbƒ^
-	CoinVault& GetCoinVault() { return m_coinVault; }
+	//BETó•t
+	void Bet(CoinVault& arg_otherVault, int arg_coinNum);
 };

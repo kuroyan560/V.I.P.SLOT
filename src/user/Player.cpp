@@ -3,6 +3,7 @@
 #include"UsersInput.h"
 #include"ConstParameters.h"
 #include"AudioApp.h"
+#include"SlotMachine.h"
 
 Player::Player()
 {
@@ -37,7 +38,7 @@ void Player::Init()
 	m_consecutiveBetTimer = 0;
 }
 
-void Player::Update(CoinVault& arg_slotCoinVault)
+void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine)
 {
 //入力情報取得
 	const auto& input = *UsersInput::Instance();
@@ -124,11 +125,17 @@ void Player::Update(CoinVault& arg_slotCoinVault)
 		//コイン投入
 		if (m_betTimer <= 0)
 		{
-			m_coinVault.Pass(arg_slotCoinVault, ConstParameter::Player::PASS_COIN_NUM);
+			//スロットマシンにBET
+			arg_slotMachine.lock()->Bet(m_coinVault, ConstParameter::Player::PASS_COIN_NUM);
 
+			//BETスパン計算
 			int betSpan = KuroMath::Lerp(ConstParameter::Player::BET_SPEED_MIN_SPAN, ConstParameter::Player::BET_SPEED_MAX_SPAN,
 				m_consecutiveBetTimer, ConstParameter::Player::UNTIL_MAX_SPEED_BET_TIME);
+
+			//次にBETするまでの時間
 			m_betTimer = betSpan;
+
+			//BETのSE再生
 			AudioApp::Instance()->PlayWave(m_betSE);
 		}
 		//コイン投入インターバル

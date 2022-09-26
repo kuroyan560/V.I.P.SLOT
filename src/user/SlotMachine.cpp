@@ -92,3 +92,9 @@ void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<C
 {
 	DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
 }
+
+void SlotMachine::Bet(CoinVault& arg_otherVault, int arg_coinNum)
+{
+	//‘ŠŽè‚©‚çƒRƒCƒ“Žó‚¯Žæ‚è
+	arg_otherVault.Pass(m_coinVault, arg_coinNum);
+}
