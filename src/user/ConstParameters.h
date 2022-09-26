@@ -55,6 +55,11 @@ namespace ConstParameter
 		const int FINISH_SPIN_TIME = 30;
 		//回転終了時のリール振動最大
 		const float FINISH_SPIN_SHAKE_MAX = 0.02f;
+
+		//投げられてからコインがBETされるまでの時間
+		const int UNTIL_THROW_COIN_TO_BET = 10;
+		//コイン投入口の位置
+		const Vec3<float>COIN_PORT_POS = { -15.0f,14.0f,-10.0f };
 	};
 };
 

@@ -96,13 +96,9 @@ void SlotMachine::Update()
 		}
 	}
 
-	//投げられてからコインがBETされるまでの時間
-	const int UNTIL_BET = 10;
-	//コイン投入口の位置
-	const Vec3<float>PORT_POS = { -15.0f,14.0f,-10.0f };
 	for (auto& coin : m_betCoinArray)
 	{
-		if (UNTIL_BET < coin.m_timer)
+		if (ConstParameter::Slot::UNTIL_THROW_COIN_TO_BET < coin.m_timer)
 		{
 			//相手からコイン受け取り
 			assert(coin.m_otherVault); //一応nullチェック
@@ -113,7 +109,8 @@ void SlotMachine::Update()
 		else
 		{
 			//コインの座標を算出してトランスフォームに適用
-			Vec3<float>newPos = KuroMath::Lerp(coin.m_emitTransform.GetPos(), PORT_POS, coin.m_timer, UNTIL_BET);
+			Vec3<float>newPos = KuroMath::Lerp(	coin.m_emitTransform.GetPos(), ConstParameter::Slot::COIN_PORT_POS, 
+				coin.m_timer, ConstParameter::Slot::UNTIL_THROW_COIN_TO_BET);
 			coin.m_transform.SetPos(newPos);
 		}
 
