@@ -507,5 +507,8 @@
     <ClInclude Include="src\user\CoinVault.h">
       <Filter>src\user\Game</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\Timer.h">
+      <Filter>src\engine\ユーザー向け</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
