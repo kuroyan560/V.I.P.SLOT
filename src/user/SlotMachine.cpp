@@ -54,6 +54,9 @@ void SlotMachine::Init()
 
 	//コインリセット
 	m_coinVault.Init(0);
+
+	//BET中コインリセット
+	m_betCoinArray.clear();
 }
 
 //デバッグ用
