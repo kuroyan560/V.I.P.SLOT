@@ -135,12 +135,12 @@ void Reel::Stop()
 	m_timer = 0;
 
 	//小数第１位を丸め込んで補正（中途半端な位置で止まらないようにする）
-	float tmp = roundf(m_vOffset * 10.0f) / 10.0f;
+	float roundOffset = roundf(m_vOffset * 10.0f) / 10.0f;
 
 	//停止位置の絵柄インデックス記録
 	const int patternNum = static_cast<int>(m_patternArray.size());
 	const float vSpan = 1.0f / (patternNum - 1);
-	m_nowPatternIdx = patternNum + static_cast<int>(tmp / vSpan);
+	m_nowPatternIdx = patternNum + roundOffset / vSpan;
 
 	//絵柄のループ
 	while (m_nowPatternIdx < 0)m_nowPatternIdx += patternNum;
