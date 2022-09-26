@@ -3,6 +3,7 @@
 #include<memory>
 #include"Vec.h"
 #include"CoinVault.h"
+#include"Timer.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -26,9 +27,9 @@ class Player
 	CoinVault m_coinVault;
 
 	//BETのスパン計測用タイマー
-	int m_betTimer;
+	Timer m_betTimer;
 	//連続BETの計測用タイマー
-	int m_consecutiveBetTimer;
+	Timer m_consecutiveBetTimer;
 	//BETのSE
 	int m_betSE;
 

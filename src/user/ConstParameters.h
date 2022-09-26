@@ -34,9 +34,9 @@ namespace ConstParameter
 		//最高速BETに到達するまでの時間（長押しでだんだんBETの間隔が短くなっていく）
 		const int UNTIL_MAX_SPEED_BET_TIME = 160;
 		//最低速BETのスパン
-		const int BET_SPEED_MAX_SPAN = 3;
+		const int BET_SPEED_MAX_SPAN = 4;
 		//最高速BETのスパン
-		const int BET_SPEED_MIN_SPAN = 30;
+		const int BET_SPEED_MIN_SPAN = 31;
 		//一度に投入するコインの数
 		const int PASS_COIN_NUM = 1;
 	};

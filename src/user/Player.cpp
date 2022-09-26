@@ -32,10 +32,10 @@ void Player::Init()
 	m_coinVault.Init(300000);
 
 	//BETのスパン計測用タイマー
-	m_betTimer = 0;
+	m_betTimer.Reset(0);
 
 	//連続BETの計測用タイマー
-	m_consecutiveBetTimer = 0;
+	m_consecutiveBetTimer.Reset(ConstParameter::Player::UNTIL_MAX_SPEED_BET_TIME);
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine)
@@ -123,38 +123,30 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine)
 	if (betInput)
 	{
 		//コイン投入
-		if (m_betTimer <= 0)
+		if (m_betTimer.UpdateTimer())
 		{
 			//スロットマシンにBET
 			arg_slotMachine.lock()->Bet(m_coinVault, ConstParameter::Player::PASS_COIN_NUM, m_modelObj->m_transform);
 
 			//BETスパン計算
 			int betSpan = KuroMath::Lerp(ConstParameter::Player::BET_SPEED_MIN_SPAN, ConstParameter::Player::BET_SPEED_MAX_SPAN,
-				m_consecutiveBetTimer, ConstParameter::Player::UNTIL_MAX_SPEED_BET_TIME);
+				m_consecutiveBetTimer.GetTimeRate());
 
 			//次にBETするまでの時間
-			m_betTimer = betSpan;
+			m_betTimer.Reset(betSpan);
 
 			//BETのSE再生
 			AudioApp::Instance()->PlayWave(m_betSE);
 		}
-		//コイン投入インターバル
-		else
-		{
-			m_betTimer--;
-		}
 
 		//連続BETの時間計測
-		if (m_consecutiveBetTimer < ConstParameter::Player::UNTIL_MAX_SPEED_BET_TIME)
-		{
-			m_consecutiveBetTimer++;
-		}
+		m_consecutiveBetTimer.UpdateTimer();
 	}
 	//次の入力トリガー時は即コイン投入
 	else
 	{
-		m_betTimer = 0;
-		m_consecutiveBetTimer = 0;
+		m_betTimer.Reset(0);
+		m_consecutiveBetTimer.Reset();
 	}
 }
 
@@ -163,5 +155,4 @@ void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>
 {
 	//DrawFunc3D::DrawADSShadingModel(*LigMgr.lock(), m_modelObj, *Cam.lock(), AlphaBlendMode_None);
 	DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
-
 }
