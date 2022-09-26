@@ -99,7 +99,7 @@ void SlotMachine::Update()
 
 	for (auto& coin : m_betCoinArray)
 	{
-		if (ConstParameter::Slot::UNTIL_THROW_COIN_TO_BET < coin.m_timer)
+		if (coin.m_emitTimer.IsTimeUp())
 		{
 			//相手からコイン受け取り
 			assert(coin.m_otherVault); //一応nullチェック
@@ -107,16 +107,13 @@ void SlotMachine::Update()
 			//BETに成功
 			coin.m_bet = true;
 		}
-		else
-		{
-			//コインの座標を算出してトランスフォームに適用
-			Vec3<float>newPos = KuroMath::Lerp(	coin.m_emitTransform.GetPos(), ConstParameter::Slot::COIN_PORT_POS, 
-				coin.m_timer, ConstParameter::Slot::UNTIL_THROW_COIN_TO_BET);
-			coin.m_transform.SetPos(newPos);
-		}
 
-		//時間計測
-		coin.m_timer++;
+		//タイマー計測
+		coin.m_emitTimer.UpdateTimer();
+
+		//コインの座標を算出してトランスフォームに適用
+		Vec3<float>newPos = KuroMath::Lerp(coin.m_emitTransform.GetPos(), ConstParameter::Slot::COIN_PORT_POS, coin.m_emitTimer.GetTimeRate());
+		coin.m_transform.SetPos(newPos);
 	}
 
 	//投入口に到達したら削除
@@ -142,5 +139,5 @@ void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<G
 void SlotMachine::Bet(CoinVault& arg_otherVault, int arg_coinNum, const Transform& arg_emitTransform)
 {
 	//BETされたコイン情報追加
-	m_betCoinArray.emplace_front(&arg_otherVault, arg_coinNum, arg_emitTransform);
+	m_betCoinArray.emplace_front(&arg_otherVault, arg_coinNum, arg_emitTransform, ConstParameter::Slot::UNTIL_THROW_COIN_TO_BET);
 }

@@ -55,12 +55,15 @@ class SlotMachine
 		//自身のトランスフォーム
 		Transform m_transform;
 		//投げ込まれてからの時間
-		int m_timer = 0;
+		Timer m_emitTimer;
 		//BETに成功
 		bool m_bet = false;
 
-		BetCoin(CoinVault* arg_otherVault, int arg_coinNum, const Transform& arg_emitTransform)
-			:m_otherVault(arg_otherVault), m_coinNum(arg_coinNum), m_emitTransform(arg_emitTransform), m_transform(arg_emitTransform) {}
+		BetCoin(CoinVault* arg_otherVault, int arg_coinNum, const Transform& arg_emitTransform,int arg_aliveTime)
+			:m_otherVault(arg_otherVault), m_coinNum(arg_coinNum), m_emitTransform(arg_emitTransform), m_transform(arg_emitTransform) 
+		{
+			m_emitTimer.Reset(arg_aliveTime);
+		}
 	};
 	std::forward_list<BetCoin>m_betCoinArray;
 	
