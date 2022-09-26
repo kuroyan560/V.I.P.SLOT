@@ -3,16 +3,12 @@
 #include"Model.h"
 #include"ConstParameters.h"
 #include"AudioApp.h"
+#include"Importer.h"
 
 SlotMachine::SlotMachine()
 {
 	//スロットマシン生成
 	m_slotMachineObj = std::make_shared<ModelObject>("resource/user/model/", "slotMachine.glb");
-
-	//コイン投入口メガホン生成
-	m_megaPhoneObj = std::make_shared<ModelObject>("resource/user/model/", "megaPhone.glb");
-	//スロットマシンのトランスフォームを親として登録
-	m_megaPhoneObj->m_transform.SetParent(&m_slotMachineObj->m_transform);
 
 	//モデルからリールの情報取得
 	for (auto& mesh : m_slotMachineObj->m_model->m_meshes)
@@ -30,6 +26,14 @@ SlotMachine::SlotMachine()
 			}
 		}
 	}
+
+	//コイン投入口メガホン生成
+	m_megaPhoneObj = std::make_shared<ModelObject>("resource/user/model/", "megaPhone.glb");
+	//スロットマシンのトランスフォームを親として登録
+	m_megaPhoneObj->m_transform.SetParent(&m_slotMachineObj->m_transform);
+
+	//コインモデル読み込み
+	m_coinModel = Importer::Instance()->LoadModel("resource/user/model/", "coin.glb");
 
 	//サウンド読み込み
 	m_spinStartSE = AudioApp::Instance()->LoadAudio("resource/user/sound/slot_start.wav");
@@ -90,6 +94,32 @@ void SlotMachine::Update()
 			m_slotWaitTimer = 0;
 		}
 	}
+
+	//投げられてからコインがBETされるまでの時間
+	const int UNTIL_BET = 10;
+	//コイン投入口の位置
+	const Vec3<float>PORT_POS = { -10.0f,4.2f,5.0f };
+	for (auto& coin : m_betCoinArray)
+	{
+		Vec3<float>newPos = KuroMath::Lerp(coin.m_emitTransform.GetPos(), PORT_POS, coin.m_timer, UNTIL_BET);
+		coin.m_transform.SetPos(newPos);
+		coin.m_timer++;
+
+		if (UNTIL_BET < coin.m_timer)
+		{
+			//相手からコイン受け取り
+			assert(coin.m_otherVault); //一応nullチェック
+			coin.m_otherVault->Pass(m_coinVault, coin.m_coinNum);
+			//BETに成功
+			coin.m_bet = true;
+		}
+	}
+
+	//投入口に到達したら削除
+	m_betCoinArray.remove_if([](BetCoin& c)
+		{
+			return c.m_bet;
+		});
 }
 
 #include"DrawFunc3D.h"
@@ -97,10 +127,16 @@ void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<C
 {
 	DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
 	DrawFunc3D::DrawNonShadingModel(m_megaPhoneObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
+
+	//BETされたコインの描画
+	for (auto& coin : m_betCoinArray)
+	{
+		DrawFunc3D::DrawNonShadingModel(m_coinModel, coin.m_transform, *arg_cam.lock(), 1.0f, nullptr, AlphaBlendMode_None);
+	}
 }
 
-void SlotMachine::Bet(CoinVault& arg_otherVault, int arg_coinNum)
+void SlotMachine::Bet(CoinVault& arg_otherVault, int arg_coinNum, const Transform& arg_emitTransform)
 {
-	//相手からコイン受け取り
-	arg_otherVault.Pass(m_coinVault, arg_coinNum);
+	//BETされたコイン情報追加
+	m_betCoinArray.emplace_front(&arg_otherVault, arg_coinNum, arg_emitTransform);
 }
