@@ -6,6 +6,7 @@
 #include"CoinVault.h"
 #include"Transform.h"
 #include<forward_list>
+#include"Timer.h"
 class ModelObject;
 class Model;
 class LightManager;
@@ -33,7 +34,7 @@ class SlotMachine
 	//スロットのレバーフラグ（StartかStopか）
 	int m_lever;
 	//最後のリールを止めてからの時間計測
-	int m_slotWaitTimer;
+	Timer m_slotWaitTimer;
 
 	//サウンド
 	int m_spinStartSE;	//回転スタート

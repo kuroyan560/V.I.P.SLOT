@@ -44,7 +44,7 @@ namespace ConstParameter
 	namespace Slot
 	{
 		//スロットが終わってから次を開始出来るようになるまでの時間
-		const int SLOT_WAIT_TIME = 12;
+		const int SLOT_WAIT_TIME = 13;
 
 		//最高速度になるまでの時間
 		const int UNTIL_MAX_SPEED_TIME = 14;

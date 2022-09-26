@@ -50,7 +50,7 @@ void SlotMachine::Init()
 	m_lever = -1;
 
 	//最後のリールを止めてからの時間計測用タイマーリセット
-	m_slotWaitTimer = 0;
+	m_slotWaitTimer.Reset(ConstParameter::Slot::SLOT_WAIT_TIME);
 
 	//コインリセット
 	m_coinVault.Init(0);
@@ -89,13 +89,11 @@ void SlotMachine::Update()
 	//全リール停止済
 	if (REEL::RIGHT < m_lever)
 	{
-		m_slotWaitTimer++;
-
 		//次のスロット回転可能に
-		if (ConstParameter::Slot::SLOT_WAIT_TIME < m_slotWaitTimer)
+		if (m_slotWaitTimer.UpdateTimer())
 		{
 			m_lever = -1;
-			m_slotWaitTimer = 0;
+			m_slotWaitTimer.Reset();
 		}
 	}
 
