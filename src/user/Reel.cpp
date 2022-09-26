@@ -2,9 +2,9 @@
 #include"Model.h"
 #include"ConstParameters.h"
 
-void Reel::Attach(ModelMesh* ReelMesh)
+void Reel::Attach(ModelMesh* arg_reelMesh)
 {
-	m_meshPtr = ReelMesh;
+	m_meshPtr = arg_reelMesh;
 
 	//リールメッシュ頂点のV初期化値保存
 	auto& vertices = m_meshPtr->mesh->vertices;
@@ -15,7 +15,7 @@ void Reel::Attach(ModelMesh* ReelMesh)
 	}
 }
 
-void Reel::Init(std::shared_ptr<TextureBuffer> ReelTex, int PatternNum)
+void Reel::Init(std::shared_ptr<TextureBuffer>arg_reelTex, std::vector<PATTERN>arg_patternArray)
 {
 	//リールのメッシュが見つけられていない
 	if (m_meshPtr == nullptr)
@@ -25,10 +25,10 @@ void Reel::Init(std::shared_ptr<TextureBuffer> ReelTex, int PatternNum)
 	}
 
 	//リールのテクスチャ指定
-	if (ReelTex)m_meshPtr->material->texBuff[COLOR_TEX] = ReelTex;
+	if (arg_reelTex)m_meshPtr->material->texBuff[COLOR_TEX] = arg_reelTex;
 
 	//絵柄の数指定
-	m_patternNum = PatternNum;
+	m_patternArray = arg_patternArray;
 
 	//回転量リセット
 	m_vOffset = 0.0f;
@@ -138,15 +138,16 @@ void Reel::Stop()
 	float tmp = roundf(m_vOffset * 10.0f) / 10.0f;
 
 	//停止位置の絵柄インデックス記録
-	const float vSpan = 1.0f / (m_patternNum - 1);
-	m_nowPatternIdx = m_patternNum + static_cast<int>(tmp / vSpan);
+	const int patternNum = static_cast<int>(m_patternArray.size());
+	const float vSpan = 1.0f / (patternNum - 1);
+	m_nowPatternIdx = patternNum + static_cast<int>(tmp / vSpan);
 
 	//絵柄のループ
-	while (m_nowPatternIdx < 0)m_nowPatternIdx += m_patternNum;
-	while (m_patternNum <= m_nowPatternIdx)m_nowPatternIdx -= m_patternNum;
+	while (m_nowPatternIdx < 0)m_nowPatternIdx += patternNum;
+	while (patternNum <= m_nowPatternIdx)m_nowPatternIdx -= patternNum;
 
 	//停止位置のV値を記録
-	m_vOffsetFixedStop = 1.0f / m_patternNum * m_nowPatternIdx;
+	m_vOffsetFixedStop = 1.0f / patternNum * m_nowPatternIdx;
 
 	printf("ReelStop : %d\n", m_nowPatternIdx + 1);
 }

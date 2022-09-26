@@ -1,19 +1,22 @@
 #pragma once
 #include<vector>
 #include<memory>
+#include"ConstParameters.h"
 class ModelMesh;
 class TextureBuffer;
 
 class Reel
 {
 private:
+	using PATTERN = ConstParameter::Slot::PATTERN;
+
 	//対象のメッシュポインタ
 	ModelMesh* m_meshPtr = nullptr;
 	//UV値の初期化値
 	std::vector<float>m_initV;
 
-	//絵柄の数
-	int m_patternNum = 20;
+	//絵柄配列
+	std::vector<PATTERN>m_patternArray;
 
 	//回転量（UV値のV）
 	float m_vOffset = 0.0f;
@@ -42,9 +45,9 @@ private:
 
 public:
 	//リールメッシュアタッチ
-	void Attach(ModelMesh* ReelMesh);
+	void Attach(ModelMesh* arg_reelMesh);
 	//初期化
-	void Init(std::shared_ptr<TextureBuffer>ReelTex = nullptr, int PatternNum = 20);
+	void Init(std::shared_ptr<TextureBuffer>arg_reelTex = nullptr, std::vector<PATTERN>arg_patternArray = {});
 	//更新（回転）
 	void Update();
 

@@ -45,8 +45,18 @@ SlotMachine::SlotMachine()
 
 void SlotMachine::Init()
 {
+	//デバッグ用
+	using PATTERN = ConstParameter::Slot::PATTERN;
+	std::vector<PATTERN>testPatternArray;
+	testPatternArray.resize(20);
+	for (int i = 0; i < 20; ++i)
+	{
+		if (i % 2 == 0)testPatternArray[i] = PATTERN::DOUBLE;
+		else testPatternArray[i] = PATTERN::TRIPLE;
+	}
+
 	//リール初期化
-	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Init();
+	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Init(nullptr, testPatternArray);
 
 	//レバー初期化
 	m_lever = -1;
