@@ -9,6 +9,11 @@ SlotMachine::SlotMachine()
 	//スロットマシン生成
 	m_slotMachineObj = std::make_shared<ModelObject>("resource/user/model/", "slotMachine.glb");
 
+	//コイン投入口メガホン生成
+	m_megaPhoneObj = std::make_shared<ModelObject>("resource/user/model/", "megaPhone.glb");
+	//スロットマシンのトランスフォームを親として登録
+	m_megaPhoneObj->m_transform.SetParent(&m_slotMachineObj->m_transform);
+
 	//モデルからリールの情報取得
 	for (auto& mesh : m_slotMachineObj->m_model->m_meshes)
 	{
@@ -91,6 +96,7 @@ void SlotMachine::Update()
 void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
 	DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
+	DrawFunc3D::DrawNonShadingModel(m_megaPhoneObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
 }
 
 void SlotMachine::Bet(CoinVault& arg_otherVault, int arg_coinNum)

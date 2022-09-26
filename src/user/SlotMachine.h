@@ -13,6 +13,9 @@ class SlotMachine
 	//スロットマシン
 	std::shared_ptr<ModelObject>m_slotMachineObj;
 
+	//コイン投入口メガホン
+	std::shared_ptr<ModelObject>m_megaPhoneObj;
+
 	//リール
 	enum REEL { LEFT, CENTER, RIGHT, NUM };
 	const std::array<std::string, REEL::NUM>REEL_MATERIAL_NAME =
