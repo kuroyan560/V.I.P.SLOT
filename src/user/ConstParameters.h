@@ -79,10 +79,20 @@ namespace ConstParameter
 		const int MEGA_PHONE_EXPAND_TIME = 60;
 
 		/*--- コイン返却 ---*/
-		//この値につき返却コイン1枚描画
-		const int RETURN_COIN_DRAW_NUM_PER = 2;
 		//スロット位置（返却コインの放出位置）
 		const Vec3<float>SLOT_POS_ON_BACK_CAM = { 0.0f,18.0f,22.0f };
+		//返却コインの重力
+		const float RETURN_COIN_GRAVITY = -0.002f;
+		//返却コインの寿命
+		const int RETURN_COIN_LIFE_TIME = 200;
+		//描画上の返却コインの放出スパン
+		const int RETURN_COIN_EMIT_SPAN = 5;
+		//この値につき返却コイン1枚描画
+		const int RETURN_COIN_DRAW_NUM_PER = 2;
+		//描画上の返却コインの放出数下限
+		const int EMIT_COIN_COUNT_MIN = 1;
+		//描画上の返却コインの放出数上限
+		const int EMIT_COIN_COUNT_MAX = 10;
 	};
 };
 

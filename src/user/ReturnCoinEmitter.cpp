@@ -1,5 +1,6 @@
 #include "ReturnCoinEmitter.h"
 #include"AudioApp.h"
+#include"ConstParameters.h"
 
 ReturnCoinEmitter::ReturnCoinEmitter()
 {
@@ -15,10 +16,8 @@ void ReturnCoinEmitter::Init()
 
 int ReturnCoinEmitter::Update()
 {
-	const int EMIT_SPAN = 5;
+	using namespace ConstParameter::Slot;
 
-	//返却コインの寿命
-	static const int RETURN_COIN_LIFE_TIME = 200;
 	//返却コインの放出パワー下限
 	static const float RETURN_COIN_EMIT_POWER_MIN = 2.0f;
 	//返却コインの放出パワー上限
@@ -32,42 +31,55 @@ int ReturnCoinEmitter::Update()
 	//返還の放出パワーY方向の強さレート上限
 	static const float RETURN_COIN_EMIT_Y_POWER_RATE_MAX = 1.0f;
 
-
+	//返却コイン配列
 	if (!m_returnCoins.empty())
 	{
-		if (m_emitTimer % EMIT_SPAN == 0)
+		//放出タイミング
+		if (m_emitTimer % RETURN_COIN_EMIT_SPAN == 0)
 		{
-			const int EMIT_COIN_COUNT_MIN = 1;
-			const int EMIT_COIN_COUNT_MAX = 10;
+			//１度に放出する数
 			const int emitCoinCount = KuroFunc::GetRand(EMIT_COIN_COUNT_MIN, EMIT_COIN_COUNT_MAX);
 
+			//放出した数
 			int count = 0;
 
 			while (count < emitCoinCount && !m_returnCoins.empty())
 			{
+				//返却コインの情報取得
 				const auto& returnCoin = m_returnCoins.front();
 
+				//放出パワー
 				const float power = KuroFunc::GetRand(RETURN_COIN_EMIT_POWER_MIN, RETURN_COIN_EMIT_POWER_MAX);
-				float vec_x = KuroFunc::GetRand(RETURN_COIN_EMIT_XZ_POWER_RATE_MIN, RETURN_COIN_EMIT_XZ_POWER_RATE_MAX);
-				vec_x *= KuroFunc::GetRandPlusMinus();
+
+				//放出ベクトル
 				float vec_y = KuroFunc::GetRand(RETURN_COIN_EMIT_Y_POWER_RATE_MIN, RETURN_COIN_EMIT_Y_POWER_RATE_MAX);
+				float vec_x = KuroFunc::GetRand(RETURN_COIN_EMIT_XZ_POWER_RATE_MIN, RETURN_COIN_EMIT_XZ_POWER_RATE_MAX);
 				float vec_z = KuroFunc::GetRand(RETURN_COIN_EMIT_XZ_POWER_RATE_MIN, RETURN_COIN_EMIT_XZ_POWER_RATE_MAX);
+				vec_x *= KuroFunc::GetRandPlusMinus();
 				vec_z *= KuroFunc::GetRandPlusMinus();
 
+				//放出移動量
 				const Vec3<float>initMove = Vec3<float>(vec_x, vec_y, vec_z) * power;
+
+				//返却コイン描画
 				m_returnCoinObjManager.Add(returnCoin.m_perCoinNum,
 					returnCoin.m_initTransform, RETURN_COIN_LIFE_TIME, new ReturnCoinPerform(initMove));
 
+				//放出した数カウント
 				count++;
 			}
 
+			//SE再生
 			AudioApp::Instance()->PlayWaveDelay(m_coinReturnSE);
 
+			//放出済のコイン情報ポップ
 			m_returnCoins.pop_front();
 
+			//放出タイマーリセット
 			m_emitTimer = 0;
 		}
 
+		//放出タイマーカウント
 		m_emitTimer++;
 	}
 	else m_emitTimer = -1;
@@ -98,9 +110,8 @@ void ReturnCoinEmitter::Emit(int arg_coinNumSum, int arg_perCoinNum, const Trans
 
 void ReturnCoinEmitter::ReturnCoinPerform::OnUpdate(Coins& arg_coin)
 {
-	const float GRAVITY = -0.002f;
 	m_move.y += m_fallAccel;
-	m_fallAccel += GRAVITY;
+	m_fallAccel += ConstParameter::Slot::RETURN_COIN_GRAVITY;
 
 	auto pos = arg_coin.m_transform.GetPos();
 	pos += m_move;
