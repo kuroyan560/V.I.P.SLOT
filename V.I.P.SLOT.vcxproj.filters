@@ -286,6 +286,9 @@
     <ClCompile Include="src\user\Coins.cpp">
       <Filter>src\user\Coin</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\ReturnCoinEmitter.cpp">
+      <Filter>src\user\Slot</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -542,6 +545,9 @@
     </ClInclude>
     <ClInclude Include="src\user\Coins.h">
       <Filter>src\user\Coin</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\ReturnCoinEmitter.h">
+      <Filter>src\user\Slot</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

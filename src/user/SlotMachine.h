@@ -9,6 +9,7 @@
 #include"PatternManager.h"
 #include"CoinObjectManager.h"
 #include"CoinPerform.h"
+#include"ReturnCoinEmitter.h"
 class ModelObject;
 class LightManager;
 class GameCamera;
@@ -50,17 +51,9 @@ class SlotMachine
 		void OnEmit(Coins& arg_coin)override {};
 	};
 
-	//返却するコインの挙動（スロット上部から放出）
-	CoinObjectManager m_returnCoinObjManager;
-	class ReturnCoinPerform : public CoinPerform
-	{
-		float m_fallAccel = 0.0f;
-		Vec3<float>m_move;
-	public:
-		ReturnCoinPerform(Vec3<float>arg_initMove) : m_move(arg_initMove) {	}
-		void OnUpdate(Coins& arg_coin)override;
-		void OnEmit(Coins& arg_coin)override {};
-	};
+	//返却コインエミッター
+	ReturnCoinEmitter m_returnCoinEmitter;
+	//コイン返却SE
 	int m_coinReturnSE;
 
 	//BET時のメガホン拡縮演出
