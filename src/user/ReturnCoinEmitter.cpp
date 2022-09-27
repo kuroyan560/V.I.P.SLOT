@@ -1,4 +1,10 @@
 #include "ReturnCoinEmitter.h"
+#include"AudioApp.h"
+
+ReturnCoinEmitter::ReturnCoinEmitter()
+{
+	m_coinReturnSE = AudioApp::Instance()->LoadAudio("resource/user/sound/coin.wav", 0.15f);
+}
 
 void ReturnCoinEmitter::Init()
 {

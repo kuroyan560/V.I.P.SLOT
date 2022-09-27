@@ -53,8 +53,6 @@ class SlotMachine
 
 	//返却コインエミッター
 	ReturnCoinEmitter m_returnCoinEmitter;
-	//コイン返却SE
-	int m_coinReturnSE;
 
 	//BET時のメガホン拡縮演出
 	Timer m_megaPhoneExpandTimer;
@@ -65,7 +63,7 @@ class SlotMachine
 	//絵柄を確認して全て一緒なら効果発動
 	bool CheckReelPattern();
 	//スロットの結果から演出を選ぶ
-	void SlotPerform(const ConstParameter::Slot::PATTERN& Pattern);
+	void SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern, CoinVault& arg_playersVault);
 	
 public:
 	SlotMachine();

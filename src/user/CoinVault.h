@@ -18,6 +18,8 @@ public:
 	{
 		arg_dest.Add(this->m_coin);
 		this->m_coin = 0;
+
+		printf("Pass : (from)%d , (to)%d\n", this->m_coin, arg_dest.m_coin);
 	}
 	//金額を指定して渡す（足りなければ何もせず、falseを返す）
 	bool Pass(CoinVault& arg_dest, int arg_coinNum)

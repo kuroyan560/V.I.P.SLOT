@@ -18,8 +18,11 @@ class ReturnCoinEmitter
 		void OnEmit(Coins& arg_coin)override {};
 	};
 
+	//ƒRƒCƒ“•Ô‹pSE
+	int m_coinReturnSE;
+
 public:
-	ReturnCoinEmitter() {}
+	ReturnCoinEmitter();
 
 	//‰Šú‰»
 	void Init();

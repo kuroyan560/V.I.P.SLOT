@@ -18,19 +18,22 @@ bool SlotMachine::CheckReelPattern()
 	return true;
 }
 
-void SlotMachine::SlotPerform(const ConstParameter::Slot::PATTERN& Pattern)
+void SlotMachine::SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern, CoinVault& arg_playersVault)
 {
 	using namespace ConstParameter::Slot;
 	using PATTERN = ConstParameter::Slot::PATTERN;
 
 	//コインを返す演出（スロット上部からコイン放出）
-	bool returnCoinFlg = (Pattern == PATTERN::DOUBLE) || (Pattern == PATTERN::TRIPLE);
+	bool returnCoinFlg = (arg_pattern == PATTERN::DOUBLE) || (arg_pattern == PATTERN::TRIPLE);
 
 	if (returnCoinFlg)
 	{
 		Transform initTransform;
 		initTransform.SetPos(SLOT_POS_ON_BACK_CAM);
 		m_returnCoinEmitter.Emit(m_coinVault.GetNum(), RETURN_COIN_DRAW_NUM_PER, initTransform);
+
+		//プレイヤーにコイン返却
+		m_coinVault.Pass(arg_playersVault);
 	}
 }
 
@@ -66,7 +69,6 @@ SlotMachine::SlotMachine() : m_patternMgr(m_coinVault)
 	//サウンド読み込み
 	m_spinStartSE = AudioApp::Instance()->LoadAudio("resource/user/sound/slot_start.wav");
 	m_reelStopSE = AudioApp::Instance()->LoadAudio("resource/user/sound/slot_stop.wav");
-	m_coinReturnSE = AudioApp::Instance()->LoadAudio("resource/user/sound/coin.wav", 0.15f);
 }
 
 void SlotMachine::Init()
@@ -128,7 +130,7 @@ void SlotMachine::Update(CoinVault& arg_playersVault)
 			if (m_lever++ == REEL::RIGHT && CheckReelPattern())
 			{
 				//効果を確認して演出の処理
-				SlotPerform(m_reels[REEL::LEFT].GetNowPattern());
+				SlotPerform(m_reels[REEL::LEFT].GetNowPattern(), arg_playersVault);
 			}
 		}
 	}
@@ -156,10 +158,6 @@ void SlotMachine::Update(CoinVault& arg_playersVault)
 	//返却コイン演出
 	if (int returnCoinNum = m_returnCoinEmitter.Update())
 	{
-		//プレイヤーにコイン返却
-		m_coinVault.Pass(arg_playersVault, returnCoinNum);
-		//SE再生
-		AudioApp::Instance()->PlayWave(m_coinReturnSE);
 	}
 
 	//メガホン拡縮
