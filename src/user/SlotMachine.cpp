@@ -20,6 +20,7 @@ bool SlotMachine::CheckReelPattern()
 
 void SlotMachine::SlotPerform(const ConstParameter::Slot::PATTERN& Pattern)
 {
+	using namespace ConstParameter::Slot;
 	using PATTERN = ConstParameter::Slot::PATTERN;
 
 	//コインを返す演出（スロット上部からコイン放出）
@@ -30,27 +31,23 @@ void SlotMachine::SlotPerform(const ConstParameter::Slot::PATTERN& Pattern)
 		//スロット内の総額
 		int slotCoinNum = m_coinVault.GetNum();
 
-		//この値につき返却コイン1枚描画
-		const int RETURN_COIN_DRAW_NUM_PER = 2;
-		//返却コインの放出位置
-		const Vec3<float>RETURN_COIN_EMIT_POS = { 0,18.0f,22.0f };
 		//返却コインの寿命
-		const int RETURN_COIN_LIFE_TIME = 200;
+		static const int RETURN_COIN_LIFE_TIME = 200;
 		//返却コインの放出パワー下限
-		const float RETURN_COIN_EMIT_POWER_MIN = 2.0f;
+		static const float RETURN_COIN_EMIT_POWER_MIN = 2.0f;
 		//返却コインの放出パワー上限
-		const float RETURN_COIN_EMIT_POWER_MAX = 6.0f;
+		static const float RETURN_COIN_EMIT_POWER_MAX = 6.0f;
 		//返還の放出パワーXZ平面方向の強さレート下限
-		const float RETURN_COIN_EMIT_XZ_POWER_RATE_MIN = 0.05f;
+		static const float RETURN_COIN_EMIT_XZ_POWER_RATE_MIN = 0.05f;
 		//返還の放出パワーXZ平面方向の強さレート上限
-		const float RETURN_COIN_EMIT_XZ_POWER_RATE_MAX = 0.2f;
+		static const float RETURN_COIN_EMIT_XZ_POWER_RATE_MAX = 0.2f;
 		//返還の放出パワーY方向の強さレート下限
-		const float RETURN_COIN_EMIT_Y_POWER_RATE_MIN = 0.3f;
+		static const float RETURN_COIN_EMIT_Y_POWER_RATE_MIN = 0.3f;
 		//返還の放出パワーY方向の強さレート上限
-		const float RETURN_COIN_EMIT_Y_POWER_RATE_MAX = 1.0f;
+		static const float RETURN_COIN_EMIT_Y_POWER_RATE_MAX = 1.0f;
 
 		Transform initTransform;
-		initTransform.SetPos(RETURN_COIN_EMIT_POS);
+		initTransform.SetPos(SLOT_POS_ON_BACK_CAM);
 
 		//描画する返却コインの追加
 		for (; RETURN_COIN_DRAW_NUM_PER <= slotCoinNum; slotCoinNum -= RETURN_COIN_DRAW_NUM_PER)
