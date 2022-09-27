@@ -2,6 +2,7 @@
 #include"CoinObjectManager.h"
 #include"CoinPerform.h"
 #include"Transform.h"
+#include<forward_list>
 class Camera;
 
 class ReturnCoinEmitter
@@ -17,6 +18,18 @@ class ReturnCoinEmitter
 		void OnUpdate(Coins& arg_coin)override;
 		void OnEmit(Coins& arg_coin)override {};
 	};
+
+	struct ReturnCoin
+	{
+		int m_perCoinNum;
+		Transform m_initTransform;
+		ReturnCoin(const int& arg_perCoinNum, const Transform& arg_initTransform)
+			:m_perCoinNum(arg_perCoinNum), m_initTransform(arg_initTransform) {}
+	};
+	std::forward_list<ReturnCoin>m_returnCoins;
+
+	//放出タイミング計測
+	int m_emitTimer;
 
 	//コイン返却SE
 	int m_coinReturnSE;
