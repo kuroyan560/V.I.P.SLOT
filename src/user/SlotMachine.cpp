@@ -55,9 +55,6 @@ SlotMachine::SlotMachine() : m_patternMgr(m_coinVault)
 	//メガホン位置
 	m_megaPhoneObj->m_transform.SetPos(ConstParameter::Slot::MEGA_PHONE_POS);
 
-	//BETコインマネージャ
-	m_betCoinObjManager = std::make_unique<CoinObjectManager>(new BetCoinPerform());
-
 	//サウンド読み込み
 	m_spinStartSE = AudioApp::Instance()->LoadAudio("resource/user/sound/slot_start.wav");
 	m_reelStopSE = AudioApp::Instance()->LoadAudio("resource/user/sound/slot_stop.wav");
@@ -88,7 +85,10 @@ void SlotMachine::Init()
 	m_coinVault.Set(0);
 
 	//BETコインリセット
-	m_betCoinObjManager->Init();
+	m_betCoinObjManager.Init();
+
+	//返却コインリセット
+	m_returnCoinObjManager.Init();
 }
 
 //デバッグ用
@@ -136,12 +136,19 @@ void SlotMachine::Update(CoinVault& arg_playersVault)
 	}
 
 	//BETコイン投げ入れ演出
-	if (int betCoinNum = m_betCoinObjManager->Update())
+	if (int betCoinNum = m_betCoinObjManager.Update())
 	{
 		//プレイヤーからコイン受け取り
 		arg_playersVault.Pass(m_coinVault, betCoinNum);
 		//メガホン拡縮
 		m_megaPhoneExpandTimer.Reset(ConstParameter::Slot::MEGA_PHONE_EXPAND_TIME);
+	}
+
+	//返却コイン演出
+	if (int returnCoinNum = m_returnCoinObjManager.Update())
+	{
+		//プレイヤーにコイン返却
+		m_coinVault.Pass(arg_playersVault, returnCoinNum);
 	}
 
 	//メガホン拡縮
@@ -158,13 +165,15 @@ void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<G
 	DrawFunc3D::DrawNonShadingModel(m_megaPhoneObj, *arg_gameCam.lock()->GetBackCam(), 1.0f, AlphaBlendMode_None);
 
 	//BETされたコインの描画
-	m_betCoinObjManager->Draw(arg_lightMgr, arg_gameCam);
+	m_betCoinObjManager.Draw(arg_lightMgr, arg_gameCam);
+	m_returnCoinObjManager.Draw(arg_lightMgr, arg_gameCam);
 }
 
 void SlotMachine::Bet(int arg_coinNum, const Transform& arg_emitTransform)
 {
 	//BETされたコイン情報追加
-	m_betCoinObjManager->Add(arg_coinNum, arg_emitTransform, ConstParameter::Slot::UNTIL_THROW_COIN_TO_BET);
+	m_betCoinObjManager.Add(
+		arg_coinNum, arg_emitTransform, ConstParameter::Slot::UNTIL_THROW_COIN_TO_BET, new BetCoinPerform());
 }
 
 void SlotMachine::BetCoinPerform::OnUpdate(Coins& arg_coin)
@@ -172,4 +181,8 @@ void SlotMachine::BetCoinPerform::OnUpdate(Coins& arg_coin)
 	//コインの座標を算出してトランスフォームに適用
 	Vec3<float>newPos = KuroMath::Lerp(arg_coin.m_initTransform.GetPos(), ConstParameter::Slot::COIN_PORT_POS, arg_coin.m_timer.GetTimeRate());
 	arg_coin.m_transform.SetPos(newPos);
+}
+
+void SlotMachine::ReturnCoinPerform::OnUpdate(Coins& arg_coin)
+{
 }

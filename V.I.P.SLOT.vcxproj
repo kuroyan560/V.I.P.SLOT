@@ -218,6 +218,7 @@
     <ClCompile Include="src\engine\WinApp.cpp" />
     <ClCompile Include="src\user\BasicDraw.cpp" />
     <ClCompile Include="src\user\CoinObjectManager.cpp" />
+    <ClCompile Include="src\user\Coins.cpp" />
     <ClCompile Include="src\user\GameCamera.cpp" />
     <ClCompile Include="src\user\GameScene.cpp" />
     <ClCompile Include="src\user\Pattern.cpp" />

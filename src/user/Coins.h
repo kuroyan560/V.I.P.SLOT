@@ -1,8 +1,12 @@
 #pragma once
 #include"Transform.h"
 #include"Timer.h"
+#include<memory>
+class CoinPerform;
+
 class Coins
 {
+	std::unique_ptr<CoinPerform>m_perform;
 public:
 	//コイン数
 	int m_coinNum;
@@ -15,9 +19,6 @@ public:
 	//死亡フラグ
 	bool m_isDead = false;
 
-	Coins(int arg_coinNum, const Transform& arg_initTransform, int arg_lifeTime)
-		:m_coinNum(arg_coinNum), m_initTransform(arg_initTransform), m_transform(m_initTransform)
-	{
-		m_timer.Reset(arg_lifeTime);
-	}
+	Coins(int arg_coinNum, const Transform& arg_initTransform, int arg_lifeTime, CoinPerform* arg_perform);
+	void Update();
 };

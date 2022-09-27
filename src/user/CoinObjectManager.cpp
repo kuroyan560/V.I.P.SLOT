@@ -3,8 +3,7 @@
 #include"CoinPerform.h"
 #include"GameCamera.h"
 
-CoinObjectManager::CoinObjectManager(CoinPerform* arg_coinPerform)
-	: m_perform(std::unique_ptr<CoinPerform>(arg_coinPerform))
+CoinObjectManager::CoinObjectManager()
 {
 	m_coinModel = Importer::Instance()->LoadModel("resource/user/model/", "coin.glb");
 }
@@ -33,7 +32,7 @@ int CoinObjectManager::Update()
 		coin.m_timer.UpdateTimer();
 
 		//ÉRÉCÉìââèo
-		m_perform->OnUpdate(coin);
+		coin.Update();
 	}
 
 	//éÄñSÇµÇΩÇÁçÌèú
@@ -55,7 +54,7 @@ void CoinObjectManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak
 	}
 }
 
-void CoinObjectManager::Add(int arg_coinNum, const Transform& arg_initTransform, int arg_lifeTime)
+void CoinObjectManager::Add(int arg_coinNum, const Transform& arg_initTransform, int arg_lifeTime, CoinPerform* arg_perform)
 {
-	m_coins.emplace_front(arg_coinNum, arg_initTransform, arg_lifeTime);
+	m_coins.emplace_front(arg_coinNum, arg_initTransform, arg_lifeTime, arg_perform);
 }

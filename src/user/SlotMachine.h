@@ -42,8 +42,16 @@ class SlotMachine
 	CoinVault m_coinVault;
 
 	//BETされたコインの挙動
-	std::unique_ptr<CoinObjectManager>m_betCoinObjManager;
+	CoinObjectManager m_betCoinObjManager;
 	class BetCoinPerform : public CoinPerform
+	{
+		void OnUpdate(Coins& arg_coin)override;
+		void OnEmit(Coins& arg_coin)override {};
+	};
+
+	//返却するコインの挙動（スロット上部から放出）
+	CoinObjectManager m_returnCoinObjManager;
+	class ReturnCoinPerform : public CoinPerform
 	{
 		void OnUpdate(Coins& arg_coin)override;
 		void OnEmit(Coins& arg_coin)override {};

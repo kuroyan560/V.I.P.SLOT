@@ -283,6 +283,9 @@
     <ClCompile Include="src\user\CoinObjectManager.cpp">
       <Filter>src\user\Coin</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\Coins.cpp">
+      <Filter>src\user\Coin</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">

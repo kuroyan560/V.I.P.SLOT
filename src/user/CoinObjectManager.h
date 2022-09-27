@@ -14,15 +14,12 @@ private:
 	//コイン配列
 	std::forward_list<Coins>m_coins;
 
-	//コイン挙動
-	std::unique_ptr<CoinPerform>m_perform;
-
 	//コインモデル
 	std::shared_ptr<Model>m_coinModel;
 
 public:
 	//挙動をアタッチ
-	CoinObjectManager(CoinPerform* arg_coinPerform);
+	CoinObjectManager();
 	//初期化
 	void Init();
 	/// <summary>
@@ -34,5 +31,5 @@ public:
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<GameCamera>arg_gameCam);
 
 	//コイン追加
-	void Add(int arg_coinNum, const Transform& arg_initTransform, int arg_lifeTime);
+	void Add(int arg_coinNum, const Transform& arg_initTransform, int arg_lifeTime, CoinPerform* arg_perform);
 };
