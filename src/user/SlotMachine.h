@@ -56,6 +56,7 @@ class SlotMachine
 		void OnUpdate(Coins& arg_coin)override;
 		void OnEmit(Coins& arg_coin)override {};
 	};
+	int m_coinReturnSE;
 
 	//BET‚ÌƒƒKƒzƒ“Šgk‰‰o
 	Timer m_megaPhoneExpandTimer;
