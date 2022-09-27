@@ -57,6 +57,8 @@ class SlotMachine
 
 	//絵柄を確認して全て一緒なら効果発動
 	bool CheckReelPattern();
+	//スロットの結果から演出を選ぶ
+	void SlotPerform(const ConstParameter::Slot::PATTERN& Pattern);
 	
 public:
 	SlotMachine();

@@ -68,6 +68,8 @@ namespace ConstParameter
 		const Vec3<float>MEGA_PHONE_POS = { -18.0f,5.0f,20.0f };
 		//BET時のメガホン拡縮スケール
 		const float MEGA_PHONE_EXPAND_SCALE = 1.2f;
+		//BET時のメガホン拡縮時間
+		const int MEGA_PHONE_EXPAND_TIME = 60;
 	};
 };
 

@@ -15,6 +15,15 @@ bool SlotMachine::CheckReelPattern()
 	if (pattern != m_reels[REEL::RIGHT].GetNowPattern())return false;
 
 	m_patternMgr.Invoke(pattern);
+	return true;
+}
+
+void SlotMachine::SlotPerform(const ConstParameter::Slot::PATTERN& Pattern)
+{
+	using PATTERN = ConstParameter::Slot::PATTERN;
+
+	//コインを返す演出（スロット上部からコイン放出）
+	bool returnCoin = (Pattern == PATTERN::DOUBLE) || (Pattern == PATTERN::TRIPLE);
 }
 
 SlotMachine::SlotMachine() : m_patternMgr(m_coinVault)
@@ -107,7 +116,11 @@ void SlotMachine::Update(CoinVault& arg_playersVault)
 			AudioApp::Instance()->PlayWaveDelay(m_reelStopSE);
 
 			//絵柄を確認して全て一緒なら効果発動
-			if (m_lever++ == REEL::RIGHT)CheckReelPattern();
+			if (m_lever++ == REEL::RIGHT && CheckReelPattern())
+			{
+				//効果を確認して演出の処理
+				SlotPerform(m_reels[REEL::LEFT].GetNowPattern());
+			}
 		}
 	}
 
@@ -122,15 +135,13 @@ void SlotMachine::Update(CoinVault& arg_playersVault)
 		}
 	}
 
-	const int MEGA_PHONE_EXPAND_TIME = 60;
-
 	//BETコイン投げ入れ演出
 	if (int betCoinNum = m_betCoinObjManager->Update())
 	{
 		//プレイヤーからコイン受け取り
 		arg_playersVault.Pass(m_coinVault, betCoinNum);
 		//メガホン拡縮
-		m_megaPhoneExpandTimer.Reset(MEGA_PHONE_EXPAND_TIME);
+		m_megaPhoneExpandTimer.Reset(ConstParameter::Slot::MEGA_PHONE_EXPAND_TIME);
 	}
 
 	//メガホン拡縮
