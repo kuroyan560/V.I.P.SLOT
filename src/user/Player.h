@@ -41,4 +41,6 @@ public:
 	void Update(std::weak_ptr<SlotMachine> arg_slotMachine);
 	//•`‰æ
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
+
+	CoinVault& GetVault() { return m_coinVault; }
 };

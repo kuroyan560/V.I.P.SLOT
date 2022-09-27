@@ -46,8 +46,8 @@ SlotMachine::SlotMachine() : m_patternMgr(m_coinVault)
 	//メガホン位置
 	m_megaPhoneObj->m_transform.SetPos(ConstParameter::Slot::MEGA_PHONE_POS);
 
-	//コインモデル読み込み
-	m_coinModel = Importer::Instance()->LoadModel("resource/user/model/", "coin.glb");
+	//BETコインマネージャ
+	m_betCoinObjManager = std::make_unique<CoinObjectManager>(new BetCoinPerform());
 
 	//サウンド読み込み
 	m_spinStartSE = AudioApp::Instance()->LoadAudio("resource/user/sound/slot_start.wav");
@@ -78,14 +78,14 @@ void SlotMachine::Init()
 	//コインリセット
 	m_coinVault.Set(0);
 
-	//BET中コインリセット
-	m_betCoinArray.clear();
+	//BETコインリセット
+	m_betCoinObjManager->Init();
 }
 
 //デバッグ用
 #include"UsersInput.h"
 
-void SlotMachine::Update()
+void SlotMachine::Update(CoinVault& arg_playersVault)
 {
 	//リール更新
 	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Update();
@@ -124,33 +124,14 @@ void SlotMachine::Update()
 
 	const int MEGA_PHONE_EXPAND_TIME = 60;
 
-	for (auto& coin : m_betCoinArray)
+	//BETコイン投げ入れ演出
+	if (int betCoinNum = m_betCoinObjManager->Update())
 	{
-		if (coin.m_emitTimer.IsTimeUp())
-		{
-			//相手からコイン受け取り
-			assert(coin.m_otherVault); //一応nullチェック
-			coin.m_otherVault->Pass(m_coinVault, coin.m_coinNum);
-			//BETに成功
-			coin.m_bet = true;
-
-			//メガホン拡縮
-			m_megaPhoneExpandTimer.Reset(MEGA_PHONE_EXPAND_TIME);
-		}
-
-		//タイマー計測
-		coin.m_emitTimer.UpdateTimer();
-
-		//コインの座標を算出してトランスフォームに適用
-		Vec3<float>newPos = KuroMath::Lerp(coin.m_emitTransform.GetPos(), ConstParameter::Slot::COIN_PORT_POS, coin.m_emitTimer.GetTimeRate());
-		coin.m_transform.SetPos(newPos);
+		//プレイヤーからコイン受け取り
+		arg_playersVault.Pass(m_coinVault, betCoinNum);
+		//メガホン拡縮
+		m_megaPhoneExpandTimer.Reset(MEGA_PHONE_EXPAND_TIME);
 	}
-
-	//投入口に到達したら削除
-	m_betCoinArray.remove_if([](BetCoin& c)
-		{
-			return c.m_bet;
-		});
 
 	//メガホン拡縮
 	float megaPhoneScale = KuroMath::Ease(Out, Elastic, m_megaPhoneExpandTimer.GetTimeRate(), 
@@ -166,14 +147,18 @@ void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<G
 	DrawFunc3D::DrawNonShadingModel(m_megaPhoneObj, *arg_gameCam.lock()->GetBackCam(), 1.0f, AlphaBlendMode_None);
 
 	//BETされたコインの描画
-	for (auto& coin : m_betCoinArray)
-	{
-		DrawFunc3D::DrawNonShadingModel(m_coinModel, coin.m_transform, *arg_gameCam.lock()->GetFrontCam(), 1.0f, nullptr, AlphaBlendMode_None);
-	}
+	m_betCoinObjManager->Draw(arg_lightMgr, arg_gameCam);
 }
 
-void SlotMachine::Bet(CoinVault& arg_otherVault, int arg_coinNum, const Transform& arg_emitTransform)
+void SlotMachine::Bet(int arg_coinNum, const Transform& arg_emitTransform)
 {
 	//BETされたコイン情報追加
-	m_betCoinArray.emplace_front(&arg_otherVault, arg_coinNum, arg_emitTransform, ConstParameter::Slot::UNTIL_THROW_COIN_TO_BET);
+	m_betCoinObjManager->Add(arg_coinNum, arg_emitTransform, ConstParameter::Slot::UNTIL_THROW_COIN_TO_BET);
+}
+
+void SlotMachine::BetCoinPerform::OnUpdate(Coins& arg_coin)
+{
+	//コインの座標を算出してトランスフォームに適用
+	Vec3<float>newPos = KuroMath::Lerp(arg_coin.m_initTransform.GetPos(), ConstParameter::Slot::COIN_PORT_POS, arg_coin.m_timer.GetTimeRate());
+	arg_coin.m_transform.SetPos(newPos);
 }

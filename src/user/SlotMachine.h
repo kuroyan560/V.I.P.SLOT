@@ -5,11 +5,11 @@
 #include"Reel.h"
 #include"CoinVault.h"
 #include"Transform.h"
-#include<forward_list>
 #include"Timer.h"
 #include"PatternManager.h"
+#include"CoinObjectManager.h"
+#include"CoinPerform.h"
 class ModelObject;
-class Model;
 class LightManager;
 class GameCamera;
 
@@ -20,9 +20,6 @@ class SlotMachine
 
 	//コイン投入口メガホン
 	std::shared_ptr<ModelObject>m_megaPhoneObj;
-
-	//コインモデル
-	std::shared_ptr<Model>m_coinModel;
 
 	//リール
 	enum REEL { LEFT, CENTER, RIGHT, NUM };
@@ -44,29 +41,13 @@ class SlotMachine
 	//所持金
 	CoinVault m_coinVault;
 
-	//BETされたコインの情報
-	struct BetCoin
+	//BETされたコインの挙動
+	std::unique_ptr<CoinObjectManager>m_betCoinObjManager;
+	class BetCoinPerform : public CoinPerform
 	{
-		//相手の所持金
-		CoinVault* m_otherVault;
-		//コイン数
-		int m_coinNum;
-		//投げ込み位置
-		Transform m_emitTransform;
-		//自身のトランスフォーム
-		Transform m_transform;
-		//投げ込まれてからの時間
-		Timer m_emitTimer;
-		//BETに成功
-		bool m_bet = false;
-
-		BetCoin(CoinVault* arg_otherVault, int arg_coinNum, const Transform& arg_emitTransform,int arg_aliveTime)
-			:m_otherVault(arg_otherVault), m_coinNum(arg_coinNum), m_emitTransform(arg_emitTransform), m_transform(arg_emitTransform) 
-		{
-			m_emitTimer.Reset(arg_aliveTime);
-		}
+		void OnUpdate(Coins& arg_coin)override;
+		void OnEmit(Coins& arg_coin)override {};
 	};
-	std::forward_list<BetCoin>m_betCoinArray;
 
 	//BET時のメガホン拡縮演出
 	Timer m_megaPhoneExpandTimer;
@@ -82,10 +63,10 @@ public:
 	//初期化
 	void Init();
 	//更新
-	void Update();
+	void Update(CoinVault& arg_playersVault);
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<GameCamera>arg_gameCam);
 
 	//BET受付
-	void Bet(CoinVault& arg_otherVault, int arg_coinNum, const Transform& arg_emitTransform);
+	void Bet(int arg_coinNum, const Transform& arg_emitTransform);
 };

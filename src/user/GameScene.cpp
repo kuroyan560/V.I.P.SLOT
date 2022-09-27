@@ -59,7 +59,7 @@ void GameScene::OnUpdate()
 	m_player->Update(m_slotMachine);
 
 	//スロットマシン更新
-	m_slotMachine->Update();
+	m_slotMachine->Update(m_player->GetVault());
 }
 
 

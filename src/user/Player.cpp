@@ -126,7 +126,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine)
 		if (m_betTimer.UpdateTimer())
 		{
 			//スロットマシンにBET
-			arg_slotMachine.lock()->Bet(m_coinVault, ConstParameter::Player::PASS_COIN_NUM, m_modelObj->m_transform);
+			arg_slotMachine.lock()->Bet(ConstParameter::Player::PASS_COIN_NUM, m_modelObj->m_transform);
 
 			//BETスパン計算
 			int betSpan = KuroMath::Lerp(ConstParameter::Player::BET_SPEED_MIN_SPAN, ConstParameter::Player::BET_SPEED_MAX_SPAN,

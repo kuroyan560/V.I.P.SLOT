@@ -80,6 +80,9 @@
     <Filter Include="src\user\Slot\Pattern">
       <UniqueIdentifier>{0ab9c53f-16d1-422f-ba07-af3ab35a9d2e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\user\Coin">
+      <UniqueIdentifier>{898a6f98-4c9f-4013-b12c-29daeb09858b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\D3D12App.cpp">
@@ -276,6 +279,9 @@
     </ClCompile>
     <ClCompile Include="src\user\PatternManager.cpp">
       <Filter>src\user\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\CoinObjectManager.cpp">
+      <Filter>src\user\Coin</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -513,9 +519,6 @@
     <ClInclude Include="src\user\Reel.h">
       <Filter>src\user\Slot</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\CoinVault.h">
-      <Filter>src\user\Game</Filter>
-    </ClInclude>
     <ClInclude Include="src\engine\Timer.h">
       <Filter>src\engine\ユーザー向け</Filter>
     </ClInclude>
@@ -524,6 +527,18 @@
     </ClInclude>
     <ClInclude Include="src\user\PatternManager.h">
       <Filter>src\user\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\CoinVault.h">
+      <Filter>src\user\Coin</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\CoinObjectManager.h">
+      <Filter>src\user\Coin</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\CoinPerform.h">
+      <Filter>src\user\Coin</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Coins.h">
+      <Filter>src\user\Coin</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

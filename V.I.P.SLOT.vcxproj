@@ -217,6 +217,7 @@
     <ClCompile Include="src\engine\UsersInput.cpp" />
     <ClCompile Include="src\engine\WinApp.cpp" />
     <ClCompile Include="src\user\BasicDraw.cpp" />
+    <ClCompile Include="src\user\CoinObjectManager.cpp" />
     <ClCompile Include="src\user\GameCamera.cpp" />
     <ClCompile Include="src\user\GameScene.cpp" />
     <ClCompile Include="src\user\Pattern.cpp" />
@@ -299,6 +300,9 @@
     <ClInclude Include="src\engine\UsersInput.h" />
     <ClInclude Include="src\engine\WinApp.h" />
     <ClInclude Include="src\user\BasicDraw.h" />
+    <ClInclude Include="src\user\CoinObjectManager.h" />
+    <ClInclude Include="src\user\CoinPerform.h" />
+    <ClInclude Include="src\user\Coins.h" />
     <ClInclude Include="src\user\CoinVault.h" />
     <ClInclude Include="src\user\ConstParameters.h" />
     <ClInclude Include="src\user\GameCamera.h" />
