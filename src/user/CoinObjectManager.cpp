@@ -1,7 +1,6 @@
 #include "CoinObjectManager.h"
 #include"Importer.h"
 #include"CoinPerform.h"
-#include"GameCamera.h"
 
 CoinObjectManager::CoinObjectManager()
 {
@@ -45,12 +44,12 @@ int CoinObjectManager::Update()
 }
 
 #include"DrawFunc3D.h"
-void CoinObjectManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<GameCamera> arg_gameCam)
+void CoinObjectManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
 	//BET‚³‚ê‚½ƒRƒCƒ“‚Ì•`‰æ
 	for (auto& coin : m_coins)
 	{
-		DrawFunc3D::DrawNonShadingModel(m_coinModel, coin.m_transform, *arg_gameCam.lock()->GetFrontCam(), 1.0f, nullptr, AlphaBlendMode_None);
+		DrawFunc3D::DrawNonShadingModel(m_coinModel, coin.m_transform, *arg_cam.lock(), 1.0f, nullptr, AlphaBlendMode_None);
 	}
 }
 

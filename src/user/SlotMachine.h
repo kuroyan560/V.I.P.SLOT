@@ -45,6 +45,7 @@ class SlotMachine
 	CoinObjectManager m_betCoinObjManager;
 	class BetCoinPerform : public CoinPerform
 	{
+	public:
 		void OnUpdate(Coins& arg_coin)override;
 		void OnEmit(Coins& arg_coin)override {};
 	};
@@ -53,6 +54,10 @@ class SlotMachine
 	CoinObjectManager m_returnCoinObjManager;
 	class ReturnCoinPerform : public CoinPerform
 	{
+		float m_fallAccel = 0.0f;
+		Vec3<float>m_move;
+	public:
+		ReturnCoinPerform(Vec3<float>arg_initMove) : m_move(arg_initMove) {	}
 		void OnUpdate(Coins& arg_coin)override;
 		void OnEmit(Coins& arg_coin)override {};
 	};

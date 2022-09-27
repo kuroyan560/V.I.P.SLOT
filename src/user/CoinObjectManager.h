@@ -5,7 +5,7 @@
 class Model;
 class CoinPerform;
 class LightManager;
-class GameCamera;
+class Camera;
 
 //コイン演出・挙動
 class CoinObjectManager
@@ -28,7 +28,7 @@ public:
 	/// <returns>演出終了したコインの総数（０ならどのコインも終了していない）</returns>
 	int Update();
 	//描画
-	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<GameCamera>arg_gameCam);
+	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 
 	//コイン追加
 	void Add(int arg_coinNum, const Transform& arg_initTransform, int arg_lifeTime, CoinPerform* arg_perform);

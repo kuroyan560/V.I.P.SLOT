@@ -33,9 +33,21 @@ void SlotMachine::SlotPerform(const ConstParameter::Slot::PATTERN& Pattern)
 		//この値につき返却コイン1枚描画
 		const int RETURN_COIN_DRAW_NUM_PER = 2;
 		//返却コインの放出位置
-		const Vec3<float>RETURN_COIN_EMIT_POS = { 0,0,0 };
+		const Vec3<float>RETURN_COIN_EMIT_POS = { 0,18.0f,22.0f };
 		//返却コインの寿命
-		const int RETURN_COIN_LIFE_TIME = 120;
+		const int RETURN_COIN_LIFE_TIME = 200;
+		//返却コインの放出パワー下限
+		const float RETURN_COIN_EMIT_POWER_MIN = 2.0f;
+		//返却コインの放出パワー上限
+		const float RETURN_COIN_EMIT_POWER_MAX = 6.0f;
+		//返還の放出パワーXZ平面方向の強さレート下限
+		const float RETURN_COIN_EMIT_XZ_POWER_RATE_MIN = 0.05f;
+		//返還の放出パワーXZ平面方向の強さレート上限
+		const float RETURN_COIN_EMIT_XZ_POWER_RATE_MAX = 0.2f;
+		//返還の放出パワーY方向の強さレート下限
+		const float RETURN_COIN_EMIT_Y_POWER_RATE_MIN = 0.3f;
+		//返還の放出パワーY方向の強さレート上限
+		const float RETURN_COIN_EMIT_Y_POWER_RATE_MAX = 1.0f;
 
 		Transform initTransform;
 		initTransform.SetPos(RETURN_COIN_EMIT_POS);
@@ -43,8 +55,17 @@ void SlotMachine::SlotPerform(const ConstParameter::Slot::PATTERN& Pattern)
 		//描画する返却コインの追加
 		for (; RETURN_COIN_DRAW_NUM_PER <= slotCoinNum; slotCoinNum -= RETURN_COIN_DRAW_NUM_PER)
 		{
+			const float power = KuroFunc::GetRand(RETURN_COIN_EMIT_POWER_MIN, RETURN_COIN_EMIT_POWER_MAX);
+			float vec_x = KuroFunc::GetRand(RETURN_COIN_EMIT_XZ_POWER_RATE_MIN, RETURN_COIN_EMIT_XZ_POWER_RATE_MAX);
+			vec_x *= KuroFunc::GetRandPlusMinus();
+			float vec_y = KuroFunc::GetRand(RETURN_COIN_EMIT_Y_POWER_RATE_MIN, RETURN_COIN_EMIT_Y_POWER_RATE_MAX);
+			float vec_z = KuroFunc::GetRand(RETURN_COIN_EMIT_XZ_POWER_RATE_MIN, RETURN_COIN_EMIT_XZ_POWER_RATE_MAX);
+			vec_z *= KuroFunc::GetRandPlusMinus();
+
+			const Vec3<float>initMove = Vec3<float>(vec_x, vec_y, vec_z) * power;
+
 			m_returnCoinObjManager.Add(RETURN_COIN_DRAW_NUM_PER,
-				initTransform, RETURN_COIN_LIFE_TIME, new ReturnCoinPerform());
+				initTransform, RETURN_COIN_LIFE_TIME, new ReturnCoinPerform(initMove));
 		}
 	}
 }
@@ -191,8 +212,9 @@ void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<G
 	DrawFunc3D::DrawNonShadingModel(m_megaPhoneObj, *arg_gameCam.lock()->GetBackCam(), 1.0f, AlphaBlendMode_None);
 
 	//BETされたコインの描画
-	m_betCoinObjManager.Draw(arg_lightMgr, arg_gameCam);
-	m_returnCoinObjManager.Draw(arg_lightMgr, arg_gameCam);
+	m_betCoinObjManager.Draw(arg_lightMgr, arg_gameCam.lock()->GetFrontCam());
+	//返却コインの描画
+	m_returnCoinObjManager.Draw(arg_lightMgr, arg_gameCam.lock()->GetBackCam());
 }
 
 void SlotMachine::Bet(int arg_coinNum, const Transform& arg_emitTransform)
@@ -211,4 +233,16 @@ void SlotMachine::BetCoinPerform::OnUpdate(Coins& arg_coin)
 
 void SlotMachine::ReturnCoinPerform::OnUpdate(Coins& arg_coin)
 {
+	const float GRAVITY = -0.002f;
+	m_move.y += m_fallAccel;
+	m_fallAccel += GRAVITY;
+
+	auto pos = arg_coin.m_transform.GetPos();
+	pos += m_move;
+
+	//XZ平面方向の移動量は空気抵抗で減衰
+	m_move.x = KuroMath::Lerp(m_move.x, 0.0f, 0.01f);
+	m_move.z = KuroMath::Lerp(m_move.z, 0.0f, 0.01f);
+
+	arg_coin.m_transform.SetPos(pos);
 }
