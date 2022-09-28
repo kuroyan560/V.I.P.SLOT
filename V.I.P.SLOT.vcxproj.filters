@@ -83,6 +83,9 @@
     <Filter Include="src\user\Coin">
       <UniqueIdentifier>{898a6f98-4c9f-4013-b12c-29daeb09858b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\user\Enemy">
+      <UniqueIdentifier>{f5ff9f17-0c33-43fa-80dd-82a1da31c6de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\D3D12App.cpp">
@@ -288,6 +291,12 @@
     </ClCompile>
     <ClCompile Include="src\user\ReturnCoinEmitter.cpp">
       <Filter>src\user\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\Enemy.cpp">
+      <Filter>src\user\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\EnemyController.cpp">
+      <Filter>src\user\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -548,6 +557,15 @@
     </ClInclude>
     <ClInclude Include="src\user\ReturnCoinEmitter.h">
       <Filter>src\user\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Enemy.h">
+      <Filter>src\user\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\EnemyController.h">
+      <Filter>src\user\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\EnemyBreed.h">
+      <Filter>src\user\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
