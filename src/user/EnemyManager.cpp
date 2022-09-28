@@ -13,7 +13,7 @@ EnemyManager::EnemyManager()
 		int weakSlideIdx = static_cast<int>(ENEMY_TYPE::WEAK_SLIDE);
 		m_breeds[weakSlideIdx] = std::make_shared<EnemyBreed>(
 			weakSlideIdx,
-			Importer::Instance()->LoadModel("", ""),
+			Importer::Instance()->LoadModel("resource/user/model/", "enemy_test.glb"),
 			1,
 			10,
 			std::make_unique<EnemySlideMove>(0.1f)
