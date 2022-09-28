@@ -23,3 +23,21 @@ class EnemyController
 	//クローンの生成
 	virtual std::unique_ptr<EnemyController>Clone() = 0;
 };
+
+//横移動
+class EnemySlideMove : public EnemyController
+{
+	//スピード
+	float m_xSpeed;
+
+	//X軸方向スピード
+	float m_xMove;
+
+	void OnInit(Enemy& arg_enemy)override;
+	void OnUpdate(Enemy& arg_enemy)override;
+	std::unique_ptr<EnemyController>Clone()override;
+	bool IsDead(Enemy& arg_enemy)override;
+
+public:
+	EnemySlideMove(float arg_xSpeed) :m_xSpeed(arg_xSpeed) {}
+};

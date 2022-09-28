@@ -298,6 +298,9 @@
     <ClCompile Include="src\user\EnemyController.cpp">
       <Filter>src\user\Enemy</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\EnemyManager.cpp">
+      <Filter>src\user\Enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -565,6 +568,9 @@
       <Filter>src\user\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="src\user\EnemyBreed.h">
+      <Filter>src\user\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\EnemyManager.h">
       <Filter>src\user\Enemy</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,6 @@
 #pragma once
 #include"Vec.h"
+#include<array>
 
 //調整用パラメータ
 namespace ConstParameter
@@ -96,5 +97,17 @@ namespace ConstParameter
 		//描画上の返却コインの放出数上限
 		const int EMIT_COIN_COUNT_MAX = 10;
 	};
+
+	namespace Enemy
+	{
+		//種別
+		enum struct TYPE { WEAK_SLIDE, NUM };
+
+		//種別ごとの最大数
+		const std::array<int, static_cast<int>(TYPE::NUM)>INSTANCE_NUM_MAX =
+		{
+			100
+		};
+	}
 };
 
