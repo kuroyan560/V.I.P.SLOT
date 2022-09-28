@@ -33,6 +33,15 @@ public:
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 
+	/// <summary>
+	/// ダメージを受ける
+	/// </summary>
+	/// <param name="arg_amount">ダメージ量</param>
+	/// <returns>死亡した場合コイン数、死亡してなければ０を返す/returns>
+	int Damage(int arg_amount = 1);
+	//一撃で死ぬ
+	int Blow() { return Damage(m_hp); }
+
 	//種別番号ゲッタ
 	const int& GetTypeID();
 

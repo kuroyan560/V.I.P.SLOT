@@ -27,6 +27,13 @@ void Enemy::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>a
 	m_controller->OnDraw(*this, arg_lightMgr, arg_cam);
 }
 
+int Enemy::Damage(int arg_amount)
+{
+	m_hp -= arg_amount;
+	m_controller->OnDamage(*this);
+	m_coinVault.GetNum();
+}
+
 const int& Enemy::GetTypeID()
 {
 	return m_breed.lock()->m_typeID;
