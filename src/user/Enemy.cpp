@@ -2,19 +2,24 @@
 #include"EnemyBreed.h"
 #include"EnemyController.h"
 
-void Enemy::Init(const std::shared_ptr<EnemyBreed>& arg_breed)
+Enemy::Enemy(const std::shared_ptr<EnemyBreed>& arg_breed)
 {
 	//血統の記録
 	m_breed = arg_breed;
+	//挙動制御アタッチ
+	m_controller = m_breed.lock()->m_controller->Clone();
+}
 
+void Enemy::Init()
+{
 	//所持コイン初期化
-	m_coinVault.Set(arg_breed->m_initCoinNum);
+	m_coinVault.Set(m_breed.lock()->m_initCoinNum);
 
 	//HP初期化
-	m_hp = arg_breed->m_maxHp;
+	m_hp = m_breed.lock()->m_maxHp;
 
-	//挙動制御アタッチ
-	m_controller = arg_breed->m_controller->Clone();
+	//挙動制御初期化
+	m_controller->OnInit(*this);
 }
 
 void Enemy::Update()

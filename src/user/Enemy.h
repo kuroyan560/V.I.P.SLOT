@@ -23,10 +23,11 @@ public:
 	//ŒŒ“
 	std::weak_ptr<EnemyBreed>m_breed;
 
-	Enemy() {}
+	//ŒŒ“î•ñ‚ğŠî‚É¶¬
+	Enemy(const std::shared_ptr<EnemyBreed>& arg_breed);
 
 	//‰Šú‰»
-	void Init(const std::shared_ptr<EnemyBreed>& arg_breed);
+	void Init();
 	//XV
 	void Update();
 	//•`‰æ
