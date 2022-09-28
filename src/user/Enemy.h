@@ -9,15 +9,7 @@ class Camera;
 
 class Enemy
 {
-protected:
-	Enemy() {}
-
-	friend class EnemyController;
-
-	//血統
-	std::weak_ptr<EnemyBreed>m_breed;
-	//トランスフォーム
-	Transform m_transform;
+private:
 	//所持金
 	CoinVault m_coinVault;
 	//HP
@@ -26,6 +18,13 @@ protected:
 	std::unique_ptr<EnemyController>m_controller;
 
 public:
+	//トランスフォーム
+	Transform m_transform;
+	//血統
+	std::weak_ptr<EnemyBreed>m_breed;
+
+	Enemy() {}
+
 	//初期化
 	void Init(const std::shared_ptr<EnemyBreed>& arg_breed);
 	//更新

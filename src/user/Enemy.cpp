@@ -31,7 +31,7 @@ int Enemy::Damage(int arg_amount)
 {
 	m_hp -= arg_amount;
 	m_controller->OnDamage(*this);
-	m_coinVault.GetNum();
+	return m_coinVault.GetNum();
 }
 
 const int& Enemy::GetTypeID()
