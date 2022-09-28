@@ -9,6 +9,7 @@
 #include"GameCamera.h"
 #include"ConstParameters.h"
 #include"SlotMachine.h"
+#include"EnemyManager.h"
 
 GameScene::GameScene()
 {
@@ -31,6 +32,9 @@ GameScene::GameScene()
 
 	//ゲームカメラ生成
 	m_gameCam = std::make_shared<GameCamera>();
+
+	//敵マネージャ生成
+	m_enemyMgr = std::make_shared<EnemyManager>();
 }
 
 void GameScene::OnInitialize()
@@ -43,6 +47,9 @@ void GameScene::OnInitialize()
 
 	//カメラ初期化
 	m_gameCam->Init();
+
+	//敵マネージャ初期化
+	m_enemyMgr->Init();
 }
 
 void GameScene::OnUpdate()
@@ -52,14 +59,23 @@ void GameScene::OnUpdate()
 		this->Initialize();
 	}
 
-	//カメラ更新
+	//カメラ
 	m_gameCam->Update();
 
-	//プレイヤー更新
+	//プレイヤー
 	m_player->Update(m_slotMachine);
 
-	//スロットマシン更新
+	//スロットマシン
 	m_slotMachine->Update(m_player->GetVault());
+
+	//デバッグ用
+	if (UsersInput::Instance()->KeyOnTrigger(DIK_E))
+	{
+		m_enemyMgr->Appear(ConstParameter::Enemy::TYPE::WEAK_SLIDE);
+	}
+
+	//敵マネージャ
+	m_enemyMgr->Update();
 }
 
 
@@ -82,6 +98,9 @@ void GameScene::OnDraw()
 	//床
 	DrawFunc3D::DrawNonShadingModel(m_squareFloorObj, *m_gameCam->GetFrontCam(), 1.0f, AlphaBlendMode_None);
 
+	//敵
+	m_enemyMgr->Draw(m_ligMgr, m_gameCam->GetFrontCam());
+	
 	//プレイヤー
 	m_player->Draw(m_ligMgr, m_gameCam->GetFrontCam());
 
