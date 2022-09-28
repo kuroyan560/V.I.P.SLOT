@@ -7,13 +7,25 @@ class EnemyBreed
 {
 public:
 	//種別番号（種類ごと）
-	int m_typeID;
+	const int m_typeID;
 	//モデル
-	std::shared_ptr<Model>m_model;
+	const std::shared_ptr<Model>m_model;
 	//最大HP
-	int m_maxHp;
+	const int m_maxHp;
 	//所持コイン（倒したら得られるコインの数）
-	int m_initCoinNum;
+	const int m_initCoinNum;
 	//挙動制御
-	std::unique_ptr<EnemyController>m_controller;
+	const std::unique_ptr<EnemyController>m_controller;
+
+	EnemyBreed(
+		int arg_typeID,
+		std::shared_ptr<Model>arg_model,
+		int arg_maxHp,
+		int arg_initCoinNum,
+		std::unique_ptr<EnemyController>arg_controller)
+		:m_typeID(arg_typeID),
+		m_model(arg_model),
+		m_maxHp(arg_maxHp),
+		m_initCoinNum(arg_initCoinNum),
+		m_controller(std::move(arg_controller)) {}
 };
