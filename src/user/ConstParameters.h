@@ -8,12 +8,14 @@ namespace ConstParameter
 	{
 		//ステージ横幅の半分
 		const float FIELD_WIDTH_HALF = 30.0f;
+		//フィールド位置のZ軸
+		const float FIELD_DEPTH = -20.0f;
 	}
 
 	namespace Player
 	{
 		//初期位置
-		const Vec3<float>INIT_POS = { 0,0,-20 };
+		const Vec3<float>INIT_POS = { 0,0,Environment::FIELD_DEPTH };
 
 		/*--- 移動 ---*/
 		//移動速度
