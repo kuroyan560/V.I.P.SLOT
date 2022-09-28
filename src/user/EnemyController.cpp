@@ -17,7 +17,7 @@ void EnemyController::OnDraw(Enemy& arg_enemy, std::weak_ptr<LightManager>& arg_
 
 void EnemySlideMove::OnInit(Enemy& arg_enemy)
 {
-	const float ABS_X = 43.0f;
+	using namespace ConstParameter::Enemy;
 
 	//初期化位置
 	Vec3<float>initPos;
@@ -28,21 +28,18 @@ void EnemySlideMove::OnInit(Enemy& arg_enemy)
 	//移動スピードによってスタートXを変える
 	if (m_xMove < 0.0f)
 	{
-		initPos.x = ABS_X;
+		initPos.x = POS_X_ABS;
 	}
 	else if (0.0f < m_xMove)
 	{
-		initPos.x = -ABS_X;
+		initPos.x = -POS_X_ABS;
 	}
 
 	//高さランダム
-	const float MIN_Y = 1.0f;
-	const float MAX_Y = 32.5f;
-	initPos.y = KuroFunc::GetRand(MIN_Y, MAX_Y);
-	initPos.y = MIN_Y;
+	initPos.y = KuroFunc::GetRand(POS_Y_MIN, POS_Y_MAX);
 
 	//フィールドのZに合わせる
-	initPos.z = ConstParameter::Environment::FIELD_DEPTH - 5.2f;
+	initPos.z = POS_Z;
 
 	//初期位置設定
 	arg_enemy.m_transform.SetPos(initPos);
@@ -64,9 +61,9 @@ std::unique_ptr<EnemyController> EnemySlideMove::Clone()
 
 bool EnemySlideMove::IsDead(Enemy& arg_enemy)
 {
-	const float ABS_X = 43.0f;
-	auto pos = arg_enemy.m_transform.GetPos();
+	using namespace ConstParameter::Enemy;
 
+	auto pos = arg_enemy.m_transform.GetPos();
 	//フィールド外
-	return pos.x < -ABS_X || ABS_X < pos.x;
+	return pos.x < -POS_X_ABS || POS_X_ABS < pos.x;
 }

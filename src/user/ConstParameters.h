@@ -108,6 +108,17 @@ namespace ConstParameter
 		{
 			100
 		};
+
+		//敵がいる空間のX軸座標絶対値
+		const float POS_X_ABS = 43.0f;
+
+		//敵がいる空間のY軸座標下限
+		const float POS_Y_MIN = 1.0f;
+		//敵がいる空間のY軸座標上限
+		const float POS_Y_MAX = 32.5f;
+
+		//敵がいる空間のZ軸座標
+		const float POS_Z = Environment::FIELD_DEPTH - 5.2f;
 	}
 };
 
