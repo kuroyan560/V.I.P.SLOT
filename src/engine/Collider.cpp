@@ -2,8 +2,10 @@
 
 int Collider::s_id = 0;
 
-Collider::Collider(const std::string& arg_name, const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray)
-	:m_id(s_id++), m_name(arg_name), m_primitiveArray(arg_primitiveArray)
+Collider::Collider(const std::string& arg_name, 
+	const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray, 
+	const std::shared_ptr<CollisionCallBack>& arg_callBack)
+	:m_id(s_id++), m_name(arg_name), m_primitiveArray(arg_primitiveArray),m_callBack(arg_callBack)
 {
 }
 

@@ -22,8 +22,6 @@ class CollisionManager
 		std::shared_ptr<Collider>m_collider;
 		//自身の振る舞い
 		unsigned char m_myAttribute = 0;
-		//コールバック関数
-		std::shared_ptr<CollisionCallBack>m_callBack;
 	};
 
 	//初期化済か
@@ -42,5 +40,7 @@ public:
 
 	void Update();
 	void DebugDraw(Camera& Cam);
+
+	const unsigned char& GetAttribute(std::string arg_key)const;
 };
 
