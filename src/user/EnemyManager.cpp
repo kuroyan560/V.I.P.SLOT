@@ -12,10 +12,7 @@ void EnemyManager::OnEnemyAppear(std::shared_ptr<Enemy>& arg_enemy, std::weak_pt
 	arg_enemy->Init();
 
 	//ƒRƒ‰ƒCƒ_[‚Ì“o˜^
-	for (auto& col : arg_enemy->m_colliders)
-	{
-		arg_collisionMgr.lock()->Register("Enemy", col);
-	}
+	arg_collisionMgr.lock()->Register("Enemy", arg_enemy->m_colliders);
 }
 
 void EnemyManager::OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr)
