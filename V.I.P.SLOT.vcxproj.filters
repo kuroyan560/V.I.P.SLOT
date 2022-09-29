@@ -304,6 +304,12 @@
     <ClCompile Include="src\user\ReturnCoinEmitter.cpp">
       <Filter>src\user\Coin</Filter>
     </ClCompile>
+    <ClCompile Include="src\engine\CollisionManager.cpp">
+      <Filter>src\engine\ユーザー向け\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\CollisionCallBack.cpp">
+      <Filter>src\engine\ユーザー向け\Collision</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -578,6 +584,12 @@
     </ClInclude>
     <ClInclude Include="src\user\ReturnCoinEmitter.h">
       <Filter>src\user\Coin</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\CollisionManager.h">
+      <Filter>src\engine\ユーザー向け\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\CollisionCallBack.h">
+      <Filter>src\engine\ユーザー向け\Collision</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
