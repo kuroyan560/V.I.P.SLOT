@@ -33,7 +33,7 @@ private:
 public:
 	Collider(const std::string& arg_name,
 		const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray,
-		const std::shared_ptr<CollisionCallBack>& arg_callBack);
+		const std::shared_ptr<CollisionCallBack>& arg_callBack = nullptr);
 
 	//トランスフォームだけ変えてクローンする
 	Collider Clone(Transform* arg_parent);
@@ -50,5 +50,6 @@ public:
 	void SetActive(const bool& Active) { m_isActive = Active; }
 
 	//ゲッタ
+	const int& GetID()const { return m_id; }
 	const bool& GetIsHit()const { return m_isHit; }
 };
