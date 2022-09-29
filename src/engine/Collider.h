@@ -1,6 +1,7 @@
 #pragma once
 #include<memory>
 #include"Collision.h"
+#include<vector>
 
 class Collider
 {
@@ -16,8 +17,8 @@ private:
 	//コライダー名
 	std::string m_name;
 
-	//衝突判定用プリミティブ
-	std::shared_ptr<CollisionPrimitive>m_primitive;
+	//衝突判定用プリミティブ配列
+	std::vector<std::shared_ptr<CollisionPrimitive>>m_primitiveArray;
 
 	//有効フラグ
 	bool m_isActive = true;
@@ -26,9 +27,7 @@ private:
 	bool m_isHit = false;
 
 public:
-	Collider(const std::string& arg_name, const std::shared_ptr<CollisionPrimitive>& arg_primitive);
-	//クローン
-	Collider(const Collider& arg_origin, Transform* arg_parent = nullptr);
+	Collider(const std::string& arg_name, const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray);
 
 	~Collider()	{}
 
@@ -43,5 +42,4 @@ public:
 
 	//ゲッタ
 	const bool& GetIsHit()const { return m_isHit; }
-	const std::weak_ptr<CollisionPrimitive>GetColliderPrimitive()const { return m_primitive; }
 };
