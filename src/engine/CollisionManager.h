@@ -4,6 +4,7 @@
 #include<list>
 #include<memory>
 #include<limits>
+#include<vector>
 class Collider;
 class Camera;
 
@@ -32,6 +33,10 @@ public:
 
 	//コライダーの登録
 	void Register(std::string arg_attributeKey, const std::shared_ptr<Collider>& arg_collider);
+	void Register(std::string arg_attributeKey, const std::vector<std::shared_ptr<Collider>>& arg_colliderArray)
+	{
+		for (auto& col : arg_colliderArray)Register(arg_attributeKey, col);
+	}
 	//コライダーの登録解除
 	void Remove(const std::shared_ptr<Collider>& arg_collider);
 
