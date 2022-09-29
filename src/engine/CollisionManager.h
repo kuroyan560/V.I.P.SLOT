@@ -41,6 +41,12 @@ public:
 	void Update();
 	void DebugDraw(Camera& Cam);
 
+	//コライダーの登録
+	void Register(std::string arg_attributeKey, const std::shared_ptr<Collider>& arg_collider);
+	//コライダーの登録解除
+	void Remove(const std::shared_ptr<Collider>& arg_collider);
+
+	//コライダー振る舞いをキーから取得
 	const unsigned char& GetAttribute(std::string arg_key)const;
 };
 

@@ -64,6 +64,31 @@ void CollisionManager::DebugDraw(Camera& Cam)
 	}
 }
 
+void CollisionManager::Register(std::string arg_attributeKey, const std::shared_ptr<Collider>& arg_collider)
+{
+	auto attribute = GetAttribute(arg_attributeKey);
+	RegisterInfo info;
+	info.m_myAttribute = attribute;
+	info.m_collider = arg_collider;
+	m_registerList.push_back(info);
+}
+
+void CollisionManager::Remove(const std::shared_ptr<Collider>& arg_collider)
+{
+	auto result = std::find(m_registerList.begin(), m_registerList.end(), [arg_collider](RegisterInfo& info)
+		{
+			return arg_collider->GetID() == info.m_collider->GetID();
+		});
+
+	if (result == m_registerList.end())
+	{
+		printf("Error : This collider ( %s ) wasn't be registerd so that it can't removed.", arg_collider->m_name.c_str());
+		assert(0);
+	}
+
+	m_registerList.erase(result);
+}
+
 const unsigned char& CollisionManager::GetAttribute(std::string arg_key) const
 {
 	auto result = m_attributeList.find(arg_key);
