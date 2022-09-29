@@ -1,8 +1,6 @@
 #pragma once
 #include"Vec.h"
 #include<memory>
-class Collider;
-class CollisionManager;
 
 //Õ“Ë”»’è‚ª‚ ‚Á‚½Û‚ÉŒÄ‚Ño‚³‚ê‚é
 class CollisionCallBack

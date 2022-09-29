@@ -1,7 +1,11 @@
 #pragma once
 #include<memory>
-#include"Collision.h"
 #include<vector>
+#include<string>
+#include"Vec.h"
+#include"Transform.h"
+class Camera;
+class CollisionPrimitive;
 class CollisionCallBack;
 
 class Collider
@@ -50,6 +54,10 @@ public:
 	void SetActive(const bool& Active) { m_isActive = Active; }
 
 	//ƒQƒbƒ^
-	const int& GetID()const { return m_id; }
 	const bool& GetIsHit()const { return m_isHit; }
+
+	bool operator== (const Collider& arg_other)const
+	{
+		return this->m_id == arg_other.m_id;
+	}
 };

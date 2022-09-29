@@ -1,4 +1,5 @@
 #include "Collider.h"
+#include"Collision.h"
 
 int Collider::s_id = 0;
 
@@ -35,14 +36,12 @@ bool Collider::CheckHitCollision(std::weak_ptr<Collider> Other, Vec3<float>* Int
 	Vec3<float>inter;
 	bool hit = false;
 
-	while (!hit)
+	for (auto& primitiveA : this->m_primitiveArray)
 	{
-		for (auto& primitiveA : this->m_primitiveArray)
+		for (auto& primitiveB : other->m_primitiveArray)
 		{
-			for (auto& primitiveB : other->m_primitiveArray)
-			{
-				hit = Collision::CheckPrimitiveHit(primitiveA.get(), primitiveB.get(), &inter);
-			}
+			hit = Collision::CheckPrimitiveHit(primitiveA.get(), primitiveB.get(), &inter);
+			if (hit)break;
 		}
 	}
 

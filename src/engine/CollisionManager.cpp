@@ -1,29 +1,18 @@
 #include "CollisionManager.h"
-#include"Collider.h"
 #include"CollisionCallBack.h"
+#include"Collider.h"
 
-void CollisionManager::CheckInvalid()
+void CollisionManager::AddAttribute(std::string arg_attributeKey, unsigned char arg_attribute)
 {
-	if (!m_invalid)return;
-
-	printf("Invalid : This CollisionManager hasn't be initialized yet.");
-	assert(0);
-}
-
-void CollisionManager::Generate(const std::map<std::string, unsigned char>& arg_attributeList)
-{
-	m_attributeList = arg_attributeList;
-	m_invalid = false;
+	m_attributeList[arg_attributeKey] = arg_attribute;
 }
 
 void CollisionManager::Update()
 {
-	CheckInvalid();
-
 	//既に寿命切れのコライダーを削除
 	m_registerList.remove_if([](RegisterInfo& info) 
 		{
-			return info.m_collider;
+			return !info.m_collider;
 		});
 
 	//当たり判定記録リセット
@@ -55,8 +44,6 @@ void CollisionManager::Update()
 
 void CollisionManager::DebugDraw(Camera& Cam)
 {
-	CheckInvalid();
-
 	for (auto& info : m_registerList)
 	{
 		if (!info.m_collider->m_isActive)continue;
@@ -66,6 +53,16 @@ void CollisionManager::DebugDraw(Camera& Cam)
 
 void CollisionManager::Register(std::string arg_attributeKey, const std::shared_ptr<Collider>& arg_collider)
 {
+	for (auto& info : m_registerList)
+	{
+		//登録済
+		if (*info.m_collider == *arg_collider)
+		{
+			printf("Error : This collider ( %s ) has already registered.", arg_collider->m_name.c_str());
+			assert(0);
+		}
+	}
+
 	auto attribute = GetAttribute(arg_attributeKey);
 	RegisterInfo info;
 	info.m_myAttribute = attribute;
@@ -75,18 +72,10 @@ void CollisionManager::Register(std::string arg_attributeKey, const std::shared_
 
 void CollisionManager::Remove(const std::shared_ptr<Collider>& arg_collider)
 {
-	auto result = std::find(m_registerList.begin(), m_registerList.end(), [arg_collider](RegisterInfo& info)
+	m_registerList.remove_if([arg_collider](RegisterInfo info)
 		{
-			return arg_collider->GetID() == info.m_collider->GetID();
+			return *info.m_collider == *arg_collider;
 		});
-
-	if (result == m_registerList.end())
-	{
-		printf("Error : This collider ( %s ) wasn't be registerd so that it can't removed.", arg_collider->m_name.c_str());
-		assert(0);
-	}
-
-	m_registerList.erase(result);
 }
 
 const unsigned char& CollisionManager::GetAttribute(std::string arg_key) const
