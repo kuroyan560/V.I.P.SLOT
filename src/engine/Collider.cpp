@@ -9,6 +9,21 @@ Collider::Collider(const std::string& arg_name,
 {
 }
 
+Collider Collider::Clone(Transform* arg_parent)
+{
+	std::vector<std::shared_ptr<CollisionPrimitive>>clonePrimitiveArray;
+	for (auto& primitive : m_primitiveArray)
+	{
+		clonePrimitiveArray.emplace_back(std::shared_ptr<CollisionPrimitive>(primitive->Clone(arg_parent)));
+	}
+
+	return Collider(
+		m_name + " - Clone",
+		clonePrimitiveArray,
+		m_callBack
+	);
+}
+
 bool Collider::CheckHitCollision(std::weak_ptr<Collider> Other, Vec3<float>* Inter)
 {
 	auto other = Other.lock();

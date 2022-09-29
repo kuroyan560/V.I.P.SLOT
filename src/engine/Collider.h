@@ -35,6 +35,9 @@ public:
 		const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray,
 		const std::shared_ptr<CollisionCallBack>& arg_callBack);
 
+	//トランスフォームだけ変えてクローンする
+	Collider Clone(Transform* arg_parent);
+
 	~Collider()	{}
 
 	//当たり判定（衝突点を返す）
