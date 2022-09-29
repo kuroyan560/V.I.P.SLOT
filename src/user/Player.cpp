@@ -5,14 +5,40 @@
 #include"AudioApp.h"
 #include"SlotMachine.h"
 #include"TimeScale.h"
+#include"Collision.h"
+#include"Collider.h"
+#include"CollisionManager.h"
 
-Player::Player()
+Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	//モデル読み込み
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "player.glb");
 
 	//BETのSE読み込み
 	m_betSE = AudioApp::Instance()->LoadAudio("resource/user/sound/coin.wav",0.15f);
+
+	/*--- コライダー用プリミティブ生成 ---*/
+	//モデル中央に合わせるためのオフセット値
+	const Vec3<float>FIX_MODEL_CENTER_OFFSET = { 0.0f,2.0f,ConstParameter::Environment::FIELD_DEPTH_MODEL_OFFSET };
+
+	//モデル全体を覆う球
+	std::shared_ptr<CollisionPrimitive>bodySphereCol = std::make_shared<CollisionSphere>(
+		1.4f,
+		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -0.3f, 0.0f),
+		&m_modelObj->m_transform);
+
+	/*--- 各コライダーにアタッチするプリミティブ配列設定 ---*/
+	//被ダメージ受付コライダー
+	std::vector<std::shared_ptr<CollisionPrimitive>>damagedColPrimitiveArray =
+	{
+		bodySphereCol
+	};
+
+	/*--- コライダー生成 ---*/
+	m_colliders.emplace_back(std::make_shared<Collider>("Player_Damaged", damagedColPrimitiveArray));
+
+	//コリジョンマネージャに登録
+	arg_collisionMgr.lock()->Register("Player", m_colliders);
 }
 
 void Player::Init()

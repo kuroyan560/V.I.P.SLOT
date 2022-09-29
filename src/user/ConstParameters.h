@@ -11,6 +11,8 @@ namespace ConstParameter
 		const float FIELD_WIDTH_HALF = 30.0f;
 		//フィールド位置のZ軸
 		const float FIELD_DEPTH = -20.0f;
+		//フィールド位置のZ軸とのオフセット（モデルの位置ズレ）
+		const float FIELD_DEPTH_MODEL_OFFSET = -5.2f;
 	}
 
 	namespace Player
@@ -118,7 +120,7 @@ namespace ConstParameter
 		const float POS_Y_MAX = 32.5f;
 
 		//敵がいる空間のZ軸座標
-		const float POS_Z = Environment::FIELD_DEPTH - 5.2f;
+		const float POS_Z = Environment::FIELD_DEPTH + Environment::FIELD_DEPTH_MODEL_OFFSET;
 	}
 };
 

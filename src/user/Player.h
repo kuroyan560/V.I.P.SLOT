@@ -4,11 +4,14 @@
 #include"Vec.h"
 #include"CoinVault.h"
 #include"Timer.h"
+#include<vector>
 class ModelObject;
 class LightManager;
 class Camera;
 class SlotMachine;
 class TimeScale;
+class Collider;
+class CollisionManager;
 
 class Player
 {
@@ -34,8 +37,11 @@ class Player
 	//BETのSE
 	int m_betSE;
 
+	//コライダー配列
+	std::vector<std::shared_ptr<Collider>>m_colliders;
+
 public:
-	Player();
+	Player(std::weak_ptr<CollisionManager>arg_collisionMgr);
 	//初期化
 	void Init();
 	//更新

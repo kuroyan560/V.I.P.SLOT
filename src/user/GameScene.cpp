@@ -14,8 +14,14 @@
 
 GameScene::GameScene()
 {
+	//コリジョンマネージャ生成
+	m_collisionMgr = std::make_shared<CollisionManager>();
+	//コライダー振る舞いリストセット
+	m_collisionMgr->AddAttribute("Enemy", 0b00000001);
+	m_collisionMgr->AddAttribute("Player", 0b00000001 << 1);
+
 	//プレイヤー生成
-	m_player = std::make_shared<Player>();
+	m_player = std::make_shared<Player>(m_collisionMgr);
 
 	//スロットマシン生成
 	m_slotMachine = std::make_shared<SlotMachine>();
@@ -36,11 +42,6 @@ GameScene::GameScene()
 
 	//敵マネージャ生成
 	m_enemyMgr = std::make_shared<EnemyManager>();
-
-	//コリジョンマネージャ生成
-	m_collisionMgr = std::make_shared<CollisionManager>();
-	//コライダー振る舞いリストセット
-	m_collisionMgr->AddAttribute("Enemy", 0b00000001);
 }
 
 void GameScene::OnInitialize()
