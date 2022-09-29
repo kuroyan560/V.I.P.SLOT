@@ -8,6 +8,7 @@ class ModelObject;
 class LightManager;
 class Camera;
 class SlotMachine;
+class TimeScale;
 
 class Player
 {
@@ -38,7 +39,7 @@ public:
 	//‰Šú‰»
 	void Init();
 	//XV
-	void Update(std::weak_ptr<SlotMachine> arg_slotMachine);
+	void Update(std::weak_ptr<SlotMachine> arg_slotMachine, const TimeScale& arg_timeScale);
 	//•`‰æ
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 

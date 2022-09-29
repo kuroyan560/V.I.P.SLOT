@@ -2,6 +2,7 @@
 #include<vector>
 #include<memory>
 #include"ConstParameters.h"
+#include"Timer.h"
 class ModelMesh;
 class TextureBuffer;
 
@@ -35,7 +36,7 @@ private:
 	float m_vOffsetFixedStop;
 
 	//時間計測
-	int m_timer;
+	Timer m_timer;
 
 	//スロット結果の絵柄インデックス
 	int m_nowPatternIdx = 0;
@@ -49,7 +50,7 @@ public:
 	//初期化
 	void Init(std::shared_ptr<TextureBuffer>arg_reelTex = nullptr, std::vector<PATTERN>arg_patternArray = {});
 	//更新（回転）
-	void Update();
+	void Update(float arg_timeScale);
 
 	//回転スタート
 	void Start();

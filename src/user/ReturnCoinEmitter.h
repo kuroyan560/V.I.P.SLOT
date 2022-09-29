@@ -3,6 +3,7 @@
 #include"CoinPerform.h"
 #include"Transform.h"
 #include<forward_list>
+#include"Timer.h"
 class Camera;
 
 class ReturnCoinEmitter
@@ -15,7 +16,7 @@ class ReturnCoinEmitter
 		Vec3<float>m_move;
 	public:
 		ReturnCoinPerform(Vec3<float>arg_initMove) : m_move(arg_initMove) {	}
-		void OnUpdate(Coins& arg_coin)override;
+		void OnUpdate(Coins& arg_coin, float arg_timeScale)override;
 		void OnEmit(Coins& arg_coin)override {};
 	};
 
@@ -29,7 +30,7 @@ class ReturnCoinEmitter
 	std::forward_list<ReturnCoin>m_returnCoins;
 
 	//放出タイミング計測
-	int m_emitTimer;
+	Timer m_emitTimer;
 
 	//コイン返却SE
 	int m_coinReturnSE;
@@ -43,7 +44,7 @@ public:
 	/// 更新
 	/// </summary>
 	/// <returns>演出を終えた返却するコインの数</returns>
-	int Update();
+	int Update(float arg_timeScale);
 	//描画
 	void Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);
 

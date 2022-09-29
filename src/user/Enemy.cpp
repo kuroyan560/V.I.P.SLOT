@@ -22,9 +22,9 @@ void Enemy::Init()
 	m_controller->OnInit(*this);
 }
 
-void Enemy::Update()
+void Enemy::Update(const TimeScale& arg_timeScale)
 {
-	m_controller->OnUpdate(*this);
+	m_controller->OnUpdate(*this, arg_timeScale);
 }
 
 void Enemy::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)

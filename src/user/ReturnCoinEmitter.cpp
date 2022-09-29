@@ -11,10 +11,10 @@ void ReturnCoinEmitter::Init()
 {
 	m_returnCoinObjManager.Init();
 	m_returnCoins.clear();
-	m_emitTimer = -1;
+	m_emitTimer.Reset(ConstParameter::Slot::RETURN_COIN_EMIT_SPAN);
 }
 
-int ReturnCoinEmitter::Update()
+int ReturnCoinEmitter::Update(float arg_timeScale)
 {
 	using namespace ConstParameter::Slot;
 
@@ -35,7 +35,7 @@ int ReturnCoinEmitter::Update()
 	if (!m_returnCoins.empty())
 	{
 		//放出タイミング
-		if (m_emitTimer % RETURN_COIN_EMIT_SPAN == 0)
+		if (m_emitTimer.IsTimeUp())
 		{
 			//１度に放出する数
 			const int emitCoinCount = KuroFunc::GetRand(EMIT_COIN_COUNT_MIN, EMIT_COIN_COUNT_MAX);
@@ -76,15 +76,14 @@ int ReturnCoinEmitter::Update()
 			m_returnCoins.pop_front();
 
 			//放出タイマーリセット
-			m_emitTimer = 0;
+			m_emitTimer.Reset(ConstParameter::Slot::RETURN_COIN_EMIT_SPAN);
 		}
 
 		//放出タイマーカウント
-		m_emitTimer++;
+		m_emitTimer.UpdateTimer(arg_timeScale);
 	}
-	else m_emitTimer = -1;
 
-	return m_returnCoinObjManager.Update();
+	return m_returnCoinObjManager.Update(arg_timeScale);
 }
 
 void ReturnCoinEmitter::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
@@ -105,16 +104,16 @@ void ReturnCoinEmitter::Emit(int arg_coinNumSum, int arg_perCoinNum, const Trans
 		m_returnCoins.emplace_front(arg_perCoinNum, arg_initTransform);
 	}
 
-	m_emitTimer = 0;
+	m_emitTimer.Reset(0);
 }
 
-void ReturnCoinEmitter::ReturnCoinPerform::OnUpdate(Coins& arg_coin)
+void ReturnCoinEmitter::ReturnCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScale)
 {
 	m_move.y += m_fallAccel;
-	m_fallAccel += ConstParameter::Slot::RETURN_COIN_GRAVITY;
+	m_fallAccel += ConstParameter::Slot::RETURN_COIN_GRAVITY * arg_timeScale;
 
 	auto pos = arg_coin.m_transform.GetPos();
-	pos += m_move;
+	pos += m_move * arg_timeScale;
 
 	//XZ平面方向の移動量は空気抵抗で減衰
 	m_move.x = KuroMath::Lerp(m_move.x, 0.0f, 0.01f);

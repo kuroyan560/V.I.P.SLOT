@@ -44,13 +44,13 @@ void EnemyManager::Init()
 	}
 }
 
-void EnemyManager::Update()
+void EnemyManager::Update(const TimeScale& arg_timeScale)
 {
 	for (auto& aliveEnemys : m_aliveEnemyArray)
 	{
 		for (auto& enemy : aliveEnemys)
 		{
-			enemy->Update();
+			enemy->Update(arg_timeScale);
 		}
 	}
 

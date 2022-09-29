@@ -4,6 +4,7 @@
 #include"ConstParameters.h"
 #include"AudioApp.h"
 #include"SlotMachine.h"
+#include"TimeScale.h"
 
 Player::Player()
 {
@@ -38,7 +39,7 @@ void Player::Init()
 	m_consecutiveBetTimer.Reset(ConstParameter::Player::UNTIL_MAX_SPEED_BET_TIME);
 }
 
-void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine)
+void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, const TimeScale& arg_timeScale)
 {
 //入力情報取得
 	const auto& input = *UsersInput::Instance();
@@ -81,11 +82,11 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine)
 	m_move.y += m_fallSpeed;
 	if (0.0f < m_fallSpeed)
 	{
-		m_fallSpeed -= ConstParameter::Player::STRONG_GRAVITY;
+		m_fallSpeed -= ConstParameter::Player::STRONG_GRAVITY * arg_timeScale.GetTimeScale();
 	}
 	else
 	{
-		m_fallSpeed -= ConstParameter::Player::WEAK_GRAVITY;
+		m_fallSpeed -= ConstParameter::Player::WEAK_GRAVITY * arg_timeScale.GetTimeScale();
 	}
 
 	//落下速度加減
@@ -93,7 +94,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine)
 
 	//移動量加算
 	auto pos = m_modelObj->m_transform.GetPos();
-	pos += m_move;
+	pos += m_move * arg_timeScale.GetTimeScale();
 
 	//押し戻し（床）
 	if (pos.y < 0.0f)
@@ -123,7 +124,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine)
 	if (betInput)
 	{
 		//コイン投入
-		if (m_betTimer.UpdateTimer())
+		if (m_betTimer.UpdateTimer(arg_timeScale.GetTimeScale()))
 		{
 			//スロットマシンにBET
 			arg_slotMachine.lock()->Bet(ConstParameter::Player::PASS_COIN_NUM, m_modelObj->m_transform);
@@ -140,7 +141,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine)
 		}
 
 		//連続BETの時間計測
-		m_consecutiveBetTimer.UpdateTimer();
+		m_consecutiveBetTimer.UpdateTimer(arg_timeScale.GetTimeScale());
 	}
 	//次の入力トリガー時は即コイン投入
 	else

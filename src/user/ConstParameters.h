@@ -89,7 +89,7 @@ namespace ConstParameter
 		//返却コインの寿命
 		const int RETURN_COIN_LIFE_TIME = 200;
 		//描画上の返却コインの放出スパン
-		const int RETURN_COIN_EMIT_SPAN = 5;
+		const int RETURN_COIN_EMIT_SPAN = 6;
 		//この値につき返却コイン1枚描画
 		const int RETURN_COIN_DRAW_NUM_PER = 2;
 		//描画上の返却コインの放出数下限

@@ -231,6 +231,7 @@
     <ClCompile Include="src\user\RenderTargetManager.cpp" />
     <ClCompile Include="src\user\ReturnCoinEmitter.cpp" />
     <ClCompile Include="src\user\SlotMachine.cpp" />
+    <ClCompile Include="src\user\TimeScale.cpp" />
     <ClCompile Include="src\user\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -323,6 +324,7 @@
     <ClInclude Include="src\user\RenderTargetManager.h" />
     <ClInclude Include="src\user\ReturnCoinEmitter.h" />
     <ClInclude Include="src\user\SlotMachine.h" />
+    <ClInclude Include="src\user\TimeScale.h" />
     <ClInclude Include="src\user\TitleScene.h" />
   </ItemGroup>
   <ItemGroup>

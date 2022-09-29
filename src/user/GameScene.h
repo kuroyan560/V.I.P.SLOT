@@ -1,5 +1,6 @@
 #pragma once
 #include"KuroEngine.h"
+#include"TimeScale.h"
 class Player;
 class SlotMachine;
 class LightManager;
@@ -32,6 +33,9 @@ class GameScene : public BaseScene
 	const std::string m_backCamKey = "GameCamera - Back";
 	const std::string m_frontCamKey = "GameCamera - Front";
 	std::shared_ptr<GameCamera>m_gameCam;
+
+	//タイムスケール
+	TimeScale m_timeScale;
 
 public:
 	GameScene();

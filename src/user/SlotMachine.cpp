@@ -5,6 +5,7 @@
 #include"AudioApp.h"
 #include"Importer.h"
 #include"GameCamera.h"
+#include"TimeScale.h"
 
 bool SlotMachine::CheckReelPattern()
 {
@@ -105,10 +106,10 @@ void SlotMachine::Init()
 //デバッグ用
 #include"UsersInput.h"
 
-void SlotMachine::Update(CoinVault& arg_playersVault)
+void SlotMachine::Update(CoinVault& arg_playersVault, const TimeScale& arg_timeScale)
 {
 	//リール更新
-	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Update();
+	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Update(arg_timeScale.GetTimeScale());
 
 	//レバー操作
 	if (UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::RB))
@@ -139,7 +140,7 @@ void SlotMachine::Update(CoinVault& arg_playersVault)
 	if (REEL::RIGHT < m_lever)
 	{
 		//次のスロット回転可能に
-		if (m_slotWaitTimer.UpdateTimer())
+		if (m_slotWaitTimer.UpdateTimer(arg_timeScale.GetTimeScale()))
 		{
 			m_lever = -1;
 			m_slotWaitTimer.Reset();
@@ -147,7 +148,7 @@ void SlotMachine::Update(CoinVault& arg_playersVault)
 	}
 
 	//BETコイン投げ入れ演出
-	if (int betCoinNum = m_betCoinObjManager.Update())
+	if (int betCoinNum = m_betCoinObjManager.Update(arg_timeScale.GetTimeScale()))
 	{
 		//プレイヤーからコイン受け取り
 		arg_playersVault.Pass(m_coinVault, betCoinNum);
@@ -156,7 +157,7 @@ void SlotMachine::Update(CoinVault& arg_playersVault)
 	}
 
 	//返却コイン演出
-	if (int returnCoinNum = m_returnCoinEmitter.Update())
+	if (int returnCoinNum = m_returnCoinEmitter.Update(arg_timeScale.GetTimeScale()))
 	{
 	}
 
@@ -164,7 +165,7 @@ void SlotMachine::Update(CoinVault& arg_playersVault)
 	float megaPhoneScale = KuroMath::Ease(Out, Elastic, m_megaPhoneExpandTimer.GetTimeRate(), 
 		ConstParameter::Slot::MEGA_PHONE_EXPAND_SCALE, 1.0f);
 	m_megaPhoneObj->m_transform.SetScale(megaPhoneScale);
-	m_megaPhoneExpandTimer.UpdateTimer();
+	m_megaPhoneExpandTimer.UpdateTimer(arg_timeScale.GetTimeScale());
 }
 
 #include"DrawFunc3D.h"
@@ -186,7 +187,7 @@ void SlotMachine::Bet(int arg_coinNum, const Transform& arg_emitTransform)
 		arg_coinNum, arg_emitTransform, ConstParameter::Slot::UNTIL_THROW_COIN_TO_BET, new BetCoinPerform());
 }
 
-void SlotMachine::BetCoinPerform::OnUpdate(Coins& arg_coin)
+void SlotMachine::BetCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScale)
 {
 	//コインの座標を算出してトランスフォームに適用
 	Vec3<float>newPos = KuroMath::Lerp(arg_coin.m_initTransform.GetPos(), ConstParameter::Slot::COIN_PORT_POS, arg_coin.m_timer.GetTimeRate());

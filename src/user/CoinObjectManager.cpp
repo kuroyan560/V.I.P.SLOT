@@ -12,7 +12,7 @@ void CoinObjectManager::Init()
 	m_coins.clear();
 }
 
-int CoinObjectManager::Update()
+int CoinObjectManager::Update(float arg_timeScale)
 {
 	int finishCoinNum = 0;
 
@@ -27,11 +27,8 @@ int CoinObjectManager::Update()
 			coin.m_isDead = true;
 		}
 
-		//寿命タイマー更新
-		coin.m_timer.UpdateTimer();
-
 		//コイン演出
-		coin.Update();
+		coin.Update(arg_timeScale);
 	}
 
 	//死亡したら削除

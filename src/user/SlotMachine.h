@@ -13,6 +13,7 @@
 class ModelObject;
 class LightManager;
 class GameCamera;
+class TimeScale;
 
 class SlotMachine
 {
@@ -47,7 +48,7 @@ class SlotMachine
 	class BetCoinPerform : public CoinPerform
 	{
 	public:
-		void OnUpdate(Coins& arg_coin)override;
+		void OnUpdate(Coins& arg_coin, float arg_timeScale)override;
 		void OnEmit(Coins& arg_coin)override {};
 	};
 
@@ -70,7 +71,7 @@ public:
 	//èâä˙âª
 	void Init();
 	//çXêV
-	void Update(CoinVault& arg_playersVault);
+	void Update(CoinVault& arg_playersVault, const TimeScale& arg_timeScale);
 	//ï`âÊ
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<GameCamera>arg_gameCam);
 

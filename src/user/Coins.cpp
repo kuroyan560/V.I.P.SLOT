@@ -8,7 +8,10 @@ Coins::Coins(int arg_coinNum, const Transform& arg_initTransform, int arg_lifeTi
 	m_perform->OnEmit(*this);
 }
 
-void Coins::Update()
+void Coins::Update(float arg_timeScale)
 {
-	m_perform->OnUpdate(*this);
+	//寿命タイマー更新
+	m_timer.UpdateTimer(arg_timeScale);
+
+	m_perform->OnUpdate(*this, arg_timeScale);
 }

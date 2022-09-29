@@ -289,9 +289,6 @@
     <ClCompile Include="src\user\Coins.cpp">
       <Filter>src\user\Coin</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\ReturnCoinEmitter.cpp">
-      <Filter>src\user\Slot</Filter>
-    </ClCompile>
     <ClCompile Include="src\user\Enemy.cpp">
       <Filter>src\user\Enemy</Filter>
     </ClCompile>
@@ -300,6 +297,12 @@
     </ClCompile>
     <ClCompile Include="src\user\EnemyManager.cpp">
       <Filter>src\user\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\TimeScale.cpp">
+      <Filter>src\user</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\ReturnCoinEmitter.cpp">
+      <Filter>src\user\Coin</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -558,9 +561,6 @@
     <ClInclude Include="src\user\Coins.h">
       <Filter>src\user\Coin</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\ReturnCoinEmitter.h">
-      <Filter>src\user\Slot</Filter>
-    </ClInclude>
     <ClInclude Include="src\user\Enemy.h">
       <Filter>src\user\Enemy</Filter>
     </ClInclude>
@@ -572,6 +572,12 @@
     </ClInclude>
     <ClInclude Include="src\user\EnemyManager.h">
       <Filter>src\user\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\TimeScale.h">
+      <Filter>src\user</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\ReturnCoinEmitter.h">
+      <Filter>src\user\Coin</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

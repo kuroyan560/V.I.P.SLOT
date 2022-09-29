@@ -50,31 +50,26 @@ void Reel::Init(std::shared_ptr<TextureBuffer>arg_reelTex, std::vector<PATTERN>a
 
 	//スロットの絵柄結果
 	m_nowPatternIdx = 0;
-
-	//タイマーリセット
-	m_timer = -1;
 }
 
-void Reel::Update()
+void Reel::Update(float arg_timeScale)
 {
 	//回転中じゃないならスルー
 	if (!m_isSpin)return;
 
-	//タイマー起動中（ -1 でオフ）
-	if (0 <= m_timer)m_timer++;
+	//タイマー更新
+	m_timer.UpdateTimer(arg_timeScale);
 
 	//回転始め
 	if (m_isStartSpin)
 	{
 		//回転速度加速
-		m_spinSpeed = KuroMath::Ease(In, Back, m_timer,
-			ConstParameter::Slot::UNTIL_MAX_SPEED_TIME, 0.0f, ConstParameter::Slot::MAX_SPIN_SPEED);
+		m_spinSpeed = KuroMath::Ease(In, Back, m_timer.GetTimeRate(), 0.0f, ConstParameter::Slot::MAX_SPIN_SPEED);
 
 		//最高速度到達
-		if (ConstParameter::Slot::UNTIL_MAX_SPEED_TIME < m_timer)
+		if (m_timer.IsTimeUp())
 		{
 			m_isStartSpin = false;	//回転始めフラグを下ろす
-			m_timer = -1;				//タイマーリセット
 		}
 	}
 
@@ -82,8 +77,7 @@ void Reel::Update()
 	if (m_isEndSpin)
 	{
 		// (0 ~ 1) を (-1 ~1) の範囲に補正してイージング計算
-		float easeRate = KuroMath::Ease(Out, Elastic, m_timer,
-			ConstParameter::Slot::FINISH_SPIN_TIME, 0.0f, 1.0f) * 2.0f - 2.0f;
+		float easeRate = KuroMath::Ease(Out, Elastic, m_timer.GetTimeRate(), 0.0f, 1.0f) * 2.0f - 2.0f;
 
 		//回転停止直後の振動量計算
 		float shake = ConstParameter::Slot::FINISH_SPIN_SHAKE_MAX * easeRate;
@@ -92,17 +86,16 @@ void Reel::Update()
 		m_vOffset = m_vOffsetFixedStop + shake;
 
 		//振動終了
-		if (ConstParameter::Slot::FINISH_SPIN_TIME < m_timer)
+		if (m_timer.IsTimeUp())
 		{
 			m_isSpin = false;			//回転終了
 			m_isEndSpin = false;	//回転終了フラグを下ろす
-			m_timer = -1;				//タイマーリセット
 		}
 	}
 	//V回転
 	else
 	{
-		m_vOffset += m_spinSpeed;
+		m_vOffset += m_spinSpeed * arg_timeScale;
 	}
 
 	//リールメッシュに回転を反映
@@ -117,7 +110,7 @@ void Reel::Start()
 	m_isEndSpin = false;
 
 	//タイマースタート
-	m_timer = 0;
+	m_timer.Reset(ConstParameter::Slot::UNTIL_MAX_SPEED_TIME);
 
 	//回転中
 	m_nowPatternIdx = -1;
@@ -132,7 +125,7 @@ void Reel::Stop()
 	m_isEndSpin = true;
 
 	//タイマースタート
-	m_timer = 0;
+	m_timer.Reset(ConstParameter::Slot::FINISH_SPIN_TIME);
 
 	//小数第１位を丸め込んで補正（中途半端な位置で止まらないようにする）
 	float roundOffset = roundf(m_vOffset * 10.0f) / 10.0f;

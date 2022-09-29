@@ -26,7 +26,7 @@ public:
 	/// 更新
 	/// </summary>
 	/// <returns>演出終了したコインの総数（０ならどのコインも終了していない）</returns>
-	int Update();
+	int Update(float arg_timeScale);
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 

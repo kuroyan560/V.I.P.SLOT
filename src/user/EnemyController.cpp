@@ -3,6 +3,7 @@
 #include"DrawFunc3D.h"
 #include"EnemyBreed.h"
 #include"ConstParameters.h"
+#include"TimeScale.h"
 
 void EnemyController::OnDraw(Enemy& arg_enemy, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam)
 {
@@ -47,10 +48,10 @@ void EnemySlideMove::OnInit(Enemy& arg_enemy)
 	printf("AppearÅFEnemySlideMoveÅFxMove %.f\n", m_xMove);
 }
 
-void EnemySlideMove::OnUpdate(Enemy& arg_enemy)
+void EnemySlideMove::OnUpdate(Enemy& arg_enemy, const TimeScale& arg_timeScale)
 {
 	auto pos = arg_enemy.m_transform.GetPos();
-	pos.x += m_xMove;
+	pos.x += m_xMove * arg_timeScale.GetTimeScale();
 	arg_enemy.m_transform.SetPos(pos);
 }
 

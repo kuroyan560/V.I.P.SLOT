@@ -54,28 +54,32 @@ void GameScene::OnInitialize()
 
 void GameScene::OnUpdate()
 {
+	//デバッグ用
 	if (UsersInput::Instance()->KeyOnTrigger(DIK_I))
 	{
 		this->Initialize();
 	}
+	if (UsersInput::Instance()->KeyOnTrigger(DIK_E))
+	{
+		m_enemyMgr->Appear(ConstParameter::Enemy::TYPE::WEAK_SLIDE);
+	}
+	if (UsersInput::Instance()->KeyInput(DIK_T))
+	{
+		m_timeScale.Set(0.0f);
+	}
+	else m_timeScale.Set(1.0f);
 
 	//カメラ
 	m_gameCam->Update();
 
 	//プレイヤー
-	m_player->Update(m_slotMachine);
+	m_player->Update(m_slotMachine, m_timeScale);
 
 	//スロットマシン
-	m_slotMachine->Update(m_player->GetVault());
-
-	//デバッグ用
-	if (UsersInput::Instance()->KeyOnTrigger(DIK_E))
-	{
-		m_enemyMgr->Appear(ConstParameter::Enemy::TYPE::WEAK_SLIDE);
-	}
+	m_slotMachine->Update(m_player->GetVault(), m_timeScale);
 
 	//敵マネージャ
-	m_enemyMgr->Update();
+	m_enemyMgr->Update(m_timeScale);
 }
 
 

@@ -4,6 +4,7 @@
 #include"Transform.h"
 class EnemyBreed;
 class EnemyController;
+class TimeScale;
 class LightManager;
 class Camera;
 
@@ -29,7 +30,7 @@ public:
 	//‰Šú‰»
 	void Init();
 	//XV
-	void Update();
+	void Update(const TimeScale& arg_timeScale);
 	//•`‰æ
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 

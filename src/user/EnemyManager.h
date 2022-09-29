@@ -6,6 +6,7 @@
 
 class EnemyBreed;
 class Enemy;
+class TimeScale;
 class LightManager;
 class Camera;
 
@@ -27,7 +28,7 @@ class EnemyManager
 public:
 	EnemyManager();
 	void Init();
-	void Update();
+	void Update(const TimeScale& arg_timeScale);
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 
 	void Appear(ENEMY_TYPE arg_type);

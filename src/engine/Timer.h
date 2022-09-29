@@ -46,4 +46,6 @@ public:
 		m_intervalTime = arg_interval;
 		Reset();
 	}
+
+	void operator=(float arg) = delete;
 };

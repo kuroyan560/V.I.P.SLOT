@@ -20,5 +20,5 @@ public:
 	bool m_isDead = false;
 
 	Coins(int arg_coinNum, const Transform& arg_initTransform, int arg_lifeTime, CoinPerform* arg_perform);
-	void Update();
+	void Update(float arg_timeScale);
 };
