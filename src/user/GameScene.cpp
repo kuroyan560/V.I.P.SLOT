@@ -55,7 +55,7 @@ void GameScene::OnInitialize()
 	m_gameCam->Init();
 
 	//敵マネージャ初期化
-	m_enemyMgr->Init();
+	m_enemyMgr->Init(m_collisionMgr);
 }
 
 void GameScene::OnUpdate()

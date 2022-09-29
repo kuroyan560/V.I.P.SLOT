@@ -28,7 +28,7 @@ class EnemyManager
 	std::array<std::forward_list<std::shared_ptr<Enemy>>, static_cast<int>(ENEMY_TYPE::NUM)>m_aliveEnemyArray;
 public:
 	EnemyManager();
-	void Init();
+	void Init(std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 

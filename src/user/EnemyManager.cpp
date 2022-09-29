@@ -41,10 +41,19 @@ EnemyManager::EnemyManager()
 	}
 }
 
-void EnemyManager::Init()
+void EnemyManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	for (int typeIdx = 0; typeIdx < static_cast<int>(ENEMY_TYPE::NUM); ++typeIdx)
 	{
+		for (auto& enemy : m_aliveEnemyArray[typeIdx])
+		{
+			//生存エネミー配列のコライダー登録解除
+			for (auto& col : enemy->m_colliders)
+			{
+				arg_collisionMgr.lock()->Remove(col);
+			}
+		}
+
 		//生存エネミー配列を空に
 		m_aliveEnemyArray[typeIdx].clear();
 
