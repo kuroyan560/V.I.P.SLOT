@@ -26,6 +26,11 @@ class EnemyManager
 	std::array<std::forward_list<std::shared_ptr<Enemy>>, static_cast<int>(ENEMY_TYPE::NUM)>m_deadEnemyArray;
 	//生存しているエネミー配列
 	std::array<std::forward_list<std::shared_ptr<Enemy>>, static_cast<int>(ENEMY_TYPE::NUM)>m_aliveEnemyArray;
+
+	//敵の登場時に呼び出す
+	void OnEnemyAppear(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr);
+	//敵の死亡時に呼び出す
+	void OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr);
 public:
 	EnemyManager();
 	void Init(std::weak_ptr<CollisionManager>arg_collisionMgr);

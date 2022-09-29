@@ -6,6 +6,27 @@
 #include"Collider.h"
 #include"CollisionManager.h"
 
+void EnemyManager::OnEnemyAppear(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager> arg_collisionMgr)
+{
+	//新規敵の初期化
+	arg_enemy->Init();
+
+	//コライダーの登録
+	for (auto& col : arg_enemy->m_colliders)
+	{
+		arg_collisionMgr.lock()->Register("Enemy", col);
+	}
+}
+
+void EnemyManager::OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr)
+{
+	//コライダー登録解除
+	for (auto& col : arg_enemy->m_colliders)
+	{
+		arg_collisionMgr.lock()->Remove(col);
+	}
+}
+
 EnemyManager::EnemyManager()
 {
 	/*--- 敵の定義 ---*/
@@ -47,11 +68,7 @@ void EnemyManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	{
 		for (auto& enemy : m_aliveEnemyArray[typeIdx])
 		{
-			//生存エネミー配列のコライダー登録解除
-			for (auto& col : enemy->m_colliders)
-			{
-				arg_collisionMgr.lock()->Remove(col);
-			}
+			OnEnemyDead(enemy, arg_collisionMgr);
 		}
 
 		//生存エネミー配列を空に
@@ -73,11 +90,7 @@ void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<Collisio
 			//死んでいたら
 			if (enemy->IsDead())
 			{
-				//コライダーの登録解除
-				for (auto& col : enemy->m_colliders)
-				{
-					arg_collisionMgr.lock()->Remove(col);
-				}
+				OnEnemyDead(enemy, arg_collisionMgr);
 			}
 		}
 	}
@@ -114,14 +127,7 @@ void EnemyManager::Appear(ENEMY_TYPE arg_type, std::weak_ptr<CollisionManager>ar
 	//生存エネミー配列に追加
 	m_aliveEnemyArray[typeIdx].push_front(newEnemy);
 
-	//新規敵の初期化
-	newEnemy->Init();
-
-	//コライダーの登録
-	for (auto& col : newEnemy->m_colliders)
-	{
-		arg_collisionMgr.lock()->Register("Enemy", col);
-	}
+	OnEnemyAppear(newEnemy, arg_collisionMgr);
 
 	//新規敵を死亡エネミー配列からポップ
 	m_deadEnemyArray[typeIdx].pop_front();
