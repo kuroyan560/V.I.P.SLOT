@@ -1,5 +1,7 @@
 #pragma once
 #include<memory>
+#include<vector>
+#include"Collider.h"
 class Model;
 class EnemyController;
 
@@ -16,16 +18,29 @@ public:
 	const int m_initCoinNum;
 	//挙動制御
 	const std::unique_ptr<EnemyController>m_controller;
+	//コライダー（クローン元）
+	const std::vector<std::unique_ptr<Collider>>m_originCollider;
 
+	/// <summary>
+	/// 敵の血統コンストラクタ
+	/// </summary>
+	/// <param name="arg_typeID">種別番号（敵の種類ごと）</param>
+	/// <param name="arg_model">モデルデータ</param>
+	/// <param name="arg_maxHp">最大HPの</param>
+	/// <param name="arg_initCoinNum">生成時の所持コイン数</param>
+	/// <param name="arg_controller">挙動制御</param>
+	/// <param name="arg_originCollider">クローン元コライダー</param>
 	EnemyBreed(
 		int arg_typeID,
 		std::shared_ptr<Model>arg_model,
 		int arg_maxHp,
 		int arg_initCoinNum,
-		std::unique_ptr<EnemyController>arg_controller)
+		std::unique_ptr<EnemyController>arg_controller, 
+		std::vector<std::unique_ptr<Collider>>& arg_originCollider)
 		:m_typeID(arg_typeID),
 		m_model(arg_model),
 		m_maxHp(arg_maxHp),
 		m_initCoinNum(arg_initCoinNum),
-		m_controller(std::move(arg_controller)) {}
+		m_controller(std::move(arg_controller)),
+		m_originCollider(std::move(arg_originCollider)) {}
 };

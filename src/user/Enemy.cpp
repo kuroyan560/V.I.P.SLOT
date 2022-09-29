@@ -1,6 +1,8 @@
 #include "Enemy.h"
 #include"EnemyBreed.h"
 #include"EnemyController.h"
+#include"Collision.h"
+#include"Collider.h"
 
 Enemy::Enemy(const std::shared_ptr<EnemyBreed>& arg_breed)
 {
@@ -8,6 +10,12 @@ Enemy::Enemy(const std::shared_ptr<EnemyBreed>& arg_breed)
 	m_breed = arg_breed;
 	//挙動制御アタッチ
 	m_controller = m_breed.lock()->m_controller->Clone();
+
+	//血統よりコライダーをクローン
+	for (auto& colOrigin : arg_breed->m_originCollider)
+	{
+		m_colliders.emplace_back(std::make_shared<Collider>(colOrigin->Clone(&m_transform)));
+	}
 }
 
 void Enemy::Init()

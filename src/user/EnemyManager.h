@@ -9,6 +9,7 @@ class Enemy;
 class TimeScale;
 class LightManager;
 class Camera;
+class CollisionManager;
 
 //エネミーの定義、管理を行う
 class EnemyManager
@@ -28,9 +29,9 @@ class EnemyManager
 public:
 	EnemyManager();
 	void Init();
-	void Update(const TimeScale& arg_timeScale);
+	void Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 
-	void Appear(ENEMY_TYPE arg_type);
+	void Appear(ENEMY_TYPE arg_type, std::weak_ptr<CollisionManager>arg_collisionMgr);
 };
 

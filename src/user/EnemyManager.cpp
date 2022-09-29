@@ -3,6 +3,8 @@
 #include"Importer.h"
 #include"EnemyController.h"
 #include"Enemy.h"
+#include"Collider.h"
+#include"CollisionManager.h"
 
 EnemyManager::EnemyManager()
 {
@@ -10,13 +12,20 @@ EnemyManager::EnemyManager()
 
 	//‰¡ˆÚ“®‚·‚éG‹›“G
 	{
+		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
+		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(3.0f, Vec3<float>(0.0f, 0.0f, 0.0f)));
+
+		std::vector<std::unique_ptr<Collider>>colliderArray;
+		colliderArray.emplace_back(std::make_unique<Collider>("Weak_Slide_Enemy - Body_Sphere", colPrimitiveArray));
+
 		int weakSlideIdx = static_cast<int>(ENEMY_TYPE::WEAK_SLIDE);
 		m_breeds[weakSlideIdx] = std::make_shared<EnemyBreed>(
 			weakSlideIdx,
 			Importer::Instance()->LoadModel("resource/user/model/", "enemy_test.glb"),
 			1,
 			10,
-			std::make_unique<EnemySlideMove>(0.1f)
+			std::make_unique<EnemySlideMove>(0.1f),
+			colliderArray
 			);
 	}
 
@@ -44,13 +53,23 @@ void EnemyManager::Init()
 	}
 }
 
-void EnemyManager::Update(const TimeScale& arg_timeScale)
+void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	for (auto& aliveEnemys : m_aliveEnemyArray)
 	{
 		for (auto& enemy : aliveEnemys)
 		{
 			enemy->Update(arg_timeScale);
+
+			//€‚ñ‚Å‚¢‚½‚ç
+			if (enemy->IsDead())
+			{
+				//ƒRƒ‰ƒCƒ_[‚Ì“o˜^‰ğœ
+				for (auto& col : enemy->m_colliders)
+				{
+					arg_collisionMgr.lock()->Remove(col);
+				}
+			}
 		}
 	}
 
@@ -75,7 +94,7 @@ void EnemyManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<
 	}
 }
 
-void EnemyManager::Appear(ENEMY_TYPE arg_type)
+void EnemyManager::Appear(ENEMY_TYPE arg_type, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	//“Gí•Ê”Ô†æ“¾
 	int typeIdx = static_cast<int>(arg_type);
@@ -88,6 +107,12 @@ void EnemyManager::Appear(ENEMY_TYPE arg_type)
 
 	//V‹K“G‚Ì‰Šú‰»
 	newEnemy->Init();
+
+	//ƒRƒ‰ƒCƒ_[‚Ì“o˜^
+	for (auto& col : newEnemy->m_colliders)
+	{
+		arg_collisionMgr.lock()->Register("Enemy", col);
+	}
 
 	//V‹K“G‚ğ€–SƒGƒlƒ~[”z—ñ‚©‚çƒ|ƒbƒv
 	m_deadEnemyArray[typeIdx].pop_front();

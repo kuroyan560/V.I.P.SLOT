@@ -8,6 +8,7 @@ class ModelObject;
 class TextureBuffer;
 class GameCamera;
 class EnemyManager;
+class CollisionManager;
 
 class GameScene : public BaseScene
 {
@@ -36,6 +37,9 @@ class GameScene : public BaseScene
 
 	//タイムスケール
 	TimeScale m_timeScale;
+
+	//コリジョンマネージャ
+	std::shared_ptr<CollisionManager>m_collisionMgr;
 
 public:
 	GameScene();

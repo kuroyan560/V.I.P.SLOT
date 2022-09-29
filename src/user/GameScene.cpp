@@ -10,6 +10,7 @@
 #include"ConstParameters.h"
 #include"SlotMachine.h"
 #include"EnemyManager.h"
+#include"CollisionManager.h"
 
 GameScene::GameScene()
 {
@@ -35,6 +36,11 @@ GameScene::GameScene()
 
 	//敵マネージャ生成
 	m_enemyMgr = std::make_shared<EnemyManager>();
+
+	//コリジョンマネージャ生成
+	m_collisionMgr = std::make_shared<CollisionManager>();
+	//コライダー振る舞いリストセット
+	m_collisionMgr->AddAttribute("Enemy", 0b00000001);
 }
 
 void GameScene::OnInitialize()
@@ -61,13 +67,16 @@ void GameScene::OnUpdate()
 	}
 	if (UsersInput::Instance()->KeyOnTrigger(DIK_E))
 	{
-		m_enemyMgr->Appear(ConstParameter::Enemy::TYPE::WEAK_SLIDE);
+		m_enemyMgr->Appear(ConstParameter::Enemy::TYPE::WEAK_SLIDE, m_collisionMgr);
 	}
 	if (UsersInput::Instance()->KeyInput(DIK_T))
 	{
 		m_timeScale.Set(0.0f);
 	}
 	else m_timeScale.Set(1.0f);
+
+	//コリジョンマネージャ
+	m_collisionMgr->Update();
 
 	//カメラ
 	m_gameCam->Update();
@@ -79,7 +88,7 @@ void GameScene::OnUpdate()
 	m_slotMachine->Update(m_player->GetVault(), m_timeScale);
 
 	//敵マネージャ
-	m_enemyMgr->Update(m_timeScale);
+	m_enemyMgr->Update(m_timeScale, m_collisionMgr);
 }
 
 
@@ -111,6 +120,7 @@ void GameScene::OnDraw()
 	//デバッグ描画
 #ifdef _DEBUG
 	//Collider::DebugDrawAllColliders(*m_gameCam->GetFrontCam());
+	m_collisionMgr->DebugDraw(*m_gameCam->GetFrontCam());
 #endif
 }
 

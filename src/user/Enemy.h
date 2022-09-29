@@ -7,16 +7,22 @@ class EnemyController;
 class TimeScale;
 class LightManager;
 class Camera;
+class Collider;
 
 class Enemy
 {
 private:
+	friend class EnemyManager;
+
 	//所持金
 	CoinVault m_coinVault;
 	//HP
 	int m_hp;
 	//コントローラー
 	std::unique_ptr<EnemyController>m_controller;
+
+	//コライダー配列
+	std::vector<std::shared_ptr<Collider>>m_colliders;
 
 public:
 	//トランスフォーム
