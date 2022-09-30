@@ -3,10 +3,10 @@
 
 int Collider::s_id = 0;
 
-Collider::Collider(const std::string& arg_name, 
+Collider::Collider(const std::string& arg_name,
 	const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray,
 	ColliderParentObject* arg_parentObj)
-	:m_id(s_id++), m_name(arg_name), m_primitiveArray(arg_primitiveArray)
+	:m_id(s_id++), m_name(arg_name), m_primitiveArray(arg_primitiveArray), m_parentObj(arg_parentObj)
 {
 }
 
