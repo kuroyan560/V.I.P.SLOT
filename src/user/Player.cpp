@@ -202,7 +202,10 @@ void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>
 	DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
 }
 
-void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter, const unsigned char& arg_otherAttribute, const CollisionManager& arg_collisionMgr)
+void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter, 
+	std::weak_ptr<Collider>arg_otherCollider,
+	const unsigned char& arg_otherAttribute, 
+	const CollisionManager& arg_collisionMgr)
 {
 	//–³“GŽžŠÔ’†‚©
 	if (!m_invincibleTimer.IsTimeUp())return;

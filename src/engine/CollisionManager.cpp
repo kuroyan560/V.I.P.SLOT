@@ -15,7 +15,7 @@ void CollisionManager::OnHit(const RegisterInfo& arg_myInfo, const RegisterInfo&
 		unsigned char attribute = callback.first;
 		if (attribute & arg_otherInfo.m_myAttribute)
 		{
-			callback.second->OnCollision(arg_inter, arg_otherInfo.m_myAttribute, *this);
+			callback.second->OnCollision(arg_inter, arg_otherInfo.m_collider, arg_otherInfo.m_myAttribute, *this);
 		}
 	}
 }

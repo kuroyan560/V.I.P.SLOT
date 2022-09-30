@@ -1,6 +1,7 @@
 #pragma once
 #include"Vec.h"
 #include<memory>
+class Collider;
 
 //衝突判定があった際に呼び出される
 class CollisionCallBack
@@ -17,6 +18,7 @@ protected:
 	/// <param name="arg_collisionMgr">コライダーマネージャ（振る舞いパラメータ取得のため）</param>
 	virtual void OnCollision(
 		const Vec3<float>& arg_inter,
+		std::weak_ptr<Collider>arg_otherCollider,
 		const unsigned char& arg_otherAttribute, 
 		const CollisionManager& arg_collisionMgr) = 0;
 public:

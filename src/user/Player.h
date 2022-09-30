@@ -55,6 +55,7 @@ class Player
 
 		void OnCollision(
 			const Vec3<float>& arg_inter,
+			std::weak_ptr<Collider>arg_otherCollider,
 			const unsigned char& arg_otherAttribute,
 			const CollisionManager& arg_collisionMgr)override;
 
