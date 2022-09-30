@@ -5,6 +5,7 @@
 #include<memory>
 #include<limits>
 #include<vector>
+#include"Vec.h"
 class Collider;
 class Camera;
 
@@ -23,6 +24,9 @@ class CollisionManager
 
 	//登録されたコライダーリスト
 	std::list<RegisterInfo>m_registerList;
+
+	//衝突していた場合の処理
+	void OnHit(const RegisterInfo& arg_myInfo, const RegisterInfo& arg_otherInfo, const Vec3<float>& arg_inter);
 
 public:
 	CollisionManager() {}

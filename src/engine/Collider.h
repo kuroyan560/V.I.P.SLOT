@@ -4,6 +4,7 @@
 #include<string>
 #include"Vec.h"
 #include"Transform.h"
+#include<map>
 class Camera;
 class CollisionPrimitive;
 class CollisionCallBack;
@@ -25,8 +26,8 @@ private:
 	//衝突判定用プリミティブ配列
 	std::vector<std::shared_ptr<CollisionPrimitive>>m_primitiveArray;
 
-	//コールバック関数
-	std::shared_ptr<CollisionCallBack>m_callBack;
+	//コールバック関数（相手の振る舞いによって呼び出すコールバックを変えられる）
+	std::map<unsigned char, std::shared_ptr<CollisionCallBack>>m_callBacks;
 
 	//有効フラグ
 	bool m_isActive = true;
@@ -36,8 +37,7 @@ private:
 
 public:
 	Collider(const std::string& arg_name,
-		const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray,
-		const std::shared_ptr<CollisionCallBack>& arg_callBack = nullptr);
+		const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray);
 
 	//トランスフォームだけ変えてクローンする
 	Collider Clone(Transform* arg_parent);
@@ -52,6 +52,7 @@ public:
 
 	//セッタ
 	void SetActive(const bool& Active) { m_isActive = Active; }
+	void SetCallBack(const std::shared_ptr<CollisionCallBack>& arg_callBack, unsigned char arg_otherAttribute = UCHAR_MAX);
 
 	//ゲッタ
 	const bool& GetIsHit()const { return m_isHit; }

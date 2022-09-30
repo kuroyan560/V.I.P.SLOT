@@ -2,6 +2,24 @@
 #include"CollisionCallBack.h"
 #include"Collider.h"
 
+void CollisionManager::OnHit(const RegisterInfo& arg_myInfo, const RegisterInfo& arg_otherInfo, const Vec3<float>& arg_inter)
+{
+	const auto& col = arg_myInfo.m_collider;
+
+	col->m_isHit = true;
+
+	//コールバック関数呼び出し
+	for (auto& callback : col->m_callBacks)
+	{
+		//相手が指定した振る舞いのときのみ、そのコールバックを呼び出す
+		unsigned char attribute = callback.first;
+		if (attribute & arg_otherInfo.m_myAttribute)
+		{
+			callback.second->OnCollision(arg_inter, arg_otherInfo.m_myAttribute, *this);
+		}
+	}
+}
+
 void CollisionManager::AddAttribute(std::string arg_attributeKey, unsigned char arg_attribute)
 {
 	m_attributeList[arg_attributeKey] = arg_attribute;
@@ -32,11 +50,8 @@ void CollisionManager::Update()
 			Vec3<float>inter;
 			if (colA->CheckHitCollision(colB, &inter))
 			{
-				colA->m_isHit = true;
-				colB->m_isHit = true;
-				//コールバック関数呼び出し
-				if (colA->m_callBack)colA->m_callBack->OnCollision(inter, itrB->m_myAttribute, *this);
-				if (colB->m_callBack)colB->m_callBack->OnCollision(inter, itrA->m_myAttribute, *this);
+				OnHit(*itrA, *itrB, inter);
+				OnHit(*itrB, *itrA, inter);
 			}
 		}
 	}

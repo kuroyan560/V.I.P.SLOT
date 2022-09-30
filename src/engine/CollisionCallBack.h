@@ -17,7 +17,7 @@ protected:
 	/// <param name="arg_collisionMgr">コライダーマネージャ（振る舞いパラメータ取得のため）</param>
 	virtual void OnCollision(
 		const Vec3<float>& arg_inter,
-		unsigned char& arg_otherAttribute, 
+		const unsigned char& arg_otherAttribute, 
 		const CollisionManager& arg_collisionMgr) = 0;
 public:
 	virtual ~CollisionCallBack() {}
