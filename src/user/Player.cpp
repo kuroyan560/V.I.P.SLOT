@@ -107,7 +107,7 @@ void Player::Init()
 	m_damegedCallBack->Init();
 }
 
-void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, const TimeScale& arg_timeScale)
+void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
 {
 //入力情報取得
 	const auto& input = *UsersInput::Instance();
@@ -147,7 +147,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, const TimeScale&
 	}
 
 	//落下（ジャンプ中と落下中で重力変化、素早くジャンプ → ゆっくり降下）
-	m_move.y += m_fallSpeed;
+	m_move.y += m_fallSpeed * arg_timeScale.GetTimeScale();
 	if (0.0f < m_fallSpeed)
 	{
 		m_fallSpeed -= ConstParameter::Player::STRONG_GRAVITY * arg_timeScale.GetTimeScale();
@@ -219,7 +219,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, const TimeScale&
 	}
 
 	//被ダメージコールバック
-	m_damegedCallBack->Update(arg_timeScale.GetTimeScale());
+	m_damegedCallBack->Update(arg_timeScale);
 }
 
 #include"DrawFunc3D.h"
@@ -237,10 +237,29 @@ void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter,
 	//無敵時間中か
 	if (!m_invincibleTimer.IsTimeUp())return;
 
+	//HP減少
 	m_parent->m_hp--;
-	printf("Player : Damaged : remain hp %d\n", m_parent->m_hp);
 
+	//無敵時間設定
 	m_invincibleTimer.Reset(ConstParameter::Player::INVINCIBLE_TIME_WHEN_DAMAGED);
+
+	//ヒットストップ
+	const int HIT_STOP = 30;
+	m_hitStopTimer.Reset(HIT_STOP);
+
+	printf("Player : Damaged : remain hp %d\n", m_parent->m_hp);
+}
+
+void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
+{
+	//ヒットストップ中
+	if (m_hitStopTimer.IsTimeStartOnTrigger())arg_timeScale.Set(0.0f);
+	else if (m_hitStopTimer.IsTimeUpOnTrigger())arg_timeScale.Set(1.0f);
+
+	m_hitStopTimer.UpdateTimer();
+
+	//無敵時間
+	m_invincibleTimer.UpdateTimer(arg_timeScale.GetTimeScale());
 }
 
 #include"Enemy.h"

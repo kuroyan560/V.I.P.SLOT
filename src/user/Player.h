@@ -50,6 +50,9 @@ class Player
 	{
 		Player* m_parent;
 
+		//ヒットストップタイマー
+		Timer m_hitStopTimer;
+
 		//無敵時間
 		Timer m_invincibleTimer;
 
@@ -64,11 +67,9 @@ class Player
 		void Init()
 		{
 			m_invincibleTimer.Reset(0);
+			m_hitStopTimer.Reset(0);
 		}
-		void Update(const float& arg_timeScale)
-		{
-			m_invincibleTimer.UpdateTimer(arg_timeScale);
-		}
+		void Update(TimeScale& arg_timeScale);
 	};
 	std::shared_ptr<DamagedCallBack>m_damegedCallBack;
 
@@ -95,7 +96,7 @@ public:
 	//初期化
 	void Init();
 	//更新
-	void Update(std::weak_ptr<SlotMachine> arg_slotMachine, const TimeScale& arg_timeScale);
+	void Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale);
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 
