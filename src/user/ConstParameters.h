@@ -53,8 +53,10 @@ namespace ConstParameter
 		const int PASS_COIN_NUM = 1;
 
 		/*--- 衝突判定 ---*/
+		//ダメージを受けたときのヒットストップ時間
+		const int HIT_STOP_TIME_ON_DAMAGED = 30;
 		//ダメージを受けた後の無敵時間
-		const int INVINCIBLE_TIME_WHEN_DAMAGED = 120;
+		const int INVINCIBLE_TIME_ON_DAMAGED = 120;
 	};
 
 	namespace Slot

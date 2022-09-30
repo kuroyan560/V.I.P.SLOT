@@ -234,6 +234,8 @@ void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter,
 	const unsigned char& arg_otherAttribute, 
 	const CollisionManager& arg_collisionMgr)
 {
+	using namespace ConstParameter::Player;
+
 	//–³“GŽžŠÔ’†‚©
 	if (!m_invincibleTimer.IsTimeUp())return;
 
@@ -241,11 +243,10 @@ void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter,
 	m_parent->m_hp--;
 
 	//–³“GŽžŠÔÝ’è
-	m_invincibleTimer.Reset(ConstParameter::Player::INVINCIBLE_TIME_WHEN_DAMAGED);
+	m_invincibleTimer.Reset(INVINCIBLE_TIME_ON_DAMAGED);
 
 	//ƒqƒbƒgƒXƒgƒbƒv
-	const int HIT_STOP = 30;
-	m_hitStopTimer.Reset(HIT_STOP);
+	m_hitStopTimer.Reset(HIT_STOP_TIME_ON_DAMAGED);
 
 	printf("Player : Damaged : remain hp %d\n", m_parent->m_hp);
 }
