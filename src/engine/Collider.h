@@ -68,17 +68,17 @@ public:
 		//アタッチされていない
 		if (m_parentObj == nullptr)
 		{
-			pritnf("This collider's parent object hasn't be attatched. It's nullptr.\n");
+			printf("This collider's parent object hasn't be attatched. It's nullptr.\n");
 			assert(0);
 		}
 
 		//指定された型ではない
 		if (typeid(T) != typeid(*m_parentObj))
 		{
-			printf("This collider's parent object isn't \" %s \" class.\n", typeid(T).name);
+			printf("This collider's parent object isn't \" %s \" class.\n", typeid(T).name());
 			assert(0);
 		}
-		return std::dynamic_pointer_cast<T*>(m_parentObj);
+		return (T*)m_parentObj;
 	}
 
 	bool operator== (const Collider& arg_other)const
