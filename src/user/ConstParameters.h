@@ -58,10 +58,14 @@ namespace ConstParameter
 		/*--- 衝突判定 ---*/
 		//ダメージを受けたときのヒットストップ時間
 		const int HIT_STOP_TIME_ON_DAMAGED = 30;
+		//ダメージを受けたときの落下速度
+		const float FALL_SPEED_ON_DAMAGED = -1.0f;
 		//ダメージを受けた後の無敵時間
 		const int INVINCIBLE_TIME_ON_DAMAGED = 120;
 		//ダメージを受けた後の無敵時間中の点滅スパン
 		const int FLASH_SPAN_ON_DAMAGED_INVINCIBLE = 4;
+		//ダメージを受けた後、踏みつけ可能になるまでの時間
+		const int CAN_STEP_TIME_AFTER_DAMAGED = 20;
 	};
 
 	namespace Slot
