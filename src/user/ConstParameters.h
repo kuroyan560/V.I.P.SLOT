@@ -20,6 +20,9 @@ namespace ConstParameter
 		//初期位置
 		const Vec3<float>INIT_POS = { 0,0,Environment::FIELD_DEPTH };
 
+		//モデル中央に合わせるためのオフセット値
+		const Vec3<float>FIX_MODEL_CENTER_OFFSET = { 0.0f,2.0f,ConstParameter::Environment::FIELD_DEPTH_MODEL_OFFSET };
+
 		//最大HP
 		const int MAX_HP = 10;
 

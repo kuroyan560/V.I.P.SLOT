@@ -28,6 +28,8 @@ class Player
 
 	//接地フラグ
 	bool m_isOnGround;
+	//ジャンプSE
+	int m_jumpSE;
 
 	//所持金
 	CoinVault m_coinVault;
@@ -93,6 +95,8 @@ class Player
 	class AttackCallBack : public CollisionCallBack
 	{
 		Player* m_parent;
+		//踏みつけSE
+		int m_stepEnemySE;
 
 		void OnCollision(
 			const Vec3<float>& arg_inter,
@@ -101,7 +105,8 @@ class Player
 			const CollisionManager& arg_collisionMgr)override;
 
 	public:
-		AttackCallBack(Player* arg_player) :m_parent(arg_player) {}
+		AttackCallBack(Player* arg_player, int arg_stepEnemySE)
+			:m_parent(arg_player), m_stepEnemySE(arg_stepEnemySE) {}
 	};
 	std::shared_ptr<AttackCallBack>m_attackCallBack;
 

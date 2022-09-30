@@ -18,8 +18,13 @@ void Player::Jump()
 
 Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
+	using namespace ConstParameter::Player;
+
 	//モデル読み込み
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "player.glb");
+
+	//ジャンプSE読み込み
+	m_jumpSE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_jump.wav",0.6f);
 
 	//BETのSE読み込み
 	m_betSE = AudioApp::Instance()->LoadAudio("resource/user/sound/coin.wav",0.15f);
@@ -30,27 +35,28 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	//被ダメージSE
 	int onDamagedSE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_damage_onTrigger.wav",0.4f);
 
+	//敵の踏みつけSE
+	int onStepEnemySE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_step.wav",0.8f);
+
 	/*--- コライダー用プリミティブ生成 ---*/
-	//モデル中央に合わせるためのオフセット値
-	const Vec3<float>FIX_MODEL_CENTER_OFFSET = { 0.0f,2.0f,ConstParameter::Environment::FIELD_DEPTH_MODEL_OFFSET };
 
 	//モデル全体を覆う球
 	std::shared_ptr<CollisionPrimitive>bodySphereCol = std::make_shared<CollisionSphere>(
-		1.4f,
-		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -0.3f, 0.0f),
+		1.2f,
+		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -0.2f, 0.0f),
 		&m_modelObj->m_transform);
 
 	//足元の当たり判定球
 	std::shared_ptr<CollisionPrimitive>footSphereCol = std::make_shared<CollisionSphere>(
-		0.9f,
-		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -3.0f, 0.0f),
+		1.0f,
+		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -1.5f, 0.0f),
 		&m_modelObj->m_transform);
 
 	/*--- コールバック生成 ---*/
 	//被ダメージコールバック
 	m_damegedCallBack = std::make_shared<DamagedCallBack>(this, onDamagedHitStopSE, onDamagedSE);
 	//攻撃コールバック
-	m_attackCallBack = std::make_shared<AttackCallBack>(this);
+	m_attackCallBack = std::make_shared<AttackCallBack>(this, onStepEnemySE);
 
 	/*--- コライダー生成 ---*/
 
@@ -150,6 +156,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	if (jumpTrigger && m_isOnGround)
 	{
 		Jump();
+		AudioApp::Instance()->PlayWaveDelay(m_jumpSE,3);
 		m_isOnGround = false;
 	}
 
@@ -307,7 +314,13 @@ void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
 #include"Enemy.h"
 void Player::AttackCallBack::OnCollision(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider, const unsigned char& arg_otherAttribute, const CollisionManager& arg_collisionMgr)
 {
+	using namespace ConstParameter::Player;
+
+	//プレイヤーより衝突点が上（踏みつけできない）
+	if (m_parent->m_modelObj->m_transform.GetPos().y + FIX_MODEL_CENTER_OFFSET.y < arg_inter.y)return;
+
 	auto enemy = arg_otherCollider.lock()->GetParentObject<Enemy>();
 	enemy->Damage();
 	m_parent->Jump();
+	AudioApp::Instance()->PlayWave(m_stepEnemySE);
 }
