@@ -5,6 +5,8 @@ class Timer
 	float m_intervalTime = 0.0f;
 	//経過時間
 	float m_elaspedTime = 0.0f;
+	//タイムアップトリガー記録
+	bool m_onTimeUpTrigger = false;
 
 public:
 	Timer(float arg_intervalTime = 1.0f) :m_intervalTime(arg_intervalTime) {}
@@ -12,12 +14,18 @@ public:
 	//設定時間が経過したか
 	bool IsTimeUp()const { return m_intervalTime <= m_elaspedTime; }
 
+	//タイムアップした瞬間
+	const bool& IsTimeUpOnTrigger()const { return m_onTimeUpTrigger; }
+
 	//経過時間 / 設定時間
 	float GetTimeRate()const
 	{
 		if (IsTimeUp())return 1.0f;
 		return m_elaspedTime / m_intervalTime;
 	}
+
+	//タイマースタートした瞬間
+	bool IsTimeStartOnTrigger()const { return GetTimeRate() == 0.0f; }
 
 	//(1.0f - 経過時間 / 設定時間)
 	float GetInverseTimeRate()const { return 1.0f - GetTimeRate(); }
@@ -35,7 +43,13 @@ public:
 	/// <returns>設定時間が経過したか</returns>
 	bool UpdateTimer(float arg_timeScale = 1.0f)
 	{
+		//前フレームでタイムアップしたか
+		bool oldTimeUp = IsTimeUp();
 		m_elaspedTime += arg_timeScale;
+
+		//タイムアップのトリガー記録
+		m_onTimeUpTrigger = !oldTimeUp && IsTimeUp();
+
 		return IsTimeUp();
 	}
 
