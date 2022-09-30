@@ -31,7 +31,7 @@ EnemyManager::EnemyManager()
 	//‰¡ˆÚ“®‚·‚éŽG‹›“G
 	{
 		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
-		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(3.0f, Vec3<float>(0.0f, 0.0f, 0.0f)));
+		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(2.0f, Vec3<float>(0.0f, 0.0f, 0.0f)));
 
 		std::vector<std::unique_ptr<Collider>>colliderArray;
 		colliderArray.emplace_back(std::make_unique<Collider>("Weak_Slide_Enemy - Body_Sphere", colPrimitiveArray));
