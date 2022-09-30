@@ -66,6 +66,8 @@ SlotMachine::SlotMachine() : m_patternMgr(m_coinVault)
 	m_megaPhoneObj->m_transform.SetParent(&m_slotMachineObj->m_transform);
 	//メガホン位置
 	m_megaPhoneObj->m_transform.SetPos(ConstParameter::Slot::MEGA_PHONE_POS);
+	//トランスフォームバッファ更新のため呼び出し
+	m_megaPhoneObj->GetTransformBuff();
 
 	//サウンド読み込み
 	m_spinStartSE = AudioApp::Instance()->LoadAudio("resource/user/sound/slot_start.wav");
@@ -101,6 +103,9 @@ void SlotMachine::Init()
 
 	//返却コインリセット
 	m_returnCoinEmitter.Init();
+
+	//メガホン拡縮タイマーリセット
+	m_megaPhoneExpandTimer.Reset(0);
 }
 
 //デバッグ用
