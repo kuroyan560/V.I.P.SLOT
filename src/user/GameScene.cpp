@@ -47,7 +47,7 @@ GameScene::GameScene()
 void GameScene::OnInitialize()
 {
 	//プレイヤー初期化
-	m_player->Init();
+	m_player->Init(m_gameCam);
 
 	//スロットマシン初期化
 	m_slotMachine->Init();

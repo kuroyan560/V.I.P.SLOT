@@ -8,6 +8,7 @@
 #include"Collision.h"
 #include"Collider.h"
 #include"CollisionManager.h"
+#include"GameCamera.h"
 
 void Player::Jump()
 {
@@ -75,7 +76,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	arg_collisionMgr.lock()->Register("Player", m_colliders);
 }
 
-void Player::Init()
+void Player::Init(std::weak_ptr<GameCamera>arg_cam)
 {
 	using namespace ConstParameter::Player;
 
@@ -104,7 +105,7 @@ void Player::Init()
 	m_consecutiveBetTimer.Reset(UNTIL_MAX_SPEED_BET_TIME);
 
 	//被ダメージコールバック
-	m_damegedCallBack->Init();
+	m_damegedCallBack->Init(arg_cam);
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
@@ -252,6 +253,9 @@ void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter,
 
 	//点滅
 	m_flashTimer.Reset(FLASH_SPAN_ON_DAMAGED_INVINCIBLE);
+
+	//カメラ振動
+	m_cam.lock()->Shake(60, 2, 2.0f, 1.0f);
 
 	printf("Player : Damaged : remain hp %d\n", m_parent->m_hp);
 }

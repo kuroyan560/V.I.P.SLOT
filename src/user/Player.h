@@ -13,6 +13,7 @@ class SlotMachine;
 class TimeScale;
 class Collider;
 class CollisionManager;
+class GameCamera;
 
 class Player
 {
@@ -49,6 +50,7 @@ class Player
 	class DamagedCallBack : public CollisionCallBack
 	{
 		Player* m_parent;
+		std::weak_ptr<GameCamera>m_cam;
 
 		//ヒットストップタイマー
 		Timer m_hitStopTimer;
@@ -68,8 +70,9 @@ class Player
 
 	public:
 		DamagedCallBack(Player* arg_player) :m_parent(arg_player) {}
-		void Init()
+		void Init(std::weak_ptr<GameCamera>arg_cam)
 		{
+			m_cam = arg_cam;
 			m_invincibleTimer.Reset(0);
 			m_hitStopTimer.Reset(0);
 			m_isDraw = true;
@@ -101,7 +104,7 @@ class Player
 public:
 	Player(std::weak_ptr<CollisionManager>arg_collisionMgr);
 	//初期化
-	void Init();
+	void Init(std::weak_ptr<GameCamera>arg_cam);
 	//更新
 	void Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale);
 	//描画
