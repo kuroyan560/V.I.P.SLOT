@@ -42,7 +42,8 @@ class Player
 	int m_betSE;
 
 	//コライダー
-	std::vector<std::shared_ptr<Collider>>m_colliders;
+	std::shared_ptr<Collider>m_bodyCollider;
+	std::shared_ptr<Collider>m_footCollider;
 
 	//HP
 	int m_hp;

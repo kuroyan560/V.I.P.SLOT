@@ -60,32 +60,34 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 
 	/*--- コライダー生成 ---*/
 
+	std::vector<std::shared_ptr<Collider>>colliders;
+
 	//モデル全体を覆うコライダー
 	{
 		std::vector<std::shared_ptr<CollisionPrimitive>>coverModelPrimitiveArray =
 		{
 			bodySphereCol
 		};
-		std::shared_ptr<Collider>bodyCollider = std::make_shared<Collider>("Player_Body", coverModelPrimitiveArray);
+		m_bodyCollider = std::make_shared<Collider>("Player_Body", coverModelPrimitiveArray);
 
 		//被ダメージコールバックアタッチ
-		bodyCollider->SetCallBack(m_damegedCallBack, arg_collisionMgr.lock()->GetAttribute("Enemy"));
-		m_colliders.emplace_back(bodyCollider);
+		m_bodyCollider->SetCallBack(m_damegedCallBack, arg_collisionMgr.lock()->GetAttribute("Enemy"));
+		colliders.emplace_back(m_bodyCollider);
 	}
 	
 	//足元のコライダー
 	{
 		std::vector<std::shared_ptr<CollisionPrimitive>>footPrimitiveArray = { footSphereCol };
-		std::shared_ptr<Collider>footCollider = std::make_shared<Collider>("Player_Foot", footPrimitiveArray);
+		m_footCollider = std::make_shared<Collider>("Player_Foot", footPrimitiveArray);
 
 		//攻撃コールバックアタッチ
-		footCollider->SetCallBack(m_attackCallBack, arg_collisionMgr.lock()->GetAttribute("Enemy"));
-		m_colliders.emplace_back(footCollider);
+		m_footCollider->SetCallBack(m_attackCallBack, arg_collisionMgr.lock()->GetAttribute("Enemy"));
+		colliders.emplace_back(m_footCollider);
 	}
 
 
 	/*--- コライダー配列登録 ---*/
-	arg_collisionMgr.lock()->Register("Player", m_colliders);
+	arg_collisionMgr.lock()->Register("Player", colliders);
 }
 
 void Player::Init(std::weak_ptr<GameCamera>arg_cam)
