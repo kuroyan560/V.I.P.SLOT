@@ -9,6 +9,12 @@
 #include"Collider.h"
 #include"CollisionManager.h"
 
+void Player::Jump()
+{
+	m_move.y = 0.0f;
+	m_fallSpeed = ConstParameter::Player::JUMP_POWER;
+}
+
 Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	//モデル読み込み
@@ -27,22 +33,43 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -0.3f, 0.0f),
 		&m_modelObj->m_transform);
 
+	//足元の当たり判定球
+	std::shared_ptr<CollisionPrimitive>footSphereCol = std::make_shared<CollisionSphere>(
+		0.9f,
+		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -3.0f, 0.0f),
+		&m_modelObj->m_transform);
+
 	/*--- コールバック生成 ---*/
 	//被ダメージコールバック
 	m_damegedCallBack = std::make_shared<DamagedCallBack>(this);
+	//攻撃コールバック
+	m_attackCallBack = std::make_shared<AttackCallBack>(this);
 
-	/*--- モデル全体を覆うコライダー生成 ---*/
+	/*--- コライダー生成 ---*/
+
+	//モデル全体を覆うコライダー
 	{
 		std::vector<std::shared_ptr<CollisionPrimitive>>coverModelPrimitiveArray =
 		{
 			bodySphereCol
 		};
-		std::shared_ptr<Collider>bodyCollider = std::make_shared<Collider>("Player_Damaged", coverModelPrimitiveArray);
+		std::shared_ptr<Collider>bodyCollider = std::make_shared<Collider>("Player_Body", coverModelPrimitiveArray);
 
 		//被ダメージコールバックアタッチ
 		bodyCollider->SetCallBack(m_damegedCallBack, arg_collisionMgr.lock()->GetAttribute("Enemy"));
 		m_colliders.emplace_back(bodyCollider);
 	}
+	
+	//足元のコライダー
+	{
+		std::vector<std::shared_ptr<CollisionPrimitive>>footPrimitiveArray = { footSphereCol };
+		std::shared_ptr<Collider>footCollider = std::make_shared<Collider>("Player_Foot", footPrimitiveArray);
+
+		//攻撃コールバックアタッチ
+		footCollider->SetCallBack(m_attackCallBack, arg_collisionMgr.lock()->GetAttribute("Enemy"));
+		m_colliders.emplace_back(footCollider);
+	}
+
 
 	/*--- コライダー配列登録 ---*/
 	arg_collisionMgr.lock()->Register("Player", m_colliders);
@@ -115,7 +142,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, const TimeScale&
 	//ジャンプ
 	if (jumpTrigger && m_isOnGround)
 	{
-		m_fallSpeed += ConstParameter::Player::JUMP_POWER;
+		Jump();
 		m_isOnGround = false;
 	}
 
@@ -214,4 +241,12 @@ void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter,
 	printf("Player : Damaged : remain hp %d\n", m_parent->m_hp);
 
 	m_invincibleTimer.Reset(ConstParameter::Player::INVINCIBLE_TIME_WHEN_DAMAGED);
+}
+
+#include"Enemy.h"
+void Player::AttackCallBack::OnCollision(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider, const unsigned char& arg_otherAttribute, const CollisionManager& arg_collisionMgr)
+{
+	auto enemy = arg_otherCollider.lock()->GetParentObject<Enemy>();
+	enemy->Damage();
+	m_parent->Jump();
 }

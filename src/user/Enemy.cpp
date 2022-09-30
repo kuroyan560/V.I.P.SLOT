@@ -3,6 +3,8 @@
 #include"EnemyController.h"
 #include"Collision.h"
 #include"Collider.h"
+#include"TimeScale.h"
+#include"ConstParameters.h"
 
 Enemy::Enemy(const std::shared_ptr<EnemyBreed>& arg_breed)
 {
@@ -28,11 +30,16 @@ void Enemy::Init()
 
 	//挙動制御初期化
 	m_controller->OnInit(*this);
+
+	//被ダメージ無敵時間タイマーリセット
+	m_damagedInvincibleTimer.Reset(0);
 }
 
 void Enemy::Update(const TimeScale& arg_timeScale)
 {
 	m_controller->OnUpdate(*this, arg_timeScale);
+
+	m_damagedInvincibleTimer.UpdateTimer(arg_timeScale.GetTimeScale());
 }
 
 void Enemy::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
@@ -42,8 +49,15 @@ void Enemy::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>a
 
 int Enemy::Damage(int arg_amount)
 {
+	//無敵時間中
+	if (!m_damagedInvincibleTimer.IsTimeUp())return 0;
+
 	m_hp -= arg_amount;
 	m_controller->OnDamage(*this);
+	m_damagedInvincibleTimer.Reset(ConstParameter::Enemy::INVINCIBLE_TIME_WHEN_DAMAGED);
+
+	printf("Enemy : Damaged : remain hp %d\n", m_hp);
+
 	return m_coinVault.GetNum();
 }
 

@@ -72,6 +72,24 @@ class Player
 	};
 	std::shared_ptr<DamagedCallBack>m_damegedCallBack;
 
+	//“G‚Ö‚ÌUŒ‚
+	class AttackCallBack : public CollisionCallBack
+	{
+		Player* m_parent;
+
+		void OnCollision(
+			const Vec3<float>& arg_inter,
+			std::weak_ptr<Collider>arg_otherCollider,
+			const unsigned char& arg_otherAttribute,
+			const CollisionManager& arg_collisionMgr)override;
+
+	public:
+		AttackCallBack(Player* arg_player) :m_parent(arg_player) {}
+	};
+	std::shared_ptr<AttackCallBack>m_attackCallBack;
+
+	void Jump();
+	
 public:
 	Player(std::weak_ptr<CollisionManager>arg_collisionMgr);
 	//‰Šú‰»

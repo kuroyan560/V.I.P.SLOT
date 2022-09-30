@@ -128,6 +128,10 @@ namespace ConstParameter
 
 		//敵がいる空間のZ軸座標
 		const float POS_Z = Environment::FIELD_DEPTH + Environment::FIELD_DEPTH_MODEL_OFFSET;
+
+		/*--- 衝突判定 ---*/
+		//ダメージを受けた後の無敵時間
+		const int INVINCIBLE_TIME_WHEN_DAMAGED = 60;
 	}
 };
 
