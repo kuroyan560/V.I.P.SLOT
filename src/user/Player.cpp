@@ -24,6 +24,12 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	//BETのSE読み込み
 	m_betSE = AudioApp::Instance()->LoadAudio("resource/user/sound/coin.wav",0.15f);
 
+	//被ダメージヒットストップSE
+	int onDamagedHitStopSE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_damage_hitStop.wav",0.5f);
+
+	//被ダメージSE
+	int onDamagedSE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_damage_onTrigger.wav",0.4f);
+
 	/*--- コライダー用プリミティブ生成 ---*/
 	//モデル中央に合わせるためのオフセット値
 	const Vec3<float>FIX_MODEL_CENTER_OFFSET = { 0.0f,2.0f,ConstParameter::Environment::FIELD_DEPTH_MODEL_OFFSET };
@@ -42,7 +48,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 
 	/*--- コールバック生成 ---*/
 	//被ダメージコールバック
-	m_damegedCallBack = std::make_shared<DamagedCallBack>(this);
+	m_damegedCallBack = std::make_shared<DamagedCallBack>(this, onDamagedHitStopSE, onDamagedSE);
 	//攻撃コールバック
 	m_attackCallBack = std::make_shared<AttackCallBack>(this);
 
@@ -251,6 +257,9 @@ void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter,
 	//ヒットストップ
 	m_hitStopTimer.Reset(HIT_STOP_TIME_ON_DAMAGED);
 
+	//ヒットストップSE再生
+	AudioApp::Instance()->PlayWave(m_hitStopSE);
+
 	//点滅
 	m_flashTimer.Reset(FLASH_SPAN_ON_DAMAGED_INVINCIBLE);
 
@@ -264,9 +273,17 @@ void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
 {
 	using namespace ConstParameter::Player;
 
-	//ヒットストップ中
-	if (m_hitStopTimer.IsTimeStartOnTrigger())arg_timeScale.Set(0.0f);
-	else if (m_hitStopTimer.IsTimeUpOnTrigger())arg_timeScale.Set(1.0f);
+	//ヒットストップ始め
+	if (m_hitStopTimer.IsTimeStartOnTrigger())
+	{
+		arg_timeScale.Set(0.0f);
+	}
+	//ヒットストップ終わり
+	else if (m_hitStopTimer.IsTimeUpOnTrigger())
+	{
+		arg_timeScale.Set(1.0f);
+		AudioApp::Instance()->PlayWave(m_damageSE);
+	}
 
 	m_hitStopTimer.UpdateTimer();
 

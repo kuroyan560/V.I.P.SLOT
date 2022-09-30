@@ -62,6 +62,11 @@ class Player
 		Timer m_flashTimer;
 		bool m_isDraw;
 
+		//ヒットストップSE
+		int m_hitStopSE;
+		//ダメージSE
+		int m_damageSE;
+
 		void OnCollision(
 			const Vec3<float>& arg_inter,
 			std::weak_ptr<Collider>arg_otherCollider,
@@ -69,7 +74,8 @@ class Player
 			const CollisionManager& arg_collisionMgr)override;
 
 	public:
-		DamagedCallBack(Player* arg_player) :m_parent(arg_player) {}
+		DamagedCallBack(Player* arg_player, int arg_hitStopSE, int arg_damageSE)
+			:m_parent(arg_player), m_hitStopSE(arg_hitStopSE), m_damageSE(arg_damageSE) {}
 		void Init(std::weak_ptr<GameCamera>arg_cam)
 		{
 			m_cam = arg_cam;
