@@ -43,6 +43,8 @@ class GameCamera
 		float m_powerMin;
 		//振動の強さ乱数上限
 		float m_powerMax;
+		//振動オフセット
+		Vec3<float>m_offset;
 	}m_shake;
 
 	void SetPosAndTarget(Vec3<float>arg_offset = { 0,0,0 });
