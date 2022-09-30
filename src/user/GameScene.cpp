@@ -70,11 +70,6 @@ void GameScene::OnUpdate()
 	{
 		m_enemyMgr->Appear(ConstParameter::Enemy::TYPE::WEAK_SLIDE, m_collisionMgr);
 	}
-	if (UsersInput::Instance()->KeyInput(DIK_T))
-	{
-		m_timeScale.Set(0.0f);
-	}
-	else m_timeScale.Set(1.0f);
 
 	//コリジョンマネージャ
 	m_collisionMgr->Update();
