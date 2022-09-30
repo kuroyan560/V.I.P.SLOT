@@ -57,6 +57,8 @@ namespace ConstParameter
 		const int HIT_STOP_TIME_ON_DAMAGED = 30;
 		//ダメージを受けた後の無敵時間
 		const int INVINCIBLE_TIME_ON_DAMAGED = 120;
+		//ダメージを受けた後の無敵時間中の点滅スパン
+		const int FLASH_SPAN_ON_DAMAGED_INVINCIBLE = 4;
 	};
 
 	namespace Slot

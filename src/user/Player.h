@@ -56,6 +56,10 @@ class Player
 		//–³“GŽžŠÔ
 		Timer m_invincibleTimer;
 
+		//–³“GŽžŠÔ’†“_–Å
+		Timer m_flashTimer;
+		bool m_isDraw;
+
 		void OnCollision(
 			const Vec3<float>& arg_inter,
 			std::weak_ptr<Collider>arg_otherCollider,
@@ -68,8 +72,11 @@ class Player
 		{
 			m_invincibleTimer.Reset(0);
 			m_hitStopTimer.Reset(0);
+			m_isDraw = true;
 		}
 		void Update(TimeScale& arg_timeScale);
+
+		const bool& GetIsDraw()const { return m_isDraw; }
 	};
 	std::shared_ptr<DamagedCallBack>m_damegedCallBack;
 

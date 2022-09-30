@@ -225,6 +225,8 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 #include"DrawFunc3D.h"
 void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
 {
+	if (!m_damegedCallBack->GetIsDraw())return;
+
 	//DrawFunc3D::DrawADSShadingModel(*LigMgr.lock(), m_modelObj, *Cam.lock(), AlphaBlendMode_None);
 	DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
 }
@@ -248,11 +250,16 @@ void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter,
 	//ヒットストップ
 	m_hitStopTimer.Reset(HIT_STOP_TIME_ON_DAMAGED);
 
+	//点滅
+	m_flashTimer.Reset(FLASH_SPAN_ON_DAMAGED_INVINCIBLE);
+
 	printf("Player : Damaged : remain hp %d\n", m_parent->m_hp);
 }
 
 void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
 {
+	using namespace ConstParameter::Player;
+
 	//ヒットストップ中
 	if (m_hitStopTimer.IsTimeStartOnTrigger())arg_timeScale.Set(0.0f);
 	else if (m_hitStopTimer.IsTimeUpOnTrigger())arg_timeScale.Set(1.0f);
@@ -260,7 +267,20 @@ void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
 	m_hitStopTimer.UpdateTimer();
 
 	//無敵時間
-	m_invincibleTimer.UpdateTimer(arg_timeScale.GetTimeScale());
+	if (m_invincibleTimer.UpdateTimer(arg_timeScale.GetTimeScale()))
+	{
+		//点滅終了
+		m_isDraw = true;
+	}
+	else
+	{
+		//点滅
+		if (m_flashTimer.UpdateTimer(arg_timeScale.GetTimeScale()))
+		{
+			m_flashTimer.Reset(FLASH_SPAN_ON_DAMAGED_INVINCIBLE);
+			m_isDraw = !m_isDraw;
+		}
+	}
 }
 
 #include"Enemy.h"
