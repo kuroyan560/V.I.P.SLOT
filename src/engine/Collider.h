@@ -8,6 +8,7 @@
 class Camera;
 class CollisionPrimitive;
 class CollisionCallBack;
+class ColliderParentObject;
 
 class Collider
 {
@@ -16,6 +17,9 @@ private:
 
 	//付与する識別番号
 	static int s_id;
+
+	//自身がアタッチされる親オブジェクト
+	ColliderParentObject* m_parentObj = nullptr;
 
 	//識別番号
 	int m_id = -1;
@@ -37,10 +41,11 @@ private:
 
 public:
 	Collider(const std::string& arg_name,
-		const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray);
+		const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray,
+		ColliderParentObject* arg_parentObj = nullptr);
 
 	//トランスフォームだけ変えてクローンする
-	Collider Clone(Transform* arg_parent);
+	Collider Clone(Transform* arg_parent, ColliderParentObject* arg_parentObj = nullptr);
 
 	~Collider()	{}
 
@@ -56,6 +61,25 @@ public:
 
 	//ゲッタ
 	const bool& GetIsHit()const { return m_isHit; }
+	//コライダーがアタッチされてる親オブジェクト取得
+	template<typename T>
+	T* GetParentObject()
+	{
+		//アタッチされていない
+		if (m_parentObj == nullptr)
+		{
+			pritnf("This collider's parent object hasn't be attatched. It's nullptr.\n");
+			assert(0);
+		}
+
+		//指定された型ではない
+		if (typeid(T) != typeid(*m_parentObj))
+		{
+			printf("This collider's parent object isn't \" %s \" class.\n", typeid(T).name);
+			assert(0);
+		}
+		return std::dynamic_pointer_cast<T*>(m_parentObj);
+	}
 
 	bool operator== (const Collider& arg_other)const
 	{

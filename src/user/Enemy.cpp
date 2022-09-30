@@ -14,7 +14,7 @@ Enemy::Enemy(const std::shared_ptr<EnemyBreed>& arg_breed)
 	//血統よりコライダーをクローン
 	for (auto& colOrigin : arg_breed->m_originCollider)
 	{
-		m_colliders.emplace_back(std::make_shared<Collider>(colOrigin->Clone(&m_transform)));
+		m_colliders.emplace_back(std::make_shared<Collider>(colOrigin->Clone(&m_transform, this)));
 	}
 }
 

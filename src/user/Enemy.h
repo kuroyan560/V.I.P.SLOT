@@ -2,6 +2,7 @@
 #include"CoinVault.h"
 #include<memory>
 #include"Transform.h"
+#include"ColliderParentObject.h"
 class EnemyBreed;
 class EnemyController;
 class TimeScale;
@@ -9,7 +10,7 @@ class LightManager;
 class Camera;
 class Collider;
 
-class Enemy
+class Enemy : public ColliderParentObject
 {
 private:
 	friend class EnemyManager;

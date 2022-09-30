@@ -171,6 +171,7 @@
     <ClCompile Include="src\engine\AudioApp.cpp" />
     <ClCompile Include="src\engine\Camera.cpp" />
     <ClCompile Include="src\engine\Collider.cpp" />
+    <ClCompile Include="src\engine\ColliderParentObject.cpp" />
     <ClCompile Include="src\engine\Collision.cpp" />
     <ClCompile Include="src\engine\CollisionCallBack.cpp" />
     <ClCompile Include="src\engine\CollisionManager.cpp" />
@@ -252,6 +253,7 @@
     <ClInclude Include="src\engine\AudioApp.h" />
     <ClInclude Include="src\engine\Camera.h" />
     <ClInclude Include="src\engine\Collider.h" />
+    <ClInclude Include="src\engine\ColliderParentObject.h" />
     <ClInclude Include="src\engine\Collision.h" />
     <ClInclude Include="src\engine\CollisionCallBack.h" />
     <ClInclude Include="src\engine\CollisionManager.h" />

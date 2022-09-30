@@ -4,12 +4,13 @@
 int Collider::s_id = 0;
 
 Collider::Collider(const std::string& arg_name, 
-	const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray)
+	const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray,
+	ColliderParentObject* arg_parentObj)
 	:m_id(s_id++), m_name(arg_name), m_primitiveArray(arg_primitiveArray)
 {
 }
 
-Collider Collider::Clone(Transform* arg_parent)
+Collider Collider::Clone(Transform* arg_parent, ColliderParentObject* arg_parentObj)
 {
 	//判定用プリミティブクローン
 	std::vector<std::shared_ptr<CollisionPrimitive>>clonePrimitiveArray;
@@ -19,7 +20,7 @@ Collider Collider::Clone(Transform* arg_parent)
 	}
 
 	//クローン生成
-	auto clone = Collider(m_name + " - Clone", clonePrimitiveArray);
+	auto clone = Collider(m_name + " - Clone", clonePrimitiveArray, arg_parentObj);
 
 	//コールバック関数をコピー
 	clone.m_callBacks = this->m_callBacks;

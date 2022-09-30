@@ -310,6 +310,9 @@
     <ClCompile Include="src\engine\CollisionCallBack.cpp">
       <Filter>src\engine\ユーザー向け\Collision</Filter>
     </ClCompile>
+    <ClCompile Include="src\engine\ColliderParentObject.cpp">
+      <Filter>src\engine\ユーザー向け\Collision</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -589,6 +592,9 @@
       <Filter>src\engine\ユーザー向け\Collision</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\CollisionCallBack.h">
+      <Filter>src\engine\ユーザー向け\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\ColliderParentObject.h">
       <Filter>src\engine\ユーザー向け\Collision</Filter>
     </ClInclude>
   </ItemGroup>
