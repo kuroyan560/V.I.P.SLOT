@@ -70,12 +70,16 @@ void GameScene::OnUpdate()
 	{
 		m_enemyMgr->Appear(ConstParameter::Enemy::TYPE::WEAK_SLIDE, m_collisionMgr);
 	}
+	if (UsersInput::Instance()->KeyOnTrigger(DIK_S))
+	{
+		m_gameCam->Shake(60, 2, 2.0f, 1.0f);
+	}
 
 	//コリジョンマネージャ
 	m_collisionMgr->Update();
 
 	//カメラ
-	m_gameCam->Update();
+	m_gameCam->Update(m_timeScale.GetTimeScale());
 
 	//プレイヤー
 	m_player->Update(m_slotMachine, m_timeScale);
