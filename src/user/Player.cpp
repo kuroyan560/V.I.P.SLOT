@@ -27,24 +27,36 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -0.3f, 0.0f),
 		&m_modelObj->m_transform);
 
-	/*--- 各コライダーにアタッチするプリミティブ配列設定 ---*/
-	//被ダメージ受付コライダー
-	std::vector<std::shared_ptr<CollisionPrimitive>>damagedColPrimitiveArray =
+	/*--- コールバック生成 ---*/
+	//被ダメージコールバック
+	m_damegedCallBack = std::make_shared<DamagedCallBack>(this);
+
+	/*--- モデル全体を覆うコライダー生成 ---*/
 	{
-		bodySphereCol
-	};
+		std::vector<std::shared_ptr<CollisionPrimitive>>coverModelPrimitiveArray =
+		{
+			bodySphereCol
+		};
+		std::shared_ptr<Collider>bodyCollider = std::make_shared<Collider>("Player_Damaged", coverModelPrimitiveArray);
 
-	/*--- コライダー生成 ---*/
-	m_colliders.emplace_back(std::make_shared<Collider>("Player_Damaged", damagedColPrimitiveArray));
+		//被ダメージコールバックアタッチ
+		bodyCollider->SetCallBack(m_damegedCallBack, arg_collisionMgr.lock()->GetAttribute("Enemy"));
+		m_colliders.emplace_back(bodyCollider);
+	}
 
-	//コリジョンマネージャに登録
+	/*--- コライダー配列登録 ---*/
 	arg_collisionMgr.lock()->Register("Player", m_colliders);
 }
 
 void Player::Init()
 {
+	using namespace ConstParameter::Player;
+
+	//HP初期化
+	m_hp = MAX_HP;
+
 	//スタート位置に移動
-	m_modelObj->m_transform.SetPos(ConstParameter::Player::INIT_POS);
+	m_modelObj->m_transform.SetPos(INIT_POS);
 
 	//移動速度
 	m_move = { 0,0,0 };
@@ -62,7 +74,10 @@ void Player::Init()
 	m_betTimer.Reset(0);
 
 	//連続BETの計測用タイマー
-	m_consecutiveBetTimer.Reset(ConstParameter::Player::UNTIL_MAX_SPEED_BET_TIME);
+	m_consecutiveBetTimer.Reset(UNTIL_MAX_SPEED_BET_TIME);
+
+	//被ダメージコールバック
+	m_damegedCallBack->Init();
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, const TimeScale& arg_timeScale)
@@ -175,6 +190,9 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, const TimeScale&
 		m_betTimer.Reset(0);
 		m_consecutiveBetTimer.Reset();
 	}
+
+	//被ダメージコールバック
+	m_damegedCallBack->Update(arg_timeScale.GetTimeScale());
 }
 
 #include"DrawFunc3D.h"
@@ -182,4 +200,15 @@ void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>
 {
 	//DrawFunc3D::DrawADSShadingModel(*LigMgr.lock(), m_modelObj, *Cam.lock(), AlphaBlendMode_None);
 	DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
+}
+
+void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter, const unsigned char& arg_otherAttribute, const CollisionManager& arg_collisionMgr)
+{
+	//無敵時間中か
+	if (!m_invincibleTimer.IsTimeUp())return;
+
+	m_parent->m_hp--;
+	printf("Player : Damaged : remain hp %d\n", m_parent->m_hp);
+
+	m_invincibleTimer.Reset(ConstParameter::Player::INVINCIBLE_TIME_WHEN_DAMAGED);
 }

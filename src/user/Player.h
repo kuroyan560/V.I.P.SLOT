@@ -5,6 +5,7 @@
 #include"CoinVault.h"
 #include"Timer.h"
 #include<vector>
+#include"CollisionCallBack.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -37,8 +38,38 @@ class Player
 	//BETのSE
 	int m_betSE;
 
-	//コライダー配列
+	//コライダー
 	std::vector<std::shared_ptr<Collider>>m_colliders;
+
+	//HP
+	int m_hp;
+
+	/*--- コールバック関数 ---*/
+	//被ダメージ
+	class DamagedCallBack : public CollisionCallBack
+	{
+		Player* m_parent;
+
+		//無敵時間
+		Timer m_invincibleTimer;
+
+		void OnCollision(
+			const Vec3<float>& arg_inter,
+			const unsigned char& arg_otherAttribute,
+			const CollisionManager& arg_collisionMgr)override;
+
+	public:
+		DamagedCallBack(Player* arg_player) :m_parent(arg_player) {}
+		void Init()
+		{
+			m_invincibleTimer.Reset(0);
+		}
+		void Update(const float& arg_timeScale)
+		{
+			m_invincibleTimer.UpdateTimer(arg_timeScale);
+		}
+	};
+	std::shared_ptr<DamagedCallBack>m_damegedCallBack;
 
 public:
 	Player(std::weak_ptr<CollisionManager>arg_collisionMgr);

@@ -20,6 +20,9 @@ namespace ConstParameter
 		//初期位置
 		const Vec3<float>INIT_POS = { 0,0,Environment::FIELD_DEPTH };
 
+		//最大HP
+		const int MAX_HP = 10;
+
 		/*--- 移動 ---*/
 		//移動速度
 		const float MOVE_SPEED = 0.3f;
@@ -48,6 +51,10 @@ namespace ConstParameter
 		const int BET_SPEED_MIN_SPAN = 31;
 		//一度に投入するコインの数
 		const int PASS_COIN_NUM = 1;
+
+		/*--- 衝突判定 ---*/
+		//ダメージを受けた後の無敵時間
+		const int INVINCIBLE_TIME_WHEN_DAMAGED = 120;
 	};
 
 	namespace Slot
