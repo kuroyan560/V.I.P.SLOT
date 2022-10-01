@@ -26,7 +26,7 @@ public:
 	/// </summary>
 	/// <param name="arg_typeID">種別番号（敵の種類ごと）</param>
 	/// <param name="arg_model">モデルデータ</param>
-	/// <param name="arg_maxHp">最大HPの</param>
+	/// <param name="arg_maxHp">最大HP</param>
 	/// <param name="arg_initCoinNum">生成時の所持コイン数</param>
 	/// <param name="arg_controller">挙動制御</param>
 	/// <param name="arg_originCollider">クローン元コライダー</param>
