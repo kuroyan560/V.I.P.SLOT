@@ -33,13 +33,30 @@ void Enemy::Init()
 
 	//被ダメージ無敵時間タイマーリセット
 	m_damagedInvincibleTimer.Reset(0);
+
+	//被ダメージ時の下降オフセットY
+	m_damagedOffsetTimer.Reset(0);
+	m_oldDamagedOffsetY = 0.0f;
+	m_damagedOffsetY = 0.0f;
 }
 
 void Enemy::Update(const TimeScale& arg_timeScale)
 {
 	m_controller->OnUpdate(*this, arg_timeScale);
 
+	//被ダメージ時の無敵時間計測
 	m_damagedInvincibleTimer.UpdateTimer(arg_timeScale.GetTimeScale());
+
+	//被ダメージ時のオフセットY適用
+	const float DAMAGED_OFFSET_Y_MAX = -1.2f;
+	m_damagedOffsetY = KuroMath::Ease(InOut, Back, 
+		m_damagedInvincibleTimer.GetTimeRate(), DAMAGED_OFFSET_Y_MAX, 0.0f);
+	auto pos = m_transform.GetPos();
+	pos.y -= m_oldDamagedOffsetY;
+	pos.y += m_damagedOffsetY;
+	m_transform.SetPos(pos);
+
+	m_oldDamagedOffsetY = m_damagedOffsetY;
 }
 
 void Enemy::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
@@ -49,12 +66,19 @@ void Enemy::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>a
 
 int Enemy::Damage(int arg_amount)
 {
+	using namespace ConstParameter::Enemy;
+
 	//無敵時間中
 	if (!m_damagedInvincibleTimer.IsTimeUp())return 0;
 
 	m_hp -= arg_amount;
 	m_controller->OnDamage(*this);
-	m_damagedInvincibleTimer.Reset(ConstParameter::Enemy::INVINCIBLE_TIME_WHEN_DAMAGED);
+
+	//被ダメージ時一定時間無敵に
+	m_damagedInvincibleTimer.Reset(INVINCIBLE_TIME_ON_DAMAGED);
+
+	//被ダメージ時の下降
+	m_damagedOffsetTimer.Reset(OFFSET_Y_TIME_ON_DAMAGED);
 
 	printf("Enemy : Damaged : remain hp %d\n", m_hp);
 

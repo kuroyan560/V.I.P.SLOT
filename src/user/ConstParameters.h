@@ -142,7 +142,9 @@ namespace ConstParameter
 
 		/*--- 衝突判定 ---*/
 		//ダメージを受けた後の無敵時間
-		const int INVINCIBLE_TIME_WHEN_DAMAGED = 60;
+		const int INVINCIBLE_TIME_ON_DAMAGED = 20;
+		//被ダメージ時の下降時間
+		const int OFFSET_Y_TIME_ON_DAMAGED = 15;
 	}
 };
 

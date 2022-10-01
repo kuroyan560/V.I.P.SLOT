@@ -29,6 +29,11 @@ private:
 	//被ダメージ時の無敵時間
 	Timer m_damagedInvincibleTimer;
 
+	//被ダメージ時の下降オフセットY
+	Timer m_damagedOffsetTimer;
+	float m_oldDamagedOffsetY;
+	float m_damagedOffsetY;
+
 public:
 	//トランスフォーム
 	Transform m_transform;
