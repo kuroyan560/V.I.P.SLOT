@@ -126,6 +126,9 @@ void Player::Init(std::weak_ptr<GameCamera>arg_cam)
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
 {
+	using namespace ConstParameter::Player;
+	using namespace ConstParameter::Environment;
+
 //入力情報取得
 	const auto& input = *UsersInput::Instance();
 
@@ -145,15 +148,15 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	//横移動
 	if (0.0f < stickVec.x)
 	{
-		m_move.x = KuroMath::Lerp(m_move.x, ConstParameter::Player::MOVE_SPEED, ConstParameter::Player::MOVE_LERP_RATE);
+		m_move.x = KuroMath::Lerp(m_move.x, MOVE_SPEED, MOVE_LERP_RATE);
 	}
 	else if (stickVec.x < 0.0f)
 	{
-		m_move.x = KuroMath::Lerp(m_move.x, -ConstParameter::Player::MOVE_SPEED, ConstParameter::Player::MOVE_LERP_RATE);
+		m_move.x = KuroMath::Lerp(m_move.x, -MOVE_SPEED, MOVE_LERP_RATE);
 	}
 	else
 	{
-		m_move.x = KuroMath::Lerp(m_move.x, 0.0f, ConstParameter::Player::MOVE_LERP_RATE);
+		m_move.x = KuroMath::Lerp(m_move.x, 0.0f, MOVE_LERP_RATE);
 	}
 
 	//ジャンプ
@@ -168,15 +171,15 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	m_move.y += m_fallSpeed * arg_timeScale.GetTimeScale();
 	if (0.0f < m_fallSpeed)
 	{
-		m_fallSpeed -= ConstParameter::Player::STRONG_GRAVITY * arg_timeScale.GetTimeScale();
+		m_fallSpeed -= STRONG_GRAVITY * arg_timeScale.GetTimeScale();
 	}
 	else
 	{
-		m_fallSpeed -= ConstParameter::Player::WEAK_GRAVITY * arg_timeScale.GetTimeScale();
+		m_fallSpeed -= WEAK_GRAVITY * arg_timeScale.GetTimeScale();
 	}
 
 	//落下速度加減
-	if (m_fallSpeed < ConstParameter::Player::FALL_SPEED_MIN)m_fallSpeed = ConstParameter::Player::FALL_SPEED_MIN;
+	if (m_fallSpeed < FALL_SPEED_MIN)m_fallSpeed = FALL_SPEED_MIN;
 
 	//移動量加算
 	auto pos = m_modelObj->m_transform.GetPos();
@@ -192,14 +195,14 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	}
 
 	//押し戻し（ステージ端）
-	if (pos.x < -ConstParameter::Environment::FIELD_WIDTH_HALF)
+	if (pos.x < -FIELD_WIDTH_HALF)
 	{
-		pos.x = -ConstParameter::Environment::FIELD_WIDTH_HALF;
+		pos.x = -FIELD_WIDTH_HALF;
 		m_move.x = 0.0f;
 	}
-	else if(ConstParameter::Environment::FIELD_WIDTH_HALF < pos.x)
+	else if(FIELD_WIDTH_HALF < pos.x)
 	{
-		pos.x = ConstParameter::Environment::FIELD_WIDTH_HALF;
+		pos.x = FIELD_WIDTH_HALF;
 		m_move.x = 0.0f;
 	}
 
@@ -213,10 +216,10 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 		if (m_betTimer.UpdateTimer(arg_timeScale.GetTimeScale()))
 		{
 			//スロットマシンにBET
-			arg_slotMachine.lock()->Bet(ConstParameter::Player::PASS_COIN_NUM, m_modelObj->m_transform);
+			arg_slotMachine.lock()->Bet(PASS_COIN_NUM, m_modelObj->m_transform);
 
 			//BETスパン計算
-			int betSpan = KuroMath::Lerp(ConstParameter::Player::BET_SPEED_MIN_SPAN, ConstParameter::Player::BET_SPEED_MAX_SPAN,
+			int betSpan = KuroMath::Lerp(BET_SPEED_MIN_SPAN, BET_SPEED_MAX_SPAN,
 				m_consecutiveBetTimer.GetTimeRate());
 
 			//次にBETするまでの時間
