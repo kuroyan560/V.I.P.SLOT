@@ -13,6 +13,10 @@ namespace ConstParameter
 		const float FIELD_DEPTH = -20.0f;
 		//フィールド位置のZ軸とのオフセット（モデルの位置ズレ）
 		const float FIELD_DEPTH_MODEL_OFFSET = -5.2f;
+		//コインにかかる重力
+		const float COIN_GRAVITY = -0.002f;
+		//フィールド床の高さの半分
+		const float FIELD_HEIGHT_HALF = 1.3f;
 	}
 
 	namespace Player
@@ -104,8 +108,6 @@ namespace ConstParameter
 		/*--- コイン返却 ---*/
 		//スロット位置（返却コインの放出位置）
 		const Vec3<float>SLOT_POS_ON_BACK_CAM = { 0.0f,18.0f,22.0f };
-		//返却コインの重力
-		const float RETURN_COIN_GRAVITY = -0.002f;
 		//返却コインの寿命
 		const int RETURN_COIN_LIFE_TIME = 200;
 		//描画上の返却コインの放出スパン
@@ -133,7 +135,7 @@ namespace ConstParameter
 		const float POS_X_ABS = 43.0f;
 
 		//敵がいる空間のY軸座標下限
-		const float POS_Y_MIN = 1.0f;
+		const float POS_Y_MIN = Environment::FIELD_HEIGHT_HALF;
 		//敵がいる空間のY軸座標上限
 		const float POS_Y_MAX = 32.5f;
 

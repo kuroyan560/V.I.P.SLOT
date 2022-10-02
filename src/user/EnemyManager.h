@@ -3,6 +3,8 @@
 #include<array>
 #include<forward_list>
 #include"ConstParameters.h"
+#include"CoinPerform.h"
+#include"CoinObjectManager.h"
 
 class EnemyBreed;
 class Enemy;
@@ -16,6 +18,18 @@ class EnemyManager
 {
 	using ENEMY_TYPE = ConstParameter::Enemy::TYPE;
 
+	//敵が死んだらコインを落とす
+	CoinObjectManager m_dropCoinObjManager;
+	class DropCoinPerform : public CoinPerform
+	{
+		float m_fallAccel = 0.0f;
+		Vec3<float>m_move;
+	public:
+		DropCoinPerform(Vec3<float>arg_initMove) : m_move(arg_initMove) { m_move.z = 0.0f; }
+		void OnUpdate(Coins& arg_coin, float arg_timeScale)override;
+		void OnEmit(Coins& arg_coin)override {};
+	};
+
 	//血統
 	std::array<std::shared_ptr<EnemyBreed>, static_cast<int>(ENEMY_TYPE::NUM)>m_breeds;
 
@@ -27,10 +41,13 @@ class EnemyManager
 	//生存しているエネミー配列
 	std::array<std::forward_list<std::shared_ptr<Enemy>>, static_cast<int>(ENEMY_TYPE::NUM)>m_aliveEnemyArray;
 
+	//落としてプレイヤーに渡すコイン数
+	int m_dropCoinNumForPlayer;
+
 	//敵の登場時に呼び出す
 	void OnEnemyAppear(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	//敵の死亡時に呼び出す
-	void OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr);
+	void OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr, bool arg_dropCoin);
 public:
 	EnemyManager();
 	void Init(std::weak_ptr<CollisionManager>arg_collisionMgr);

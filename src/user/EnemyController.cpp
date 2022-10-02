@@ -37,7 +37,7 @@ void EnemySlideMove::OnInit(Enemy& arg_enemy)
 	}
 
 	//高さランダム
-	initPos.y = KuroFunc::GetRand(POS_Y_MIN, POS_Y_MAX);
+	initPos.y = KuroFunc::GetRand(POS_Y_MIN + 3.0f, POS_Y_MAX);
 
 	//フィールドのZに合わせる
 	initPos.z = POS_Z;

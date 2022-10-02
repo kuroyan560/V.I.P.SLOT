@@ -110,7 +110,7 @@ void ReturnCoinEmitter::Emit(int arg_coinNumSum, int arg_perCoinNum, const Trans
 void ReturnCoinEmitter::ReturnCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScale)
 {
 	m_move.y += m_fallAccel;
-	m_fallAccel += ConstParameter::Slot::RETURN_COIN_GRAVITY * arg_timeScale;
+	m_fallAccel += ConstParameter::Environment::COIN_GRAVITY * arg_timeScale;
 
 	auto pos = arg_coin.m_transform.GetPos();
 	pos += m_move * arg_timeScale;
