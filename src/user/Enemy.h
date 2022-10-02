@@ -64,4 +64,6 @@ public:
 
 	//生存フラグ
 	bool IsDead();
+	//ダメージで死んだか
+	bool IsKilled();
 };

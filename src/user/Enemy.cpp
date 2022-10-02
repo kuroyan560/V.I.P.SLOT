@@ -94,3 +94,8 @@ bool Enemy::IsDead()
 {
 	return m_hp <= 0 || m_controller->IsDead(*this);
 }
+
+bool Enemy::IsKilled()
+{
+	return m_hp <= 0;
+}
