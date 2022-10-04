@@ -148,7 +148,7 @@ void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<Collisio
 	{
 		AudioApp::Instance()->PlayWave(m_dropCoinReturnSE);
 	}
-	arg_player.lock()->GetVault().Add(dropCoinReturnNum);
+	arg_player.lock()->GetCoin(dropCoinReturnNum);
 }
 
 void EnemyManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)

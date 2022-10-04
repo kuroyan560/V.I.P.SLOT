@@ -85,7 +85,7 @@ void GameScene::OnUpdate()
 	m_player->Update(m_slotMachine, m_timeScale);
 
 	//スロットマシン
-	m_slotMachine->Update(m_player->GetVault(), m_timeScale);
+	m_slotMachine->Update(m_player, m_timeScale);
 
 	//敵マネージャ
 	m_enemyMgr->Update(m_timeScale, m_collisionMgr, m_player);

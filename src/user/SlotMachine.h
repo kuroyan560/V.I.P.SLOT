@@ -14,6 +14,7 @@ class ModelObject;
 class LightManager;
 class GameCamera;
 class TimeScale;
+class Player;
 
 class SlotMachine
 {
@@ -71,14 +72,14 @@ class SlotMachine
 	//絵柄を確認して全て一緒なら効果発動
 	bool CheckReelPattern();
 	//スロットの結果から演出を選ぶ
-	void SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern, CoinVault& arg_playersVault);
+	void SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern, std::weak_ptr<Player>& arg_player);
 	
 public:
 	SlotMachine();
 	//初期化
 	void Init();
 	//更新
-	void Update(CoinVault& arg_playersVault, const TimeScale& arg_timeScale);
+	void Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_timeScale);
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<GameCamera>arg_gameCam);
 

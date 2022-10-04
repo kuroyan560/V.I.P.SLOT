@@ -255,6 +255,11 @@ void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>
 	DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
 }
 
+void Player::GetCoin(int arg_coinNum)
+{
+	m_coinVault.Add(arg_coinNum);
+}
+
 const Transform& Player::GetTransform()const
 {
 	return m_modelObj->m_transform;

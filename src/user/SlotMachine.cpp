@@ -6,6 +6,7 @@
 #include"Importer.h"
 #include"GameCamera.h"
 #include"TimeScale.h"
+#include"Player.h"
 
 bool SlotMachine::CheckReelPattern()
 {
@@ -19,7 +20,7 @@ bool SlotMachine::CheckReelPattern()
 	return true;
 }
 
-void SlotMachine::SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern, CoinVault& arg_playersVault)
+void SlotMachine::SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern, std::weak_ptr<Player>& arg_player)
 {
 	using namespace ConstParameter::Slot;
 	using PATTERN = ConstParameter::Slot::PATTERN;
@@ -34,7 +35,7 @@ void SlotMachine::SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern, 
 		m_returnCoinEmitter.Emit(m_coinVault.GetNum(), RETURN_COIN_DRAW_NUM_PER, initTransform);
 
 		//プレイヤーにコイン返却
-		m_coinVault.Pass(arg_playersVault);
+		arg_player.lock()->GetCoin(m_coinVault);
 	}
 }
 
@@ -111,7 +112,7 @@ void SlotMachine::Init()
 //デバッグ用
 #include"UsersInput.h"
 
-void SlotMachine::Update(CoinVault& arg_playersVault, const TimeScale& arg_timeScale)
+void SlotMachine::Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_timeScale)
 {
 	//リール更新
 	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Update(arg_timeScale.GetTimeScale());
@@ -136,7 +137,7 @@ void SlotMachine::Update(CoinVault& arg_playersVault, const TimeScale& arg_timeS
 			if (m_lever++ == REEL::RIGHT && CheckReelPattern())
 			{
 				//効果を確認して演出の処理
-				SlotPerform(m_reels[REEL::LEFT].GetNowPattern(), arg_playersVault);
+				SlotPerform(m_reels[REEL::LEFT].GetNowPattern(), arg_player);
 			}
 		}
 	}
@@ -156,7 +157,7 @@ void SlotMachine::Update(CoinVault& arg_playersVault, const TimeScale& arg_timeS
 	if (int betCoinNum = m_betCoinObjManager.Update(arg_timeScale.GetTimeScale()))
 	{
 		//プレイヤーからコイン受け取り
-		arg_playersVault.Pass(m_coinVault, betCoinNum);
+		arg_player.lock()->PassCoin(m_coinVault, betCoinNum);
 		//メガホン拡縮
 		m_megaPhoneExpandTimer.Reset(ConstParameter::Slot::MEGA_PHONE_EXPAND_TIME);
 	}

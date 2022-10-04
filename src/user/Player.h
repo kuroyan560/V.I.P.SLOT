@@ -139,8 +139,29 @@ public:
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 
-	//所持金クラスゲッタ
-	CoinVault& GetVault() { return m_coinVault; }
+	//コインGET（＋n表示）
+	void GetCoin(int arg_coinNum);
+	void GetCoin(CoinVault& arg_coinVault)
+	{
+		arg_coinVault.Pass(m_coinVault);
+		GetCoin(0);
+	}
+	void GetCoin(CoinVault& arg_coinVault, int arg_coinNum)
+	{
+		arg_coinVault.Pass(m_coinVault, arg_coinNum);
+		GetCoin(0);
+	}
+
+	//コインを渡す
+	void PassCoin(CoinVault& arg_coinVault)
+	{
+		m_coinVault.Pass(arg_coinVault);
+	}
+	void PassCoin(CoinVault& arg_coinVault, int arg_coinNum)
+	{
+		m_coinVault.Pass(arg_coinVault, arg_coinNum);
+	}
+
 	//トランスフォームゲッタ
 	const Transform& GetTransform()const;
 };
