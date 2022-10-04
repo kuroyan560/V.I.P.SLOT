@@ -18,15 +18,15 @@ int CoinObjectManager::Update(float arg_timeScale)
 
 	for (auto& coin : m_coins)
 	{
+		//コイン演出
+		coin.Update(arg_timeScale);
+
 		//寿命切れ
 		if (coin.IsDead())
 		{
 			//演出終了したコインの枚数加算
 			finishCoinNum += coin.m_coinNum;
 		}
-
-		//コイン演出
-		coin.Update(arg_timeScale);
 	}
 
 	//死亡したら削除
