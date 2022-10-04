@@ -7,6 +7,7 @@
 #include"CollisionManager.h"
 #include"Coins.h"
 #include"TimeScale.h"
+#include"AudioApp.h"
 
 void EnemyManager::OnEnemyAppear(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
@@ -98,6 +99,9 @@ EnemyManager::EnemyManager()
 			m_enemys[typeIdx].emplace_front(std::make_shared<Enemy>(m_breeds[typeIdx]));
 		}
 	}
+
+	//SE読み込み
+	m_dropCoinReturnSE = AudioApp::Instance()->LoadAudio("resource/user/sound/coin.wav");
 }
 
 void EnemyManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
@@ -118,13 +122,10 @@ void EnemyManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 
 	//落としたコインリセット
 	m_dropCoinObjManager.Init();
-	m_dropCoinNumForPlayer = 0;
 }
 
-void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
+void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, CoinVault& arg_playerVault)
 {
-	m_dropCoinNumForPlayer = 0;
-
 	for (auto& aliveEnemys : m_aliveEnemyArray)
 	{
 		for (auto& enemy : aliveEnemys)
@@ -148,7 +149,12 @@ void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<Collisio
 			});
 	}
 
-	m_dropCoinNumForPlayer = m_dropCoinObjManager.Update(arg_timeScale.GetTimeScale());
+	int dropCoinReturnNum = m_dropCoinObjManager.Update(arg_timeScale.GetTimeScale());
+	if (dropCoinReturnNum)
+	{
+		AudioApp::Instance()->PlayWave(m_dropCoinReturnSE);
+	}
+	arg_playerVault.Add(dropCoinReturnNum);
 }
 
 void EnemyManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
