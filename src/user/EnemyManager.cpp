@@ -27,25 +27,22 @@ void EnemyManager::OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<
 		arg_collisionMgr.lock()->Remove(col);
 	}
 
-
 	//コインを落とす
 	if (arg_dropCoin)
 	{
-		//落としたコインの放出パワー下限
-		const float DROP_COIN_EMIT_POWER_MIN = 0.4f;
-		//落としたコインの放出パワー上限
-		const float DROP_COIN_EMIT_POWER_MAX = 1.4f;
+		//落としたコインの放出パワー
+		const float DROP_COIN_EMIT_POWER = 0.5f;
 		//放出パワーX方向の強さレート下限
-		const float DROP_COIN_EMIT_X_POWER_RATE_MIN = 0.0f;
+		const float DROP_COIN_EMIT_X_POWER_RATE_MIN = 0.05f;
 		//放出パワーX方向の強さレート上限
-		const float DROP_COIN_EMIT_X_POWER_RATE_MAX = 1.0f;
+		const float DROP_COIN_EMIT_X_POWER_RATE_MAX = 0.4f;
 		//放出パワーY方向の強さレート下限
 		const float DROP_COIN_EMIT_Y_POWER_RATE_MIN = 0.8f;
 		//放出パワーY方向の強さレート上限
 		const float DROP_COIN_EMIT_Y_POWER_RATE_MAX = 1.0f;
 
 		//放出パワー
-		const float power = KuroFunc::GetRand(DROP_COIN_EMIT_POWER_MIN, DROP_COIN_EMIT_POWER_MAX);
+		const float power = DROP_COIN_EMIT_POWER;
 
 		//放出ベクトル
 		float vec_y = KuroFunc::GetRand(DROP_COIN_EMIT_Y_POWER_RATE_MIN, DROP_COIN_EMIT_Y_POWER_RATE_MAX);
@@ -184,8 +181,24 @@ void EnemyManager::Appear(ENEMY_TYPE arg_type, std::weak_ptr<CollisionManager>ar
 	m_deadEnemyArray[typeIdx].pop_front();
 }
 
+EnemyManager::DropCoinPerform::DropCoinPerform(Vec3<float> arg_initMove, const Transform* arg_playerTransform)
+	: m_move(arg_initMove), m_playerTransform(arg_playerTransform)
+{
+	m_move.z = 0.0f;
+	//プレイヤーに回収される挙動の時間
+	const int COLLECT_TOTAL_TIME = 60;
+	m_collectTimer.Reset(COLLECT_TOTAL_TIME);
+}
+
 void EnemyManager::DropCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScale)
 {
+	//プレイヤーのトランスフォームポインタがアタッチされていない
+	if (m_playerTransform == nullptr)
+	{
+		printf("Error : The drop coin hasn't playerTransform's pointer.\n");
+		assert(0);
+	}
+
 	using namespace ConstParameter::Environment;
 
 	//跳ね返り時の移動量減衰率
@@ -194,17 +207,12 @@ void EnemyManager::DropCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScal
 	//接地時のX軸移動量減衰率
 	const float MOVE_X_DAMP_RATE_ON_GROUND = 0.9f;
 
-	//移動量が一定以下になったらプレイヤーが回収
-	const float MOVE_ABSOLUTE_MIN_FOR_COLLECT = 0.1f;
-	if (m_move.Length() < MOVE_ABSOLUTE_MIN_FOR_COLLECT)
-	{
-		m_collect = true;
-	}
+	//コインの座標取得
+	auto pos = arg_coin.m_transform.GetPos();
 
 	//自由挙動
 	if (!m_collect)
 	{
-		auto pos = arg_coin.m_transform.GetPos();
 		pos += m_move * arg_timeScale;
 
 		m_move.y += m_fallAccel;
@@ -220,6 +228,14 @@ void EnemyManager::DropCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScal
 			m_fallAccel = 0.0f;
 			m_move.x *= MOVE_X_DAMP_RATE_ON_GROUND;
 			m_move.y *= MOVE_REFLECT_RATE;
+			m_onGroundPos = pos;
+
+			//移動量が一定以下になったらプレイヤーが回収
+			const float MOVE_ABSOLUTE_MIN_FOR_COLLECT = 0.05f;
+			if (m_move.Length() < MOVE_ABSOLUTE_MIN_FOR_COLLECT)
+			{
+				m_collect = true;
+			}
 		}
 
 		//押し戻し（ステージ端）
@@ -233,15 +249,23 @@ void EnemyManager::DropCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScal
 			pos.x = FIELD_WIDTH_HALF;
 			m_move.x *= MOVE_REFLECT_RATE;
 		}
-		arg_coin.m_transform.SetPos(pos);
 	}
 	//プレイヤーに回収される挙動
 	else
 	{
+		//タイマー計測
+		m_collectTimer.UpdateTimer(arg_timeScale);
+		//プレイヤーのモデル中央座標取得h
+		auto playerPos = m_playerTransform->GetPos() + ConstParameter::Player::FIX_MODEL_CENTER_OFFSET;
+		//プレイヤーに向かう
+		pos = KuroMath::Ease(In, Quint, m_collectTimer.GetTimeRate(), m_onGroundPos, playerPos);
 	}
+
+	//変更後の座標を適用
+	arg_coin.m_transform.SetPos(pos);
 }
 
 bool EnemyManager::DropCoinPerform::IsDead(Coins& arg_coin)
 {
-	return m_collect && (m_playerTransform == nullptr);
+	return m_collectTimer.IsTimeUp();
 }

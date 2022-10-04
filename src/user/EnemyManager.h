@@ -27,16 +27,16 @@ class EnemyManager
 		float m_fallAccel = 0.0f;
 		//移動量
 		Vec3<float>m_move;
+		//落下地点
+		Vec3<float>m_onGroundPos;
 		//プレイヤーに回収される動き
 		bool m_collect = false;
 		//プレイヤーのトランスフォームポインタ
 		const Transform* m_playerTransform;
+		//プレイヤーに回収される動きの時間
+		Timer m_collectTimer;
 	public:
-		DropCoinPerform(Vec3<float>arg_initMove, const Transform* arg_playerTransform)
-			: m_move(arg_initMove), m_playerTransform(arg_playerTransform)
-		{
-			m_move.z = 0.0f; 
-		}
+		DropCoinPerform(Vec3<float>arg_initMove, const Transform* arg_playerTransform);
 		void OnUpdate(Coins& arg_coin, float arg_timeScale)override;
 		void OnEmit(Coins& arg_coin)override {};
 		bool IsDead(Coins& arg_coin)override;
