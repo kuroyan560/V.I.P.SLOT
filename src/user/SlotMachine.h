@@ -47,9 +47,16 @@ class SlotMachine
 	CoinObjectManager m_betCoinObjManager;
 	class BetCoinPerform : public CoinPerform
 	{
+		//寿命時間
+		Timer m_timer;
 	public:
+		BetCoinPerform(int arg_lifeTime)
+		{
+			m_timer.Reset(arg_lifeTime);
+		}
 		void OnUpdate(Coins& arg_coin, float arg_timeScale)override;
 		void OnEmit(Coins& arg_coin)override {};
+		bool IsDead(Coins& arg_coin)override { return m_timer.IsTimeUp(); }
 	};
 
 	//返却コインエミッター

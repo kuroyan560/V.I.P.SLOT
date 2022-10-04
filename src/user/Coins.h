@@ -14,11 +14,8 @@ public:
 	const Transform m_initTransform;
 	//自身のトランスフォーム
 	Transform m_transform;
-	//寿命時間
-	Timer m_timer;
-	//死亡フラグ
-	bool m_isDead = false;
 
-	Coins(int arg_coinNum, const Transform& arg_initTransform, int arg_lifeTime, CoinPerform* arg_perform);
+	Coins(int arg_coinNum, const Transform& arg_initTransform, CoinPerform* arg_perform);
 	void Update(float arg_timeScale);
+	bool IsDead();
 };

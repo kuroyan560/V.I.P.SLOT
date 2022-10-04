@@ -108,8 +108,6 @@ namespace ConstParameter
 		/*--- コイン返却 ---*/
 		//スロット位置（返却コインの放出位置）
 		const Vec3<float>SLOT_POS_ON_BACK_CAM = { 0.0f,18.0f,22.0f };
-		//返却コインの寿命
-		const int RETURN_COIN_LIFE_TIME = 200;
 		//描画上の返却コインの放出スパン
 		const int RETURN_COIN_EMIT_SPAN = 6;
 		//この値につき返却コイン1枚描画

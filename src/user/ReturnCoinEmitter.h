@@ -12,12 +12,16 @@ class ReturnCoinEmitter
 	CoinObjectManager m_returnCoinObjManager;
 	class ReturnCoinPerform : public CoinPerform
 	{
+		//—Ž‰º‰Á‘¬“x
 		float m_fallAccel = 0.0f;
+		//ˆÚ“®—Ê
 		Vec3<float>m_move;
+
 	public:
 		ReturnCoinPerform(Vec3<float>arg_initMove) : m_move(arg_initMove) {	}
 		void OnUpdate(Coins& arg_coin, float arg_timeScale)override;
 		void OnEmit(Coins& arg_coin)override {};
+		bool IsDead(Coins& arg_coin)override;
 	};
 
 	struct ReturnCoin

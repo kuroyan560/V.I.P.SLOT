@@ -8,6 +8,7 @@
 #include"Coins.h"
 #include"TimeScale.h"
 #include"AudioApp.h"
+#include"Player.h"
 
 void EnemyManager::OnEnemyAppear(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
@@ -18,7 +19,7 @@ void EnemyManager::OnEnemyAppear(std::shared_ptr<Enemy>& arg_enemy, std::weak_pt
 	arg_collisionMgr.lock()->Register("Enemy", arg_enemy->m_colliders);
 }
 
-void EnemyManager::OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr, bool arg_dropCoin)
+void EnemyManager::OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr, bool arg_dropCoin, const Transform* arg_playerTransform)
 {
 	//コライダー登録解除
 	for (auto& col : arg_enemy->m_colliders)
@@ -43,9 +44,6 @@ void EnemyManager::OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<
 		//放出パワーY方向の強さレート上限
 		const float DROP_COIN_EMIT_Y_POWER_RATE_MAX = 1.0f;
 
-		//落としたコインの寿命
-		const int DROP_COIN_LIFE_TIME = 400;
-
 		//放出パワー
 		const float power = KuroFunc::GetRand(DROP_COIN_EMIT_POWER_MIN, DROP_COIN_EMIT_POWER_MAX);
 
@@ -61,8 +59,7 @@ void EnemyManager::OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<
 		m_dropCoinObjManager.Add(
 			arg_enemy->m_coinVault.GetNum(),
 			arg_enemy->m_transform,
-			DROP_COIN_LIFE_TIME,
-			new DropCoinPerform(initMove));
+			new DropCoinPerform(initMove, arg_playerTransform));
 	}
 }
 
@@ -110,7 +107,7 @@ void EnemyManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	{
 		for (auto& enemy : m_aliveEnemyArray[typeIdx])
 		{
-			OnEnemyDead(enemy, arg_collisionMgr, false);
+			OnEnemyDead(enemy, arg_collisionMgr, false, nullptr);
 		}
 
 		//生存エネミー配列を空に
@@ -124,7 +121,7 @@ void EnemyManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	m_dropCoinObjManager.Init();
 }
 
-void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, CoinVault& arg_playerVault)
+void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player)
 {
 	for (auto& aliveEnemys : m_aliveEnemyArray)
 	{
@@ -135,7 +132,7 @@ void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<Collisio
 			//死んでいたら
 			if (enemy->IsDead())
 			{
-				OnEnemyDead(enemy, arg_collisionMgr, enemy->IsKilled());
+				OnEnemyDead(enemy, arg_collisionMgr, enemy->IsKilled(), &arg_player.lock()->GetTransform());
 			}
 		}
 	}
@@ -154,7 +151,7 @@ void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<Collisio
 	{
 		AudioApp::Instance()->PlayWave(m_dropCoinReturnSE);
 	}
-	arg_playerVault.Add(dropCoinReturnNum);
+	arg_player.lock()->GetVault().Add(dropCoinReturnNum);
 }
 
 void EnemyManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
@@ -197,34 +194,54 @@ void EnemyManager::DropCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScal
 	//接地時のX軸移動量減衰率
 	const float MOVE_X_DAMP_RATE_ON_GROUND = 0.9f;
 
-	auto pos = arg_coin.m_transform.GetPos();
-	pos += m_move * arg_timeScale;
-
-	m_move.y += m_fallAccel;
-	m_fallAccel += COIN_GRAVITY * arg_timeScale;
-
-	//X方向の移動量は空気抵抗で減衰
-	m_move.x = KuroMath::Lerp(m_move.x, 0.0f, 0.01f);
-
-	//押し戻し（床）
-	if (pos.y < FIELD_HEIGHT_HALF)
+	//移動量が一定以下になったらプレイヤーが回収
+	const float MOVE_ABSOLUTE_MIN_FOR_COLLECT = 0.1f;
+	if (m_move.Length() < MOVE_ABSOLUTE_MIN_FOR_COLLECT)
 	{
-		pos.y = FIELD_HEIGHT_HALF;
-		m_fallAccel = 0.0f;
-		m_move.x *= MOVE_X_DAMP_RATE_ON_GROUND;
-		m_move.y *= MOVE_REFLECT_RATE;
+		m_collect = true;
 	}
 
-	//押し戻し（ステージ端）
-	if (pos.x < -FIELD_WIDTH_HALF)
+	//自由挙動
+	if (!m_collect)
 	{
-		pos.x = -FIELD_WIDTH_HALF;
-		m_move.x *= MOVE_REFLECT_RATE;
+		auto pos = arg_coin.m_transform.GetPos();
+		pos += m_move * arg_timeScale;
+
+		m_move.y += m_fallAccel;
+		m_fallAccel += COIN_GRAVITY * arg_timeScale;
+
+		//X方向の移動量は空気抵抗で減衰
+		m_move.x = KuroMath::Lerp(m_move.x, 0.0f, 0.01f);
+
+		//押し戻し（床）
+		if (pos.y < FIELD_HEIGHT_HALF)
+		{
+			pos.y = FIELD_HEIGHT_HALF;
+			m_fallAccel = 0.0f;
+			m_move.x *= MOVE_X_DAMP_RATE_ON_GROUND;
+			m_move.y *= MOVE_REFLECT_RATE;
+		}
+
+		//押し戻し（ステージ端）
+		if (pos.x < -FIELD_WIDTH_HALF)
+		{
+			pos.x = -FIELD_WIDTH_HALF;
+			m_move.x *= MOVE_REFLECT_RATE;
+		}
+		else if (FIELD_WIDTH_HALF < pos.x)
+		{
+			pos.x = FIELD_WIDTH_HALF;
+			m_move.x *= MOVE_REFLECT_RATE;
+		}
+		arg_coin.m_transform.SetPos(pos);
 	}
-	else if (FIELD_WIDTH_HALF < pos.x)
+	//プレイヤーに回収される挙動
+	else
 	{
-		pos.x = FIELD_WIDTH_HALF;
-		m_move.x *= MOVE_REFLECT_RATE;
 	}
-	arg_coin.m_transform.SetPos(pos);
+}
+
+bool EnemyManager::DropCoinPerform::IsDead(Coins& arg_coin)
+{
+	return m_collect && (m_playerTransform == nullptr);
 }

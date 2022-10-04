@@ -6,6 +6,7 @@
 #include"Timer.h"
 #include<vector>
 #include"CollisionCallBack.h"
+#include"Transform.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -138,5 +139,8 @@ public:
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 
+	//所持金クラスゲッタ
 	CoinVault& GetVault() { return m_coinVault; }
+	//トランスフォームゲッタ
+	const Transform& GetTransform()const;
 };

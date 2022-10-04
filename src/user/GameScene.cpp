@@ -88,7 +88,7 @@ void GameScene::OnUpdate()
 	m_slotMachine->Update(m_player->GetVault(), m_timeScale);
 
 	//敵マネージャ
-	m_enemyMgr->Update(m_timeScale, m_collisionMgr, m_player->GetVault());
+	m_enemyMgr->Update(m_timeScale, m_collisionMgr, m_player);
 }
 
 

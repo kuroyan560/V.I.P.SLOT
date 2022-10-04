@@ -189,13 +189,15 @@ void SlotMachine::Bet(int arg_coinNum, const Transform& arg_emitTransform)
 {
 	//BETされたコイン情報追加
 	m_betCoinObjManager.Add(
-		arg_coinNum, arg_emitTransform, ConstParameter::Slot::UNTIL_THROW_COIN_TO_BET, new BetCoinPerform());
+		arg_coinNum, arg_emitTransform, new BetCoinPerform(ConstParameter::Slot::UNTIL_THROW_COIN_TO_BET));
 }
 
 void SlotMachine::BetCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScale)
 {
+	m_timer.UpdateTimer(arg_timeScale);
+
 	//コインの座標を算出してトランスフォームに適用
-	Vec3<float>newPos = KuroMath::Lerp(arg_coin.m_initTransform.GetPos(), ConstParameter::Slot::COIN_PORT_POS, arg_coin.m_timer.GetTimeRate());
+	Vec3<float>newPos = KuroMath::Lerp(arg_coin.m_initTransform.GetPos(), ConstParameter::Slot::COIN_PORT_POS, m_timer.GetTimeRate());
 	arg_coin.m_transform.SetPos(newPos);
 }
 

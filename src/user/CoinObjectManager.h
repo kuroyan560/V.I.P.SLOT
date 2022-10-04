@@ -31,5 +31,5 @@ public:
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 
 	//ƒRƒCƒ“’Ç‰Á
-	void Add(int arg_coinNum, const Transform& arg_initTransform, int arg_lifeTime, CoinPerform* arg_perform);
+	void Add(int arg_coinNum, const Transform& arg_initTransform, CoinPerform* arg_perform);
 };

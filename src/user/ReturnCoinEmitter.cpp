@@ -63,7 +63,7 @@ int ReturnCoinEmitter::Update(float arg_timeScale)
 
 				//返却コイン描画
 				m_returnCoinObjManager.Add(returnCoin.m_perCoinNum,
-					returnCoin.m_initTransform, RETURN_COIN_LIFE_TIME, new ReturnCoinPerform(initMove));
+					returnCoin.m_initTransform, new ReturnCoinPerform(initMove));
 
 				//放出した数カウント
 				count++;
@@ -120,4 +120,11 @@ void ReturnCoinEmitter::ReturnCoinPerform::OnUpdate(Coins& arg_coin, float arg_t
 	m_move.z = KuroMath::Lerp(m_move.z, 0.0f, 0.01f);
 
 	arg_coin.m_transform.SetPos(pos);
+}
+
+bool ReturnCoinEmitter::ReturnCoinPerform::IsDead(Coins& arg_coin)
+{
+	const float COIN_DEAD_LINE_Y = -3.0f;
+	auto pos = arg_coin.m_transform.GetPos();
+	return pos.y < COIN_DEAD_LINE_Y;
 }

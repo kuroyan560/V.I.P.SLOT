@@ -255,6 +255,11 @@ void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>
 	DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
 }
 
+const Transform& Player::GetTransform()const
+{
+	return m_modelObj->m_transform;
+}
+
 void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter, 
 	std::weak_ptr<Collider>arg_otherCollider,
 	const unsigned char& arg_otherAttribute, 
