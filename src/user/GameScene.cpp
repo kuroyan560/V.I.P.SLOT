@@ -57,6 +57,8 @@ void GameScene::OnInitialize()
 
 	//敵マネージャ初期化
 	m_enemyMgr->Init(m_collisionMgr);
+
+	m_emitEnemyTimer.Reset(m_emitEnemySpan);
 }
 
 void GameScene::OnUpdate()
@@ -66,13 +68,11 @@ void GameScene::OnUpdate()
 	{
 		this->Initialize();
 	}
-	if (UsersInput::Instance()->KeyOnTrigger(DIK_E))
+	//敵出現
+	if (m_emitEnemyTimer.UpdateTimer(m_timeScale.GetTimeScale()))
 	{
 		m_enemyMgr->Appear(ConstParameter::Enemy::TYPE::WEAK_SLIDE, m_collisionMgr);
-	}
-	if (UsersInput::Instance()->KeyOnTrigger(DIK_S))
-	{
-		m_gameCam->Shake(60, 2, 2.0f, 1.0f);
+		m_emitEnemyTimer.Reset();
 	}
 
 	//コリジョンマネージャ
@@ -131,6 +131,13 @@ void GameScene::OnDraw()
 
 void GameScene::OnImguiDebug()
 {
+	ImGui::Begin("Debug");
+	if (ImGui::DragInt("WeakEnemyEmitSpan", &m_emitEnemySpan))
+	{
+		if (m_emitEnemySpan < 1)m_emitEnemySpan = 1;
+		m_emitEnemyTimer.Reset(m_emitEnemySpan);
+	}
+	ImGui::End();
 }
 
 void GameScene::OnFinalize()

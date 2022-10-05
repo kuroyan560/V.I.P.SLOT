@@ -1,6 +1,7 @@
 #pragma once
 #include"KuroEngine.h"
 #include"TimeScale.h"
+#include"Timer.h"
 class Player;
 class SlotMachine;
 class LightManager;
@@ -40,6 +41,10 @@ class GameScene : public BaseScene
 
 	//コリジョンマネージャ
 	std::shared_ptr<CollisionManager>m_collisionMgr;
+
+	//デバッグ用
+	Timer m_emitEnemyTimer;
+	int m_emitEnemySpan = 90;
 
 public:
 	GameScene();
