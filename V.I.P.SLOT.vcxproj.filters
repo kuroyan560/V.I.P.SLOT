@@ -316,6 +316,9 @@
     <ClCompile Include="src\user\EnemyKillCoinEffect.cpp">
       <Filter>src\user\Enemy</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\PlayerAttackHitEffect.cpp">
+      <Filter>src\user\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -602,6 +605,9 @@
     </ClInclude>
     <ClInclude Include="src\user\EnemyKillCoinEffect.h">
       <Filter>src\user\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\PlayerAttackHitEffect.h">
+      <Filter>src\user\Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

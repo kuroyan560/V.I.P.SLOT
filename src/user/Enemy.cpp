@@ -68,9 +68,6 @@ int Enemy::Damage(int arg_amount)
 {
 	using namespace ConstParameter::Enemy;
 
-	//–³“GŽžŠÔ’†
-	if (!m_damagedInvincibleTimer.IsTimeUp())return 0;
-
 	m_hp -= arg_amount;
 	m_controller->OnDamage(*this);
 

@@ -122,6 +122,9 @@ void Player::Init(std::weak_ptr<GameCamera>arg_cam)
 
 	//攻撃コールバック
 	m_attackCallBack->Init();
+	
+	//エフェクトの初期化
+	m_attackHitEffect.Init();
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
@@ -244,6 +247,9 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 
 	//攻撃コールバック
 	m_attackCallBack->Update(arg_timeScale.GetTimeScale());
+
+	//エフェクトの更新
+	m_attackHitEffect.Update(arg_timeScale.GetTimeScale());
 }
 
 #include"DrawFunc3D.h"
@@ -253,6 +259,11 @@ void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>
 
 	//DrawFunc3D::DrawADSShadingModel(*LigMgr.lock(), m_modelObj, *Cam.lock(), AlphaBlendMode_None);
 	DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
+}
+
+void Player::EffectDraw(std::weak_ptr<Camera> arg_cam)
+{
+	m_attackHitEffect.Draw(arg_cam);
 }
 
 void Player::GetCoin(int arg_coinNum)
@@ -357,8 +368,14 @@ void Player::AttackCallBack::OnCollision(const Vec3<float>& arg_inter, std::weak
 	//プレイヤーより衝突点が上（踏みつけできない）
 	if (m_parent->m_modelObj->m_transform.GetPos().y + FIX_MODEL_CENTER_OFFSET.y < arg_inter.y)return;
 
+	//敵が無敵か
 	auto enemy = arg_otherCollider.lock()->GetParentObject<Enemy>();
-	enemy->Damage();
+	if (enemy->IsInvincible())return;
+
+	int coinNum = enemy->Damage();
+
+	//m_parent->m_attackHitEffect.Emit(m_parent->GetCenterPos());
+	m_parent->m_attackHitEffect.Emit(arg_inter);
 
 	m_parent->Jump();
 	AudioApp::Instance()->PlayWave(m_stepEnemySE);

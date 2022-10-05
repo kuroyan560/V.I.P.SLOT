@@ -231,6 +231,7 @@
     <ClCompile Include="src\user\Pattern.cpp" />
     <ClCompile Include="src\user\PatternManager.cpp" />
     <ClCompile Include="src\user\Player.cpp" />
+    <ClCompile Include="src\user\PlayerAttackHitEffect.cpp" />
     <ClCompile Include="src\user\Reel.cpp" />
     <ClCompile Include="src\user\RenderTargetManager.cpp" />
     <ClCompile Include="src\user\ReturnCoinEmitter.cpp" />
@@ -328,6 +329,7 @@
     <ClInclude Include="src\user\Pattern.h" />
     <ClInclude Include="src\user\PatternManager.h" />
     <ClInclude Include="src\user\Player.h" />
+    <ClInclude Include="src\user\PlayerAttackHitEffect.h" />
     <ClInclude Include="src\user\Reel.h" />
     <ClInclude Include="src\user\RenderTargetManager.h" />
     <ClInclude Include="src\user\ReturnCoinEmitter.h" />

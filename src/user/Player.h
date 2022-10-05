@@ -7,6 +7,7 @@
 #include<vector>
 #include"CollisionCallBack.h"
 #include"Transform.h"
+#include"PlayerAttackHitEffect.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -127,6 +128,7 @@ class Player
 		bool GetIsInvincible()const { return !m_invincibleTimer.IsTimeUp(); }
 	};
 	std::shared_ptr<AttackCallBack>m_attackCallBack;
+	PlayerAttackHitEffect m_attackHitEffect;
 
 	void Jump();
 	
@@ -138,6 +140,8 @@ public:
 	void Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale);
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
+	//エフェクト描画
+	void EffectDraw(std::weak_ptr<Camera>arg_cam);
 
 	//コインGET（＋n表示）
 	void GetCoin(int arg_coinNum);

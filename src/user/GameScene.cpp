@@ -122,6 +122,11 @@ void GameScene::OnDraw()
 	//Collider::DebugDrawAllColliders(*m_gameCam->GetFrontCam());
 	m_collisionMgr->DebugDraw(*m_gameCam->GetFrontCam());
 #endif
+
+	//デプスステンシルクリア
+	rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_STENCIL);
+	//エフェクト描画
+	m_player->EffectDraw(m_gameCam->GetFrontCam());
 }
 
 void GameScene::OnImguiDebug()

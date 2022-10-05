@@ -66,4 +66,9 @@ public:
 	bool IsDead();
 	//ƒ_ƒ[ƒW‚Å€‚ñ‚¾‚©
 	bool IsKilled();
+	//–³“Gó‘Ô‚©
+	bool IsInvincible()
+	{
+		return !m_damagedInvincibleTimer.IsTimeUp();
+	}
 };
