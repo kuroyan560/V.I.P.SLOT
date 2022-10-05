@@ -31,18 +31,18 @@ void EnemyManager::OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<
 	if (arg_dropCoin)
 	{
 		//落としたコインの放出パワー
-		const float DROP_COIN_EMIT_POWER = 0.5f;
+		static const float DROP_COIN_EMIT_POWER = 0.5f;
 		//放出パワーX方向の強さレート下限
-		const float DROP_COIN_EMIT_X_POWER_RATE_MIN = 0.05f;
+		static const float DROP_COIN_EMIT_X_POWER_RATE_MIN = 0.05f;
 		//放出パワーX方向の強さレート上限
-		const float DROP_COIN_EMIT_X_POWER_RATE_MAX = 0.4f;
+		static const float DROP_COIN_EMIT_X_POWER_RATE_MAX = 0.4f;
 		//放出パワーY方向の強さレート下限
-		const float DROP_COIN_EMIT_Y_POWER_RATE_MIN = 0.8f;
+		static const float DROP_COIN_EMIT_Y_POWER_RATE_MIN = 0.8f;
 		//放出パワーY方向の強さレート上限
-		const float DROP_COIN_EMIT_Y_POWER_RATE_MAX = 1.0f;
+		static const float DROP_COIN_EMIT_Y_POWER_RATE_MAX = 1.0f;
 
 		//放出パワー
-		const float power = DROP_COIN_EMIT_POWER;
+		static const float power = DROP_COIN_EMIT_POWER;
 
 		//放出ベクトル
 		float vec_y = KuroFunc::GetRand(DROP_COIN_EMIT_Y_POWER_RATE_MIN, DROP_COIN_EMIT_Y_POWER_RATE_MAX);
