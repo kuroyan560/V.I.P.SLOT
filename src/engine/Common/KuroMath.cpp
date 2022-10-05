@@ -4,12 +4,19 @@
 #pragma region Easing
 KuroMath::EasingFunction KuroMath::easing[EASE_CHANGE_TYPE_NUM][EASING_TYPE_NUM] =
 {
-    {QuadIn,CubicIn,QuartIn,QuintIn,SineIn,ExpIn,CircIn,ElasticIn,BackIn,BounceIn},
-     {QuadOut,CubicOut,QuartOut,QuintOut,SineOut,ExpOut,CircOut,ElasticOut,BackOut,BounceOut},
-     {QuadInOut,CubicInOut,QuartInOut,QuintInOut,SineInOut,ExpInOut,CircInOut,ElasticInOut,BackInOut,BounceInOut}
+    {LinerFunc,QuadIn,CubicIn,QuartIn,QuintIn,SineIn,ExpIn,CircIn,ElasticIn,BackIn,BounceIn},
+     {LinerFunc,QuadOut,CubicOut,QuartOut,QuintOut,SineOut,ExpOut,CircOut,ElasticOut,BackOut,BounceOut},
+     {LinerFunc,QuadInOut,CubicInOut,QuartInOut,QuintInOut,SineInOut,ExpInOut,CircInOut,ElasticInOut,BackInOut,BounceInOut}
 };
 
 const float PI = 3.14159265359f;
+
+float KuroMath::LinerFunc(float t, float totaltime, float min, float max)
+{
+    float rate = t / totaltime;
+    if (abs(min - max) < 0.001f)return max;
+    return (1 - rate) * min + rate * max;
+}
 
 float KuroMath::QuadIn(float t, float totaltime, float min, float max)
 {
@@ -390,40 +397,6 @@ Vec4<float> KuroMath::Ease(EASE_CHANGE_TYPE EaseChangeType, EASING_TYPE EasingTy
     return Ease(EaseChangeType, EasingType, Rate, 1.0f, Min, Max);
 }
 
-#pragma endregion
-
-
-#pragma region Lerp
-
-float KuroMath::Lerp(float Min, float Max, float Rate)
-{
-    if (abs(Min - Max) < 0.001f)return Max;
-    return (1 - Rate) * Min + Rate * Max;
-}
-
-Vec2<float> KuroMath::Lerp(Vec2<float> Min, Vec2<float> Max, float Rate)
-{
-    return Vec2<float>(
-        Lerp(Min.x, Max.x, Rate),
-        Lerp(Min.y, Max.y, Rate));
-}
-
-Vec3<float> KuroMath::Lerp(Vec3<float> Min, Vec3<float> Max, float Rate)
-{
-    return Vec3<float>(
-        Lerp(Min.x, Max.x, Rate),
-        Lerp(Min.y, Max.y, Rate),
-        Lerp(Min.z, Max.z, Rate));
-}
-
-Vec4<float> KuroMath::Lerp(Vec4<float> Min, Vec4<float> Max, float Rate)
-{
-    return Vec4<float>(
-        Lerp(Min.x, Max.x, Rate),
-        Lerp(Min.y, Max.y, Rate),
-        Lerp(Min.z, Max.z, Rate),
-        Lerp(Min.w, Max.w, Rate));
-}
 #pragma endregion
 
 #pragma region Spline

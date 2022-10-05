@@ -18,12 +18,14 @@ enum EASE_CHANGE_TYPE
 };
 enum EASING_TYPE
 {
-    Quad, Cubic, Quart, Quint, Sine, Exp, Circ, Elastic, Back, Bounce, EASING_TYPE_NUM
+    Liner,Quad, Cubic, Quart, Quint, Sine, Exp, Circ, Elastic, Back, Bounce, EASING_TYPE_NUM
 };
 
 class KuroMath
 {
 private:
+    static float LinerFunc(float t, float totaltime, float min, float max);
+
     static float QuadIn(float t, float totaltime, float min, float max);
     static float QuadOut(float t, float totaltime, float min, float max);
     static float QuadInOut(float t, float totaltime, float min, float max);
@@ -80,34 +82,38 @@ public:
     static Vec3<float> Ease(EASE_CHANGE_TYPE EaseChangeType, EASING_TYPE EasingType, float Rate, Vec3<float> Min, Vec3<float> Max);
     static Vec4<float> Ease(EASE_CHANGE_TYPE EaseChangeType, EASING_TYPE EasingType, float Rate, Vec4<float> Min, Vec4<float> Max);
     
-    static float Lerp(float Min, float Max, float Rate);
-    static Vec2<float> Lerp(Vec2<float> Min, Vec2<float> Max, float Rate);
-    static Vec3<float> Lerp(Vec3<float> Min, Vec3<float> Max, float Rate);
-    static Vec4<float> Lerp(Vec4<float> Min, Vec4<float> Max, float Rate);
+    static float Lerp(float Min, float Max, float Rate)
+    {
+        return Ease(In, Liner, Rate, Min, Max);
+    }
+    static Vec2<float> Lerp(Vec2<float> Min, Vec2<float> Max, float Rate)
+    {
+        return Ease(In, Liner, Rate, Min, Max);
+    }
+    static Vec3<float> Lerp(Vec3<float> Min, Vec3<float> Max, float Rate)
+    {
+        return Ease(In, Liner, Rate, Min, Max);
+    }
+    static Vec4<float> Lerp(Vec4<float> Min, Vec4<float> Max, float Rate)
+    {
+        return Ease(In, Liner, Rate, Min, Max);
+    }
 
     static float Lerp(float Min, float Max, float T, float TotalTime)
     {
-        if (T < 0)T = 0;
-        if (TotalTime < T)T = TotalTime;
-        return Lerp(Min, Max, T / TotalTime);
+        return Ease(In, Liner, T, TotalTime, Min, Max);
     }
     static Vec2<float> Lerp(Vec2<float> Min, Vec2<float> Max, float T, float TotalTime)
     {
-        if (T < 0)T = 0;
-        if (TotalTime < T)T = TotalTime;
-        return Lerp(Min, Max, T / TotalTime);
+        return Ease(In, Liner, T, TotalTime, Min, Max);
     }
     static Vec3<float> Lerp(Vec3<float> Min, Vec3<float> Max, float T, float TotalTime)
     {
-        if (T < 0)T = 0;
-        if (TotalTime < T)T = TotalTime;
-        return Lerp(Min, Max, T / TotalTime);
+        return Ease(In, Liner, T, TotalTime, Min, Max);
     }
     static Vec4<float> Lerp(Vec4<float> Min, Vec4<float> Max, float T, float TotalTime)
     {
-        if (T < 0)T = 0;
-        if (TotalTime < T)T = TotalTime;
-        return Lerp(Min, Max, T / TotalTime);
+        return Ease(In, Liner, T, TotalTime, Min, Max);
     }
 
     static float GetSpline(const float& T, const int& P1Idx, const std::vector<float>& Array, bool Loop = false);
