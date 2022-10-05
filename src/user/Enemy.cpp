@@ -68,7 +68,7 @@ int Enemy::Damage(int arg_amount)
 {
 	using namespace ConstParameter::Enemy;
 
-	m_hp -= arg_amount;
+	//m_hp -= arg_amount;
 	m_controller->OnDamage(*this);
 
 	//”íƒ_ƒ[ƒWŽžˆê’èŽžŠÔ–³“G‚É
