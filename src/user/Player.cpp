@@ -283,6 +283,8 @@ void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter,
 {
 	using namespace ConstParameter::Player;
 
+	return;
+
 	//–³“GŽžŠÔ’†‚©
 	if (!m_invincibleTimer.IsTimeUp())return;
 	if (m_parent->m_attackCallBack->GetIsInvincible())return;
