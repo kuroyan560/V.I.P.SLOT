@@ -123,9 +123,9 @@ void EnemyManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 
 void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player)
 {
-	for (auto& aliveEnemys : m_aliveEnemyArray)
+	for (int enemyTypeIdx = 0; enemyTypeIdx < static_cast<int>(ENEMY_TYPE::NUM); ++enemyTypeIdx)
 	{
-		for (auto& enemy : aliveEnemys)
+		for (auto& enemy : m_aliveEnemyArray[enemyTypeIdx])
 		{
 			enemy->Update(arg_timeScale);
 
@@ -133,6 +133,8 @@ void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<Collisio
 			if (enemy->IsDead())
 			{
 				OnEnemyDead(enemy, arg_collisionMgr, enemy->IsKilled(), arg_player);
+				//Ž€–S“G”z—ñ‚É’Ç‰Á
+				m_deadEnemyArray[enemyTypeIdx].push_front(enemy);
 			}
 		}
 	}
