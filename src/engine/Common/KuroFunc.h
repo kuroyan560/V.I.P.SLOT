@@ -47,9 +47,14 @@ namespace KuroFunc
 	//基準の値から前後乱数算出
 	int GetRandFromCenter(int CenterNum, int Range);
 
-
-	//指定した桁の数字を取り出す
-	int GetSpecifiedDigitNum(int From, int Digit);
+	/// <summary>
+	/// 指定した桁数の数字を取得
+	/// </summary>
+	/// <param name="From">取得先</param>
+	/// <param name="Digit">指定桁数</param>
+	/// <param name="CountFromLeft">桁数を左から数えるか</param>
+	/// <returns></returns>
+	int GetSpecifiedDigitNum(int From, int Digit, bool CountFromLeft);
 	//桁数を算出
 	int GetDigit(int Num);
 

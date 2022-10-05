@@ -19,7 +19,7 @@ void EnemyManager::OnEnemyAppear(std::shared_ptr<Enemy>& arg_enemy, std::weak_pt
 	arg_collisionMgr.lock()->Register("Enemy", arg_enemy->m_colliders);
 }
 
-void EnemyManager::OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr, bool arg_dropCoin, const Transform* arg_playerTransform)
+void EnemyManager::OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr, bool arg_dropCoin, const std::weak_ptr<Player>& arg_player)
 {
 	//コライダー登録解除
 	for (auto& col : arg_enemy->m_colliders)
@@ -56,7 +56,7 @@ void EnemyManager::OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<
 		m_dropCoinObjManager.Add(
 			arg_enemy->m_coinVault.GetNum(),
 			arg_enemy->m_transform,
-			new DropCoinPerform(initMove, arg_playerTransform));
+			new DropCoinPerform(initMove, arg_player));
 	}
 }
 
@@ -104,7 +104,7 @@ void EnemyManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	{
 		for (auto& enemy : m_aliveEnemyArray[typeIdx])
 		{
-			OnEnemyDead(enemy, arg_collisionMgr, false, nullptr);
+			OnEnemyDead(enemy, arg_collisionMgr, false, std::weak_ptr<Player>());
 		}
 
 		//生存エネミー配列を空に
@@ -116,6 +116,9 @@ void EnemyManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 
 	//落としたコインリセット
 	m_dropCoinObjManager.Init();
+
+	//落としたコインをプレイヤーが拾った際のエフェクト
+	m_dropCoinEffect.Init();
 }
 
 void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player)
@@ -129,7 +132,7 @@ void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<Collisio
 			//死んでいたら
 			if (enemy->IsDead())
 			{
-				OnEnemyDead(enemy, arg_collisionMgr, enemy->IsKilled(), &arg_player.lock()->GetTransform());
+				OnEnemyDead(enemy, arg_collisionMgr, enemy->IsKilled(), arg_player);
 			}
 		}
 	}
@@ -143,10 +146,14 @@ void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<Collisio
 			});
 	}
 
+	//落としたコインをプレイヤーが拾った際のエフェクト
+	m_dropCoinEffect.Update(arg_timeScale.GetTimeScale());
+
 	int dropCoinReturnNum = m_dropCoinObjManager.Update(arg_timeScale.GetTimeScale());
 	if (dropCoinReturnNum)
 	{
 		AudioApp::Instance()->PlayWave(m_dropCoinReturnSE);
+		m_dropCoinEffect.Emit(arg_player.lock()->GetCenterPos(), dropCoinReturnNum);
 	}
 	arg_player.lock()->GetCoin(dropCoinReturnNum);
 }
@@ -162,6 +169,9 @@ void EnemyManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<
 	}
 
 	m_dropCoinObjManager.Draw(arg_lightMgr, arg_cam);
+
+	//落としたコインをプレイヤーが拾った際のエフェクト
+	m_dropCoinEffect.Draw(arg_lightMgr, arg_cam);
 }
 
 void EnemyManager::Appear(ENEMY_TYPE arg_type, std::weak_ptr<CollisionManager>arg_collisionMgr)
@@ -181,8 +191,8 @@ void EnemyManager::Appear(ENEMY_TYPE arg_type, std::weak_ptr<CollisionManager>ar
 	m_deadEnemyArray[typeIdx].pop_front();
 }
 
-EnemyManager::DropCoinPerform::DropCoinPerform(Vec3<float> arg_initMove, const Transform* arg_playerTransform)
-	: m_move(arg_initMove), m_playerTransform(arg_playerTransform)
+EnemyManager::DropCoinPerform::DropCoinPerform(Vec3<float> arg_initMove, const std::weak_ptr<Player> arg_player)
+	: m_move(arg_initMove), m_player(arg_player)
 {
 	m_move.z = 0.0f;
 	//プレイヤーに回収される挙動の時間
@@ -193,7 +203,7 @@ EnemyManager::DropCoinPerform::DropCoinPerform(Vec3<float> arg_initMove, const T
 void EnemyManager::DropCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScale)
 {
 	//プレイヤーのトランスフォームポインタがアタッチされていない
-	if (m_playerTransform == nullptr)
+	if (m_player.expired())
 	{
 		printf("Error : The drop coin hasn't playerTransform's pointer.\n");
 		assert(0);
@@ -255,8 +265,8 @@ void EnemyManager::DropCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScal
 	{
 		//タイマー計測
 		m_collectTimer.UpdateTimer(arg_timeScale);
-		//プレイヤーのモデル中央座標取得h
-		auto playerPos = m_playerTransform->GetPos() + ConstParameter::Player::FIX_MODEL_CENTER_OFFSET;
+		//プレイヤーのモデル中央座標取得
+		auto playerPos = m_player.lock()->GetCenterPos();
 		//プレイヤーに向かう
 		pos = KuroMath::Ease(In, Quint, m_collectTimer.GetTimeRate(), m_onGroundPos, playerPos);
 	}

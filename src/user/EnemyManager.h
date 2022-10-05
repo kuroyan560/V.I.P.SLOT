@@ -5,6 +5,7 @@
 #include"ConstParameters.h"
 #include"CoinPerform.h"
 #include"CoinObjectManager.h"
+#include"EnemyKillCoinEffect.h"
 
 class EnemyBreed;
 class Enemy;
@@ -31,12 +32,12 @@ class EnemyManager
 		Vec3<float>m_onGroundPos;
 		//プレイヤーに回収される動き
 		bool m_collect = false;
-		//プレイヤーのトランスフォームポインタ
-		const Transform* m_playerTransform;
+		//プレイヤーのポインタ
+		const std::weak_ptr<Player>m_player;
 		//プレイヤーに回収される動きの時間
 		Timer m_collectTimer;
 	public:
-		DropCoinPerform(Vec3<float>arg_initMove, const Transform* arg_playerTransform);
+		DropCoinPerform(Vec3<float>arg_initMove, const std::weak_ptr<Player> arg_playerTransform);
 		void OnUpdate(Coins& arg_coin, float arg_timeScale)override;
 		void OnEmit(Coins& arg_coin)override {};
 		bool IsDead(Coins& arg_coin)override;
@@ -55,11 +56,13 @@ class EnemyManager
 
 	//プレイヤーにコイン回収されるときのSE
 	int m_dropCoinReturnSE;
+	//落としたコインの入手エフェクト
+	EnemyKillCoinEffect m_dropCoinEffect;
 
 	//敵の登場時に呼び出す
 	void OnEnemyAppear(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	//敵の死亡時に呼び出す
-	void OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr, bool arg_dropCoin, const Transform* arg_playerTransform);
+	void OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr, bool arg_dropCoin, const std::weak_ptr<Player>&arg_player);
 public:
 	EnemyManager();
 	void Init(std::weak_ptr<CollisionManager>arg_collisionMgr);

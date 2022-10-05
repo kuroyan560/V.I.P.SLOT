@@ -260,9 +260,9 @@ void Player::GetCoin(int arg_coinNum)
 	m_coinVault.Add(arg_coinNum);
 }
 
-const Transform& Player::GetTransform()const
+Vec3<float> Player::GetCenterPos() const
 {
-	return m_modelObj->m_transform;
+	return m_modelObj->m_transform.GetPos() + ConstParameter::Player::FIX_MODEL_CENTER_OFFSET;
 }
 
 void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter, 

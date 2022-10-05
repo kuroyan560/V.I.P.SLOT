@@ -291,10 +291,11 @@ int KuroFunc::GetRandFromCenter(int CenterNum, int Range)
 }
 
 
-int KuroFunc::GetSpecifiedDigitNum(int From, int Digit)
+int KuroFunc::GetSpecifiedDigitNum(int From, int Digit, bool CountFromLeft)
 {
 	int result = 0;
-	for (int i = Digit; 0 <= i; i--)
+	int iMax = CountFromLeft ? (GetDigit(From) - Digit - 1) : Digit;
+	for (int i = iMax; 0 <= i; i--)
 	{
 		result = From % 10;				//6-iŒ…–Ú‚Ì”Žš‚ð‹L˜^
 		From /= 10;					//Œ…‚ðŒ¸‚ç‚·

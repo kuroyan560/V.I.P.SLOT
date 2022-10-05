@@ -162,6 +162,6 @@ public:
 		m_coinVault.Pass(arg_coinVault, arg_coinNum);
 	}
 
-	//トランスフォームゲッタ
-	const Transform& GetTransform()const;
+	//プレイヤーのモデル中央に合わせた座標ゲッタ
+	Vec3<float>GetCenterPos()const;
 };

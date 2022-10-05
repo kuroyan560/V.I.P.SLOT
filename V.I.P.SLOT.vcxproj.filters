@@ -313,6 +313,9 @@
     <ClCompile Include="src\engine\ColliderParentObject.cpp">
       <Filter>src\engine\ユーザー向け\Collision</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\EnemyKillCoinEffect.cpp">
+      <Filter>src\user\Enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -596,6 +599,9 @@
     </ClInclude>
     <ClInclude Include="src\engine\ColliderParentObject.h">
       <Filter>src\engine\ユーザー向け\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\EnemyKillCoinEffect.h">
+      <Filter>src\user\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
