@@ -16,7 +16,7 @@ void ObjectManager::OnEnemyAppear(std::shared_ptr<GameObject>& arg_obj, std::wea
 	arg_obj->Init();
 
 	//ƒRƒ‰ƒCƒ_[‚Ì“o˜^
-	arg_collisionMgr.lock()->Register("GameObject", arg_obj->m_colliders);
+	arg_collisionMgr.lock()->Register(ConstParameter::GameObject::COLLIDER_ATTRIBUTE[arg_obj->m_breed.lock()->m_typeID], arg_obj->m_colliders);
 }
 
 void ObjectManager::OnEnemyDead(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr, bool arg_dropCoin, const std::weak_ptr<Player>& arg_player)

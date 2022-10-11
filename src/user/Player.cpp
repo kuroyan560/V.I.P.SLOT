@@ -68,7 +68,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 		m_footCollider = std::make_shared<Collider>("Player_Foot", footPrimitiveArray);
 
 		//攻撃コールバックアタッチ
-		m_footCollider->SetCallBack(m_attackCallBack, arg_collisionMgr.lock()->GetAttribute("GameObject"));
+		m_footCollider->SetCallBack(m_attackCallBack, arg_collisionMgr.lock()->GetAttribute("Enemy"));
 		colliders.emplace_back(m_footCollider);
 	}
 	//モデル全体を覆うコライダー
@@ -80,7 +80,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 		m_bodyCollider = std::make_shared<Collider>("Player_Body", coverModelPrimitiveArray);
 
 		//被ダメージコールバックアタッチ
-		m_bodyCollider->SetCallBack(m_damegedCallBack, arg_collisionMgr.lock()->GetAttribute("GameObject"));
+		m_bodyCollider->SetCallBack(m_damegedCallBack, arg_collisionMgr.lock()->GetAttribute("Enemy"));
 		colliders.emplace_back(m_bodyCollider);
 	}
 

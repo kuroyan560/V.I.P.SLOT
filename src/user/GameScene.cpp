@@ -17,8 +17,14 @@ GameScene::GameScene()
 	//コリジョンマネージャ生成
 	m_collisionMgr = std::make_shared<CollisionManager>();
 	//コライダー振る舞いリストセット
-	m_collisionMgr->AddAttribute("GameObject", 0b00000001);
-	m_collisionMgr->AddAttribute("Player", 0b00000001 << 1);
+	m_collisionMgr->AddAttribute("Player", 0b00000001);
+
+	int bitOffset = 1;
+	for (int objType = 0; objType < static_cast<int>(ConstParameter::GameObject::TYPE::NUM); ++objType)
+	{
+		m_collisionMgr->AddAttribute(ConstParameter::GameObject::COLLIDER_ATTRIBUTE[objType], 0b00000001 << bitOffset);
+		++bitOffset;
+	}
 
 	//プレイヤー生成
 	m_player = std::make_shared<Player>(m_collisionMgr);

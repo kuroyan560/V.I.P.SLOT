@@ -1,6 +1,7 @@
 #pragma once
 #include"Vec.h"
 #include<array>
+#include<string>
 
 //調整用パラメータ
 namespace ConstParameter
@@ -122,6 +123,12 @@ namespace ConstParameter
 	{
 		//種別
 		enum struct TYPE { WEAK_SLIDE, NUM };
+
+		//種別ごとのコライダー振る舞い名称
+		const std::array<std::string, static_cast<int>(TYPE::NUM)>COLLIDER_ATTRIBUTE =
+		{
+			"Enemy"
+		};
 
 		//種別ごとの最大数
 		const std::array<int, static_cast<int>(TYPE::NUM)>INSTANCE_NUM_MAX =
