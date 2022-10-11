@@ -16,18 +16,11 @@ class GameObject : public ColliderParentObject
 private:
 	friend class ObjectManager;
 
-	//所持金
-	CoinVault m_coinVault;
-	//HP
-	int m_hp;
 	//コントローラー
 	std::unique_ptr<ObjectController>m_controller;
 
 	//コライダー配列
 	std::vector<std::shared_ptr<Collider>>m_colliders;
-
-	//被ダメージ時の無敵時間
-	Timer m_damagedInvincibleTimer;
 
 public:
 	//トランスフォーム
@@ -51,19 +44,10 @@ public:
 	/// <param name="arg_amount">ダメージ量</param>
 	/// <returns>死亡した場合コイン数、死亡してなければ０を返す</returns>
 	int Damage(int arg_amount = 1);
-	//一撃で死ぬ
-	int Blow() { return Damage(m_hp); }
 
 	//種別番号ゲッタ
 	const int& GetTypeID();
 
 	//生存フラグ
 	bool IsDead();
-	//ダメージで死んだか
-	bool IsKilled();
-	//無敵状態か
-	bool IsInvincible()
-	{
-		return !m_damagedInvincibleTimer.IsTimeUp();
-	}
 };

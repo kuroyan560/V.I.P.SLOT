@@ -20,29 +20,6 @@ class ObjectManager
 {
 	using OBJECT_TYPE = ConstParameter::GameObject::TYPE;
 
-	//敵が死んだらコインを落とす
-	CoinObjectManager m_dropCoinObjManager;
-	class DropCoinPerform : public CoinPerform
-	{
-		//落下加速度
-		float m_fallAccel = 0.0f;
-		//移動量
-		Vec3<float>m_move;
-		//落下地点
-		Vec3<float>m_onGroundPos;
-		//プレイヤーに回収される動き
-		bool m_collect = false;
-		//プレイヤーのポインタ
-		const std::weak_ptr<Player>m_player;
-		//プレイヤーに回収される動きの時間
-		Timer m_collectTimer;
-	public:
-		DropCoinPerform(Vec3<float>arg_initMove, const std::weak_ptr<Player> arg_playerTransform);
-		void OnUpdate(Coins& arg_coin, float arg_timeScale)override;
-		void OnEmit(Coins& arg_coin)override {};
-		bool IsDead(Coins& arg_coin)override;
-	};
-
 	//血統
 	std::array<std::shared_ptr<ObjectBreed>, static_cast<int>(OBJECT_TYPE::NUM)>m_breeds;
 
@@ -62,7 +39,7 @@ class ObjectManager
 	//敵の登場時に呼び出す
 	void OnEnemyAppear(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	//敵の死亡時に呼び出す
-	void OnEnemyDead(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr, bool arg_dropCoin, const std::weak_ptr<Player>&arg_player);
+	void OnEnemyDead(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr, const std::weak_ptr<Player>&arg_player);
 public:
 	ObjectManager();
 	void Init(std::weak_ptr<CollisionManager>arg_collisionMgr);

@@ -45,7 +45,6 @@ class Player
 
 	//コライダー
 	std::shared_ptr<Collider>m_bodyCollider;
-	std::shared_ptr<Collider>m_footCollider;
 
 	//HP
 	int m_hp;
@@ -67,9 +66,6 @@ class Player
 		Timer m_flashTimer;
 		bool m_isDraw;
 
-		//敵踏みつけ可能になるまでの時間
-		Timer m_canStepTimer;
-
 		//ヒットストップSE
 		int m_hitStopSE;
 		//ダメージSE
@@ -89,46 +85,13 @@ class Player
 			m_cam = arg_cam;
 			m_invincibleTimer.Reset(0);
 			m_hitStopTimer.Reset(0);
-			m_canStepTimer.Reset(0);
 			m_isDraw = true;
 		}
 		void Update(TimeScale& arg_timeScale);
 
 		const bool& GetIsDraw()const { return m_isDraw; }
-		bool IsCanStep()const { return m_canStepTimer.IsTimeUp(); }
 	};
 	std::shared_ptr<DamagedCallBack>m_damegedCallBack;
-
-	//敵への攻撃
-	class AttackCallBack : public CollisionCallBack
-	{
-		Player* m_parent;
-		//踏みつけSE
-		int m_stepEnemySE;
-		//無敵時間
-		Timer m_invincibleTimer;
-
-		void OnCollision(
-			const Vec3<float>& arg_inter,
-			std::weak_ptr<Collider>arg_otherCollider,
-			const unsigned char& arg_otherAttribute,
-			const CollisionManager& arg_collisionMgr)override;
-
-	public:
-		AttackCallBack(Player* arg_player, int arg_stepEnemySE)
-			:m_parent(arg_player), m_stepEnemySE(arg_stepEnemySE) {}
-		void Init()
-		{
-			m_invincibleTimer.Reset(0);
-		}
-		void Update(float arg_timeScale)
-		{
-			m_invincibleTimer.UpdateTimer(arg_timeScale);
-		}
-		bool GetIsInvincible()const { return !m_invincibleTimer.IsTimeUp(); }
-	};
-	std::shared_ptr<AttackCallBack>m_attackCallBack;
-	PlayerAttackHitEffect m_attackHitEffect;
 
 	void Jump();
 

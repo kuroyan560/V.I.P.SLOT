@@ -22,25 +22,13 @@ GameObject::GameObject(const std::shared_ptr<ObjectBreed>& arg_breed)
 
 void GameObject::Init()
 {
-	//所持コイン初期化
-	m_coinVault.Set(m_breed.lock()->m_initCoinNum);
-
-	//HP初期化
-	m_hp = m_breed.lock()->m_maxHp;
-
 	//挙動制御初期化
 	m_controller->OnInit(*this);
-
-	//被ダメージ無敵時間タイマーリセット
-	m_damagedInvincibleTimer.Reset(0);
 }
 
 void GameObject::Update(const TimeScale& arg_timeScale)
 {
 	m_controller->OnUpdate(*this, arg_timeScale);
-
-	//被ダメージ時の無敵時間計測
-	m_damagedInvincibleTimer.UpdateTimer(arg_timeScale.GetTimeScale());
 }
 
 void GameObject::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
@@ -50,17 +38,7 @@ void GameObject::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Cam
 
 int GameObject::Damage(int arg_amount)
 {
-	using namespace ConstParameter::GameObject;
-
-	//m_hp -= arg_amount;
-	m_controller->OnDamage(*this);
-
-	//被ダメージ時一定時間無敵に
-	m_damagedInvincibleTimer.Reset(INVINCIBLE_TIME_ON_DAMAGED);
-
-	printf("GameObject : Damaged : remain hp %d\n", m_hp);
-
-	return m_coinVault.GetNum();
+	return m_controller->OnDamage(*this);
 }
 
 const int& GameObject::GetTypeID()
@@ -70,10 +48,5 @@ const int& GameObject::GetTypeID()
 
 bool GameObject::IsDead()
 {
-	return m_hp <= 0 || m_controller->IsDead(*this);
-}
-
-bool GameObject::IsKilled()
-{
-	return m_hp <= 0;
+	return m_controller->IsDead(*this);
 }

@@ -55,22 +55,11 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	/*--- コールバック生成 ---*/
 	//被ダメージコールバック
 	m_damegedCallBack = std::make_shared<DamagedCallBack>(this, onDamagedHitStopSE, onDamagedSE);
-	//攻撃コールバック
-	m_attackCallBack = std::make_shared<AttackCallBack>(this, onStepEnemySE);
 
 	/*--- コライダー生成（判定順） ---*/
 
 	std::vector<std::shared_ptr<Collider>>colliders;
 	
-	//足元のコライダー
-	{
-		std::vector<std::shared_ptr<CollisionPrimitive>>footPrimitiveArray = { footSphereCol };
-		m_footCollider = std::make_shared<Collider>("Player_Foot", footPrimitiveArray);
-
-		//攻撃コールバックアタッチ
-		m_footCollider->SetCallBack(m_attackCallBack, arg_collisionMgr.lock()->GetAttribute("Enemy"));
-		colliders.emplace_back(m_footCollider);
-	}
 	//モデル全体を覆うコライダー
 	{
 		std::vector<std::shared_ptr<CollisionPrimitive>>coverModelPrimitiveArray =
@@ -119,12 +108,6 @@ void Player::Init(std::weak_ptr<GameCamera>arg_cam)
 
 	//被ダメージコールバック
 	m_damegedCallBack->Init(arg_cam);
-
-	//攻撃コールバック
-	m_attackCallBack->Init();
-	
-	//エフェクトの初期化
-	m_attackHitEffect.Init();
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
@@ -257,12 +240,6 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 
 	//被ダメージコールバック
 	m_damegedCallBack->Update(arg_timeScale);
-
-	//攻撃コールバック
-	m_attackCallBack->Update(arg_timeScale.GetTimeScale());
-
-	//エフェクトの更新
-	m_attackHitEffect.Update(arg_timeScale.GetTimeScale());
 }
 
 #include"DrawFunc3D.h"
@@ -276,7 +253,6 @@ void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>
 
 void Player::EffectDraw(std::weak_ptr<Camera> arg_cam)
 {
-	m_attackHitEffect.Draw(arg_cam);
 }
 
 void Player::GetCoin(int arg_coinNum)
@@ -296,11 +272,8 @@ void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter,
 {
 	using namespace ConstParameter::Player;
 
-	return;
-
 	//無敵時間中か
 	if (!m_invincibleTimer.IsTimeUp())return;
-	if (m_parent->m_attackCallBack->GetIsInvincible())return;
 
 	//HP減少
 	m_parent->m_hp--;
@@ -319,9 +292,6 @@ void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter,
 
 	//カメラ振動
 	m_cam.lock()->Shake(60, 2, 2.0f, 1.0f);
-
-	//踏みつけ可能になるまでの時間
-	m_canStepTimer.Reset(CAN_STEP_TIME_AFTER_DAMAGED);
 
 	//落下
 	m_parent->m_fallSpeed = FALL_SPEED_ON_DAMAGED;
@@ -364,38 +334,4 @@ void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
 			m_isDraw = !m_isDraw;
 		}
 	}
-	
-	//踏みつけ可能になるまでの時間
-	m_canStepTimer.UpdateTimer(timeScale);
-}
-
-#include"GameObject.h"
-void Player::AttackCallBack::OnCollision(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider, const unsigned char& arg_otherAttribute, const CollisionManager& arg_collisionMgr)
-{
-	using namespace ConstParameter::Player;
-
-	//ジャンプ中か
-	if (m_parent->m_isOnGround)return;
-
-	//被ダメージ直後でないか
-	if (!m_parent->m_damegedCallBack->IsCanStep())return;
-
-	//プレイヤーより衝突点が上（踏みつけできない）
-	if (m_parent->m_modelObj->m_transform.GetPos().y + FIX_MODEL_CENTER_OFFSET.y < arg_inter.y)return;
-
-	//敵が無敵か
-	auto enemy = arg_otherCollider.lock()->GetParentObject<GameObject>();
-	if (enemy->IsInvincible())return;
-
-	int coinNum = enemy->Damage();
-
-	//m_parent->m_attackHitEffect.Emit(m_parent->GetCenterPos());
-	m_parent->m_attackHitEffect.Emit(arg_inter);
-
-	m_parent->Jump();
-	AudioApp::Instance()->PlayWave(m_stepEnemySE);
-
-	//ジャンプ成功による無敵時間
-	const int INVINCIBLE_TIME_ON_SUCCESS_ATTACK = 10;
-	m_invincibleTimer.Reset(INVINCIBLE_TIME_ON_SUCCESS_ATTACK);
 }

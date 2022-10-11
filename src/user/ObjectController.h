@@ -15,8 +15,8 @@ class ObjectController
 	//デフォルトではただモデルを描画するだけ
 	virtual void OnDraw(GameObject& arg_enemy, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam);
 
-	//ダメージを受けたときの演出など
-	virtual void OnDamage(GameObject& arg_enemy) {};
+	//ダメージを受けたときの演出など（返り値：コイン数）
+	virtual int OnDamage(GameObject& arg_enemy) { return 0; };
 
 	//全ての動きを終えたときなど、EnemyController側から死亡フラグを立てられるように
 	virtual bool IsDead(GameObject& arg_enemy) { return false; }
