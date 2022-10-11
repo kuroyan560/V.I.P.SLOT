@@ -118,7 +118,7 @@ namespace ConstParameter
 		const int EMIT_COIN_COUNT_MAX = 10;
 	};
 
-	namespace Enemy
+	namespace GameObject
 	{
 		//Ží•Ê
 		enum struct TYPE { WEAK_SLIDE, NUM };

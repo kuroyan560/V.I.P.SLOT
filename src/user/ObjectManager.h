@@ -7,8 +7,8 @@
 #include"CoinObjectManager.h"
 #include"EnemyKillCoinEffect.h"
 
-class EnemyBreed;
-class Enemy;
+class ObjectBreed;
+class GameObject;
 class TimeScale;
 class LightManager;
 class Camera;
@@ -16,9 +16,9 @@ class CollisionManager;
 class Player;
 
 //エネミーの定義、管理を行う
-class EnemyManager
+class ObjectManager
 {
-	using ENEMY_TYPE = ConstParameter::Enemy::TYPE;
+	using OBJECT_TYPE = ConstParameter::GameObject::TYPE;
 
 	//敵が死んだらコインを落とす
 	CoinObjectManager m_dropCoinObjManager;
@@ -44,15 +44,15 @@ class EnemyManager
 	};
 
 	//血統
-	std::array<std::shared_ptr<EnemyBreed>, static_cast<int>(ENEMY_TYPE::NUM)>m_breeds;
+	std::array<std::shared_ptr<ObjectBreed>, static_cast<int>(OBJECT_TYPE::NUM)>m_breeds;
 
 	//全エネミー配列
-	std::array<std::forward_list<std::shared_ptr<Enemy>>, static_cast<int>(ENEMY_TYPE::NUM)>m_enemys;
+	std::array<std::forward_list<std::shared_ptr<GameObject>>, static_cast<int>(OBJECT_TYPE::NUM)>m_objects;
 
 	//死亡しているエネミー配列
-	std::array<std::forward_list<std::shared_ptr<Enemy>>, static_cast<int>(ENEMY_TYPE::NUM)>m_deadEnemyArray;
+	std::array<std::forward_list<std::shared_ptr<GameObject>>, static_cast<int>(OBJECT_TYPE::NUM)>m_deadObjectArray;
 	//生存しているエネミー配列
-	std::array<std::forward_list<std::shared_ptr<Enemy>>, static_cast<int>(ENEMY_TYPE::NUM)>m_aliveEnemyArray;
+	std::array<std::forward_list<std::shared_ptr<GameObject>>, static_cast<int>(OBJECT_TYPE::NUM)>m_aliveObjectArray;
 
 	//プレイヤーにコイン回収されるときのSE
 	int m_dropCoinReturnSE;
@@ -60,15 +60,15 @@ class EnemyManager
 	EnemyKillCoinEffect m_dropCoinEffect;
 
 	//敵の登場時に呼び出す
-	void OnEnemyAppear(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr);
+	void OnEnemyAppear(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	//敵の死亡時に呼び出す
-	void OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr, bool arg_dropCoin, const std::weak_ptr<Player>&arg_player);
+	void OnEnemyDead(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr, bool arg_dropCoin, const std::weak_ptr<Player>&arg_player);
 public:
-	EnemyManager();
+	ObjectManager();
 	void Init(std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player);
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 
-	void Appear(ENEMY_TYPE arg_type, std::weak_ptr<CollisionManager>arg_collisionMgr);
+	void Appear(OBJECT_TYPE arg_type, std::weak_ptr<CollisionManager>arg_collisionMgr);
 };
 

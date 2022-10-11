@@ -1,8 +1,8 @@
-#include "EnemyManager.h"
-#include"EnemyBreed.h"
+#include "ObjectManager.h"
+#include"ObjectBreed.h"
 #include"Importer.h"
-#include"EnemyController.h"
-#include"Enemy.h"
+#include"ObjectController.h"
+#include"GameObject.h"
 #include"Collider.h"
 #include"CollisionManager.h"
 #include"Coins.h"
@@ -10,19 +10,19 @@
 #include"AudioApp.h"
 #include"Player.h"
 
-void EnemyManager::OnEnemyAppear(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager> arg_collisionMgr)
+void ObjectManager::OnEnemyAppear(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
 	//新規敵の初期化
-	arg_enemy->Init();
+	arg_obj->Init();
 
 	//コライダーの登録
-	arg_collisionMgr.lock()->Register("Enemy", arg_enemy->m_colliders);
+	arg_collisionMgr.lock()->Register("GameObject", arg_obj->m_colliders);
 }
 
-void EnemyManager::OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<CollisionManager>arg_collisionMgr, bool arg_dropCoin, const std::weak_ptr<Player>& arg_player)
+void ObjectManager::OnEnemyDead(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr, bool arg_dropCoin, const std::weak_ptr<Player>& arg_player)
 {
 	//コライダー登録解除
-	for (auto& col : arg_enemy->m_colliders)
+	for (auto& col : arg_obj->m_colliders)
 	{
 		arg_collisionMgr.lock()->Remove(col);
 	}
@@ -54,13 +54,13 @@ void EnemyManager::OnEnemyDead(std::shared_ptr<Enemy>& arg_enemy, std::weak_ptr<
 		const Vec3<float>initMove = Vec3<float>(vec_x, vec_y, vec_z) * power;
 
 		m_dropCoinObjManager.Add(
-			arg_enemy->m_coinVault.GetNum(),
-			arg_enemy->m_transform,
+			arg_obj->m_coinVault.GetNum(),
+			arg_obj->m_transform,
 			new DropCoinPerform(initMove, arg_player));
 	}
 }
 
-EnemyManager::EnemyManager()
+ObjectManager::ObjectManager()
 {
 	/*--- 敵の定義 ---*/
 
@@ -72,13 +72,13 @@ EnemyManager::EnemyManager()
 		std::vector<std::unique_ptr<Collider>>colliderArray;
 		colliderArray.emplace_back(std::make_unique<Collider>("Weak_Slide_Enemy - Body_Sphere", colPrimitiveArray));
 
-		int weakSlideIdx = static_cast<int>(ENEMY_TYPE::WEAK_SLIDE);
-		m_breeds[weakSlideIdx] = std::make_shared<EnemyBreed>(
+		int weakSlideIdx = static_cast<int>(OBJECT_TYPE::WEAK_SLIDE);
+		m_breeds[weakSlideIdx] = std::make_shared<ObjectBreed>(
 			weakSlideIdx,
 			Importer::Instance()->LoadModel("resource/user/model/", "enemy_test.glb"),
 			5,
 			10,
-			std::make_unique<EnemySlideMove>(0.1f),
+			std::make_unique<ObjectSlideMove>(0.1f),
 			colliderArray
 			);
 	}
@@ -86,11 +86,11 @@ EnemyManager::EnemyManager()
 	/*--- ---*/
 
 	//敵インスタンス生成
-	for (int typeIdx = 0; typeIdx < static_cast<int>(ENEMY_TYPE::NUM); ++typeIdx)
+	for (int typeIdx = 0; typeIdx < static_cast<int>(OBJECT_TYPE::NUM); ++typeIdx)
 	{
-		for (int enemyCount = 0; enemyCount < ConstParameter::Enemy::INSTANCE_NUM_MAX[typeIdx]; ++enemyCount)
+		for (int enemyCount = 0; enemyCount < ConstParameter::GameObject::INSTANCE_NUM_MAX[typeIdx]; ++enemyCount)
 		{
-			m_enemys[typeIdx].emplace_front(std::make_shared<Enemy>(m_breeds[typeIdx]));
+			m_objects[typeIdx].emplace_front(std::make_shared<GameObject>(m_breeds[typeIdx]));
 		}
 	}
 
@@ -98,20 +98,20 @@ EnemyManager::EnemyManager()
 	m_dropCoinReturnSE = AudioApp::Instance()->LoadAudio("resource/user/sound/coin.wav");
 }
 
-void EnemyManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
+void ObjectManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
-	for (int typeIdx = 0; typeIdx < static_cast<int>(ENEMY_TYPE::NUM); ++typeIdx)
+	for (int typeIdx = 0; typeIdx < static_cast<int>(OBJECT_TYPE::NUM); ++typeIdx)
 	{
-		for (auto& enemy : m_aliveEnemyArray[typeIdx])
+		for (auto& enemy : m_aliveObjectArray[typeIdx])
 		{
 			OnEnemyDead(enemy, arg_collisionMgr, false, std::weak_ptr<Player>());
 		}
 
 		//生存エネミー配列を空に
-		m_aliveEnemyArray[typeIdx].clear();
+		m_aliveObjectArray[typeIdx].clear();
 
 		//死亡エネミー配列にエネミー配列コピー
-		m_deadEnemyArray[typeIdx] = m_enemys[typeIdx];
+		m_deadObjectArray[typeIdx] = m_objects[typeIdx];
 	}
 
 	//落としたコインリセット
@@ -121,11 +121,11 @@ void EnemyManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	m_dropCoinEffect.Init();
 }
 
-void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player)
+void ObjectManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player)
 {
-	for (int enemyTypeIdx = 0; enemyTypeIdx < static_cast<int>(ENEMY_TYPE::NUM); ++enemyTypeIdx)
+	for (int enemyTypeIdx = 0; enemyTypeIdx < static_cast<int>(OBJECT_TYPE::NUM); ++enemyTypeIdx)
 	{
-		for (auto& enemy : m_aliveEnemyArray[enemyTypeIdx])
+		for (auto& enemy : m_aliveObjectArray[enemyTypeIdx])
 		{
 			enemy->Update(arg_timeScale);
 
@@ -134,17 +134,17 @@ void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<Collisio
 			{
 				OnEnemyDead(enemy, arg_collisionMgr, enemy->IsKilled(), arg_player);
 				//死亡敵配列に追加
-				m_deadEnemyArray[enemyTypeIdx].push_front(enemy);
+				m_deadObjectArray[enemyTypeIdx].push_front(enemy);
 			}
 		}
 	}
 
 	//死亡していたら生存エネミー配列から削除
-	for (auto& aliveEnemys : m_aliveEnemyArray)
+	for (auto& aliveEnemys : m_aliveObjectArray)
 	{
-		aliveEnemys.remove_if([](std::shared_ptr<Enemy>& e)
+		aliveEnemys.remove_if([](std::shared_ptr<GameObject>& obj)
 			{
-				return e->IsDead();
+				return obj->IsDead();
 			});
 	}
 
@@ -160,9 +160,9 @@ void EnemyManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<Collisio
 	arg_player.lock()->GetCoin(dropCoinReturnNum);
 }
 
-void EnemyManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
+void ObjectManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
-	for (auto& aliveEnemys : m_aliveEnemyArray)
+	for (auto& aliveEnemys : m_aliveObjectArray)
 	{
 		for (auto& enemy : aliveEnemys)
 		{
@@ -176,24 +176,24 @@ void EnemyManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<
 	m_dropCoinEffect.Draw(arg_lightMgr, arg_cam);
 }
 
-void EnemyManager::Appear(ENEMY_TYPE arg_type, std::weak_ptr<CollisionManager>arg_collisionMgr)
+void ObjectManager::Appear(OBJECT_TYPE arg_type, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	//敵種別番号取得
 	int typeIdx = static_cast<int>(arg_type);
 
 	//新規追加する敵取得
-	auto& newEnemy = m_deadEnemyArray[typeIdx].front();
+	auto& newEnemy = m_deadObjectArray[typeIdx].front();
 
 	//生存エネミー配列に追加
-	m_aliveEnemyArray[typeIdx].push_front(newEnemy);
+	m_aliveObjectArray[typeIdx].push_front(newEnemy);
 
 	OnEnemyAppear(newEnemy, arg_collisionMgr);
 
 	//新規敵を死亡エネミー配列からポップ
-	m_deadEnemyArray[typeIdx].pop_front();
+	m_deadObjectArray[typeIdx].pop_front();
 }
 
-EnemyManager::DropCoinPerform::DropCoinPerform(Vec3<float> arg_initMove, const std::weak_ptr<Player> arg_player)
+ObjectManager::DropCoinPerform::DropCoinPerform(Vec3<float> arg_initMove, const std::weak_ptr<Player> arg_player)
 	: m_move(arg_initMove), m_player(arg_player)
 {
 	m_move.z = 0.0f;
@@ -202,7 +202,7 @@ EnemyManager::DropCoinPerform::DropCoinPerform(Vec3<float> arg_initMove, const s
 	m_collectTimer.Reset(COLLECT_TOTAL_TIME);
 }
 
-void EnemyManager::DropCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScale)
+void ObjectManager::DropCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScale)
 {
 	//プレイヤーのトランスフォームポインタがアタッチされていない
 	if (m_player.expired())
@@ -277,7 +277,7 @@ void EnemyManager::DropCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScal
 	arg_coin.m_transform.SetPos(pos);
 }
 
-bool EnemyManager::DropCoinPerform::IsDead(Coins& arg_coin)
+bool ObjectManager::DropCoinPerform::IsDead(Coins& arg_coin)
 {
 	return m_collectTimer.IsTimeUp();
 }

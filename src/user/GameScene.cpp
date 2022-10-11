@@ -9,7 +9,7 @@
 #include"GameCamera.h"
 #include"ConstParameters.h"
 #include"SlotMachine.h"
-#include"EnemyManager.h"
+#include"ObjectManager.h"
 #include"CollisionManager.h"
 
 GameScene::GameScene()
@@ -17,7 +17,7 @@ GameScene::GameScene()
 	//コリジョンマネージャ生成
 	m_collisionMgr = std::make_shared<CollisionManager>();
 	//コライダー振る舞いリストセット
-	m_collisionMgr->AddAttribute("Enemy", 0b00000001);
+	m_collisionMgr->AddAttribute("GameObject", 0b00000001);
 	m_collisionMgr->AddAttribute("Player", 0b00000001 << 1);
 
 	//プレイヤー生成
@@ -41,7 +41,7 @@ GameScene::GameScene()
 	m_gameCam = std::make_shared<GameCamera>();
 
 	//敵マネージャ生成
-	m_enemyMgr = std::make_shared<EnemyManager>();
+	m_enemyMgr = std::make_shared<ObjectManager>();
 }
 
 void GameScene::OnInitialize()
@@ -71,7 +71,7 @@ void GameScene::OnUpdate()
 	//敵出現
 	if (m_emitEnemyTimer.UpdateTimer(m_timeScale.GetTimeScale()))
 	{
-		m_enemyMgr->Appear(ConstParameter::Enemy::TYPE::WEAK_SLIDE, m_collisionMgr);
+		m_enemyMgr->Appear(ConstParameter::GameObject::TYPE::WEAK_SLIDE, m_collisionMgr);
 		m_emitEnemyTimer.Reset();
 	}
 

@@ -3,9 +3,9 @@
 #include<vector>
 #include"Collider.h"
 class Model;
-class EnemyController;
+class ObjectController;
 
-class EnemyBreed
+class ObjectBreed
 {
 public:
 	//種別番号（種類ごと）
@@ -17,7 +17,7 @@ public:
 	//所持コイン（倒したら得られるコインの数）
 	const int m_initCoinNum;
 	//挙動制御
-	const std::unique_ptr<EnemyController>m_controller;
+	const std::unique_ptr<ObjectController>m_controller;
 	//コライダー（クローン元）
 	const std::vector<std::unique_ptr<Collider>>m_originCollider;
 
@@ -30,12 +30,12 @@ public:
 	/// <param name="arg_initCoinNum">生成時の所持コイン数</param>
 	/// <param name="arg_controller">挙動制御</param>
 	/// <param name="arg_originCollider">クローン元コライダー</param>
-	EnemyBreed(
+	ObjectBreed(
 		int arg_typeID,
 		std::shared_ptr<Model>arg_model,
 		int arg_maxHp,
 		int arg_initCoinNum,
-		std::unique_ptr<EnemyController>arg_controller, 
+		std::unique_ptr<ObjectController>arg_controller, 
 		std::vector<std::unique_ptr<Collider>>& arg_originCollider)
 		:m_typeID(arg_typeID),
 		m_model(arg_model),

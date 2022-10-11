@@ -68,7 +68,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 		m_footCollider = std::make_shared<Collider>("Player_Foot", footPrimitiveArray);
 
 		//攻撃コールバックアタッチ
-		m_footCollider->SetCallBack(m_attackCallBack, arg_collisionMgr.lock()->GetAttribute("Enemy"));
+		m_footCollider->SetCallBack(m_attackCallBack, arg_collisionMgr.lock()->GetAttribute("GameObject"));
 		colliders.emplace_back(m_footCollider);
 	}
 	//モデル全体を覆うコライダー
@@ -80,7 +80,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 		m_bodyCollider = std::make_shared<Collider>("Player_Body", coverModelPrimitiveArray);
 
 		//被ダメージコールバックアタッチ
-		m_bodyCollider->SetCallBack(m_damegedCallBack, arg_collisionMgr.lock()->GetAttribute("Enemy"));
+		m_bodyCollider->SetCallBack(m_damegedCallBack, arg_collisionMgr.lock()->GetAttribute("GameObject"));
 		colliders.emplace_back(m_bodyCollider);
 	}
 
@@ -369,7 +369,7 @@ void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
 	m_canStepTimer.UpdateTimer(timeScale);
 }
 
-#include"Enemy.h"
+#include"GameObject.h"
 void Player::AttackCallBack::OnCollision(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider, const unsigned char& arg_otherAttribute, const CollisionManager& arg_collisionMgr)
 {
 	using namespace ConstParameter::Player;
@@ -384,7 +384,7 @@ void Player::AttackCallBack::OnCollision(const Vec3<float>& arg_inter, std::weak
 	if (m_parent->m_modelObj->m_transform.GetPos().y + FIX_MODEL_CENTER_OFFSET.y < arg_inter.y)return;
 
 	//敵が無敵か
-	auto enemy = arg_otherCollider.lock()->GetParentObject<Enemy>();
+	auto enemy = arg_otherCollider.lock()->GetParentObject<GameObject>();
 	if (enemy->IsInvincible())return;
 
 	int coinNum = enemy->Damage();

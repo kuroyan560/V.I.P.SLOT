@@ -4,24 +4,24 @@
 #include"Transform.h"
 #include"ColliderParentObject.h"
 #include"Timer.h"
-class EnemyBreed;
-class EnemyController;
+class ObjectBreed;
+class ObjectController;
 class TimeScale;
 class LightManager;
 class Camera;
 class Collider;
 
-class Enemy : public ColliderParentObject
+class GameObject : public ColliderParentObject
 {
 private:
-	friend class EnemyManager;
+	friend class ObjectManager;
 
 	//所持金
 	CoinVault m_coinVault;
 	//HP
 	int m_hp;
 	//コントローラー
-	std::unique_ptr<EnemyController>m_controller;
+	std::unique_ptr<ObjectController>m_controller;
 
 	//コライダー配列
 	std::vector<std::shared_ptr<Collider>>m_colliders;
@@ -38,10 +38,10 @@ public:
 	//トランスフォーム
 	Transform m_transform;
 	//血統
-	std::weak_ptr<EnemyBreed>m_breed;
+	std::weak_ptr<ObjectBreed>m_breed;
 
 	//血統情報を基に生成
-	Enemy(const std::shared_ptr<EnemyBreed>& arg_breed);
+	GameObject(const std::shared_ptr<ObjectBreed>& arg_breed);
 
 	//初期化
 	void Init();

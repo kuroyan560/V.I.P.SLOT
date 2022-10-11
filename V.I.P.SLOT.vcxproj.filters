@@ -83,7 +83,7 @@
     <Filter Include="src\user\Coin">
       <UniqueIdentifier>{898a6f98-4c9f-4013-b12c-29daeb09858b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\user\Enemy">
+    <Filter Include="src\user\GameObject">
       <UniqueIdentifier>{f5ff9f17-0c33-43fa-80dd-82a1da31c6de}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -289,14 +289,14 @@
     <ClCompile Include="src\user\Coins.cpp">
       <Filter>src\user\Coin</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\Enemy.cpp">
-      <Filter>src\user\Enemy</Filter>
+    <ClCompile Include="src\user\GameObject.cpp">
+      <Filter>src\user\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\EnemyController.cpp">
-      <Filter>src\user\Enemy</Filter>
+    <ClCompile Include="src\user\ObjectController.cpp">
+      <Filter>src\user\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\EnemyManager.cpp">
-      <Filter>src\user\Enemy</Filter>
+    <ClCompile Include="src\user\ObjectManager.cpp">
+      <Filter>src\user\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="src\user\TimeScale.cpp">
       <Filter>src\user</Filter>
@@ -314,7 +314,7 @@
       <Filter>src\engine\ユーザー向け\Collision</Filter>
     </ClCompile>
     <ClCompile Include="src\user\EnemyKillCoinEffect.cpp">
-      <Filter>src\user\Enemy</Filter>
+      <Filter>src\user\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="src\user\PlayerAttackHitEffect.cpp">
       <Filter>src\user\Player</Filter>
@@ -576,17 +576,17 @@
     <ClInclude Include="src\user\Coins.h">
       <Filter>src\user\Coin</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\Enemy.h">
-      <Filter>src\user\Enemy</Filter>
+    <ClInclude Include="src\user\GameObject.h">
+      <Filter>src\user\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\EnemyController.h">
-      <Filter>src\user\Enemy</Filter>
+    <ClInclude Include="src\user\ObjectController.h">
+      <Filter>src\user\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\EnemyBreed.h">
-      <Filter>src\user\Enemy</Filter>
+    <ClInclude Include="src\user\ObjectBreed.h">
+      <Filter>src\user\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\EnemyManager.h">
-      <Filter>src\user\Enemy</Filter>
+    <ClInclude Include="src\user\ObjectManager.h">
+      <Filter>src\user\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="src\user\TimeScale.h">
       <Filter>src\user</Filter>
@@ -604,7 +604,7 @@
       <Filter>src\engine\ユーザー向け\Collision</Filter>
     </ClInclude>
     <ClInclude Include="src\user\EnemyKillCoinEffect.h">
-      <Filter>src\user\Enemy</Filter>
+      <Filter>src\user\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="src\user\PlayerAttackHitEffect.h">
       <Filter>src\user\Player</Filter>

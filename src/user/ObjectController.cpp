@@ -1,11 +1,11 @@
-#include "EnemyController.h"
-#include"Enemy.h"
+#include"ObjectController.h"
+#include"GameObject.h"
 #include"DrawFunc3D.h"
-#include"EnemyBreed.h"
+#include"ObjectBreed.h"
 #include"ConstParameters.h"
 #include"TimeScale.h"
 
-void EnemyController::OnDraw(Enemy& arg_enemy, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam)
+void ObjectController::OnDraw(GameObject& arg_enemy, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam)
 {
 	DrawFunc3D::DrawNonShadingModel(
 		arg_enemy.m_breed.lock()->m_model,
@@ -16,9 +16,9 @@ void EnemyController::OnDraw(Enemy& arg_enemy, std::weak_ptr<LightManager>& arg_
 		AlphaBlendMode_None);
 }
 
-void EnemySlideMove::OnInit(Enemy& arg_enemy)
+void ObjectSlideMove::OnInit(GameObject& arg_enemy)
 {
-	using namespace ConstParameter::Enemy;
+	using namespace ConstParameter::GameObject;
 
 	//初期化位置
 	Vec3<float>initPos;
@@ -48,21 +48,21 @@ void EnemySlideMove::OnInit(Enemy& arg_enemy)
 	printf("Appear：EnemySlideMove：xMove %.f\n", m_xMove);
 }
 
-void EnemySlideMove::OnUpdate(Enemy& arg_enemy, const TimeScale& arg_timeScale)
+void ObjectSlideMove::OnUpdate(GameObject& arg_enemy, const TimeScale& arg_timeScale)
 {
 	auto pos = arg_enemy.m_transform.GetPos();
 	pos.x += m_xMove * arg_timeScale.GetTimeScale();
 	arg_enemy.m_transform.SetPos(pos);
 }
 
-std::unique_ptr<EnemyController> EnemySlideMove::Clone()
+std::unique_ptr<ObjectController> ObjectSlideMove::Clone()
 {
-	return std::make_unique<EnemySlideMove>(m_xSpeed);
+	return std::make_unique<ObjectSlideMove>(m_xSpeed);
 }
 
-bool EnemySlideMove::IsDead(Enemy& arg_enemy)
+bool ObjectSlideMove::IsDead(GameObject& arg_enemy)
 {
-	using namespace ConstParameter::Enemy;
+	using namespace ConstParameter::GameObject;
 
 	auto pos = arg_enemy.m_transform.GetPos();
 	//フィールド外

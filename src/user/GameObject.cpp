@@ -1,12 +1,12 @@
-#include "Enemy.h"
-#include"EnemyBreed.h"
-#include"EnemyController.h"
+#include"GameObject.h"
+#include"ObjectBreed.h"
+#include"ObjectController.h"
 #include"Collision.h"
 #include"Collider.h"
 #include"TimeScale.h"
 #include"ConstParameters.h"
 
-Enemy::Enemy(const std::shared_ptr<EnemyBreed>& arg_breed)
+GameObject::GameObject(const std::shared_ptr<ObjectBreed>& arg_breed)
 {
 	//血統の記録
 	m_breed = arg_breed;
@@ -20,7 +20,7 @@ Enemy::Enemy(const std::shared_ptr<EnemyBreed>& arg_breed)
 	}
 }
 
-void Enemy::Init()
+void GameObject::Init()
 {
 	//所持コイン初期化
 	m_coinVault.Set(m_breed.lock()->m_initCoinNum);
@@ -40,7 +40,7 @@ void Enemy::Init()
 	m_damagedOffsetY = 0.0f;
 }
 
-void Enemy::Update(const TimeScale& arg_timeScale)
+void GameObject::Update(const TimeScale& arg_timeScale)
 {
 	m_controller->OnUpdate(*this, arg_timeScale);
 
@@ -59,14 +59,14 @@ void Enemy::Update(const TimeScale& arg_timeScale)
 	m_oldDamagedOffsetY = m_damagedOffsetY;
 }
 
-void Enemy::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
+void GameObject::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
 {
 	m_controller->OnDraw(*this, arg_lightMgr, arg_cam);
 }
 
-int Enemy::Damage(int arg_amount)
+int GameObject::Damage(int arg_amount)
 {
-	using namespace ConstParameter::Enemy;
+	using namespace ConstParameter::GameObject;
 
 	//m_hp -= arg_amount;
 	m_controller->OnDamage(*this);
@@ -77,22 +77,22 @@ int Enemy::Damage(int arg_amount)
 	//被ダメージ時の下降
 	m_damagedOffsetTimer.Reset(OFFSET_Y_TIME_ON_DAMAGED);
 
-	printf("Enemy : Damaged : remain hp %d\n", m_hp);
+	printf("GameObject : Damaged : remain hp %d\n", m_hp);
 
 	return m_coinVault.GetNum();
 }
 
-const int& Enemy::GetTypeID()
+const int& GameObject::GetTypeID()
 {
 	return m_breed.lock()->m_typeID;
 }
 
-bool Enemy::IsDead()
+bool GameObject::IsDead()
 {
 	return m_hp <= 0 || m_controller->IsDead(*this);
 }
 
-bool Enemy::IsKilled()
+bool GameObject::IsKilled()
 {
 	return m_hp <= 0;
 }

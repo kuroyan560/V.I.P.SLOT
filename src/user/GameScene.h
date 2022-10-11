@@ -8,7 +8,7 @@ class LightManager;
 class ModelObject;
 class TextureBuffer;
 class GameCamera;
-class EnemyManager;
+class ObjectManager;
 class CollisionManager;
 
 class GameScene : public BaseScene
@@ -29,7 +29,7 @@ class GameScene : public BaseScene
 	std::shared_ptr<TextureBuffer>m_backGround;
 
 	//敵マネージャ
-	std::shared_ptr<EnemyManager>m_enemyMgr;
+	std::shared_ptr<ObjectManager>m_enemyMgr;
 	
 	//ゲームカメラ
 	const std::string m_backCamKey = "GameCamera - Back";
