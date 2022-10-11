@@ -136,24 +136,37 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	const auto& input = *UsersInput::Instance();
 
 	//左スティック（移動）入力
-	const auto stickVec = input.GetLeftStickVec(0);
-
+	Vec2<float> moveInput = { 0,0 };
 	//Aボタン（ジャンプ）入力
-	const bool jumpTrigger = input.ControllerOnTrigger(0, XBOX_BUTTON::A);
-
-	//Xボタン（前方にショット）入力
-	const bool shotTrigger = input.ControllerOnTrigger(0, XBOX_BUTTON::X);
-
+	bool jumpTrigger = false;
 	//LBボタン（BET）入力
-	const bool betInput = input.ControllerInput(0, XBOX_BUTTON::LB);
+	bool betInput = false;
+
+	switch (m_inputConfig)
+	{
+	case Player::INPUT_CONFIG::KEY_BOARD:
+		if (input.KeyInput(DIK_LEFT))moveInput.x = -1.0f;
+		else if (input.KeyInput(DIK_RIGHT))moveInput.x = 1.0f;
+		jumpTrigger = input.KeyOnTrigger(DIK_UP);
+		betInput = input.KeyInput(DIK_SPACE);
+		break;
+	case Player::INPUT_CONFIG::CONTROLLER:
+		moveInput = input.GetLeftStickVec(0);
+		jumpTrigger = input.ControllerOnTrigger(0, XBOX_BUTTON::A);
+		betInput = input.ControllerInput(0, XBOX_BUTTON::LB);
+		break;
+	default:
+		assert(0);
+		break;
+	}
 
 //入力情報を元に操作
 	//横移動
-	if (0.0f < stickVec.x)
+	if (0.0f < moveInput.x)
 	{
 		m_move.x = KuroMath::Lerp(m_move.x, MOVE_SPEED, MOVE_LERP_RATE);
 	}
-	else if (stickVec.x < 0.0f)
+	else if (moveInput.x < 0.0f)
 	{
 		m_move.x = KuroMath::Lerp(m_move.x, -MOVE_SPEED, MOVE_LERP_RATE);
 	}

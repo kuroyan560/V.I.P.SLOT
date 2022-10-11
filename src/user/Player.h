@@ -131,6 +131,10 @@ class Player
 	PlayerAttackHitEffect m_attackHitEffect;
 
 	void Jump();
+
+	//操作がキーボードかコントローラーか
+	enum struct INPUT_CONFIG { KEY_BOARD, CONTROLLER };
+	INPUT_CONFIG m_inputConfig = INPUT_CONFIG::KEY_BOARD;
 	
 public:
 	Player(std::weak_ptr<CollisionManager>arg_collisionMgr);
