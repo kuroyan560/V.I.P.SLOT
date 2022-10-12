@@ -43,35 +43,35 @@ public:
 	}
 
 	//ê¸ï`âÊÉpÉCÉvÉâÉCÉìéñëOê∂ê¨
-	static void GenerateDrawLinePipeline(DXGI_FORMAT Format, const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans);
+	static void GenerateDrawLinePipeline(DXGI_FORMAT arg_format, const AlphaBlendMode& arg_blendMode = AlphaBlendMode_Trans);
 	//ê¸ï`âÊ
-	static void DrawLine(Camera& Cam, const Vec3<float>& From, const Vec3<float>& To, const Color& LineColor, const float& Thickness, const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans);
+	static void DrawLine(Camera& arg_cam, const Vec3<float>& arg_from, const Vec3<float>& arg_to, const Color& arg_lineColor, const float& arg_thickness, const AlphaBlendMode& arg_blendMode = AlphaBlendMode_Trans);
 	//í èÌï`âÊ
-	static void DrawNonShadingModel(const std::weak_ptr<Model>Model, Transform& Transform, Camera& Camera, const float& Alpha = 1.0f, std::shared_ptr<ModelAnimator> Animator = nullptr, const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans);
-	static void DrawNonShadingModel(const std::weak_ptr<ModelObject>ModelObject, Camera& Camera, const float& Alpha = 1.0f, const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans)
+	static void DrawNonShadingModel(const std::weak_ptr<Model>arg_model, Transform& arg_transform, Camera& arg_camera, const float& arg_alpha = 1.0f, std::shared_ptr<ModelAnimator> arg_animator = nullptr, const AlphaBlendMode& arg_blendMode = AlphaBlendMode_Trans);
+	static void DrawNonShadingModel(const std::weak_ptr<ModelObject>arg_modelObject, Camera& arg_camera, const float& arg_alpha = 1.0f, const AlphaBlendMode& arg_blendMode = AlphaBlendMode_Trans)
 	{
-		auto obj = ModelObject.lock();
-		DrawNonShadingModel(obj->m_model, obj->m_transform, Camera, Alpha, obj->m_animator, BlendMode);
+		auto obj = arg_modelObject.lock();
+		DrawNonShadingModel(obj->m_model, obj->m_transform, arg_camera, arg_alpha, obj->m_animator, arg_blendMode);
 	}
 	//âeÇ¬Ç´ï`âÊ
-	static void DrawADSShadingModel(LightManager& LigManager, const std::weak_ptr<Model>Model, Transform& Transform, Camera& Cam, std::shared_ptr<ModelAnimator> Animator = nullptr, const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans);
-	static void DrawADSShadingModel(LightManager& LigManager, const std::weak_ptr<ModelObject>ModelObject, Camera& Cam, const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans)
+	static void DrawADSShadingModel(LightManager& arg_ligManager, const std::weak_ptr<Model>arg_model, Transform& arg_transform, Camera& arg_cam, std::shared_ptr<ModelAnimator> arg_animator = nullptr, const AlphaBlendMode& arg_blendMode = AlphaBlendMode_Trans);
+	static void DrawADSShadingModel(LightManager& arg_ligManager, const std::weak_ptr<ModelObject>arg_modelObject, Camera& arg_cam, const AlphaBlendMode& arg_blendMode = AlphaBlendMode_Trans)
 	{
-		auto obj = ModelObject.lock();
-		DrawADSShadingModel(LigManager, obj->m_model, obj->m_transform, Cam, obj->m_animator, BlendMode);
+		auto obj = arg_modelObject.lock();
+		DrawADSShadingModel(arg_ligManager, obj->m_model, obj->m_transform, arg_cam, obj->m_animator, arg_blendMode);
 	}
 	//âeÇ¬Ç´ï`âÊ(PBR)
-	static void DrawPBRShadingModel(LightManager& LigManager, const std::weak_ptr<Model>Model, Transform& Transform, Camera& Cam, std::shared_ptr<ModelAnimator> Animator = nullptr, std::shared_ptr<CubeMap>AttachCubeMap = nullptr, const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans);
-	static void DrawPBRShadingModel(LightManager& LigManager, const std::weak_ptr<ModelObject>ModelObject, Camera& Cam, std::shared_ptr<CubeMap>AttachCubeMap = nullptr, const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans)
+	static void DrawPBRShadingModel(LightManager& arg_ligManager, const std::weak_ptr<Model>arg_model, Transform& arg_transform, Camera& arg_cam, std::shared_ptr<ModelAnimator> arg_animator = nullptr, std::shared_ptr<CubeMap>arg_attachCubeMap = nullptr, const AlphaBlendMode& arg_blendMode = AlphaBlendMode_Trans);
+	static void DrawPBRShadingModel(LightManager& arg_ligManager, const std::weak_ptr<ModelObject>arg_modelObject, Camera& arg_cam, std::shared_ptr<CubeMap>arg_attachCubeMap = nullptr, const AlphaBlendMode& arg_blendMode = AlphaBlendMode_Trans)
 	{
-		auto obj = ModelObject.lock();
-		DrawPBRShadingModel(LigManager, obj->m_model, obj->m_transform, Cam, obj->m_animator, AttachCubeMap, BlendMode);
+		auto obj = arg_modelObject.lock();
+		DrawPBRShadingModel(arg_ligManager, obj->m_model, obj->m_transform, arg_cam, obj->m_animator, arg_attachCubeMap, arg_blendMode);
 	}
 	//ÉgÉDÅ[ÉìÉVÉFÅ[ÉfÉBÉìÉO
-	static void DrawToonModel(const std::weak_ptr<TextureBuffer>ToonTex, LightManager& LigManager, const std::weak_ptr<Model>Model, Transform& Transform, Camera& Cam, const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans);
-	static void DrawToonModel(const std::weak_ptr<TextureBuffer>ToonTex, LightManager& LigManager, const std::weak_ptr<ModelObject>ModelObject, Camera& Cam, const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans)
+	static void DrawToonModel(const std::weak_ptr<TextureBuffer>arg_toonTex, LightManager& arg_ligManager, const std::weak_ptr<Model>arg_model, Transform& arg_transform, Camera& arg_cam, const AlphaBlendMode& arg_blendMode = AlphaBlendMode_Trans);
+	static void DrawToonModel(const std::weak_ptr<TextureBuffer>arg_toonTex, LightManager& arg_ligManager, const std::weak_ptr<ModelObject>arg_modelObject, Camera& arg_cam, const AlphaBlendMode& arg_bendMode = AlphaBlendMode_Trans)
 	{
-		auto obj = ModelObject.lock();
-		DrawToonModel(ToonTex, LigManager, obj->m_model, obj->m_transform, Cam, BlendMode);
+		auto obj = arg_modelObject.lock();
+		DrawToonModel(arg_toonTex, arg_ligManager, obj->m_model, obj->m_transform, arg_cam, arg_bendMode);
 	}
 };

@@ -21,10 +21,10 @@ int DrawFunc3D::s_drawToonCount = 0;
 int DrawFunc3D::s_drawShadowFallCount = 0;
 
 
-void DrawFunc3D::GenerateDrawLinePipeline(DXGI_FORMAT Format, const AlphaBlendMode& BlendMode)
+void DrawFunc3D::GenerateDrawLinePipeline(DXGI_FORMAT arg_format, const AlphaBlendMode& arg_blendMode)
 {
 	//パイプライン未生成
-	if (!s_drawLinePipeline[Format][BlendMode])
+	if (!s_drawLinePipeline[arg_format][arg_blendMode])
 	{
 		//パイプライン設定
 		static PipelineInitializeOption PIPELINE_OPTION(D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT, D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
@@ -52,13 +52,13 @@ void DrawFunc3D::GenerateDrawLinePipeline(DXGI_FORMAT Format, const AlphaBlendMo
 		};
 
 		//レンダーターゲット描画先情報
-		std::vector<RenderTargetInfo>RENDER_TARGET_INFO = { RenderTargetInfo(Format, BlendMode) };
+		std::vector<RenderTargetInfo>RENDER_TARGET_INFO = { RenderTargetInfo(arg_format, arg_blendMode) };
 		//パイプライン生成
-		s_drawLinePipeline[Format][BlendMode] = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, INPUT_LAYOUT, ROOT_PARAMETER, RENDER_TARGET_INFO, { WrappedSampler(false, false) });
+		s_drawLinePipeline[arg_format][arg_blendMode] = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, INPUT_LAYOUT, ROOT_PARAMETER, RENDER_TARGET_INFO, { WrappedSampler(false, false) });
 	}
 }
 
-void DrawFunc3D::DrawLine(Camera& Cam, const Vec3<float>& From, const Vec3<float>& To, const Color& LineColor, const float& Thickness, const AlphaBlendMode& BlendMode)
+void DrawFunc3D::DrawLine(Camera& arg_cam, const Vec3<float>& arg_from, const Vec3<float>& arg_to, const Color& arg_lineColor, const float& arg_thickness, const AlphaBlendMode& arg_blendMode)
 {
 	static std::vector<std::shared_ptr<VertexBuffer>>LINE_VERTEX_BUFF;
 
@@ -72,27 +72,27 @@ void DrawFunc3D::DrawLine(Camera& Cam, const Vec3<float>& From, const Vec3<float
 		Vec3<float>toPos;
 		Color color;
 		float thickness;
-		LineVertex(const Vec3<float>& FromPos, const Vec3<float>& ToPos, const Color& Color, const float& Thickness)
-			:fromPos(FromPos), toPos(ToPos), color(Color), thickness(Thickness) {}
+		LineVertex(const Vec3<float>& arg_fromPos, const Vec3<float>& arg_toPos, const Color& arg_color, const float& arg_thickness)
+			:fromPos(arg_fromPos), toPos(arg_toPos), color(arg_color), thickness(arg_thickness) {}
 	};
 
-	GenerateDrawLinePipeline(targetFormat, BlendMode);
+	GenerateDrawLinePipeline(targetFormat, arg_blendMode);
 
-	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(s_drawLinePipeline[targetFormat][BlendMode]);
+	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(s_drawLinePipeline[targetFormat][arg_blendMode]);
 
 	if (LINE_VERTEX_BUFF.size() < (s_drawLineCount + 1))
 	{
 		LINE_VERTEX_BUFF.emplace_back(D3D12App::Instance()->GenerateVertexBuffer(sizeof(LineVertex), 1, nullptr, ("DrawLine3D -" + std::to_string(s_drawLineCount)).c_str()));
 	}
 
-	LineVertex vertex(From, To, LineColor, Thickness);
+	LineVertex vertex(arg_from, arg_to, arg_lineColor, arg_thickness);
 	LINE_VERTEX_BUFF[s_drawLineCount]->Mapping(&vertex);
-	Vec3<float>center = From.GetCenter(To);
+	Vec3<float>center = arg_from.GetCenter(arg_to);
 
 	KuroEngine::Instance()->Graphics().ObjectRender(
 		LINE_VERTEX_BUFF[s_drawLineCount],
 		{
-			{Cam.GetBuff(),CBV}
+			{arg_cam.GetBuff(),CBV}
 		},
 		center.z,
 		true);
@@ -100,7 +100,7 @@ void DrawFunc3D::DrawLine(Camera& Cam, const Vec3<float>& From, const Vec3<float
 	s_drawLineCount++;
 }
 
-void DrawFunc3D::DrawNonShadingModel(const std::weak_ptr<Model> Model, Transform& Transform, Camera& Cam, const float& Alpha, std::shared_ptr<ModelAnimator> Animator, const AlphaBlendMode& BlendMode)
+void DrawFunc3D::DrawNonShadingModel(const std::weak_ptr<Model> arg_model, Transform& arg_transform, Camera& arg_cam, const float& arg_alpha, std::shared_ptr<ModelAnimator> arg_animator, const AlphaBlendMode& arg_blendMode)
 {
 	static std::map<DXGI_FORMAT, std::array<std::shared_ptr<GraphicsPipeline>, AlphaBlendModeNum>>PIPELINE;
 	static std::vector<std::shared_ptr<ConstantBuffer>>DRWA_DATA_BUFF;
@@ -114,7 +114,7 @@ void DrawFunc3D::DrawNonShadingModel(const std::weak_ptr<Model> Model, Transform
 	const auto targetFormat = KuroEngine::Instance()->Graphics().GetRecentRenderTargetFormat(0);
 
 	//パイプライン未生成
-	if (!PIPELINE[targetFormat][BlendMode])
+	if (!PIPELINE[targetFormat][arg_blendMode])
 	{
 		//パイプライン設定
 		static PipelineInitializeOption PIPELINE_OPTION(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -135,12 +135,12 @@ void DrawFunc3D::DrawNonShadingModel(const std::weak_ptr<Model> Model, Transform
 		};
 
 		//レンダーターゲット描画先情報
-		std::vector<RenderTargetInfo>RENDER_TARGET_INFO = { RenderTargetInfo(targetFormat, BlendMode) };
+		std::vector<RenderTargetInfo>RENDER_TARGET_INFO = { RenderTargetInfo(targetFormat, arg_blendMode) };
 		//パイプライン生成
-		PIPELINE[targetFormat][BlendMode] = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, ModelMesh::Vertex::GetInputLayout(), ROOT_PARAMETER, RENDER_TARGET_INFO, {WrappedSampler(true, true)});
+		PIPELINE[targetFormat][arg_blendMode] = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, ModelMesh::Vertex::GetInputLayout(), ROOT_PARAMETER, RENDER_TARGET_INFO, {WrappedSampler(true, true)});
 	}
 
-	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(PIPELINE[targetFormat][BlendMode]);
+	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(PIPELINE[targetFormat][arg_blendMode]);
 
 	if (DRWA_DATA_BUFF.size() < (s_drawNonShadingCount + 1))
 	{
@@ -148,13 +148,13 @@ void DrawFunc3D::DrawNonShadingModel(const std::weak_ptr<Model> Model, Transform
 	}
 
 	DrawData drawData;
-	drawData.m_transformMat = Transform.GetMat();
-	drawData.m_alpha = Alpha;
+	drawData.m_transformMat = arg_transform.GetMat();
+	drawData.m_alpha = arg_alpha;
 	DRWA_DATA_BUFF[s_drawNonShadingCount]->Mapping(&drawData);
 
-	auto model = Model.lock();
+	auto model = arg_model.lock();
 	std::shared_ptr<ConstantBuffer>boneBuff;
-	if (Animator)boneBuff = Animator->GetBoneMatBuff();
+	if (arg_animator)boneBuff = arg_animator->GetBoneMatBuff();
 
 	for (int meshIdx = 0; meshIdx < model->m_meshes.size(); ++meshIdx)
 	{
@@ -163,26 +163,26 @@ void DrawFunc3D::DrawNonShadingModel(const std::weak_ptr<Model> Model, Transform
 			mesh.mesh->vertBuff,
 			mesh.mesh->idxBuff,
 			{
-				{Cam.GetBuff(),CBV},
+				{arg_cam.GetBuff(),CBV},
 				{DRWA_DATA_BUFF[s_drawNonShadingCount],CBV},
 				{boneBuff,CBV},
 				{mesh.material->texBuff[COLOR_TEX],SRV},
 				{mesh.material->buff,CBV}
 			},
-			Transform.GetPos().z,
+			arg_transform.GetPos().z,
 			true);
 	}
 
 	s_drawNonShadingCount++;
 }
 
-void DrawFunc3D::DrawADSShadingModel(LightManager& LigManager, const std::weak_ptr<Model> Model, Transform& Transform, Camera& Cam, std::shared_ptr<ModelAnimator> Animator, const AlphaBlendMode& BlendMode)
+void DrawFunc3D::DrawADSShadingModel(LightManager& arg_ligManager, const std::weak_ptr<Model> arg_model, Transform& arg_transform, Camera& arg_cam, std::shared_ptr<ModelAnimator> arg_animator, const AlphaBlendMode& arg_blendMode)
 {
 	static std::shared_ptr<GraphicsPipeline>PIPELINE[AlphaBlendModeNum];
 	static std::vector<std::shared_ptr<ConstantBuffer>>TRANSFORM_BUFF;
 
 	//パイプライン未生成
-	if (!PIPELINE[BlendMode])
+	if (!PIPELINE[arg_blendMode])
 	{
 		//パイプライン設定
 		static PipelineInitializeOption PIPELINE_OPTION(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -210,23 +210,23 @@ void DrawFunc3D::DrawADSShadingModel(LightManager& LigManager, const std::weak_p
 		};
 
 		//レンダーターゲット描画先情報
-		std::vector<RenderTargetInfo>RENDER_TARGET_INFO = { RenderTargetInfo(D3D12App::Instance()->GetBackBuffFormat(), BlendMode) };
+		std::vector<RenderTargetInfo>RENDER_TARGET_INFO = { RenderTargetInfo(D3D12App::Instance()->GetBackBuffFormat(), arg_blendMode) };
 		//パイプライン生成
-		PIPELINE[BlendMode] = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, ModelMesh::Vertex::GetInputLayout(), ROOT_PARAMETER, RENDER_TARGET_INFO, {WrappedSampler(false, false)});
+		PIPELINE[arg_blendMode] = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, ModelMesh::Vertex::GetInputLayout(), ROOT_PARAMETER, RENDER_TARGET_INFO, {WrappedSampler(false, false)});
 	}
 
-	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(PIPELINE[BlendMode]);
+	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(PIPELINE[arg_blendMode]);
 
 	if (TRANSFORM_BUFF.size() < (s_drawAdsShadingCount + 1))
 	{
 		TRANSFORM_BUFF.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("DrawADSShadingModel_Transform -" + std::to_string(s_drawAdsShadingCount)).c_str()));
 	}
 
-	TRANSFORM_BUFF[s_drawAdsShadingCount]->Mapping(&Transform.GetMat());
+	TRANSFORM_BUFF[s_drawAdsShadingCount]->Mapping(&arg_transform.GetMat());
 
-	auto model = Model.lock();
+	auto model = arg_model.lock();
 	std::shared_ptr<ConstantBuffer>boneBuff;
-	if (Animator)boneBuff = Animator->GetBoneMatBuff();
+	if (arg_animator)boneBuff = arg_animator->GetBoneMatBuff();
 	
 	for (int meshIdx = 0; meshIdx < model->m_meshes.size(); ++meshIdx)
 	{
@@ -235,32 +235,32 @@ void DrawFunc3D::DrawADSShadingModel(LightManager& LigManager, const std::weak_p
 			mesh.mesh->vertBuff,
 			mesh.mesh->idxBuff,
 			{
-				{Cam.GetBuff(),CBV},
-				{LigManager.GetLigNumInfo(),CBV},
-				{LigManager.GetLigInfo(Light::DIRECTION),SRV},
-				{LigManager.GetLigInfo(Light::POINT),SRV},
-				{LigManager.GetLigInfo(Light::SPOT),SRV},
-				{LigManager.GetLigInfo(Light::HEMISPHERE),SRV},
+				{arg_cam.GetBuff(),CBV},
+				{arg_ligManager.GetLigNumInfo(),CBV},
+				{arg_ligManager.GetLigInfo(Light::DIRECTION),SRV},
+				{arg_ligManager.GetLigInfo(Light::POINT),SRV},
+				{arg_ligManager.GetLigInfo(Light::SPOT),SRV},
+				{arg_ligManager.GetLigInfo(Light::HEMISPHERE),SRV},
 				{TRANSFORM_BUFF[s_drawAdsShadingCount],CBV},
 				{boneBuff,CBV},
 				{mesh.material->texBuff[COLOR_TEX],SRV},
 				{mesh.material->texBuff[NORMAL_TEX],SRV},
 				{mesh.material->buff,CBV}
 			},
-			Transform.GetPos().z,
+			arg_transform.GetPos().z,
 			true);
 	}
 
 	s_drawAdsShadingCount++;
 }
 
-void DrawFunc3D::DrawPBRShadingModel(LightManager& LigManager, const std::weak_ptr<Model> Model, Transform& Transform, Camera& Cam, std::shared_ptr<ModelAnimator> Animator, std::shared_ptr<CubeMap>AttachCubeMap, const AlphaBlendMode& BlendMode)
+void DrawFunc3D::DrawPBRShadingModel(LightManager& arg_ligManager, const std::weak_ptr<Model> arg_model, Transform& arg_transform, Camera& arg_cam, std::shared_ptr<ModelAnimator> arg_animator, std::shared_ptr<CubeMap>arg_attachCubeMap, const AlphaBlendMode& arg_blendMode)
 {
 	static std::shared_ptr<GraphicsPipeline>PIPELINE[AlphaBlendModeNum];
 	static std::vector<std::shared_ptr<ConstantBuffer>>TRANSFORM_BUFF;
 
 	//パイプライン未生成
-	if (!PIPELINE[BlendMode])
+	if (!PIPELINE[arg_blendMode])
 	{
 		//パイプライン設定
 		static PipelineInitializeOption PIPELINE_OPTION(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -291,29 +291,29 @@ void DrawFunc3D::DrawPBRShadingModel(LightManager& LigManager, const std::weak_p
 		};
 
 		//レンダーターゲット描画先情報
-		std::vector<RenderTargetInfo>RENDER_TARGET_INFO = { RenderTargetInfo(D3D12App::Instance()->GetBackBuffFormat(), BlendMode) };
+		std::vector<RenderTargetInfo>RENDER_TARGET_INFO = { RenderTargetInfo(D3D12App::Instance()->GetBackBuffFormat(), arg_blendMode) };
 		//パイプライン生成
-		PIPELINE[BlendMode] = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, ModelMesh::Vertex::GetInputLayout(), ROOT_PARAMETER, RENDER_TARGET_INFO, {WrappedSampler(false, false)});
+		PIPELINE[arg_blendMode] = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, ModelMesh::Vertex::GetInputLayout(), ROOT_PARAMETER, RENDER_TARGET_INFO, {WrappedSampler(false, false)});
 	}
 
-	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(PIPELINE[BlendMode]);
+	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(PIPELINE[arg_blendMode]);
 
 	if (TRANSFORM_BUFF.size() < (s_drawPbrShadingCount + 1))
 	{
 		TRANSFORM_BUFF.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("DrawPBRShadingModel_Transform -" + std::to_string(s_drawPbrShadingCount)).c_str()));
 	}
 
-	TRANSFORM_BUFF[s_drawPbrShadingCount]->Mapping(&Transform.GetMat());
+	TRANSFORM_BUFF[s_drawPbrShadingCount]->Mapping(&arg_transform.GetMat());
 
 
 	//ボーン行列バッファ取得（アニメーターがnullptrなら空）
-	auto model = Model.lock();
+	auto model = arg_model.lock();
 	std::shared_ptr<ConstantBuffer>boneBuff;
-	if (Animator)boneBuff = Animator->GetBoneMatBuff();
+	if (arg_animator)boneBuff = arg_animator->GetBoneMatBuff();
 
 	//キューブマップ（nullptrならデフォルトの静的キューブマップ）
 	std::shared_ptr<CubeMap>cubeMap = StaticallyCubeMap::GetDefaultCubeMap();
-	if (AttachCubeMap)cubeMap = AttachCubeMap;
+	if (arg_attachCubeMap)cubeMap = arg_attachCubeMap;
 
 	for (int meshIdx = 0; meshIdx < model->m_meshes.size(); ++meshIdx)
 	{
@@ -322,12 +322,12 @@ void DrawFunc3D::DrawPBRShadingModel(LightManager& LigManager, const std::weak_p
 			mesh.mesh->vertBuff,
 			mesh.mesh->idxBuff,
 			{
-				{Cam.GetBuff(),CBV},
-				{LigManager.GetLigNumInfo(),CBV},
-				{LigManager.GetLigInfo(Light::DIRECTION),SRV},
-				{LigManager.GetLigInfo(Light::POINT),SRV},
-				{LigManager.GetLigInfo(Light::SPOT),SRV},
-				{LigManager.GetLigInfo(Light::HEMISPHERE),SRV},
+				{arg_cam.GetBuff(),CBV},
+				{arg_ligManager.GetLigNumInfo(),CBV},
+				{arg_ligManager.GetLigInfo(Light::DIRECTION),SRV},
+				{arg_ligManager.GetLigInfo(Light::POINT),SRV},
+				{arg_ligManager.GetLigInfo(Light::SPOT),SRV},
+				{arg_ligManager.GetLigInfo(Light::HEMISPHERE),SRV},
 				{cubeMap->GetCubeMapTex(),SRV},
 				{TRANSFORM_BUFF[s_drawPbrShadingCount],CBV},
 				{boneBuff,CBV},
@@ -337,20 +337,20 @@ void DrawFunc3D::DrawPBRShadingModel(LightManager& LigManager, const std::weak_p
 				{mesh.material->texBuff[ROUGHNESS_TEX],SRV},
 				{mesh.material->buff,CBV},
 			},
-			Transform.GetPos().z,
+			arg_transform.GetPos().z,
 			true);
 	}
 
 	s_drawPbrShadingCount++;
 }
 
-void DrawFunc3D::DrawToonModel(const std::weak_ptr<TextureBuffer> ToonTex, LightManager& LigManager, const std::weak_ptr<Model> Model, Transform& Transform, Camera& Cam, const AlphaBlendMode& BlendMode)
+void DrawFunc3D::DrawToonModel(const std::weak_ptr<TextureBuffer> arg_toonTex, LightManager& arg_ligManager, const std::weak_ptr<Model> arg_model, Transform& arg_transform, Camera& arg_cam, const AlphaBlendMode& arg_blendMode)
 {
 	static std::shared_ptr<GraphicsPipeline>PIPELINE[AlphaBlendModeNum];
 	static std::vector<std::shared_ptr<ConstantBuffer>>TRANSFORM_BUFF;
 
 	//パイプライン未生成
-	if (!PIPELINE[BlendMode])
+	if (!PIPELINE[arg_blendMode])
 	{
 		//パイプライン設定
 		static PipelineInitializeOption PIPELINE_OPTION(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -378,21 +378,21 @@ void DrawFunc3D::DrawToonModel(const std::weak_ptr<TextureBuffer> ToonTex, Light
 		};
 
 		//レンダーターゲット描画先情報
-		std::vector<RenderTargetInfo>RENDER_TARGET_INFO = { RenderTargetInfo(D3D12App::Instance()->GetBackBuffFormat(), BlendMode) };
+		std::vector<RenderTargetInfo>RENDER_TARGET_INFO = { RenderTargetInfo(D3D12App::Instance()->GetBackBuffFormat(), arg_blendMode) };
 		//パイプライン生成
-		PIPELINE[BlendMode] = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, ModelMesh::Vertex::GetInputLayout(), ROOT_PARAMETER, RENDER_TARGET_INFO, {WrappedSampler(false, false)});
+		PIPELINE[arg_blendMode] = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, ModelMesh::Vertex::GetInputLayout(), ROOT_PARAMETER, RENDER_TARGET_INFO, {WrappedSampler(false, false)});
 	}
 
-	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(PIPELINE[BlendMode]);
+	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(PIPELINE[arg_blendMode]);
 
 	if (TRANSFORM_BUFF.size() < (s_drawToonCount + 1))
 	{
 		TRANSFORM_BUFF.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("DrawShadingModel_Transform -" + std::to_string(s_drawToonCount)).c_str()));
 	}
 
-	TRANSFORM_BUFF[s_drawToonCount]->Mapping(&Transform.GetMat());
+	TRANSFORM_BUFF[s_drawToonCount]->Mapping(&arg_transform.GetMat());
 
-	auto model = Model.lock();
+	auto model = arg_model.lock();
 
 	for (int meshIdx = 0; meshIdx < model->m_meshes.size(); ++meshIdx)
 	{
@@ -401,19 +401,19 @@ void DrawFunc3D::DrawToonModel(const std::weak_ptr<TextureBuffer> ToonTex, Light
 			mesh.mesh->vertBuff,
 			mesh.mesh->idxBuff,
 			{
-				{Cam.GetBuff(),CBV},
-				{LigManager.GetLigNumInfo(),CBV},
-				{LigManager.GetLigInfo(Light::DIRECTION),SRV},
-				{LigManager.GetLigInfo(Light::POINT),SRV},
-				{LigManager.GetLigInfo(Light::SPOT),SRV},
-				{LigManager.GetLigInfo(Light::HEMISPHERE),SRV},
+				{arg_cam.GetBuff(),CBV},
+				{arg_ligManager.GetLigNumInfo(),CBV},
+				{arg_ligManager.GetLigInfo(Light::DIRECTION),SRV},
+				{arg_ligManager.GetLigInfo(Light::POINT),SRV},
+				{arg_ligManager.GetLigInfo(Light::SPOT),SRV},
+				{arg_ligManager.GetLigInfo(Light::HEMISPHERE),SRV},
 				{TRANSFORM_BUFF[s_drawToonCount],CBV},
 				{mesh.material->texBuff[COLOR_TEX],SRV},
 				{mesh.material->texBuff[NORMAL_TEX],SRV},
-				{ToonTex.lock(),SRV},
+				{arg_toonTex.lock(),SRV},
 				{mesh.material->buff,CBV}
 			},
-			Transform.GetPos().z,
+			arg_transform.GetPos().z,
 			true);
 	}
 
