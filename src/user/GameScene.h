@@ -10,6 +10,7 @@ class TextureBuffer;
 class GameCamera;
 class ObjectManager;
 class CollisionManager;
+class StageMgr;
 
 class GameScene : public BaseScene
 {
@@ -41,6 +42,9 @@ class GameScene : public BaseScene
 
 	//コリジョンマネージャ
 	std::shared_ptr<CollisionManager>m_collisionMgr;
+
+	//ステージマネージャ
+	std::shared_ptr<StageMgr>m_stageMgr;
 
 	//デバッグ用
 	Timer m_emitEnemyTimer;

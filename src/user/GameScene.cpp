@@ -11,6 +11,7 @@
 #include"SlotMachine.h"
 #include"ObjectManager.h"
 #include"CollisionManager.h"
+#include"StageMgr.h"
 
 GameScene::GameScene()
 {
@@ -48,6 +49,9 @@ GameScene::GameScene()
 
 	//敵マネージャ生成
 	m_enemyMgr = std::make_shared<ObjectManager>();
+
+	//ステージマネージャ生成
+	m_stageMgr = std::make_shared<StageMgr>(m_slotMachine);
 }
 
 void GameScene::OnInitialize()
@@ -65,6 +69,9 @@ void GameScene::OnInitialize()
 	m_enemyMgr->Init(m_collisionMgr);
 
 	m_emitEnemyTimer.Reset(m_emitEnemySpan);
+
+	//ステージマネージャ
+	m_stageMgr->Init("");
 }
 
 void GameScene::OnUpdate()
@@ -95,6 +102,9 @@ void GameScene::OnUpdate()
 
 	//敵マネージャ
 	m_enemyMgr->Update(m_timeScale, m_collisionMgr, m_player);
+
+	//ステージマネージャ
+	m_stageMgr->Update();
 }
 
 
@@ -120,6 +130,9 @@ void GameScene::OnDraw()
 	//敵
 	m_enemyMgr->Draw(m_ligMgr, m_gameCam->GetFrontCam());
 	
+	//ステージマネージャ
+	m_stageMgr->Draw(m_ligMgr, m_gameCam->GetFrontCam());
+
 	//プレイヤー
 	m_player->Draw(m_ligMgr, m_gameCam->GetFrontCam());
 
@@ -144,6 +157,8 @@ void GameScene::OnImguiDebug()
 		m_emitEnemyTimer.Reset(m_emitEnemySpan);
 	}
 	ImGui::End();
+
+	m_stageMgr->ImguiDebug();
 }
 
 void GameScene::OnFinalize()

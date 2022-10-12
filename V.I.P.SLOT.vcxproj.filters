@@ -86,6 +86,9 @@
     <Filter Include="src\user\GameObject">
       <UniqueIdentifier>{f5ff9f17-0c33-43fa-80dd-82a1da31c6de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\user\Stage">
+      <UniqueIdentifier>{6477cd29-1f1f-40ff-ae03-d27465c6f341}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\D3D12App.cpp">
@@ -318,6 +321,12 @@
     </ClCompile>
     <ClCompile Include="src\user\PlayerAttackHitEffect.cpp">
       <Filter>src\user\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\StageMgr.cpp">
+      <Filter>src\user\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\Block.cpp">
+      <Filter>src\user\Stage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -608,6 +617,12 @@
     </ClInclude>
     <ClInclude Include="src\user\PlayerAttackHitEffect.h">
       <Filter>src\user\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\StageMgr.h">
+      <Filter>src\user\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Block.h">
+      <Filter>src\user\Stage</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

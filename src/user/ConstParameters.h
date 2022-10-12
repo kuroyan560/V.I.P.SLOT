@@ -8,16 +8,24 @@ namespace ConstParameter
 {
 	namespace Environment
 	{
+		//ステージ横幅
+		const float FIELD_WIDTH = 60.0f;
 		//ステージ横幅の半分
-		const float FIELD_WIDTH_HALF = 30.0f;
+		const float FIELD_WIDTH_HALF = FIELD_WIDTH / 2.0f;
 		//フィールド位置のZ軸
 		const float FIELD_DEPTH = -20.0f;
 		//フィールド位置のZ軸とのオフセット（モデルの位置ズレ）
 		const float FIELD_DEPTH_MODEL_OFFSET = -5.2f;
+		//フィールド位置のZ軸（オフセット適用）
+		const float FIELD_DEPTH_FIXED = FIELD_DEPTH + FIELD_DEPTH_MODEL_OFFSET;
+		//フィールドの高さ
+		const float FIELD_HEIGHT = 32.5f;
 		//コインにかかる重力
 		const float COIN_GRAVITY = -0.002f;
+		//フィールド床の高さ
+		const float FLOOR_HEIGHT = 2.6f;
 		//フィールド床の高さの半分
-		const float FIELD_HEIGHT_HALF = 1.3f;
+		const float FLOOR_HEIGHT_HALF = FLOOR_HEIGHT / 2.0f;
 	}
 
 	namespace Player
@@ -140,12 +148,12 @@ namespace ConstParameter
 		const float POS_X_ABS = 43.0f;
 
 		//敵がいる空間のY軸座標下限
-		const float POS_Y_MIN = Environment::FIELD_HEIGHT_HALF;
+		const float POS_Y_MIN = Environment::FLOOR_HEIGHT_HALF;
 		//敵がいる空間のY軸座標上限
-		const float POS_Y_MAX = 32.5f;
+		const float POS_Y_MAX = Environment::FIELD_HEIGHT;
 
 		//敵がいる空間のZ軸座標
-		const float POS_Z = Environment::FIELD_DEPTH + Environment::FIELD_DEPTH_MODEL_OFFSET;
+		const float POS_Z = Environment::FIELD_DEPTH_FIXED;
 
 		/*--- 衝突判定 ---*/
 		//ダメージを受けた後の無敵時間
@@ -154,5 +162,12 @@ namespace ConstParameter
 		const int OFFSET_Y_TIME_ON_DAMAGED = 15;
 	}
 
+	namespace Stage
+	{
+		namespace Block
+		{
+			enum struct TYPE { COIN, SLOT, NUM };
+		}
+	}
 };
 
