@@ -256,6 +256,10 @@ public:
 	{
 		m_resource->Mapping(m_dataSize, m_elementNum, SendData);
 	}
+	void Mapping(const void* SendData, int ElementNum)
+	{
+		m_resource->Mapping(m_dataSize, ElementNum, SendData);
+	}
 };
 
 //構造化バッファ（見かけ上は定数バッファと同じ）
