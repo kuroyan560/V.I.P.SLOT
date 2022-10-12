@@ -290,6 +290,13 @@ int KuroFunc::GetRandFromCenter(int CenterNum, int Range)
 	return CenterNum + GetRand(0, Range) * GetRandPlusMinus();
 }
 
+bool KuroFunc::Probability(float Rate)
+{
+	Rate = std::clamp(Rate, 0.0f, 100.0f);
+	float rand = GetRand(100.0f);
+	return rand < Rate;
+}
+
 
 int KuroFunc::GetSpecifiedDigitNum(int From, int Digit, bool CountFromLeft)
 {

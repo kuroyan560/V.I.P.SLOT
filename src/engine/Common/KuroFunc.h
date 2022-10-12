@@ -47,6 +47,9 @@ namespace KuroFunc
 	//基準の値から前後乱数算出
 	int GetRandFromCenter(int CenterNum, int Range);
 
+	//確率(MAX:100%)、引数に渡した確率でtrueを返す
+	bool Probability(float Rate);
+
 	/// <summary>
 	/// 指定した桁数の数字を取得
 	/// </summary>
