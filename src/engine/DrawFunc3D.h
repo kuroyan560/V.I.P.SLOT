@@ -21,6 +21,7 @@ class DrawFunc3D
 
 	//DrawNonShadingModel
 	static int s_drawNonShadingCount;
+	static int s_drawNonShadingCountHuge;
 	//DrawADSShadingModel
 	static int s_drawAdsShadingCount;
 	//DrawPBRShadingModel
@@ -31,11 +32,15 @@ class DrawFunc3D
 	static int s_drawShadowFallCount;
 
 public:
+	//インスタンシング描画で一度に描画できるインスタンス最大数
+	static const int INSTANCE_MAX = 1024;
+
 	//呼び出しカウントリセット
 	static void CountReset()
 	{
 		s_drawLineCount = 0;
 		s_drawNonShadingCount = 0;
+		s_drawNonShadingCountHuge = 0;
 		s_drawAdsShadingCount = 0;
 		s_drawPbrShadingCount = 0;
 		s_drawToonCount = 0;
@@ -53,6 +58,7 @@ public:
 		auto obj = arg_modelObject.lock();
 		DrawNonShadingModel(obj->m_model, obj->m_transform, arg_camera, arg_alpha, obj->m_animator, arg_blendMode);
 	}
+	static void DrawNonShadingModel(const std::weak_ptr<Model>arg_model, const std::vector<Matrix>&arg_matArray, Camera& arg_Camera, const AlphaBlendMode& arg_blendMode = AlphaBlendMode_Trans, const float& arg_depth = 0.0f, std::shared_ptr<ModelAnimator> arg_animator = nullptr);
 	//影つき描画
 	static void DrawADSShadingModel(LightManager& arg_ligManager, const std::weak_ptr<Model>arg_model, Transform& arg_transform, Camera& arg_cam, std::shared_ptr<ModelAnimator> arg_animator = nullptr, const AlphaBlendMode& arg_blendMode = AlphaBlendMode_Trans);
 	static void DrawADSShadingModel(LightManager& arg_ligManager, const std::weak_ptr<ModelObject>arg_modelObject, Camera& arg_cam, const AlphaBlendMode& arg_blendMode = AlphaBlendMode_Trans)

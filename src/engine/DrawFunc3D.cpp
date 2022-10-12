@@ -11,6 +11,7 @@ std::map<DXGI_FORMAT, std::array<std::shared_ptr<GraphicsPipeline>, AlphaBlendMo
 
 //DrawNonShadingModel
 int DrawFunc3D::s_drawNonShadingCount = 0;
+int DrawFunc3D::s_drawNonShadingCountHuge = 0;
 //DrawADSShadingModel
 int DrawFunc3D::s_drawAdsShadingCount = 0;
 //DrawPBRShadingModel
@@ -170,10 +171,80 @@ void DrawFunc3D::DrawNonShadingModel(const std::weak_ptr<Model> arg_model, Trans
 				{mesh.material->buff,CBV}
 			},
 			arg_transform.GetPos().z,
-			true);
+			arg_blendMode == AlphaBlendMode_Trans);
 	}
 
 	s_drawNonShadingCount++;
+}
+
+void DrawFunc3D::DrawNonShadingModel(const std::weak_ptr<Model> arg_model, const std::vector<Matrix>& arg_matArray, Camera& arg_cam, const AlphaBlendMode& arg_blendMode, const float& arg_depth, std::shared_ptr<ModelAnimator> arg_animator)
+{
+	if (INSTANCE_MAX < arg_matArray.size())assert(0);
+
+	static std::map<DXGI_FORMAT, std::array<std::shared_ptr<GraphicsPipeline>, AlphaBlendModeNum>>PIPELINE;
+	static std::vector<std::shared_ptr<ConstantBuffer>>TRANSFORM_BUFF;
+
+	const auto targetFormat = KuroEngine::Instance()->Graphics().GetRecentRenderTargetFormat(0);
+
+	//パイプライン未生成
+	if (!PIPELINE[targetFormat][arg_blendMode])
+	{
+		//パイプライン設定
+		static PipelineInitializeOption PIPELINE_OPTION(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		//シェーダー情報
+		static Shaders SHADERS;
+		SHADERS.m_vs = D3D12App::Instance()->CompileShader("resource/engine/DrawNonShadingModel_Huge.hlsl", "VSmain", "vs_6_4");
+		SHADERS.m_ps = D3D12App::Instance()->CompileShader("resource/engine/DrawNonShadingModel_Huge.hlsl", "PSmain", "ps_6_4");
+
+		//ルートパラメータ
+		static std::vector<RootParam>ROOT_PARAMETER =
+		{
+			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"カメラ情報バッファ"),
+			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"描画データバッファ"),
+			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"ボーン行列バッファ"),
+			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,"カラーテクスチャ"),
+			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"マテリアル基本情報バッファ"),
+		};
+
+		//レンダーターゲット描画先情報
+		std::vector<RenderTargetInfo>RENDER_TARGET_INFO = { RenderTargetInfo(targetFormat, arg_blendMode) };
+		//パイプライン生成
+		PIPELINE[targetFormat][arg_blendMode] = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, ModelMesh::Vertex::GetInputLayout(), ROOT_PARAMETER, RENDER_TARGET_INFO, { WrappedSampler(true, true) });
+	}
+
+	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(PIPELINE[targetFormat][arg_blendMode]);
+
+	if (TRANSFORM_BUFF.size() < (s_drawNonShadingCountHuge + 1))
+	{
+		TRANSFORM_BUFF.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), INSTANCE_MAX, nullptr, ("DrawShadingModel_Huge_Transform -" + std::to_string(s_drawNonShadingCountHuge)).c_str()));
+	}
+
+	TRANSFORM_BUFF[s_drawNonShadingCountHuge]->Mapping(arg_matArray.data(), static_cast<int>(arg_matArray.size()));
+
+	auto model = arg_model.lock();
+	std::shared_ptr<ConstantBuffer>boneBuff;
+	if (arg_animator)boneBuff = arg_animator->GetBoneMatBuff();
+
+	for (int meshIdx = 0; meshIdx < model->m_meshes.size(); ++meshIdx)
+	{
+		const auto& mesh = model->m_meshes[meshIdx];
+		KuroEngine::Instance()->Graphics().ObjectRender(
+			mesh.mesh->vertBuff,
+			mesh.mesh->idxBuff,
+			{
+				{arg_cam.GetBuff(),CBV},
+				{TRANSFORM_BUFF[s_drawNonShadingCountHuge],CBV},
+				{boneBuff,CBV},
+				{mesh.material->texBuff[COLOR_TEX],SRV},
+				{mesh.material->buff,CBV}
+			},
+			arg_depth,
+			arg_blendMode == AlphaBlendMode_Trans,
+			static_cast<int>(arg_matArray.size()));
+	}
+
+	s_drawNonShadingCountHuge++;
 }
 
 void DrawFunc3D::DrawADSShadingModel(LightManager& arg_ligManager, const std::weak_ptr<Model> arg_model, Transform& arg_transform, Camera& arg_cam, std::shared_ptr<ModelAnimator> arg_animator, const AlphaBlendMode& arg_blendMode)
