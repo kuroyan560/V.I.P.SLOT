@@ -15,7 +15,10 @@ void CollisionManager::OnHit(const RegisterInfo& arg_myInfo, const RegisterInfo&
 		unsigned char attribute = callback.first;
 		if (attribute & arg_otherInfo.m_myAttribute)
 		{
-			callback.second->OnCollision(arg_inter, arg_otherInfo.m_collider, arg_otherInfo.m_myAttribute, *this);
+			callback.second->OnCollisionEnter(arg_inter, arg_otherInfo.m_collider, arg_otherInfo.m_myAttribute, *this);
+
+			//瞬間
+			if (!col->m_oldIsHit)callback.second->OnCollisionTrigger(arg_inter, arg_otherInfo.m_collider, arg_otherInfo.m_myAttribute, *this);
 		}
 	}
 }
@@ -34,7 +37,12 @@ void CollisionManager::Update()
 		});
 
 	//当たり判定記録リセット
-	for (auto& info : m_registerList)info.m_collider->m_isHit = false;
+	for (auto& info : m_registerList)
+	{
+		//直前のフラグ記録
+		info.m_collider->m_oldIsHit = info.m_collider->m_isHit;
+		info.m_collider->m_isHit = false;
+	}
 
 	//総当り衝突判定
 	for (auto itrA = m_registerList.begin(); itrA != m_registerList.end(); ++itrA)

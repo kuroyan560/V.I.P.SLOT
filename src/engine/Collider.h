@@ -36,6 +36,8 @@ private:
 	//有効フラグ
 	bool m_isActive = true;
 
+	//過去の当たり判定フラグ記録
+	bool m_oldIsHit = false;
 	//当たり判定があったかフラグ
 	bool m_isHit = false;
 

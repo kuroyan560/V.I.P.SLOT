@@ -217,7 +217,7 @@ Vec3<float> Player::GetCenterPos() const
 	return m_modelObj->m_transform.GetPos() + ConstParameter::Player::FIX_MODEL_CENTER_OFFSET;
 }
 
-void Player::DamagedCallBack::OnCollision(const Vec3<float>& arg_inter, 
+void Player::DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter, 
 	std::weak_ptr<Collider>arg_otherCollider,
 	const unsigned char& arg_otherAttribute, 
 	const CollisionManager& arg_collisionMgr)
