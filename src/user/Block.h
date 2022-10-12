@@ -23,6 +23,8 @@ protected:
 	virtual void OnHitTrigger() = 0;
 
 public:
+	enum TYPE { COIN, SLOT };
+
 	virtual ~Block() {}
 	//初期化
 	void Init();
@@ -36,13 +38,11 @@ public:
 
 	//死亡判定
 	virtual bool IsDead() = 0;
+	virtual TYPE GetType() = 0;
 };
 
 class CoinBlock : public Block
 {
-	static std::shared_ptr<Model>COIN_MODEL;
-	static std::shared_ptr<Model>EMPTY_COIN_MODEL;
-
 	void OnInit()override {}
 	void OnUpdate()override {}
 	void OnDraw(Transform& arg_transform, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam)override;
@@ -50,13 +50,15 @@ class CoinBlock : public Block
 public:
 	CoinBlock();
 
+	//コインを所持しているか（一度でも叩かれていたらもう持ってない）
+	bool IsEmpty() { return m_hitCount; }
+
 	bool IsDead()override { return false; }
+	TYPE GetType()override { return COIN; }
 };
 
 class SlotBlock : public Block
 {
-	static std::shared_ptr<Model>MODEL;
-
 	//スロットマシンポインタ
 	std::weak_ptr<SlotMachine>m_slotMachinePtr;
 
@@ -68,4 +70,6 @@ public:
 	SlotBlock(const std::shared_ptr<SlotMachine>& arg_slotMachine);
 
 	bool IsDead()override;
+	TYPE GetType()override { return SLOT; }
+
 };
