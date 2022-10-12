@@ -43,6 +43,8 @@ void StageMgr::Init(std::string arg_mapFilePath)
 		m_terrianBlockArray[y].resize(m_blockNum.x);
 		for (int x = 0; x < m_blockNum.x; ++x)
 		{
+			if (!KuroFunc::Probability(45.0f))continue;
+
 			auto& block = m_terrianBlockArray[y][x];
 
 			block = std::dynamic_pointer_cast<Block>(m_coinBlocks[coinBlockIdx++]);
