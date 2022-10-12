@@ -41,41 +41,16 @@ class SlotMachine
 	int m_spinStartSE;	//回転スタート
 	int m_reelStopSE;		//リールストップ
 
-	//所持金
-	CoinVault m_coinVault;
-
-	//BETされたコインの挙動
-	CoinObjectManager m_betCoinObjManager;
-	class BetCoinPerform : public CoinPerform
-	{
-		//寿命時間
-		Timer m_timer;
-	public:
-		BetCoinPerform(int arg_lifeTime)
-		{
-			m_timer.Reset(arg_lifeTime);
-		}
-		void OnUpdate(Coins& arg_coin, float arg_timeScale)override;
-		void OnEmit(Coins& arg_coin)override {};
-		bool IsDead(Coins& arg_coin)override { return m_timer.IsTimeUp(); }
-	};
-
-	//返却コインエミッター
-	ReturnCoinEmitter m_returnCoinEmitter;
-
-	//BET時のメガホン拡縮演出
-	Timer m_megaPhoneExpandTimer;
-
 	//絵柄の定義クラス
 	PatternManager m_patternMgr;
 
 	//絵柄を確認して全て一緒なら効果発動
 	bool CheckReelPattern();
 	//スロットの結果から演出を選ぶ
-	void SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern, std::weak_ptr<Player>& arg_player);
+	void SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern);
 	
 public:
-	SlotMachine();
+	SlotMachine(CoinVault& arg_playerVault);
 	//初期化
 	void Init();
 	//更新
@@ -83,6 +58,6 @@ public:
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<GameCamera>arg_gameCam);
 
-	//BET受付
-	void Bet(int arg_coinNum, const Transform& arg_emitTransform);
+	//レバー操作
+	void Lever();
 };

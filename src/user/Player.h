@@ -36,13 +36,6 @@ class Player
 	//所持金
 	CoinVault m_coinVault;
 
-	//BETのスパン計測用タイマー
-	Timer m_betTimer;
-	//連続BETの計測用タイマー
-	Timer m_consecutiveBetTimer;
-	//BETのSE
-	int m_betSE;
-
 	//コライダー
 	std::shared_ptr<Collider>m_bodyCollider;
 
@@ -135,4 +128,6 @@ public:
 
 	//プレイヤーのモデル中央に合わせた座標ゲッタ
 	Vec3<float>GetCenterPos()const;
+	//所持金クラスゲッタ
+	CoinVault& GetVault() { return m_coinVault; }
 };

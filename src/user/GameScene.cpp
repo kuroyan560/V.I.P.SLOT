@@ -30,7 +30,7 @@ GameScene::GameScene()
 	m_player = std::make_shared<Player>(m_collisionMgr);
 
 	//スロットマシン生成
-	m_slotMachine = std::make_shared<SlotMachine>();
+	m_slotMachine = std::make_shared<SlotMachine>(m_player->GetVault());
 
 	//ライトマネージャ生成
 	m_ligMgr = std::make_shared<LightManager>();

@@ -26,9 +26,6 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	//ジャンプSE読み込み
 	m_jumpSE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_jump.wav",0.6f);
 
-	//BETのSE読み込み
-	m_betSE = AudioApp::Instance()->LoadAudio("resource/user/sound/coin.wav",0.15f);
-
 	//被ダメージヒットストップSE
 	int onDamagedHitStopSE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_damage_hitStop.wav",0.5f);
 
@@ -100,12 +97,6 @@ void Player::Init(std::weak_ptr<GameCamera>arg_cam)
 	//所持金リセット
 	m_coinVault.Set(300000);
 
-	//BETのスパン計測用タイマー
-	m_betTimer.Reset(0);
-
-	//連続BETの計測用タイマー
-	m_consecutiveBetTimer.Reset(UNTIL_MAX_SPEED_BET_TIME);
-
 	//被ダメージコールバック
 	m_damegedCallBack->Init(arg_cam);
 }
@@ -122,8 +113,6 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	Vec2<float> moveInput = { 0,0 };
 	//Aボタン（ジャンプ）入力
 	bool jumpTrigger = false;
-	//LBボタン（BET）入力
-	bool betInput = false;
 
 	switch (m_inputConfig)
 	{
@@ -131,12 +120,10 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 		if (input.KeyInput(DIK_LEFT))moveInput.x = -1.0f;
 		else if (input.KeyInput(DIK_RIGHT))moveInput.x = 1.0f;
 		jumpTrigger = input.KeyOnTrigger(DIK_UP);
-		betInput = input.KeyInput(DIK_SPACE);
 		break;
 	case Player::INPUT_CONFIG::CONTROLLER:
 		moveInput = input.GetLeftStickVec(0);
 		jumpTrigger = input.ControllerOnTrigger(0, XBOX_BUTTON::A);
-		betInput = input.ControllerInput(0, XBOX_BUTTON::LB);
 		break;
 	default:
 		assert(0);
@@ -207,36 +194,6 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 
 	//更新した座標の反映
 	m_modelObj->m_transform.SetPos(pos);
-
-	//コインのBET
-	if (betInput)
-	{
-		//コイン投入
-		if (m_betTimer.UpdateTimer(arg_timeScale.GetTimeScale()))
-		{
-			//スロットマシンにBET
-			arg_slotMachine.lock()->Bet(PASS_COIN_NUM, m_modelObj->m_transform);
-
-			//BETスパン計算
-			int betSpan = KuroMath::Lerp(BET_SPEED_MIN_SPAN, BET_SPEED_MAX_SPAN,
-				m_consecutiveBetTimer.GetTimeRate());
-
-			//次にBETするまでの時間
-			m_betTimer.Reset(betSpan);
-
-			//BETのSE再生
-			AudioApp::Instance()->PlayWave(m_betSE);
-		}
-
-		//連続BETの時間計測
-		m_consecutiveBetTimer.UpdateTimer(arg_timeScale.GetTimeScale());
-	}
-	//次の入力トリガー時は即コイン投入
-	else
-	{
-		m_betTimer.Reset(0);
-		m_consecutiveBetTimer.Reset();
-	}
 
 	//被ダメージコールバック
 	m_damegedCallBack->Update(arg_timeScale);

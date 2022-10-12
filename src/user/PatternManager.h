@@ -19,7 +19,7 @@ private:
 	std::shared_ptr<Pattern>& GetPattern(PATTERN arg_pattern);
 
 public:
-	PatternManager(CoinVault& arg_slotCoinVault);
+	PatternManager(CoinVault& arg_targetVault);
 	//絵柄のテクスチャ取得
 	std::shared_ptr<TextureBuffer>GetTex(PATTERN arg_pattern);
 	//絵柄を指定して効果を発動させる

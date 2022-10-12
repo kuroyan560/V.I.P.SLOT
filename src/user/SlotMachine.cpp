@@ -20,26 +20,16 @@ bool SlotMachine::CheckReelPattern()
 	return true;
 }
 
-void SlotMachine::SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern, std::weak_ptr<Player>& arg_player)
+void SlotMachine::SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern)
 {
 	using namespace ConstParameter::Slot;
 	using PATTERN = ConstParameter::Slot::PATTERN;
 
 	//コインを返す演出（スロット上部からコイン放出）
 	bool returnCoinFlg = (arg_pattern == PATTERN::DOUBLE) || (arg_pattern == PATTERN::TRIPLE);
-
-	if (returnCoinFlg)
-	{
-		Transform initTransform;
-		initTransform.SetPos(SLOT_POS_ON_BACK_CAM);
-		m_returnCoinEmitter.Emit(m_coinVault.GetNum(), RETURN_COIN_DRAW_NUM_PER, initTransform);
-
-		//プレイヤーにコイン返却
-		arg_player.lock()->GetCoin(m_coinVault);
-	}
 }
 
-SlotMachine::SlotMachine() : m_patternMgr(m_coinVault)
+SlotMachine::SlotMachine(CoinVault& arg_playerVault) : m_patternMgr(arg_playerVault)
 {
 	//スロットマシン生成
 	m_slotMachineObj = std::make_shared<ModelObject>("resource/user/model/", "slotMachine.glb");
@@ -95,18 +85,6 @@ void SlotMachine::Init()
 
 	//最後のリールを止めてからの時間計測用タイマーリセット
 	m_slotWaitTimer.Reset(ConstParameter::Slot::SLOT_WAIT_TIME);
-
-	//コインリセット
-	m_coinVault.Set(0);
-
-	//BETコインリセット
-	m_betCoinObjManager.Init();
-
-	//返却コインリセット
-	m_returnCoinEmitter.Init();
-
-	//メガホン拡縮タイマーリセット
-	m_megaPhoneExpandTimer.Reset(0);
 }
 
 //デバッグ用
@@ -116,31 +94,6 @@ void SlotMachine::Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_t
 {
 	//リール更新
 	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Update(arg_timeScale.GetTimeScale());
-
-	//レバー操作
-	if (UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::RB))
-	{
-		//スロット回転開始
-		if (m_lever == -1)
-		{
-			for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Start();
-			AudioApp::Instance()->PlayWaveDelay(m_spinStartSE);
-			m_lever++;
-		}
-		//各リール停止
-		else if (m_lever <= REEL::RIGHT && m_reels[m_lever].IsCanStop())
-		{
-			m_reels[m_lever].Stop();
-			AudioApp::Instance()->PlayWaveDelay(m_reelStopSE);
-
-			//絵柄を確認して全て一緒なら効果発動
-			if (m_lever++ == REEL::RIGHT && CheckReelPattern())
-			{
-				//効果を確認して演出の処理
-				SlotPerform(m_reels[REEL::LEFT].GetNowPattern(), arg_player);
-			}
-		}
-	}
 
 	//全リール停止済
 	if (REEL::RIGHT < m_lever)
@@ -152,26 +105,6 @@ void SlotMachine::Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_t
 			m_slotWaitTimer.Reset();
 		}
 	}
-
-	//BETコイン投げ入れ演出
-	if (int betCoinNum = m_betCoinObjManager.Update(arg_timeScale.GetTimeScale()))
-	{
-		//プレイヤーからコイン受け取り
-		arg_player.lock()->PassCoin(m_coinVault, betCoinNum);
-		//メガホン拡縮
-		m_megaPhoneExpandTimer.Reset(ConstParameter::Slot::MEGA_PHONE_EXPAND_TIME);
-	}
-
-	//返却コイン演出
-	if (int returnCoinNum = m_returnCoinEmitter.Update(arg_timeScale.GetTimeScale()))
-	{
-	}
-
-	//メガホン拡縮
-	float megaPhoneScale = KuroMath::Ease(Out, Elastic, m_megaPhoneExpandTimer.GetTimeRate(), 
-		ConstParameter::Slot::MEGA_PHONE_EXPAND_SCALE, 1.0f);
-	m_megaPhoneObj->m_transform.SetScale(megaPhoneScale);
-	m_megaPhoneExpandTimer.UpdateTimer(arg_timeScale.GetTimeScale());
 }
 
 #include"DrawFunc3D.h"
@@ -179,26 +112,28 @@ void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<G
 {
 	DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *arg_gameCam.lock()->GetBackCam(), 1.0f, AlphaBlendMode_None);
 	DrawFunc3D::DrawNonShadingModel(m_megaPhoneObj, *arg_gameCam.lock()->GetBackCam(), 1.0f, AlphaBlendMode_None);
-
-	//BETされたコインの描画
-	m_betCoinObjManager.Draw(arg_lightMgr, arg_gameCam.lock()->GetFrontCam());
-	//返却コインの描画
-	m_returnCoinEmitter.Draw(arg_lightMgr, arg_gameCam.lock()->GetBackCam());
 }
 
-void SlotMachine::Bet(int arg_coinNum, const Transform& arg_emitTransform)
+void SlotMachine::Lever()
 {
-	//BETされたコイン情報追加
-	m_betCoinObjManager.Add(
-		arg_coinNum, arg_emitTransform, new BetCoinPerform(ConstParameter::Slot::UNTIL_THROW_COIN_TO_BET));
+	//スロット回転開始
+	if (m_lever == -1)
+	{
+		for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Start();
+		AudioApp::Instance()->PlayWaveDelay(m_spinStartSE);
+		m_lever++;
+	}
+	//各リール停止
+	else if (m_lever <= REEL::RIGHT && m_reels[m_lever].IsCanStop())
+	{
+		m_reels[m_lever].Stop();
+		AudioApp::Instance()->PlayWaveDelay(m_reelStopSE);
+
+		//絵柄を確認して全て一緒なら効果発動
+		if (m_lever++ == REEL::RIGHT && CheckReelPattern())
+		{
+			//効果を確認して演出の処理
+			SlotPerform(m_reels[REEL::LEFT].GetNowPattern());
+		}
+	}
 }
-
-void SlotMachine::BetCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScale)
-{
-	m_timer.UpdateTimer(arg_timeScale);
-
-	//コインの座標を算出してトランスフォームに適用
-	Vec3<float>newPos = KuroMath::Lerp(arg_coin.m_initTransform.GetPos(), ConstParameter::Slot::COIN_PORT_POS, m_timer.GetTimeRate());
-	arg_coin.m_transform.SetPos(newPos);
-}
-
