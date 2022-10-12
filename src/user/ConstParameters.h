@@ -76,7 +76,7 @@ namespace ConstParameter
 	namespace Slot
 	{
 		//絵柄
-		enum struct PATTERN { DOUBLE, TRIPLE, NUM };
+		enum struct PATTERN { NONE, NUM };
 
 		/*--- スロット ---*/
 		//スロットが終わってから次を開始出来るようになるまでの時間
@@ -153,5 +153,6 @@ namespace ConstParameter
 		//被ダメージ時の下降時間
 		const int OFFSET_Y_TIME_ON_DAMAGED = 15;
 	}
+
 };
 

@@ -24,12 +24,9 @@ void SlotMachine::SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern)
 {
 	using namespace ConstParameter::Slot;
 	using PATTERN = ConstParameter::Slot::PATTERN;
-
-	//コインを返す演出（スロット上部からコイン放出）
-	bool returnCoinFlg = (arg_pattern == PATTERN::DOUBLE) || (arg_pattern == PATTERN::TRIPLE);
 }
 
-SlotMachine::SlotMachine(CoinVault& arg_playerVault) : m_patternMgr(arg_playerVault)
+SlotMachine::SlotMachine()
 {
 	//スロットマシン生成
 	m_slotMachineObj = std::make_shared<ModelObject>("resource/user/model/", "slotMachine.glb");
@@ -73,8 +70,7 @@ void SlotMachine::Init()
 	testPatternArray.resize(20);
 	for (int i = 0; i < 20; ++i)
 	{
-		if (i % 2 == 0)testPatternArray[i] = PATTERN::DOUBLE;
-		else testPatternArray[i] = PATTERN::TRIPLE;
+		testPatternArray[i] = PATTERN::NONE;
 	}
 
 	//リール初期化

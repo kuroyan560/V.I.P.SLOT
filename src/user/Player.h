@@ -103,31 +103,6 @@ public:
 	//エフェクト描画
 	void EffectDraw(std::weak_ptr<Camera>arg_cam);
 
-	//コインGET（＋n表示）
-	void GetCoin(int arg_coinNum);
-	void GetCoin(CoinVault& arg_coinVault)
-	{
-		arg_coinVault.Pass(m_coinVault);
-		GetCoin(0);
-	}
-	void GetCoin(CoinVault& arg_coinVault, int arg_coinNum)
-	{
-		arg_coinVault.Pass(m_coinVault, arg_coinNum);
-		GetCoin(0);
-	}
-
-	//コインを渡す
-	void PassCoin(CoinVault& arg_coinVault)
-	{
-		m_coinVault.Pass(arg_coinVault);
-	}
-	void PassCoin(CoinVault& arg_coinVault, int arg_coinNum)
-	{
-		m_coinVault.Pass(arg_coinVault, arg_coinNum);
-	}
-
 	//プレイヤーのモデル中央に合わせた座標ゲッタ
 	Vec3<float>GetCenterPos()const;
-	//所持金クラスゲッタ
-	CoinVault& GetVault() { return m_coinVault; }
 };

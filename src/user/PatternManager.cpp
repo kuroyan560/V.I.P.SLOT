@@ -7,10 +7,9 @@ std::shared_ptr<Pattern>& PatternManager::GetPattern(PATTERN arg_pattern)
 	return m_patterns[idx];
 }
 
-PatternManager::PatternManager(CoinVault& arg_targetVault)
+PatternManager::PatternManager()
 {
-	GetPattern(PATTERN::DOUBLE) = std::make_shared<MultiplyPattern>(2.0f, &arg_targetVault);
-	GetPattern(PATTERN::TRIPLE) = std::make_shared<MultiplyPattern>(3.0f, &arg_targetVault);
+	GetPattern(PATTERN::NONE) = std::make_shared<NonePattern>();
 }
 
 std::shared_ptr<TextureBuffer> PatternManager::GetTex(PATTERN arg_pattern)

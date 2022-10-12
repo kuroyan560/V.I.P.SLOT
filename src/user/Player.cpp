@@ -212,11 +212,6 @@ void Player::EffectDraw(std::weak_ptr<Camera> arg_cam)
 {
 }
 
-void Player::GetCoin(int arg_coinNum)
-{
-	m_coinVault.Add(arg_coinNum);
-}
-
 Vec3<float> Player::GetCenterPos() const
 {
 	return m_modelObj->m_transform.GetPos() + ConstParameter::Player::FIX_MODEL_CENTER_OFFSET;

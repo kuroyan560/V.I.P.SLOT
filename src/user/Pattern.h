@@ -1,6 +1,5 @@
 #pragma once
 #include<memory>
-#include"CoinVault.h"
 class TextureBuffer;
 
 //ƒXƒƒbƒg‚ÌŠG•¿
@@ -19,17 +18,9 @@ public:
 	std::shared_ptr<TextureBuffer>GetTex() { return m_tex; }
 };
 
-//”{—¦UP
-class MultiplyPattern : public Pattern
+//“Á‚É‰½‚à‚µ‚È‚¢
+class NonePattern : public Pattern
 {
-	float m_rate = 1.0f;
-	CoinVault* m_slotCoinVault = nullptr;
 public:
-	MultiplyPattern(float arg_rate, CoinVault* arg_target) :m_rate(arg_rate), m_slotCoinVault(arg_target) {}
-	void Invoke()override
-	{
-		int oldCoinNum = m_slotCoinVault->GetNum();
-		m_slotCoinVault->Set(oldCoinNum * m_rate);
-		printf("Invoke : Multiply %f : %d to %d\n", m_rate, oldCoinNum, m_slotCoinVault->GetNum());
-	}
+	void Invoke()override {}
 };

@@ -50,7 +50,7 @@ class SlotMachine
 	void SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern);
 	
 public:
-	SlotMachine(CoinVault& arg_playerVault);
+	SlotMachine();
 	//‰Šú‰»
 	void Init();
 	//XV
