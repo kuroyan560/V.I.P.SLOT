@@ -31,7 +31,7 @@ private:
 	std::vector<std::shared_ptr<CollisionPrimitive>>m_primitiveArray;
 
 	//コールバック関数（相手の振る舞いによって呼び出すコールバックを変えられる）
-	std::map<unsigned char, std::shared_ptr<CollisionCallBack>>m_callBacks;
+	std::map<unsigned char, CollisionCallBack*>m_callBacks;
 
 	//有効フラグ
 	bool m_isActive = true;
@@ -59,7 +59,12 @@ public:
 
 	//セッタ
 	void SetActive(const bool& Active) { m_isActive = Active; }
-	void SetCallBack(const std::shared_ptr<CollisionCallBack>& arg_callBack, unsigned char arg_otherAttribute = UCHAR_MAX);
+	void SetCallBack(CollisionCallBack* arg_callBack, unsigned char arg_otherAttribute = UCHAR_MAX);
+	void SetParentTransform(Transform* arg_parent);
+	void SetParentObj(ColliderParentObject* arg_parentObj)
+	{
+		m_parentObj = arg_parentObj;
+	}
 
 	//ゲッタ
 	const bool& GetIsHit()const { return m_isHit; }

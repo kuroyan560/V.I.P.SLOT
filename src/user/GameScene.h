@@ -29,9 +29,6 @@ class GameScene : public BaseScene
 	//背景画像
 	std::shared_ptr<TextureBuffer>m_backGround;
 
-	//敵マネージャ
-	std::shared_ptr<ObjectManager>m_enemyMgr;
-	
 	//ゲームカメラ
 	const std::string m_backCamKey = "GameCamera - Back";
 	const std::string m_frontCamKey = "GameCamera - Front";
@@ -45,10 +42,6 @@ class GameScene : public BaseScene
 
 	//ステージマネージャ
 	std::shared_ptr<StageMgr>m_stageMgr;
-
-	//デバッグ用
-	Timer m_emitEnemyTimer;
-	int m_emitEnemySpan = 90;
 
 public:
 	GameScene();

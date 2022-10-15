@@ -40,7 +40,7 @@ ObjectManager::ObjectManager()
 		std::vector<std::unique_ptr<Collider>>colliderArray;
 		colliderArray.emplace_back(std::make_unique<Collider>("Weak_Slide_Enemy - Body_Sphere", colPrimitiveArray));
 
-		int weakSlideIdx = static_cast<int>(OBJECT_TYPE::WEAK_SLIDE);
+		int weakSlideIdx = static_cast<int>(OBJECT_TYPE::ENEMY);
 		m_breeds[weakSlideIdx] = std::make_shared<ObjectBreed>(
 			weakSlideIdx,
 			Importer::Instance()->LoadModel("resource/user/model/", "enemy_test.glb"),

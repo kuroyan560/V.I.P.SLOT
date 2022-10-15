@@ -17,15 +17,9 @@ GameScene::GameScene()
 {
 	//コリジョンマネージャ生成
 	m_collisionMgr = std::make_shared<CollisionManager>();
-	//コライダー振る舞いリストセット
 	m_collisionMgr->AddAttribute("Player", 0b00000001);
-
-	int bitOffset = 1;
-	for (int objType = 0; objType < static_cast<int>(ConstParameter::GameObject::TYPE::NUM); ++objType)
-	{
-		m_collisionMgr->AddAttribute(ConstParameter::GameObject::COLLIDER_ATTRIBUTE[objType], 0b00000001 << bitOffset);
-		++bitOffset;
-	}
+	m_collisionMgr->AddAttribute("Enemy", 0b00000001 << 1);
+	m_collisionMgr->AddAttribute("Block", 0b00000001 << 2);
 
 	//プレイヤー生成
 	m_player = std::make_shared<Player>(m_collisionMgr);
@@ -47,11 +41,8 @@ GameScene::GameScene()
 	//ゲームカメラ生成
 	m_gameCam = std::make_shared<GameCamera>();
 
-	//敵マネージャ生成
-	m_enemyMgr = std::make_shared<ObjectManager>();
-
 	//ステージマネージャ生成
-	m_stageMgr = std::make_shared<StageMgr>(m_slotMachine);
+	m_stageMgr = std::make_shared<StageMgr>(m_slotMachine, m_collisionMgr->GetAttribute("Player"));
 }
 
 void GameScene::OnInitialize()
@@ -65,13 +56,8 @@ void GameScene::OnInitialize()
 	//カメラ初期化
 	m_gameCam->Init();
 
-	//敵マネージャ初期化
-	m_enemyMgr->Init(m_collisionMgr);
-
-	m_emitEnemyTimer.Reset(m_emitEnemySpan);
-
 	//ステージマネージャ
-	m_stageMgr->Init("");
+	m_stageMgr->Init("",m_collisionMgr);
 }
 
 void GameScene::OnUpdate()
@@ -80,12 +66,6 @@ void GameScene::OnUpdate()
 	if (UsersInput::Instance()->KeyOnTrigger(DIK_I))
 	{
 		this->Initialize();
-	}
-	//敵出現
-	if (m_emitEnemyTimer.UpdateTimer(m_timeScale.GetTimeScale()))
-	{
-		m_enemyMgr->Appear(ConstParameter::GameObject::TYPE::WEAK_SLIDE, m_collisionMgr);
-		m_emitEnemyTimer.Reset();
 	}
 
 	//コリジョンマネージャ
@@ -99,9 +79,6 @@ void GameScene::OnUpdate()
 
 	//スロットマシン
 	m_slotMachine->Update(m_player, m_timeScale);
-
-	//敵マネージャ
-	m_enemyMgr->Update(m_timeScale, m_collisionMgr, m_player);
 
 	//ステージマネージャ
 	m_stageMgr->Update();
@@ -127,9 +104,6 @@ void GameScene::OnDraw()
 	//床
 	DrawFunc3D::DrawNonShadingModel(m_squareFloorObj, *m_gameCam->GetFrontCam(), 1.0f, AlphaBlendMode_None);
 
-	//敵
-	m_enemyMgr->Draw(m_ligMgr, m_gameCam->GetFrontCam());
-	
 	//ステージマネージャ
 	m_stageMgr->Draw(m_ligMgr, m_gameCam->GetFrontCam());
 
@@ -150,15 +124,7 @@ void GameScene::OnDraw()
 
 void GameScene::OnImguiDebug()
 {
-	ImGui::Begin("Debug");
-	if (ImGui::DragInt("WeakEnemyEmitSpan", &m_emitEnemySpan))
-	{
-		if (m_emitEnemySpan < 1)m_emitEnemySpan = 1;
-		m_emitEnemyTimer.Reset(m_emitEnemySpan);
-	}
-	ImGui::End();
-
-	m_stageMgr->ImguiDebug();
+	m_stageMgr->ImguiDebug(m_collisionMgr);
 }
 
 void GameScene::OnFinalize()

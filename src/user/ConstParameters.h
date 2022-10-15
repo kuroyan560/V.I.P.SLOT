@@ -130,7 +130,7 @@ namespace ConstParameter
 	namespace GameObject
 	{
 		//種別
-		enum struct TYPE { WEAK_SLIDE, NUM };
+		enum struct TYPE { ENEMY, NUM };
 
 		//種別ごとのコライダー振る舞い名称
 		const std::array<std::string, static_cast<int>(TYPE::NUM)>COLLIDER_ATTRIBUTE =
@@ -164,10 +164,15 @@ namespace ConstParameter
 
 	namespace Stage
 	{
-		namespace Block
-		{
-			enum struct TYPE { COIN, SLOT, NUM };
-		}
+		//縦横の最大ブロック数
+		static const Vec2<int>MAX_BLOCK_NUM_AXIS = { 20,15 };
+		//縦横分けなしの最大ブロック数
+		static const int MAX_BLOCK_NUM = MAX_BLOCK_NUM_AXIS.x * MAX_BLOCK_NUM_AXIS.y;
+		//ブロックの一辺長さ
+		const float BLOCK_LEN = 2.0f;
+		//ブロックの一辺長さ半分
+		const float BLOCK_LEN_HALF = BLOCK_LEN / 2.0f;
+
 	}
 };
 

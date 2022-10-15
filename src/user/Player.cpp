@@ -63,10 +63,10 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 		{
 			bodySphereCol
 		};
-		m_bodyCollider = std::make_shared<Collider>("Player_Body", coverModelPrimitiveArray);
+		m_bodyCollider = std::make_shared<Collider>("Player_Body", coverModelPrimitiveArray, this);
 
 		//被ダメージコールバックアタッチ
-		m_bodyCollider->SetCallBack(m_damegedCallBack, arg_collisionMgr.lock()->GetAttribute("Enemy"));
+		m_bodyCollider->SetCallBack(m_damegedCallBack.get(), arg_collisionMgr.lock()->GetAttribute("Enemy"));
 		colliders.emplace_back(m_bodyCollider);
 	}
 
@@ -219,7 +219,6 @@ Vec3<float> Player::GetCenterPos() const
 
 void Player::DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter, 
 	std::weak_ptr<Collider>arg_otherCollider,
-	const unsigned char& arg_otherAttribute, 
 	const CollisionManager& arg_collisionMgr)
 {
 	using namespace ConstParameter::Player;

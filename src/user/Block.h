@@ -1,14 +1,35 @@
 #pragma once
 #include<memory>
+#include"Transform.h"
+#include"CollisionCallBack.h"
 class Model;
 class SlotMachine;
-class Transform;
 class Camera;
 class LightManager;
+class Collider;
 
-class Block
+class Block : public CollisionCallBack
 {
+private:
+	void OnCollisionEnter(
+		const Vec3<float>& arg_inter,
+		std::weak_ptr<Collider>arg_otherCollider,
+		const CollisionManager& arg_collisionMgr)override {}
+
+	void OnCollisionTrigger(
+		const Vec3<float>& arg_inter,
+		std::weak_ptr<Collider>arg_otherCollider,
+		const CollisionManager& arg_collisionMgr)override
+	{
+		m_hitCount++;
+		OnHitTrigger();
+	}
+
 protected:
+	//コライダー
+	std::weak_ptr<Collider>m_attachCollider;
+	//初期化時のトランスフォーム
+	Transform m_initTransform;
 	//叩かれた回数
 	int m_hitCount;
 
@@ -23,22 +44,25 @@ protected:
 	virtual void OnHitTrigger() = 0;
 
 public:
+	//トランスフォーム
+	Transform m_transform;
 	enum TYPE { COIN, SLOT };
 
+	Block();
 	virtual ~Block() {}
 	//初期化
-	void Init();
+	void Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_attachCollider,unsigned char arg_playerColAttaribute);
 	//更新
 	void Update();
 	//描画
-	void Draw(Transform& arg_transform, std::weak_ptr<LightManager>&arg_lightMgr, std::weak_ptr<Camera>&arg_cam);
-
-	//叩かれた瞬間呼ぶ処理
-	void HitTrigger();
+	void Draw(Transform& arg_transform, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam);
 
 	//死亡判定
 	virtual bool IsDead() = 0;
 	virtual TYPE GetType() = 0;
+
+	//コライダーゲッタ
+	std::shared_ptr<Collider>GetCollider() { return m_attachCollider.lock(); }
 };
 
 class CoinBlock : public Block
@@ -46,7 +70,7 @@ class CoinBlock : public Block
 	void OnInit()override {}
 	void OnUpdate()override {}
 	void OnDraw(Transform& arg_transform, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam)override;
-	void OnHitTrigger()override {}
+	void OnHitTrigger()override;
 public:
 	CoinBlock();
 

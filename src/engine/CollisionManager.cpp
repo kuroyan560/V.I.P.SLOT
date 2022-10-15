@@ -15,10 +15,10 @@ void CollisionManager::OnHit(const RegisterInfo& arg_myInfo, const RegisterInfo&
 		unsigned char attribute = callback.first;
 		if (attribute & arg_otherInfo.m_myAttribute)
 		{
-			callback.second->OnCollisionEnter(arg_inter, arg_otherInfo.m_collider, arg_otherInfo.m_myAttribute, *this);
+			callback.second->OnCollisionEnter(arg_inter, arg_otherInfo.m_collider, *this);
 
 			//瞬間
-			if (!col->m_oldIsHit)callback.second->OnCollisionTrigger(arg_inter, arg_otherInfo.m_collider, arg_otherInfo.m_myAttribute, *this);
+			if (!col->m_oldIsHit)callback.second->OnCollisionTrigger(arg_inter, arg_otherInfo.m_collider, *this);
 		}
 	}
 }
@@ -48,12 +48,20 @@ void CollisionManager::Update()
 	for (auto itrA = m_registerList.begin(); itrA != m_registerList.end(); ++itrA)
 	{
 		auto colA = itrA->m_collider;
+		//コライダーがアクティブ状態でない
+		if (!colA->m_isActive)continue;
 
 		auto itrB = itrA;
 		++itrB;
 		for (; itrB != m_registerList.end(); ++itrB)
 		{
 			auto colB = itrB->m_collider;
+			//コライダーがアクティブ状態でない
+			if (!colB->m_isActive)continue;
+
+			//お互いにコールバック関数が用意されていないなら、当たっても何も起こらないので判定を行う必要は無い
+			if (colA->m_callBacks.find(itrB->m_myAttribute) == colA->m_callBacks.end()
+				&& colB->m_callBacks.find(itrA->m_myAttribute) == colB->m_callBacks.end())continue;
 
 			Vec3<float>inter;
 			if (colA->CheckHitCollision(colB, &inter))

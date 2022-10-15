@@ -8,6 +8,7 @@
 #include"CollisionCallBack.h"
 #include"Transform.h"
 #include"PlayerAttackHitEffect.h"
+#include"ColliderParentObject.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -17,7 +18,7 @@ class Collider;
 class CollisionManager;
 class GameCamera;
 
-class Player
+class Player : public ColliderParentObject
 {
 	//モデルオブジェクト
 	std::shared_ptr<ModelObject>m_modelObj;
@@ -67,13 +68,11 @@ class Player
 		void OnCollisionEnter(
 			const Vec3<float>& arg_inter,
 			std::weak_ptr<Collider>arg_otherCollider,
-			const unsigned char& arg_otherAttribute,
 			const CollisionManager& arg_collisionMgr)override {};
 
 		void OnCollisionTrigger(
 			const Vec3<float>& arg_inter,
 			std::weak_ptr<Collider>arg_otherCollider,
-			const unsigned char& arg_otherAttribute,
 			const CollisionManager& arg_collisionMgr)override;
 
 	public:

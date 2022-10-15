@@ -61,14 +61,12 @@ void Collider::DebugDraw(Camera& Cam)
 	}
 }
 
-void Collider::SetCallBack(const std::shared_ptr<CollisionCallBack>& arg_callBack, unsigned char arg_otherAttribute)
+void Collider::SetCallBack(CollisionCallBack* arg_callBack, unsigned char arg_otherAttribute)
 {
-	//指定された振る舞いに対するコールバックは定義済
-	if (m_callBacks.find(arg_otherAttribute) != m_callBacks.end())
-	{
-		printf("This attribute has already has callback.\n");
-		assert(0);
-	}
-
 	m_callBacks[arg_otherAttribute] = arg_callBack;
+}
+
+void Collider::SetParentTransform(Transform* arg_parent)
+{
+	for (auto& p : m_primitiveArray)p->SetParentTransform(arg_parent);
 }

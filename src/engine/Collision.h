@@ -51,7 +51,7 @@ public:
 	}
 
 	//セッタ
-	void AttachParentTransform(Transform* Parent) { m_parent = Parent; }
+	void SetParentTransform(Transform* Parent) { m_parent = Parent; }
 };
 
 //ポイント
