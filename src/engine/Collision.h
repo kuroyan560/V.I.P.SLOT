@@ -6,14 +6,21 @@
 #include<memory>
 #include"D3D12Data.h"
 class Camera;
+
+
+
 class CollisionPrimitive
 {
-public:
-	enum SHAPE { POINT, LINE, SPHERE, PLANE, CAPSULE, AABB, MESH, FLOOR_MESH };
-
 private:
 	friend class Collider;
-	const SHAPE m_shape;
+	friend class CollisionPoint;
+	friend class CollisionLine;
+	friend class CollisionSphere;
+	friend class CollisionPlane;
+	friend class CollisionCapsule;
+	friend class CollisionAABB;
+	friend class CollisionMesh;
+	friend class CollisionFloorMesh;
 	Transform* m_parent = nullptr;	//親ワールドトランスフォーム
 
 protected:
@@ -29,8 +36,21 @@ protected:
 	CollisionPrimitive() = delete;
 	CollisionPrimitive(CollisionPrimitive&& arg) = delete;
 	CollisionPrimitive(const CollisionPrimitive& arg) = delete;
-	CollisionPrimitive(const SHAPE& Shape, Transform* Parent) :m_shape(Shape), m_parent(Parent) {}
+	CollisionPrimitive(Transform* Parent) :m_parent(Parent) {}
 	virtual void DebugDraw(const bool& Hit, Camera& Cam) = 0;	//当たり判定の可視化
+
+	/*
+	ダブルディスパッチでプリミティブ形状判定して関数呼び出し
+	※当たり判定が用意されていなかった場合エラー
+	*/
+	virtual bool HitCheck(CollisionPoint* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
+	virtual bool HitCheck(CollisionLine* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
+	virtual bool HitCheck(CollisionSphere* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
+	virtual bool HitCheck(CollisionPlane* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
+	virtual bool HitCheck(CollisionCapsule* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
+	virtual bool HitCheck(CollisionAABB* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
+	virtual bool HitCheck(CollisionMesh* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
+	virtual bool HitCheck(CollisionFloorMesh* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
 
 public:
 	virtual ~CollisionPrimitive() {}
@@ -39,7 +59,6 @@ public:
 	virtual CollisionPrimitive* Clone(Transform* Parent) = 0;
 
 	//ゲッタ
-	const SHAPE& GetShape()const { return m_shape; }
 	Matrix GetParentMat()
 	{
 		if (!m_parent)return XMMatrixIdentity();
@@ -52,22 +71,22 @@ public:
 
 	//セッタ
 	void SetParentTransform(Transform* Parent) { m_parent = Parent; }
+
+	virtual bool HitCheckDispatch(CollisionPrimitive* arg_other, Vec3<float>* arg_inter) = 0;
 };
 
 //ポイント
 class CollisionPoint : public CollisionPrimitive
 {
 private:
-	friend class Collision;
-
-private:
 	std::shared_ptr<ConstantBuffer>m_constBuff;
 	void DebugDraw(const bool& Hit, Camera& Cam)override;
+	bool HitCheck(CollisionFloorMesh* arg_other, Vec3<float>* arg_inter)override;
 
 public:
 	Vec3<float>m_offset;
 	CollisionPoint(const Vec3<float>& Pos, Transform* Parent = nullptr)
-		:CollisionPrimitive(POINT, Parent) {	m_offset = Pos; }
+		:CollisionPrimitive(Parent) {	m_offset = Pos; }
 	Vec3<float>GetWorldPos() 
 	{
 		return KuroMath::TransformVec3(m_offset, GetParentMat());
@@ -78,6 +97,11 @@ public:
 	{
 		return new CollisionPoint(m_offset, Parent);
 	}
+
+	bool HitCheckDispatch(CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	{
+		return arg_other->HitCheck(this, arg_inter);
+	}
 };
 
 //線分
@@ -85,6 +109,11 @@ class CollisionLine : public CollisionPrimitive
 {
 private:
 	void DebugDraw(const bool& Hit, Camera& Cam)override;
+
+	bool HitCheckDispatch(CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	{
+		return arg_other->HitCheck(this, arg_inter);
+	}
 
 public:
 	//始点座標
@@ -95,7 +124,7 @@ public:
 	float m_len;
 
 	CollisionLine(const Vec3<float>& Start, const Vec3<float>& Dir, const float& MaxDistance, Transform* Parent = nullptr)
-		:CollisionPrimitive(LINE, Parent), m_start(Start), m_dir(Dir), m_len(MaxDistance) {}
+		:CollisionPrimitive(Parent), m_start(Start), m_dir(Dir), m_len(MaxDistance) {}
 
 	Vec3<float>GetStartWorldPos()
 	{
@@ -114,6 +143,7 @@ public:
 };
 
 //球
+class CollisionTriangle;
 class CollisionSphere : public CollisionPrimitive
 {
 private:
@@ -123,11 +153,18 @@ private:
 	std::shared_ptr<ConstantBuffer>m_constBuff;
 	void DebugDraw(const bool& Hit, Camera& Cam)override;
 	
+	bool HitCheck(CollisionSphere* arg_other, Vec3<float>* arg_inter)override;
+	bool HitCheck(CollisionPlane* arg_other, Vec3<float>* arg_inter)override;
+	bool HitCheck(CollisionLine* arg_other, Vec3<float>* arg_inter)override;
+	bool HitCheck(CollisionAABB* arg_other, Vec3<float>* arg_inter)override;
+	Vec3<float> ClosestPtPoint2Triangle(const Vec3<float>& Pt, const CollisionTriangle& Tri, const Matrix& MeshWorld);
+	bool HitCheck(CollisionMesh* arg_other, Vec3<float>* arg_inter)override;
+
 public:
 	Vec3<float>m_offset = { 0,0,0 };
 	float m_radius;					//半径
 	CollisionSphere(const float& Radius, const Vec3<float>& Offset, Transform* Parent = nullptr)
-		:CollisionPrimitive(SPHERE, Parent), m_offset(Offset), m_radius(Radius) {}
+		:CollisionPrimitive(Parent), m_offset(Offset), m_radius(Radius) {}
 	Vec3<float>GetCenter()
 	{
 		return KuroMath::TransformVec3(m_offset, GetParentMat());
@@ -137,6 +174,11 @@ public:
 	CollisionPrimitive* Clone(Transform* Parent)override
 	{
 		return new CollisionSphere(m_radius, m_offset, Parent);
+	}
+
+	bool HitCheckDispatch(CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	{
+		return arg_other->HitCheck(this, arg_inter);
 	}
 };
 
@@ -153,13 +195,18 @@ public:
 	Vec3<float>m_normal = { 0,1,0 };	//板ポリの法線
 	float m_distance = 0.0f;				//原点からの距離
 	CollisionPlane(const Vec3<float>& Normal = { 0,1,0 }, const float& Distance = 0.0f, Transform* Parent = nullptr)
-		:CollisionPrimitive(PLANE, Parent), m_normal(Normal), m_distance(Distance) {}
+		:CollisionPrimitive(Parent), m_normal(Normal), m_distance(Distance) {}
 
 
 	//クローンの生成
 	CollisionPrimitive* Clone(Transform* Parent)override
 	{
 		return new CollisionPlane(m_normal, m_distance, Parent);
+	}
+
+	bool HitCheckDispatch(CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	{
+		return arg_other->HitCheck(this, arg_inter);
 	}
 };
 
@@ -179,12 +226,17 @@ public:
 	Vec3<float>m_ePoint;	//終点
 	float m_radius;
 	CollisionCapsule(const Vec3<float>& StartPt, const Vec3<float>& EndPt, const float& Radius, Transform* Parent = nullptr, const Vec3<float>& Offset = Vec3<float>(0, 0, 0))
-		:CollisionPrimitive(CAPSULE, Parent), m_offset(Offset), m_sPoint(StartPt), m_ePoint(EndPt), m_radius(Radius) {}
+		:CollisionPrimitive(Parent), m_offset(Offset), m_sPoint(StartPt), m_ePoint(EndPt), m_radius(Radius) {}
 
 	//クローンの生成
 	CollisionPrimitive* Clone(Transform* Parent)override
 	{
 		return new CollisionCapsule(m_sPoint, m_ePoint, m_radius, Parent, m_offset);
+	}
+
+	bool HitCheckDispatch(CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	{
+		return arg_other->HitCheck(this, arg_inter);
 	}
 };
 
@@ -210,7 +262,7 @@ private:
 
 public:
 	CollisionAABB(const Vec3<ValueMinMax>& PValues, Transform* Parent = nullptr)
-		:CollisionPrimitive(AABB, Parent) { StructBox(PValues); }
+		:CollisionPrimitive(Parent) { StructBox(PValues); }
 
 	//ゲッタ
 	const Vec3<ValueMinMax>& GetPtValue() { return m_pValues; }
@@ -221,6 +273,11 @@ public:
 	CollisionPrimitive* Clone(Transform* Parent)override
 	{
 		return new CollisionAABB(m_pValues, Parent);
+	}
+
+	bool HitCheckDispatch(CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	{
+		return arg_other->HitCheck(this, arg_inter);
 	}
 };
 
@@ -273,14 +330,14 @@ private:
 
 	void DebugDraw(const bool& Hit, Camera& Cam)override;
 public:
-	CollisionMesh(const std::vector<CollisionTriangle>& Triangles, Transform* Parent = nullptr, const bool& IsFloor = false)
-		: CollisionPrimitive(IsFloor ? FLOOR_MESH : MESH, Parent)
+	CollisionMesh(const std::vector<CollisionTriangle>& Triangles, Transform* Parent = nullptr)
+		: CollisionPrimitive(Parent)
 	{
 		SetTriangles(Triangles);
 	}
 
 	//ゲッタ
-	const std::vector<CollisionTriangle>& GetTriangles()const { return m_triangles; }
+	std::vector<CollisionTriangle>& GetTriangles() { return m_triangles; }
 
 	//セッタ
 	void SetTriangles(const std::vector<CollisionTriangle>& Triangles);
@@ -288,26 +345,20 @@ public:
 	//クローンの生成
 	CollisionPrimitive* Clone(Transform* Parent)override
 	{
-		return new CollisionMesh(m_triangles, Parent, this->GetShape() == FLOOR_MESH);
+		return new CollisionMesh(m_triangles, Parent);
 	}
+	bool HitCheckDispatch(CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	{
+		return arg_other->HitCheck(this, arg_inter);
+	}
+
 };
 
-class Collision
+class CollisionFloorMesh : public CollisionMesh, public CollisionPrimitive
 {
-	//球と球
-	static bool SphereAndSphere(CollisionSphere* SphereA, CollisionSphere* SphereB, Vec3<float>* Inter);
-	//球と板
-	static bool SphereAndPlane(CollisionSphere* Sphere, CollisionPlane* Plane, Vec3<float>* Inter);
-	//球と線分
-	static bool SphereAndLine(CollisionSphere* Sphere, CollisionLine* Line, Vec3<float>* Inter);
-	//球とAABB
-	static bool SphereAndAABB(CollisionSphere* SphereA, CollisionAABB* AABB, Vec3<float>* Inter);
-	//球とメッシュ
-	static Vec3<float> ClosestPtPoint2Triangle(const Vec3<float>& Pt, const CollisionTriangle& Tri, const Matrix& MeshWorld);
-	static bool SphereAndMesh(CollisionSphere* Sphere, CollisionMesh* Mesh, Vec3<float>* Inter);
-	//点と床メッシュ
-	static bool PointAndFloorMesh(CollisionPoint* Point, CollisionMesh* FloorMesh, Vec3<float>* Inter);
-
 public:
-	static bool CheckPrimitiveHit(CollisionPrimitive* PrimitiveA, CollisionPrimitive* PrimitiveB, Vec3<float>* Inter);
+	bool HitCheckDispatch(CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	{
+		return arg_other->HitCheck(this, arg_inter);
+	}
 };

@@ -37,7 +37,8 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine, unsigned
 	for (int i = 0; i < MAX_BLOCK_NUM; ++i)
 	{
 		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
-		colPrimitiveArray.emplace_back(std::make_shared<CollisionAABB>(val));
+		//colPrimitiveArray.emplace_back(std::make_shared<CollisionAABB>(val));
+		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(2.0f, Vec3<float>(0, 0, 0)));
 
 		m_coinBlocks.emplace_back(std::make_shared<CoinBlock>());
 		m_colliders.emplace_back(std::make_shared<Collider>("BlockCollider", colPrimitiveArray));

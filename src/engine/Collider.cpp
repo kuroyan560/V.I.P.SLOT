@@ -42,7 +42,7 @@ bool Collider::CheckHitCollision(std::weak_ptr<Collider> Other, Vec3<float>* Int
 	{
 		for (auto& primitiveB : other->m_primitiveArray)
 		{
-			hit = Collision::CheckPrimitiveHit(primitiveA.get(), primitiveB.get(), &inter);
+			hit = primitiveA->HitCheckDispatch(primitiveB.get(), &inter);
 			if (hit)break;
 		}
 	}

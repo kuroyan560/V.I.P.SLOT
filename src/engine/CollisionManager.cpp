@@ -48,16 +48,12 @@ void CollisionManager::Update()
 	for (auto itrA = m_registerList.begin(); itrA != m_registerList.end(); ++itrA)
 	{
 		auto colA = itrA->m_collider;
-		//コライダーがアクティブ状態でない
-		if (!colA->m_isActive)continue;
 
 		auto itrB = itrA;
 		++itrB;
 		for (; itrB != m_registerList.end(); ++itrB)
 		{
 			auto colB = itrB->m_collider;
-			//コライダーがアクティブ状態でない
-			if (!colB->m_isActive)continue;
 
 			//お互いにコールバック関数が用意されていないなら、当たっても何も起こらないので判定を行う必要は無い
 			if (colA->m_callBacks.find(itrB->m_myAttribute) == colA->m_callBacks.end()
