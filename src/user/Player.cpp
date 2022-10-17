@@ -70,6 +70,14 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 		colliders.emplace_back(m_bodyCollider);
 	}
 
+	//モデルの足元のコライダー
+	{
+		std::vector<std::shared_ptr<CollisionPrimitive>>footPrimitiveArray =
+		{
+			footSphereCol
+		};
+		m_footCollider = std::make_shared<Collider>("Player_Foot", footPrimitiveArray, this);
+	}
 
 	/*--- コライダー配列登録 ---*/
 	arg_collisionMgr.lock()->Register("Player", colliders);
@@ -285,4 +293,8 @@ void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
 			m_isDraw = !m_isDraw;
 		}
 	}
+}
+
+void Player::JumpCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider, const CollisionManager& arg_collisionMgr)
+{
 }

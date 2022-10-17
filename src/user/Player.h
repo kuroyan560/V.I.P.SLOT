@@ -39,6 +39,7 @@ class Player : public ColliderParentObject
 
 	//コライダー
 	std::shared_ptr<Collider>m_bodyCollider;
+	std::shared_ptr<Collider>m_footCollider;
 
 	//HP
 	int m_hp;
@@ -90,6 +91,25 @@ class Player : public ColliderParentObject
 		const bool& GetIsDraw()const { return m_isDraw; }
 	};
 	std::shared_ptr<DamagedCallBack>m_damegedCallBack;
+
+	//ジャンプ処理コールバック
+	class JumpCallBack : public CollisionCallBack
+	{
+		Player* m_parent;
+
+		void OnCollisionEnter(
+			const Vec3<float>& arg_inter,
+			std::weak_ptr<Collider>arg_otherCollider,
+			const CollisionManager& arg_collisionMgr)override {}
+
+		void OnCollisionTrigger(
+			const Vec3<float>& arg_inter,
+			std::weak_ptr<Collider>arg_otherCollider,
+			const CollisionManager& arg_collisionMgr)override;
+	public:
+		JumpCallBack(Player* arg_player) :m_parent(arg_player) {}
+	};
+	std::shared_ptr<JumpCallBack>m_jumpCallBack;
 
 	void Jump();
 
