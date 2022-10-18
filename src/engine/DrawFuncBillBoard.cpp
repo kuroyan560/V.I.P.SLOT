@@ -18,6 +18,7 @@ void DrawFuncBillBoard::GeneratePipeline(const AlphaBlendMode& BlendMode)
 		//パイプライン設定
 		static PipelineInitializeOption s_pipelineOption(D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT, D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 		s_pipelineOption.m_calling = D3D12_CULL_MODE_NONE;
+		s_pipelineOption.m_depthWriteMask = false;
 
 		//シェーダー情報
 		static Shaders s_shaders;
