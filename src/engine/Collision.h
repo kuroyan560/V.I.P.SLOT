@@ -101,7 +101,7 @@ public:
 	//•ûŒü
 	Vec3<float>m_dir;
 	//Å‘å‹——£
-	float m_len;
+	float m_len = FLT_MAX;
 
 	CollisionLine(const Vec3<float>& Start, const Vec3<float>& Dir, const float& MaxDistance)
 		:m_start(Start), m_dir(Dir), m_len(MaxDistance) {}
@@ -123,7 +123,7 @@ public:
 
 	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
 	{
-		return arg_other->HitCheck(arg_myMat, arg_otherMat, this, arg_inter);
+		return arg_other->HitCheck(arg_otherMat, arg_myMat, this, arg_inter);
 	}
 };
 
