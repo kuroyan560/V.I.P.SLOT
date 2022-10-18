@@ -43,6 +43,9 @@ private:
 	//コールバックリスト、キーは相手のタグ名
 	std::map<std::string, std::vector<CollisionCallBack*>>m_callBackList;
 
+	//親トランスフォーム
+	Transform* m_parentTransform;
+
 public:
 	Collider() :m_id(s_id++) {}
 
@@ -57,11 +60,9 @@ public:
 	/// <param name="arg_name">コライダー名</param>
 	/// <param name="arg_tag">コライダータグ名</param>
 	/// <param name="arg_primitiveArray">コライダーにアタッチされるプリミティブ配列</param>
-	/// <param name="arg_parentObj">コライダーの親となるオブジェクト</param>
 	void Generate(const std::string& arg_name,
 		const std::string& arg_tag,
-		const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray,
-		ColliderParentObject* arg_parentObj = nullptr);
+		const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray);
 
 	//当たり判定（衝突点を返す）
 	bool CheckHitCollision(std::weak_ptr<Collider> arg_other, Vec3<float>* arg_inter = nullptr);
@@ -69,18 +70,33 @@ public:
 	//当たり判定描画
 	void DebugDraw(Camera& arg_cam);
 
-	//セッタ
-	void SetActive(const bool& arg_active) { m_isActive = arg_active; }
 	/// <summary>
 	/// コールバックのセット
 	/// </summary>
 	/// <param name="arg_otherTag">コールバックを呼び出す条件となる相手のタグ名</param>
 	/// <param name="arg_callBack">セットするコールバック</param>
 	void SetCallBack(std::string arg_otherTag, CollisionCallBack* arg_callBack);
+	//親トランスフォームをアタッチされている全プリミティブにセット
 	void SetParentTransform(Transform* arg_parent);
+	//親オブジェクトのセット
+	void SetParentObject(ColliderParentObject* arg_parent);
 
-	//ゲッタ
+	//アクティブフラグのセット
+	void SetActive(const bool& arg_active) { m_isActive = arg_active; }
+
+	//当たり判定結果の取得
 	const bool& GetIsHit()const { return m_isHit; }
+	//親トランスフォームより行列取得（アタッチされていなければ単位行列）
+	Matrix GetTransformMat()
+	{
+		return m_parentTransform ? m_parentTransform->GetMat() : XMMatrixIdentity();
+	}
+	//親トランスフォームより深度取得（アタッチされていなければ０）
+	float GetDepth()
+	{
+		return m_parentTransform ? m_parentTransform->GetPos().z : 0.0f;
+	}
+
 	//コライダーがアタッチされてる親オブジェクト取得
 	template<typename T>
 	T* GetParentObject()

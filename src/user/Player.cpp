@@ -9,6 +9,7 @@
 #include"Collider.h"
 #include"CollisionManager.h"
 #include"GameCamera.h"
+#include"Block.h"
 
 void Player::Jump(Vec3<float>* arg_rockOnPos)
 {
@@ -40,20 +41,18 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	//モデル全体を覆う球
 	std::shared_ptr<CollisionPrimitive>bodySphereCol = std::make_shared<CollisionSphere>(
 		1.2f,
-		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -0.2f, 0.0f),
-		&m_modelObj->m_transform);
+		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -0.2f, 0.0f));
 
 	//足元の当たり判定球
 	std::shared_ptr<CollisionPrimitive>footSphereCol = std::make_shared<CollisionSphere>(
 		1.0f,
-		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -1.5f, 0.0f),
-		&m_modelObj->m_transform);
+		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -1.5f, 0.0f));
 
 	/*--- コールバック生成 ---*/
 	//被ダメージコールバック
 	m_damegedCallBack = std::make_shared<DamagedCallBack>(this, onDamagedHitStopSE, onDamagedSE);
 	//ジャンプ権回復コールバック
-	m_callBackWithBlock = std::make_shared<CallBackWithBlock>(this);
+	m_callBackWithBlock = std::make_shared<CallBackWithBlock>(this, arg_collisionMgr);
 
 	/*--- コライダー生成（判定順） ---*/
 
@@ -66,22 +65,15 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 			bodySphereCol
 		};
 		m_bodyCollider = std::make_shared<Collider>();
-		m_bodyCollider->Generate("Player_Body", "Player", coverModelPrimitiveArray, this);
+		m_bodyCollider->Generate("Player_Body", "Player", coverModelPrimitiveArray);
+		m_bodyCollider->SetParentObject(this);
+		m_bodyCollider->SetParentTransform(&m_modelObj->m_transform);
 
 		//被ダメージコールバックアタッチ
 		m_bodyCollider->SetCallBack("Enemy", m_damegedCallBack.get());
 		//ブロックに触れた際のコールバック
 		m_bodyCollider->SetCallBack("Block", m_callBackWithBlock.get());
 		colliders.emplace_back(m_bodyCollider);
-	}
-
-	//モデルの足元のコライダー
-	{
-		std::vector<std::shared_ptr<CollisionPrimitive>>footPrimitiveArray =
-		{
-			footSphereCol
-		};
-		//m_footCollider = std::make_shared<Collider>("Player_Foot", footPrimitiveArray, this);
 	}
 
 	/*--- コライダー配列登録 ---*/
@@ -115,6 +107,10 @@ void Player::Init(std::weak_ptr<GameCamera>arg_cam)
 
 	//被ダメージコールバック
 	m_damegedCallBack->Init(arg_cam);
+
+	//入力情報初期化
+	m_inputVec = { 0,0 };
+	m_isJumpInput = false;
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
@@ -125,28 +121,45 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 //入力情報取得
 	const auto& input = *UsersInput::Instance();
 
-	//左スティック（移動）入力
-	Vec2<float> moveInput = { 0,0 };
-	//Aボタン（ジャンプ）入力
+	//ジャンプのトリガー入力
 	bool jumpTrigger = false;
 
+	//入力設定
 	switch (m_inputConfig)
 	{
+	//キーボード入力
 	case Player::INPUT_CONFIG::KEY_BOARD:
-		if (input.KeyInput(DIK_LEFT))moveInput.x = -1.0f;
-		else if (input.KeyInput(DIK_RIGHT))moveInput.x = 1.0f;
-		jumpTrigger = input.KeyOnTrigger(DIK_UP);
+	{
+		//方向入力
+		if (input.KeyInput(DIK_LEFT))m_inputVec.x = -1.0f;
+		else if (input.KeyInput(DIK_RIGHT))m_inputVec.x = 1.0f;
+		//ジャンプ入力
+		auto jumpKeyCode = DIK_UP;
+		jumpTrigger = input.KeyOnTrigger(jumpKeyCode);
+		m_isJumpInput = input.KeyInput(jumpKeyCode);
 		break;
+	}
+
+	//コントローラー入力
 	case Player::INPUT_CONFIG::CONTROLLER:
-		moveInput = input.GetLeftStickVec(0);
-		jumpTrigger = input.ControllerOnTrigger(0, XBOX_BUTTON::A);
+	{
+		//方向入力
+		m_inputVec = input.GetLeftStickVec(0);
+		//ジャンプ入力
+		auto jumpButton = XBOX_BUTTON::A;
+		jumpTrigger = input.ControllerOnTrigger(0, jumpButton);
+		m_isJumpInput = input.ControllerInput(0, jumpButton);
 		break;
+	}
+
+	//その他の入力設定になっていた場合エラー
 	default:
 		assert(0);
 		break;
 	}
 
 //入力情報を元に操作
+	const Vec2<float>moveInput = m_inputVec;
 	//横移動
 	if (0.0f < moveInput.x)
 	{
@@ -238,8 +251,7 @@ Vec3<float> Player::GetCenterPos() const
 }
 
 void Player::DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter, 
-	std::weak_ptr<Collider>arg_otherCollider,
-	const CollisionManager& arg_collisionMgr)
+	std::weak_ptr<Collider>arg_otherCollider)
 {
 	using namespace ConstParameter::Player;
 
@@ -307,8 +319,38 @@ void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
 	}
 }
 
-void Player::CallBackWithBlock::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider, const CollisionManager& arg_collisionMgr)
+void Player::CallBackWithBlock::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
 {
 	//ジャンプ権回復
 	m_parent->m_canJump = true;
+
+	//連続ジャンプ入力（長押しと方向入力）
+	if (m_parent->m_isJumpInput && !m_parent->m_inputVec.IsZero())
+	{
+		//レイの飛ばす方向
+		Vec3<float>rayDir = { m_parent->m_inputVec.x,m_parent->m_inputVec.y,0.0f };
+		//レイの判定情報格納先
+		RaycastHitInfo hitInfo;
+		//レイの長さ
+		const float CONTINUITY_JUMP_RAY_DIST = 5.0f;
+
+		//入力があった方にレイを飛ばす
+		if (m_collisionMgr.lock()->RaycastHit(m_parent->GetCenterPos(), rayDir, &hitInfo, "Block", CONTINUITY_JUMP_RAY_DIST))
+		{
+			//ブロッククラスに変換して座標取得
+			Vec3<float>nextBlockPos = hitInfo.m_otherCol.lock()->GetParentObject<Block>()->m_transform.GetPos();
+			//次のブロックに向かってジャンプ
+			m_parent->Jump(&nextBlockPos);
+		}
+		else
+		{
+			//通常ジャンプ
+			m_parent->Jump();
+		}
+	}
+	//通常ジャンプ
+	else
+	{
+		m_parent->Jump();
+	}
 }

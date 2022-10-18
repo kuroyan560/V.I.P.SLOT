@@ -9,12 +9,14 @@ Collider Collider::Clone(Transform* arg_parent, ColliderParentObject* arg_parent
 	std::vector<std::shared_ptr<CollisionPrimitive>>clonePrimitiveArray;
 	for (auto& primitive : m_primitiveArray)
 	{
-		clonePrimitiveArray.emplace_back(std::shared_ptr<CollisionPrimitive>(primitive->Clone(arg_parent)));
+		clonePrimitiveArray.emplace_back(std::shared_ptr<CollisionPrimitive>(primitive->Clone()));
 	}
 
 	//クローン生成
 	Collider clone;
-	clone.Generate(m_name + " - Clone", m_tag, clonePrimitiveArray, arg_parentObj);
+	clone.Generate(m_name + " - Clone", m_tag, clonePrimitiveArray);
+	clone.SetParentTransform(arg_parent);
+	clone.SetParentObject(arg_parentObj);
 
 	//コールバック関数をコピー
 	clone.m_callBackList = this->m_callBackList;
@@ -23,13 +25,11 @@ Collider Collider::Clone(Transform* arg_parent, ColliderParentObject* arg_parent
 
 void Collider::Generate(const std::string& arg_name,
 	const std::string& arg_tag, 
-	const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray, 
-	ColliderParentObject* arg_parentObj)
+	const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray)
 {
 	m_name = arg_name;
 	m_tag = arg_tag;
 	m_primitiveArray = arg_primitiveArray;
-	m_parentObj = arg_parentObj;
 }
 
 bool Collider::CheckHitCollision(std::weak_ptr<Collider> Other, Vec3<float>* Inter)
@@ -47,7 +47,11 @@ bool Collider::CheckHitCollision(std::weak_ptr<Collider> Other, Vec3<float>* Int
 	{
 		for (auto& primitiveB : other->m_primitiveArray)
 		{
-			hit = primitiveA->HitCheckDispatch(primitiveB.get(), &inter);
+			hit = primitiveA->HitCheckDispatch(
+				this->GetTransformMat(),
+				other->GetTransformMat(),
+				primitiveB.get(),
+				&inter);
 			if (hit)break;
 		}
 	}
@@ -62,7 +66,9 @@ void Collider::DebugDraw(Camera& Cam)
 
 	for (auto& primitive : m_primitiveArray)
 	{
-		primitive->DebugDraw(m_isHit, Cam);
+		primitive->DebugDraw(m_isHit, Cam,
+			this->GetTransformMat(),
+			this->GetDepth());
 	}
 }
 
@@ -73,5 +79,10 @@ void Collider::SetCallBack(std::string arg_otherTag, CollisionCallBack* arg_call
 
 void Collider::SetParentTransform(Transform* arg_parent)
 {
-	for (auto& p : m_primitiveArray)p->SetParentTransform(arg_parent);
+	m_parentTransform = arg_parent;
+}
+
+void Collider::SetParentObject(ColliderParentObject* arg_parent)
+{
+	m_parentObj = arg_parent;
 }

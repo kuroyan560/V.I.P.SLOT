@@ -34,7 +34,16 @@ public:
 	void Update();
 	void DebugDraw(Camera& Cam);
 
-	//レイを発射して登録されている全てのコライダーと当たり判定
+	/// <summary>
+	/// レイを発射して登録されている全てのコライダーと当たり判定
+	/// ※CollisionLineと違い、一番近いコライダーとの判定情報を返す
+	/// </summary>
+	/// <param name="arg_start">レイの始点</param>
+	/// <param name="arg_dir">レイの方向</param>
+	/// <param name="arg_hitInfo">判定情報</param>
+	/// <param name="arg_targetTag">当たり判定の対象となるコライダーのタグ指定</param>
+	/// <param name="arg_maxDist">レイの長さ</param>
+	/// <returns>当たり判定結果</returns>
 	bool RaycastHit(Vec3<float>arg_start, Vec3<float>arg_dir, RaycastHitInfo* arg_hitInfo, std::string arg_targetTag = "", float arg_maxDist = FLT_MAX);
 
 	//コライダーの登録

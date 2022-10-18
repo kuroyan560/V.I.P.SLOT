@@ -2,24 +2,23 @@
 #include<memory>
 #include"Transform.h"
 #include"CollisionCallBack.h"
+#include"ColliderParentObject.h"
 class Model;
 class SlotMachine;
 class Camera;
 class LightManager;
 class Collider;
 
-class Block : public CollisionCallBack
+class Block : public CollisionCallBack, public ColliderParentObject
 {
 private:
 	void OnCollisionEnter(
 		const Vec3<float>& arg_inter,
-		std::weak_ptr<Collider>arg_otherCollider,
-		const CollisionManager& arg_collisionMgr)override {}
+		std::weak_ptr<Collider>arg_otherCollider)override {}
 
 	void OnCollisionTrigger(
 		const Vec3<float>& arg_inter,
-		std::weak_ptr<Collider>arg_otherCollider,
-		const CollisionManager& arg_collisionMgr)override
+		std::weak_ptr<Collider>arg_otherCollider)override
 	{
 		m_hitCount++;
 		OnHitTrigger();

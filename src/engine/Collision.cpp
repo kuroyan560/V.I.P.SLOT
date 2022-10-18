@@ -43,12 +43,12 @@ std::shared_ptr<GraphicsPipeline> CollisionPrimitive::GetPrimitivePipeline()
 	return PIPELINE;
 }
 
-void CollisionPoint::DebugDraw(const bool& Hit, Camera& Cam)
+void CollisionPoint::DebugDraw(const bool& arg_hit, Camera& arg_cam, const Matrix& arg_parentMat, const float& arg_depth)
 {
-	DrawFuncBillBoard::Box(Cam, GetWorldPos(), {0.4f,0.4f }, Hit ? Color(1.0f, 0.0f, 0.0f, 1.0f) : Color());
+	DrawFuncBillBoard::Box(arg_cam, GetWorldPos(arg_parentMat), {0.4f,0.4f }, arg_hit ? Color(1.0f, 0.0f, 0.0f, 1.0f) : Color());
 }
 
-bool CollisionPoint::HitCheck(CollisionFloorMesh* arg_other, Vec3<float>* arg_inter)
+bool CollisionPoint::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionFloorMesh* arg_other, Vec3<float>* arg_inter)
 {
 	for (auto& tri : arg_other->GetTriangles())
 	{
@@ -58,7 +58,7 @@ bool CollisionPoint::HitCheck(CollisionFloorMesh* arg_other, Vec3<float>* arg_in
 		if (normal.y < 0)normal.y *= -1;
 
 		//ポイントのワールド座標
-		auto pt = this->GetWorldPos();
+		auto pt = this->GetWorldPos(arg_myMat);
 
 		//三角形の頂点A
 		auto triPtA = tri.m_p0;
@@ -75,14 +75,14 @@ bool CollisionPoint::HitCheck(CollisionFloorMesh* arg_other, Vec3<float>* arg_in
 	return false;
 }
 
-void CollisionLine::DebugDraw(const bool& Hit, Camera& Cam)
+void CollisionLine::DebugDraw(const bool& Hit, Camera& Cam, const Matrix& arg_parentMat, const float& arg_depth)
 {
-	auto startPos = GetStartWorldPos();
-	auto endPos = GetEndWorldPos();
+	auto startPos = GetStartWorldPos(arg_parentMat);
+	auto endPos = GetEndWorldPos(arg_parentMat);
 	DrawFunc3D::DrawLine(Cam, startPos, endPos, Hit ? Color(1, 0, 0, 1) : Color(), 0.01f);
 }
 
-void CollisionSphere::DebugDraw(const bool& Hit,Camera& Cam)
+void CollisionSphere::DebugDraw(const bool& Hit,Camera& Cam, const Matrix& arg_parentMat, const float& arg_depth)
 {
 	static std::shared_ptr<VertexBuffer>vertBuff;
 	static std::shared_ptr<IndexBuffer>idxBuff;
@@ -138,7 +138,7 @@ void CollisionSphere::DebugDraw(const bool& Hit,Camera& Cam)
 	}
 
 	ConstData constData;
-	constData.m_parent = XMMatrixScaling(m_radius, m_radius, m_radius) * XMMatrixTranslation(m_offset.x, m_offset.y, m_offset.z) * GetParentMat();
+	constData.m_parent = XMMatrixScaling(m_radius, m_radius, m_radius) * XMMatrixTranslation(m_offset.x, m_offset.y, m_offset.z) * arg_parentMat;
 	constData.m_hit = Hit;
 	m_constBuff->Mapping(&constData);
 
@@ -150,14 +150,16 @@ void CollisionSphere::DebugDraw(const bool& Hit,Camera& Cam)
 		{
 			{Cam.GetBuff(),CBV},
 			{m_constBuff,CBV }
-		}, GetTransformZ(), true);
+		}, 
+		arg_depth,
+		true);
 }
 
-bool CollisionSphere::HitCheck(CollisionSphere* arg_other, Vec3<float>* arg_inter)
+bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionSphere* arg_other, Vec3<float>* arg_inter)
 {
 	//２つの球のワールド中心座標を求める
-	const auto centerA = this->GetCenter();
-	const auto centerB = arg_other->GetCenter();
+	const auto centerA = this->GetCenter(arg_myMat);
+	const auto centerB = arg_other->GetCenter(arg_otherMat);
 
 	// 中心点の距離の２乗 <= 半径の和の２乗なら交差
 	const float distSq = centerA.DistanceSq(centerB);
@@ -175,10 +177,10 @@ bool CollisionSphere::HitCheck(CollisionSphere* arg_other, Vec3<float>* arg_inte
 	return false;
 }
 
-bool CollisionSphere::HitCheck(CollisionPlane* arg_other, Vec3<float>* arg_inter)
+bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPlane* arg_other, Vec3<float>* arg_inter)
 {
 	//球のワールド中心座標を求める
-	const auto center = this->GetCenter();
+	const auto center = this->GetCenter(arg_myMat);
 
 	// 座標系の原点から球の中心座標への距離から
 	// 平面の原点距離を減算することで、平面と球の中心との距離が出る
@@ -195,10 +197,10 @@ bool CollisionSphere::HitCheck(CollisionPlane* arg_other, Vec3<float>* arg_inter
 	return true;
 }
 
-bool CollisionSphere::HitCheck(CollisionLine* arg_other, Vec3<float>* arg_inter)
+bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionLine* arg_other, Vec3<float>* arg_inter)
 {
-	auto lineStart = arg_other->GetStartWorldPos();
-	XMVECTOR m = lineStart - this->GetCenter();
+	auto lineStart = arg_other->GetStartWorldPos(arg_otherMat);
+	XMVECTOR m = lineStart - this->GetCenter(arg_myMat);
 	float b = XMVector3Dot(m, arg_other->m_dir).m128_f32[0];
 	float c = XMVector3Dot(m, m).m128_f32[0] - static_cast<float>(pow(this->m_radius, 2));
 	// layの始点がsphereの外側にあり(c > 0)、layがsphereから離れていく方向を
@@ -228,18 +230,18 @@ bool CollisionSphere::HitCheck(CollisionLine* arg_other, Vec3<float>* arg_inter)
 	return true;
 }
 
-bool CollisionSphere::HitCheck(CollisionAABB* arg_other, Vec3<float>* arg_inter)
+bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionAABB* arg_other, Vec3<float>* arg_inter)
 {
 	//球の中心座標とAABBとの最短距離を求める
-	const auto spCenter = KuroMath::TransformVec3(this->m_offset, this->GetParentMat());
+	const auto spCenter = KuroMath::TransformVec3(this->m_offset, arg_myMat);
 
 	//AABBの各軸の最小値最大値にワールド変換
 	const auto& ptVal = arg_other->GetPtValue();
 
 	Vec3<float>ptMin(ptVal.x.m_min, ptVal.y.m_min, ptVal.z.m_min);
-	ptMin = KuroMath::TransformVec3(ptMin, arg_other->GetParentMat());
+	ptMin = KuroMath::TransformVec3(ptMin, arg_otherMat);
 	Vec3<float>ptMax(ptVal.x.m_max, ptVal.y.m_max, ptVal.z.m_max);
-	ptMax = KuroMath::TransformVec3(ptMax, arg_other->GetParentMat());
+	ptMax = KuroMath::TransformVec3(ptMax, arg_otherMat);
 
 	//回転によって最小・最大が入れ替わっていることがあるので調整
 	if (ptMax.x < ptMin.x)std::swap(ptMax.x, ptMin.x);
@@ -327,14 +329,14 @@ Vec3<float> CollisionSphere::ClosestPtPoint2Triangle(const Vec3<float>& Pt, cons
 	return p0 + p0_p1 * v + p0_p2 * w;
 }
 
-bool CollisionSphere::HitCheck(CollisionMesh* arg_other, Vec3<float>* arg_inter)
+bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionMesh* arg_other, Vec3<float>* arg_inter)
 {
-	const auto spCenter = KuroMath::TransformVec3(this->m_offset, this->GetParentMat());
+	const auto spCenter = KuroMath::TransformVec3(this->m_offset, arg_myMat);
 
 	for (auto& t : arg_other->GetTriangles())
 	{
 		// 球の中心に対する最近接点である三角形上にある点pを見つける
-		Vec3<float>closest = ClosestPtPoint2Triangle(spCenter, t, arg_other->GetParentMat());
+		Vec3<float>closest = ClosestPtPoint2Triangle(spCenter, t, arg_otherMat);
 		Vec3<float>v = closest - spCenter;
 		float distSq = v.Dot(v);
 
@@ -347,15 +349,7 @@ bool CollisionSphere::HitCheck(CollisionMesh* arg_other, Vec3<float>* arg_inter)
 	return false;
 }
 
-void CollisionPlane::DebugDraw(const bool& Hit, Camera& Cam)
-{
-}
-
-void CollisionCapsule::DebugDraw(const bool& Hit, Camera& Cam)
-{
-}
-
-void CollisionAABB::DebugDraw(const bool& Hit, Camera& Cam)
+void CollisionAABB::DebugDraw(const bool& arg_hit, Camera& arg_cam, const Matrix& arg_parentMat, const float& arg_depth)
 {
 	static std::shared_ptr<IndexBuffer>INDEX_BUFF;
 	if (!INDEX_BUFF)
@@ -379,8 +373,8 @@ void CollisionAABB::DebugDraw(const bool& Hit, Camera& Cam)
 	}
 
 	ConstData constData;
-	constData.m_parent = GetParentMat();
-	constData.m_hit = Hit;
+	constData.m_parent = arg_parentMat;
+	constData.m_hit = arg_hit;
 	m_constBuff->Mapping(&constData);
 
 	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(CollisionPrimitive::GetPrimitivePipeline());
@@ -389,9 +383,11 @@ void CollisionAABB::DebugDraw(const bool& Hit, Camera& Cam)
 		m_vertBuff,
 		INDEX_BUFF,
 		{
-			{Cam.GetBuff(),CBV},
+			{arg_cam.GetBuff(),CBV},
 			{m_constBuff,CBV },
-		}, GetTransformZ(), true);
+		}, 
+		arg_depth, 
+		true);
 }
 
 void CollisionAABB::StructBox(const Vec3<ValueMinMax>& PValues)
@@ -433,7 +429,7 @@ void CollisionMesh::SetTriangles(const std::vector<CollisionTriangle>& Triangles
 
 }
 
-void CollisionMesh::DebugDraw(const bool& Hit, Camera& Cam)
+void CollisionMesh::DebugDraw(const bool& arg_hit, Camera& arg_cam, const Matrix& arg_parentMat, const float& arg_depth)
 {
 	static std::shared_ptr<GraphicsPipeline>PIPELINE;
 	if (!PIPELINE)
@@ -467,8 +463,8 @@ void CollisionMesh::DebugDraw(const bool& Hit, Camera& Cam)
 	}
 
 	ConstData constData;
-	constData.m_parent = XMMatrixMultiply(XMMatrixScaling(1.1f, 1.1f, 1.1f), GetParentMat());
-	constData.m_hit = Hit;
+	constData.m_parent = XMMatrixMultiply(XMMatrixScaling(1.1f, 1.1f, 1.1f), arg_parentMat);
+	constData.m_hit = arg_hit;
 	m_constBuff->Mapping(&constData);
 
 	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(PIPELINE);
@@ -476,7 +472,9 @@ void CollisionMesh::DebugDraw(const bool& Hit, Camera& Cam)
 	KuroEngine::Instance()->Graphics().ObjectRender(
 		m_vertBuff,
 		{
-			{Cam.GetBuff(),CBV},
+			{arg_cam.GetBuff(),CBV},
 			{m_constBuff,CBV }
-		}, GetTransformZ(), true);
+		}, 
+		arg_depth, 
+		true);
 }

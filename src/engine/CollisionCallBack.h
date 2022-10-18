@@ -15,22 +15,18 @@ protected:
 	/// </summary>
 	/// <param name="arg_inter">衝突点</param>
 	/// <param name="arg_otherCollider">相手側のコライダー</param>
-	/// <param name="arg_collisionMgr">コライダーマネージャ（振る舞いパラメータ取得のため）</param>
 	virtual void OnCollisionEnter(
 		const Vec3<float>& arg_inter,
-		std::weak_ptr<Collider>arg_otherCollider,
-		const CollisionManager& arg_collisionMgr) = 0;
+		std::weak_ptr<Collider>arg_otherCollider) = 0;
 
 	/// <summary>
 	/// 衝突した瞬間呼び出される
 	/// </summary>
 	/// <param name="arg_inter">衝突点</param>
 	/// <param name="arg_otherCollider">相手側のコライダー</param>
-	/// <param name="arg_collisionMgr">コライダーマネージャ（振る舞いパラメータ取得のため）</param>
 	virtual void OnCollisionTrigger(
 		const Vec3<float>& arg_inter,
-		std::weak_ptr<Collider>arg_otherCollider,
-		const CollisionManager& arg_collisionMgr) = 0;
+		std::weak_ptr<Collider>arg_otherCollider) = 0;
 
 public:
 	virtual ~CollisionCallBack() {}

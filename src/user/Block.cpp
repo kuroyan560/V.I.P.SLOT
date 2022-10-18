@@ -20,6 +20,7 @@ void Block::Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_at
 
 	//アタッチされたコライダーを記録
 	m_attachCollider = arg_attachCollider;
+	arg_attachCollider->SetParentObject(this);
 	arg_attachCollider->SetParentTransform(&m_transform);
 	arg_attachCollider->SetCallBack("Player", this);
 	arg_attachCollider->SetActive(true);

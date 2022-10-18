@@ -41,7 +41,10 @@ class Player : public ColliderParentObject
 
 	//コライダー
 	std::shared_ptr<Collider>m_bodyCollider;
-	//std::shared_ptr<Collider>m_footCollider;
+
+	//入力情報の記録
+	Vec2<float>m_inputVec;
+	bool m_isJumpInput;
 
 	//HP
 	int m_hp;
@@ -70,13 +73,11 @@ class Player : public ColliderParentObject
 
 		void OnCollisionEnter(
 			const Vec3<float>& arg_inter,
-			std::weak_ptr<Collider>arg_otherCollider,
-			const CollisionManager& arg_collisionMgr)override {};
+			std::weak_ptr<Collider>arg_otherCollider)override {};
 
 		void OnCollisionTrigger(
 			const Vec3<float>& arg_inter,
-			std::weak_ptr<Collider>arg_otherCollider,
-			const CollisionManager& arg_collisionMgr)override;
+			std::weak_ptr<Collider>arg_otherCollider)override;
 
 	public:
 		DamagedCallBack(Player* arg_player, int arg_hitStopSE, int arg_damageSE)
@@ -98,18 +99,18 @@ class Player : public ColliderParentObject
 	class CallBackWithBlock : public CollisionCallBack
 	{
 		Player* m_parent;
+		std::weak_ptr<CollisionManager>m_collisionMgr;
 
 		void OnCollisionEnter(
 			const Vec3<float>& arg_inter,
-			std::weak_ptr<Collider>arg_otherCollider,
-			const CollisionManager& arg_collisionMgr)override {}
+			std::weak_ptr<Collider>arg_otherCollider)override {}
 
 		void OnCollisionTrigger(
 			const Vec3<float>& arg_inter,
-			std::weak_ptr<Collider>arg_otherCollider,
-			const CollisionManager& arg_collisionMgr)override;
+			std::weak_ptr<Collider>arg_otherCollider)override;
 	public:
-		CallBackWithBlock(Player* arg_player) :m_parent(arg_player) {}
+		CallBackWithBlock(Player* arg_player, const std::weak_ptr<CollisionManager>& arg_collisionMgr)
+			:m_parent(arg_player), m_collisionMgr(arg_collisionMgr) {}
 	};
 	std::shared_ptr<CallBackWithBlock>m_callBackWithBlock;
 

@@ -21,8 +21,8 @@ void CollisionManager::OnHit(const std::shared_ptr<Collider>& arg_myCollider, co
 
 	for (auto& callBack : callBackList)
 	{
-		callBack->OnCollisionEnter(arg_inter, arg_otherCollider, *this);
-		if (!arg_myCollider->m_oldIsHit)callBack->OnCollisionTrigger(arg_inter, arg_otherCollider, *this);
+		callBack->OnCollisionEnter(arg_inter, arg_otherCollider);
+		if (!arg_myCollider->m_oldIsHit)callBack->OnCollisionTrigger(arg_inter, arg_otherCollider);
 	}
 }
 
@@ -107,7 +107,7 @@ bool CollisionManager::RaycastHit(Vec3<float> arg_start, Vec3<float> arg_dir, Ra
 		for (auto& primitive : col->m_primitiveArray)
 		{
 			//“–‚½‚Á‚Ä‚¢‚È‚¢‚È‚çƒXƒ‹[
-			if (!ray.HitCheckDispatch(primitive.get(), &inter))continue;
+			if (!ray.HitCheckDispatch(XMMatrixIdentity(), col->GetTransformMat(), primitive.get(), &inter))continue;
 
 			//‹——£‚ðŽæ“¾
 			float dist = arg_start.Distance(inter);
