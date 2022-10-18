@@ -14,6 +14,8 @@ void CollisionManager::OnHit(const std::shared_ptr<Collider>& arg_myCollider, co
 	{
 		for (auto& callBack : callBackList->second)
 		{
+			if (!callBack)continue;
+
 			callBack->OnCollisionEnter(arg_inter, arg_otherCollider);
 			if (!arg_myCollider->m_oldIsHit)callBack->OnCollisionTrigger(arg_inter, arg_otherCollider);
 		}
