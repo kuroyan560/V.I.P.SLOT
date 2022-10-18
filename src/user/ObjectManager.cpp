@@ -16,7 +16,7 @@ void ObjectManager::OnEnemyAppear(std::shared_ptr<GameObject>& arg_obj, std::wea
 	arg_obj->Init();
 
 	//コライダーの登録
-	arg_collisionMgr.lock()->Register(ConstParameter::GameObject::COLLIDER_ATTRIBUTE[arg_obj->m_breed.lock()->m_typeID], arg_obj->m_colliders);
+	arg_collisionMgr.lock()->Register(arg_obj->m_colliders);
 }
 
 void ObjectManager::OnEnemyDead(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr, const std::weak_ptr<Player>& arg_player)
@@ -38,7 +38,8 @@ ObjectManager::ObjectManager()
 		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(2.0f, Vec3<float>(0.0f, 0.0f, 0.0f)));
 
 		std::vector<std::unique_ptr<Collider>>colliderArray;
-		colliderArray.emplace_back(std::make_unique<Collider>("Weak_Slide_Enemy - Body_Sphere", colPrimitiveArray));
+		colliderArray.emplace_back(std::make_unique<Collider>());
+		colliderArray.back()->Generate("Weak_Slide_Enemy - Body_Sphere", "Enemy", colPrimitiveArray);
 
 		int weakSlideIdx = static_cast<int>(OBJECT_TYPE::ENEMY);
 		m_breeds[weakSlideIdx] = std::make_shared<ObjectBreed>(
@@ -53,7 +54,7 @@ ObjectManager::ObjectManager()
 
 	/*--- ---*/
 
-	//敵インスタンス生成
+	//インスタンス生成
 	for (int typeIdx = 0; typeIdx < static_cast<int>(OBJECT_TYPE::NUM); ++typeIdx)
 	{
 		for (int enemyCount = 0; enemyCount < ConstParameter::GameObject::INSTANCE_NUM_MAX[typeIdx]; ++enemyCount)

@@ -51,7 +51,7 @@ public:
 	Block();
 	virtual ~Block() {}
 	//‰Šú‰»
-	void Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_attachCollider,unsigned char arg_playerColAttaribute);
+	void Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_attachCollider);
 	//XV
 	void Update();
 	//•`‰æ

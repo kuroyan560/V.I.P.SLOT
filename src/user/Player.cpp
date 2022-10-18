@@ -10,7 +10,7 @@
 #include"CollisionManager.h"
 #include"GameCamera.h"
 
-void Player::Jump()
+void Player::Jump(Vec3<float>* arg_rockOnPos)
 {
 	m_move.y = 0.0f;
 	m_fallSpeed = ConstParameter::Player::JUMP_POWER;
@@ -52,6 +52,8 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	/*--- コールバック生成 ---*/
 	//被ダメージコールバック
 	m_damegedCallBack = std::make_shared<DamagedCallBack>(this, onDamagedHitStopSE, onDamagedSE);
+	//ジャンプ権回復コールバック
+	m_callBackWithBlock = std::make_shared<CallBackWithBlock>(this);
 
 	/*--- コライダー生成（判定順） ---*/
 
@@ -63,10 +65,13 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 		{
 			bodySphereCol
 		};
-		m_bodyCollider = std::make_shared<Collider>("Player_Body", coverModelPrimitiveArray, this);
+		m_bodyCollider = std::make_shared<Collider>();
+		m_bodyCollider->Generate("Player_Body", "Player", coverModelPrimitiveArray, this);
 
 		//被ダメージコールバックアタッチ
-		m_bodyCollider->SetCallBack(m_damegedCallBack.get(), arg_collisionMgr.lock()->GetAttribute("Enemy"));
+		m_bodyCollider->SetCallBack("Enemy", m_damegedCallBack.get());
+		//ブロックに触れた際のコールバック
+		m_bodyCollider->SetCallBack("Block", m_callBackWithBlock.get());
 		colliders.emplace_back(m_bodyCollider);
 	}
 
@@ -76,11 +81,11 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 		{
 			footSphereCol
 		};
-		m_footCollider = std::make_shared<Collider>("Player_Foot", footPrimitiveArray, this);
+		//m_footCollider = std::make_shared<Collider>("Player_Foot", footPrimitiveArray, this);
 	}
 
 	/*--- コライダー配列登録 ---*/
-	arg_collisionMgr.lock()->Register("Player", colliders);
+	arg_collisionMgr.lock()->Register(colliders);
 }
 
 void Player::Init(std::weak_ptr<GameCamera>arg_cam)
@@ -98,6 +103,9 @@ void Player::Init(std::weak_ptr<GameCamera>arg_cam)
 
 	//落下速度初期化
 	m_fallSpeed = 0.0f;
+
+	//ジャンプ権回復
+	m_canJump = true;
 
 	//接地フラグ初期化
 	m_isOnGround = true;
@@ -154,11 +162,15 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	}
 
 	//ジャンプ
-	if (jumpTrigger && m_isOnGround)
+	if (jumpTrigger && m_canJump)
 	{
-		Jump();
-		AudioApp::Instance()->PlayWaveDelay(m_jumpSE,3);
-		m_isOnGround = false;
+		if (m_isOnGround)
+		{
+			Jump();
+			AudioApp::Instance()->PlayWaveDelay(m_jumpSE, 3);
+			m_isOnGround = false;
+		}
+		m_canJump = false;
 	}
 
 	//落下（ジャンプ中と落下中で重力変化、素早くジャンプ → ゆっくり降下）
@@ -295,6 +307,8 @@ void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
 	}
 }
 
-void Player::JumpCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider, const CollisionManager& arg_collisionMgr)
+void Player::CallBackWithBlock::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider, const CollisionManager& arg_collisionMgr)
 {
+	//ジャンプ権回復
+	m_parent->m_canJump = true;
 }

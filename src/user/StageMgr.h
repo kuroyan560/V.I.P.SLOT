@@ -17,9 +17,6 @@ class CollisionManager;
 
 class StageMgr
 {
-	//プレイヤー用コライダーの振る舞い保存用
-	const unsigned char m_playerColAttribute;
-
 	//同時間に存在するスロットブロックの最大数
 	static const int SLOT_BLOCK_MAX = 4;
 	//スロットブロックインスタンス
@@ -41,7 +38,7 @@ class StageMgr
 	std::vector<std::vector<std::shared_ptr<Block>>>m_terrianBlockArray;
 
 public:
-	StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine,unsigned char arg_playerColAttribute);
+	StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine);
 	void Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void Update();
 	void Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);

@@ -29,6 +29,8 @@ class Player : public ColliderParentObject
 	//落下速度
 	float m_fallSpeed;
 
+	//ジャンプ権
+	bool m_canJump;
 	//接地フラグ
 	bool m_isOnGround;
 	//ジャンプSE
@@ -39,7 +41,7 @@ class Player : public ColliderParentObject
 
 	//コライダー
 	std::shared_ptr<Collider>m_bodyCollider;
-	std::shared_ptr<Collider>m_footCollider;
+	//std::shared_ptr<Collider>m_footCollider;
 
 	//HP
 	int m_hp;
@@ -92,8 +94,8 @@ class Player : public ColliderParentObject
 	};
 	std::shared_ptr<DamagedCallBack>m_damegedCallBack;
 
-	//ジャンプ処理コールバック
-	class JumpCallBack : public CollisionCallBack
+	//ブロックに触れた際のジャンプ権回復コールバック
+	class CallBackWithBlock : public CollisionCallBack
 	{
 		Player* m_parent;
 
@@ -107,15 +109,16 @@ class Player : public ColliderParentObject
 			std::weak_ptr<Collider>arg_otherCollider,
 			const CollisionManager& arg_collisionMgr)override;
 	public:
-		JumpCallBack(Player* arg_player) :m_parent(arg_player) {}
+		CallBackWithBlock(Player* arg_player) :m_parent(arg_player) {}
 	};
-	std::shared_ptr<JumpCallBack>m_jumpCallBack;
+	std::shared_ptr<CallBackWithBlock>m_callBackWithBlock;
 
-	void Jump();
+	//ジャンプ
+	void Jump(Vec3<float>* arg_rockOnPos = nullptr);
 
 	//操作がキーボードかコントローラーか
 	enum struct INPUT_CONFIG { KEY_BOARD, CONTROLLER };
-	INPUT_CONFIG m_inputConfig = INPUT_CONFIG::KEY_BOARD;
+	INPUT_CONFIG m_inputConfig = INPUT_CONFIG::CONTROLLER;
 	
 public:
 	Player(std::weak_ptr<CollisionManager>arg_collisionMgr);

@@ -3,13 +3,6 @@
 
 int Collider::s_id = 0;
 
-Collider::Collider(const std::string& arg_name,
-	const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray,
-	ColliderParentObject* arg_parentObj)
-	:m_id(s_id++), m_name(arg_name), m_primitiveArray(arg_primitiveArray), m_parentObj(arg_parentObj)
-{
-}
-
 Collider Collider::Clone(Transform* arg_parent, ColliderParentObject* arg_parentObj)
 {
 	//判定用プリミティブクローン
@@ -20,11 +13,23 @@ Collider Collider::Clone(Transform* arg_parent, ColliderParentObject* arg_parent
 	}
 
 	//クローン生成
-	auto clone = Collider(m_name + " - Clone", clonePrimitiveArray, arg_parentObj);
+	Collider clone;
+	clone.Generate(m_name + " - Clone", m_tag, clonePrimitiveArray, arg_parentObj);
 
 	//コールバック関数をコピー
-	clone.m_callBacks = this->m_callBacks;
+	clone.m_callBackList = this->m_callBackList;
 	return clone;
+}
+
+void Collider::Generate(const std::string& arg_name,
+	const std::string& arg_tag, 
+	const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray, 
+	ColliderParentObject* arg_parentObj)
+{
+	m_name = arg_name;
+	m_tag = arg_tag;
+	m_primitiveArray = arg_primitiveArray;
+	m_parentObj = arg_parentObj;
 }
 
 bool Collider::CheckHitCollision(std::weak_ptr<Collider> Other, Vec3<float>* Inter)
@@ -61,9 +66,9 @@ void Collider::DebugDraw(Camera& Cam)
 	}
 }
 
-void Collider::SetCallBack(CollisionCallBack* arg_callBack, unsigned char arg_otherAttribute)
+void Collider::SetCallBack(std::string arg_otherTag, CollisionCallBack* arg_callBack)
 {
-	m_callBacks[arg_otherAttribute] = arg_callBack;
+	m_callBackList[arg_otherTag].emplace_back(arg_callBack);
 }
 
 void Collider::SetParentTransform(Transform* arg_parent)

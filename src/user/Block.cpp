@@ -8,7 +8,7 @@ Block::Block()
 {
 }
 
-void Block::Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_attachCollider, unsigned char arg_playerColAttaribute)
+void Block::Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_attachCollider)
 {
 	//初期化トランスフォームの記録と適用
 	m_initTransform = arg_initTransform;
@@ -21,7 +21,7 @@ void Block::Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_at
 	//アタッチされたコライダーを記録
 	m_attachCollider = arg_attachCollider;
 	arg_attachCollider->SetParentTransform(&m_transform);
-	arg_attachCollider->SetCallBack(this, arg_playerColAttaribute);
+	arg_attachCollider->SetCallBack("Player", this);
 	arg_attachCollider->SetActive(true);
 
 	OnInit();

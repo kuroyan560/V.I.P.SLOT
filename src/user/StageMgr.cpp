@@ -7,8 +7,7 @@
 #include"Collider.h"
 #include"CollisionManager.h"
 
-StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine, unsigned char arg_playerColAttribute)
-	:m_playerColAttribute(arg_playerColAttribute)
+StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 {
 	using namespace ConstParameter::Stage;
 
@@ -41,7 +40,8 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine, unsigned
 		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(2.0f, Vec3<float>(0, 0, 0)));
 
 		m_coinBlocks.emplace_back(std::make_shared<CoinBlock>());
-		m_colliders.emplace_back(std::make_shared<Collider>("BlockCollider", colPrimitiveArray));
+		m_colliders.emplace_back(std::make_shared<Collider>());
+		m_colliders.back()->Generate("BlockCollider", "Block", colPrimitiveArray);
 	}
 }
 
@@ -63,7 +63,7 @@ void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>
 
 			//アタッチされていたコライダー解除
 			arg_collisionMgr.lock()->Remove(t->GetCollider());
-			t->GetCollider()->SetCallBack(nullptr, m_playerColAttribute);
+			t->GetCollider()->SetCallBack("Player",nullptr);
 			t->GetCollider()->SetParentTransform(nullptr);
 		}
 	m_terrianBlockArray.clear();
@@ -105,8 +105,8 @@ void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>
 			block = std::dynamic_pointer_cast<Block>(m_coinBlocks[coinBlockIdx++]);
 
 			//ブロック初期化、コライダーアタッチ
-			arg_collisionMgr.lock()->Register("Block", m_colliders[colliderIdx]);
-			block->Init(initTransform, m_colliders[colliderIdx++], m_playerColAttribute);
+			arg_collisionMgr.lock()->Register(m_colliders[colliderIdx]);
+			block->Init(initTransform, m_colliders[colliderIdx++]);
 		}
 	}
 }

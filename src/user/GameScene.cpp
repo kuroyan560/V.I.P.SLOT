@@ -17,9 +17,6 @@ GameScene::GameScene()
 {
 	//コリジョンマネージャ生成
 	m_collisionMgr = std::make_shared<CollisionManager>();
-	m_collisionMgr->AddAttribute("Player", 0b00000001);
-	m_collisionMgr->AddAttribute("Enemy", 0b00000001 << 1);
-	m_collisionMgr->AddAttribute("Block", 0b00000001 << 2);
 
 	//プレイヤー生成
 	m_player = std::make_shared<Player>(m_collisionMgr);
@@ -42,7 +39,7 @@ GameScene::GameScene()
 	m_gameCam = std::make_shared<GameCamera>();
 
 	//ステージマネージャ生成
-	m_stageMgr = std::make_shared<StageMgr>(m_slotMachine, m_collisionMgr->GetAttribute("Player"));
+	m_stageMgr = std::make_shared<StageMgr>(m_slotMachine);
 }
 
 void GameScene::OnInitialize()
