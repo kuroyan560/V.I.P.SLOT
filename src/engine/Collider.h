@@ -108,13 +108,7 @@ public:
 			assert(0);
 		}
 
-		//Žw’è‚³‚ê‚½Œ^‚Å‚Í‚È‚¢
-		if (typeid(T) != typeid(*m_parentObj))
-		{
-			printf("This collider's parent object isn't \" %s \" class.\n", typeid(T).name());
-			assert(0);
-		}
-		return (T*)m_parentObj;
+		return dynamic_cast<T*>(m_parentObj);
 	}
 
 	bool operator== (const Collider& arg_other)const
