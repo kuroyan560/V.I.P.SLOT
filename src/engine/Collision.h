@@ -110,11 +110,6 @@ class CollisionLine : public CollisionPrimitive
 private:
 	void DebugDraw(const bool& Hit, Camera& Cam)override;
 
-	bool HitCheckDispatch(CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
-	{
-		return arg_other->HitCheck(this, arg_inter);
-	}
-
 public:
 	//énì_ç¿ïW
 	Vec3<float>m_start;
@@ -139,6 +134,11 @@ public:
 	CollisionPrimitive* Clone(Transform* Parent)override
 	{
 		return new CollisionLine(m_start, m_dir, m_len, Parent);
+	}
+
+	bool HitCheckDispatch(CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	{
+		return arg_other->HitCheck(this, arg_inter);
 	}
 };
 
