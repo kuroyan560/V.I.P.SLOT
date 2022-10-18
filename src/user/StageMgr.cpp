@@ -98,7 +98,7 @@ void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>
 		m_terrianBlockArray[y].resize(m_blockNum.x);
 		for (int x = 0; x < m_blockNum.x; ++x)
 		{
-			if (!KuroFunc::Probability(45.0f))continue;
+			if (!KuroFunc::Probability(m_generateBlockRate))continue;
 
 			auto& block = m_terrianBlockArray[y][x];
 			initTransform.SetPos({ leftX + x * offset.x,topY - y * offset.y,FIELD_DEPTH_FIXED });
@@ -168,13 +168,15 @@ void StageMgr::ImguiDebug(std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	ImGui::Begin("StageMgr");
 
+	bool changeRate = ImGui::DragFloat("BlockGenerateRate", &m_generateBlockRate, 0.5f, 0.0f, 100.0f);
+
 	bool changeX = ImGui::DragInt("BlockNumX", &m_blockNum.x);
 	bool changeY = ImGui::DragInt("BlockNumY", &m_blockNum.y);
 
 	if (m_blockNum.x < 1)m_blockNum.x = 1;
 	if (m_blockNum.y < 1)m_blockNum.y = 1;
 
-	if (changeX || changeY)Init("", arg_collisionMgr);
+	if (changeRate || changeX || changeY)Init("", arg_collisionMgr);
 
 	ImGui::End();
 }

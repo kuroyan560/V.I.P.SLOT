@@ -37,6 +37,9 @@ class StageMgr
 	//地形を形作るブロック配列（ゲーム内で実際に設置されているブロック）
 	std::vector<std::vector<std::shared_ptr<Block>>>m_terrianBlockArray;
 
+	//ブロック生成の確立
+	float m_generateBlockRate = 45.0f;
+
 public:
 	StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine);
 	void Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>arg_collisionMgr);
