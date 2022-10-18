@@ -330,14 +330,14 @@ public:
 	{
 		return new CollisionMesh(m_triangles);
 	}
-	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	virtual bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
 	{
 		return arg_other->HitCheck(arg_myMat, arg_otherMat, this, arg_inter);
 	}
 
 };
 
-class CollisionFloorMesh : public CollisionMesh, public CollisionPrimitive
+class CollisionFloorMesh : public CollisionMesh
 {
 public:
 	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override

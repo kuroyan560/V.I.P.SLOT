@@ -133,7 +133,7 @@ void Reel::Stop()
 	//停止位置の絵柄インデックス記録
 	const int patternNum = static_cast<int>(m_patternArray.size());
 	const float vSpan = 1.0f / (patternNum - 1);
-	m_nowPatternIdx = patternNum + roundOffset / vSpan;
+	m_nowPatternIdx = static_cast<int>(patternNum + roundOffset / vSpan);
 
 	//絵柄のループ
 	while (m_nowPatternIdx < 0)m_nowPatternIdx += patternNum;

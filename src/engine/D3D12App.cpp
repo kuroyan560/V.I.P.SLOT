@@ -1534,7 +1534,7 @@ std::shared_ptr<GraphicsPipeline>D3D12App::GenerateGraphicsPipeline(
 			D3D12_INPUT_ELEMENT_DESC input =
 			{
 				param.m_semantics.c_str(),	//セマンティック名
-				param.m_semanticIdx,				//同じセマンティック名が複数あるときに使うインデックス
+				static_cast<UINT>(param.m_semanticIdx),				//同じセマンティック名が複数あるときに使うインデックス
 				param.m_format,	//要素数とビット数を表す
 				0,	//入力スロットインデックス
 				D3D12_APPEND_ALIGNED_ELEMENT,	//データのオフセット値（D3D12_APPEND_ALIGNED_ELEMENTだと自動設定）

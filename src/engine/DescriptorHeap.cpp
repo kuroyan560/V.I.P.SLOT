@@ -14,7 +14,7 @@ DescriptorHeapBase::DescriptorHeapBase(ComPtr<ID3D12Device>Device, const D3D12_D
     // SRV_CBV_UAV のディスクリプタヒープ
     D3D12_DESCRIPTOR_HEAP_DESC heapDesc{
       Type,
-      MaxDescriptorNum,
+      static_cast<UINT>(MaxDescriptorNum),
       flag,
       0
     };

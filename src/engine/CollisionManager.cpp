@@ -9,20 +9,14 @@ void CollisionManager::OnHit(const std::shared_ptr<Collider>& arg_myCollider, co
 	arg_myCollider->m_isHit = true;
 
 	//コールバック関数呼び出し
-	std::vector<CollisionCallBack*>callBackList;
-	try
+	std::map<std::string,std::vector<CollisionCallBack*>>::iterator callBackList;
+	if ((callBackList = arg_myCollider->m_callBackList.find(arg_otherCollider->m_tag)) != arg_myCollider->m_callBackList.end())
 	{
-		callBackList = arg_myCollider->m_callBackList.at(arg_otherCollider->m_tag);
-	}
-	catch(std::out_of_range& exception)
-	{
-		return;
-	}
-
-	for (auto& callBack : callBackList)
-	{
-		callBack->OnCollisionEnter(arg_inter, arg_otherCollider);
-		if (!arg_myCollider->m_oldIsHit)callBack->OnCollisionTrigger(arg_inter, arg_otherCollider);
+		for (auto& callBack : callBackList->second)
+		{
+			callBack->OnCollisionEnter(arg_inter, arg_otherCollider);
+			if (!arg_myCollider->m_oldIsHit)callBack->OnCollisionTrigger(arg_inter, arg_otherCollider);
+		}
 	}
 }
 

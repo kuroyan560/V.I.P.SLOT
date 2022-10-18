@@ -7,7 +7,7 @@
 class GaussianBlur
 {
 private:
-	static enum PROCESS { X_BLUR, Y_BLUR, FINAL, PROCESS_NUM };
+	enum PROCESS { X_BLUR, Y_BLUR, FINAL, PROCESS_NUM };
 	static const int s_weightNum = 8;
 	static void GeneratePipeline(std::array<std::shared_ptr<GraphicsPipeline>, PROCESS_NUM - 1>& DestPipeline, const DXGI_FORMAT& Format);
 

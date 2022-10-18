@@ -196,8 +196,6 @@ int AudioApp::LoadAudio(string FileName, const float& Volume)
 
 	m_audios.emplace_back(FileName);
 
-	HRESULT result;
-
 	//①ファイルオープン
 		//ファイル入力ストリームのインスタンス
 	std::ifstream file;
@@ -242,7 +240,7 @@ int AudioApp::LoadAudio(string FileName, const float& Volume)
 	//Waveファイルを閉じる
 	file.close();
 
-	int handle = m_audios.size() - 1;
+	int handle = static_cast<int>(m_audios.size()) - 1;
 
 	ChangeVolume(handle, Volume);
 
@@ -302,6 +300,8 @@ int AudioApp::PlayWave(const int& Handle, bool LoopFlag)
 	result = itr->m_pSourceVoice->Start();
 
 	itr->m_playTrigger = true;
+
+	return 0;
 }
 
 void AudioApp::StopWave(const int& Handle)

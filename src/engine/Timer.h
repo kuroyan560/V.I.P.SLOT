@@ -60,6 +60,10 @@ public:
 		m_intervalTime = arg_interval;
 		Reset();
 	}
+	void Reset(int arg_interval)
+	{
+		Reset(static_cast<float>(arg_interval));
+	}
 
 	void operator=(float arg) = delete;
 };

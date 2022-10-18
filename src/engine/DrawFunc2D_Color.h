@@ -11,7 +11,7 @@ class DrawFunc2D_Color
 {
 public:
 	//“h‚è•û
-	static enum struct FILL_MDOE
+	enum struct FILL_MDOE
 	{
 		NONE,	//ƒxƒ^“h‚è
 		MUL,	//æZ
