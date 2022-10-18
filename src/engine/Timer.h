@@ -36,6 +36,9 @@ public:
 	//Œo‰ßŠÔ
 	const float& GetElaspedTime()const { return m_elaspedTime; }
 
+	//İ’èŠÔ
+	const float& GetIntervalTime()const { return m_intervalTime; }
+
 	/// <summary>
 	/// ŠÔŒo‰ß
 	/// </summary>
