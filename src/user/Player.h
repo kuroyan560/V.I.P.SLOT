@@ -9,6 +9,7 @@
 #include"Transform.h"
 #include"PlayerAttackHitEffect.h"
 #include"ColliderParentObject.h"
+#include"PlayerAttackHitEffect.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -23,18 +24,14 @@ class Player : public ColliderParentObject
 	//モデルオブジェクト
 	std::shared_ptr<ModelObject>m_modelObj;
 
+	//入力による移動方向
+	Vec3<float>m_inputMoveVec;
+
 	//移動
 	Vec3<float>m_move = { 0,0,0 };
 
-	//落下速度
-	float m_fallSpeed;
-
-	//ジャンプ権
-	bool m_canJump;
-	//接地フラグ
-	bool m_isOnGround;
-	//ジャンプSE
-	int m_jumpSE;
+	//加速度
+	Vec3<float>m_accel = { 0,0,0 };
 
 	//所持金
 	CoinVault m_coinVault;
@@ -42,12 +39,11 @@ class Player : public ColliderParentObject
 	//コライダー
 	std::shared_ptr<Collider>m_bodyCollider;
 
-	//入力情報の記録
-	Vec2<float>m_inputVec;
-	bool m_isJumpInput;
-
 	//HP
 	int m_hp;
+
+	//プレイヤーの攻撃によるヒットエフェクト
+	PlayerAttackHitEffect m_attackHitEffect;
 
 	/*--- コールバック関数 ---*/
 	//被ダメージ
@@ -101,6 +97,9 @@ class Player : public ColliderParentObject
 		Player* m_parent;
 		std::weak_ptr<CollisionManager>m_collisionMgr;
 
+		//ブロックが壊れる音
+		int m_brokenSE;
+
 		void OnCollisionEnter(
 			const Vec3<float>& arg_inter,
 			std::weak_ptr<Collider>arg_otherCollider)override {}
@@ -109,13 +108,10 @@ class Player : public ColliderParentObject
 			const Vec3<float>& arg_inter,
 			std::weak_ptr<Collider>arg_otherCollider)override;
 	public:
-		CallBackWithBlock(Player* arg_player, const std::weak_ptr<CollisionManager>& arg_collisionMgr)
-			:m_parent(arg_player), m_collisionMgr(arg_collisionMgr) {}
+		CallBackWithBlock(Player* arg_player, const std::weak_ptr<CollisionManager>& arg_collisionMgr, int arg_brokenSE)
+			:m_parent(arg_player), m_collisionMgr(arg_collisionMgr), m_brokenSE(arg_brokenSE) {}
 	};
 	std::shared_ptr<CallBackWithBlock>m_callBackWithBlock;
-
-	//ジャンプ
-	void Jump(Vec3<float>* arg_rockOnPos = nullptr);
 
 	//操作がキーボードかコントローラーか
 	enum struct INPUT_CONFIG { KEY_BOARD, CONTROLLER };

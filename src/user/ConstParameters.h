@@ -19,11 +19,11 @@ namespace ConstParameter
 		//フィールド位置のZ軸（オフセット適用）
 		const float FIELD_DEPTH_FIXED = FIELD_DEPTH + FIELD_DEPTH_MODEL_OFFSET;
 		//フィールドの高さ
-		const float FIELD_HEIGHT = 32.5f;
+		const float FIELD_HEIGHT = 25.5f;
 		//コインにかかる重力
 		const float COIN_GRAVITY = -0.002f;
 		//フィールド床の高さ
-		const float FLOOR_HEIGHT = 2.6f;
+		const float FLOOR_HEIGHT = 0.0f;
 		//フィールド床の高さの半分
 		const float FLOOR_HEIGHT_HALF = FLOOR_HEIGHT / 2.0f;
 	}
@@ -41,7 +41,7 @@ namespace ConstParameter
 
 		/*--- 移動 ---*/
 		//移動速度
-		const float MOVE_SPEED = 0.3f;
+		const float MOVE_SPEED = 0.45f;
 		//移動の動き計算のLerpRate
 		const float MOVE_LERP_RATE = 0.3f;
 
