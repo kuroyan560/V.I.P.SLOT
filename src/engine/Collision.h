@@ -163,7 +163,7 @@ public:
 
 	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
 	{
-		return arg_other->HitCheck(arg_myMat, arg_otherMat, this, arg_inter);
+		return arg_other->HitCheck(arg_otherMat, arg_myMat, this, arg_inter);
 	}
 };
 
