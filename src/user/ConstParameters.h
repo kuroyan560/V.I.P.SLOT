@@ -11,11 +11,11 @@ namespace ConstParameter
 		//ステージ横幅
 		extern float FIELD_WIDTH;
 		//フィールド位置のZ軸
-		const float FIELD_DEPTH = -20.0f;
+		extern float FIELD_DEPTH;
 		//フィールド位置のZ軸とのオフセット（モデルの位置ズレ）
-		const float FIELD_DEPTH_MODEL_OFFSET = -5.2f;
+		extern float FIELD_DEPTH_MODEL_OFFSET;
 		//フィールド位置のZ軸（オフセット適用）
-		const float FIELD_DEPTH_FIXED = FIELD_DEPTH + FIELD_DEPTH_MODEL_OFFSET;
+		extern float FIELD_DEPTH_FIXED;
 		//フィールドのY軸上限
 		extern float FIELD_HEIGHT_MAX;
 		//フィールドのY軸下限
@@ -27,33 +27,33 @@ namespace ConstParameter
 	namespace Player
 	{
 		//初期位置
-		const Vec3<float>INIT_POS = { 0,0,Environment::FIELD_DEPTH };
+		extern Vec3<float>INIT_POS;
 
 		//モデル中央に合わせるためのオフセット値
-		const Vec3<float>FIX_MODEL_CENTER_OFFSET = { 0.0f,2.0f,ConstParameter::Environment::FIELD_DEPTH_MODEL_OFFSET };
+		extern Vec3<float>FIX_MODEL_CENTER_OFFSET;
 
 		//最大HP
-		const int MAX_HP = 10;
+		extern int MAX_HP;
 
 		/*--- 移動 ---*/
 		//入力による加速度強さ
-		const float INPUT_ACCEL_POWER = 0.25f;
+		extern float INPUT_ACCEL_POWER;
 		//入力による加速度変化率
-		const float ACCEL_LERP_RATE = 0.8f;
+		extern float ACCEL_LERP_RATE;
 		//移動量の減衰変化率
-		const float MOVE_DAMP_RATE = 0.3f;
+		extern float MOVE_DAMP_RATE;
 
 		/*--- 衝突判定 ---*/
 		//ダメージを受けたときのヒットストップ時間
-		const int HIT_STOP_TIME_ON_DAMAGED = 30;
+		extern int HIT_STOP_TIME_ON_DAMAGED;
 		//ダメージを受けたときの落下速度
-		const float FALL_SPEED_ON_DAMAGED = -1.0f;
+		extern float FALL_SPEED_ON_DAMAGED;
 		//ダメージを受けた後の無敵時間
-		const int INVINCIBLE_TIME_ON_DAMAGED = 120;
+		extern int INVINCIBLE_TIME_ON_DAMAGED;
 		//ダメージを受けた後の無敵時間中の点滅スパン
-		const int FLASH_SPAN_ON_DAMAGED_INVINCIBLE = 4;
+		extern int FLASH_SPAN_ON_DAMAGED_INVINCIBLE;
 		//ダメージを受けた後、踏みつけ可能になるまでの時間
-		const int CAN_STEP_TIME_AFTER_DAMAGED = 20;
+		extern int CAN_STEP_TIME_AFTER_DAMAGED;
 
 		void ImGuiDebug();
 	};
@@ -65,20 +65,20 @@ namespace ConstParameter
 
 		/*--- スロット ---*/
 		//スロットが終わってから次を開始出来るようになるまでの時間
-		const int SLOT_WAIT_TIME = 13;
+		extern int SLOT_WAIT_TIME;
 
 		/*--- リール回転 ---*/
 		//最高速度になるまでの時間
-		const int UNTIL_MAX_SPEED_TIME = 14;
+		extern int UNTIL_MAX_SPEED_TIME;
 		//最高回転速度
-		const float MAX_SPIN_SPEED = -0.0065f;
+		extern float MAX_SPIN_SPEED;
 		//回転終了後のリール振動時間
-		const int FINISH_SPIN_TIME = 30;
+		extern int FINISH_SPIN_TIME;
 		//回転終了時のリール振動最大
-		const float FINISH_SPIN_SHAKE_MAX = 0.02f;
+		extern float FINISH_SPIN_SHAKE_MAX;
 
 		/*--- メガホン ---*/
-		const Vec3<float>MEGA_PHONE_POS = { 0.0f,18.0f,22.0f };
+		extern Vec3<float>MEGA_PHONE_POS;
 
 		void ImGuiDebug();
 	};
@@ -89,25 +89,19 @@ namespace ConstParameter
 		enum struct TYPE { ENEMY, NUM };
 
 		//種別ごとのコライダー振る舞い名称
-		const std::array<std::string, static_cast<int>(TYPE::NUM)>COLLIDER_ATTRIBUTE =
-		{
-			"Enemy"
-		};
+		extern std::array<std::string, static_cast<int>(TYPE::NUM)>COLLIDER_ATTRIBUTE;
 
 		//種別ごとの最大数
-		const std::array<int, static_cast<int>(TYPE::NUM)>INSTANCE_NUM_MAX =
-		{
-			100
-		};
+		extern std::array<int, static_cast<int>(TYPE::NUM)>INSTANCE_NUM_MAX;
 
 		//敵がいる空間のX軸座標絶対値
-		const float POS_X_ABS = 43.0f;
+		extern float POS_X_ABS;
 
 		/*--- 衝突判定 ---*/
 		//ダメージを受けた後の無敵時間
-		const int INVINCIBLE_TIME_ON_DAMAGED = 20;
+		extern int INVINCIBLE_TIME_ON_DAMAGED;
 		//被ダメージ時の下降時間
-		const int OFFSET_Y_TIME_ON_DAMAGED = 15;
+		extern int OFFSET_Y_TIME_ON_DAMAGED;
 
 		void ImGuiDebug();
 	}
@@ -115,13 +109,13 @@ namespace ConstParameter
 	namespace Stage
 	{
 		//縦横の最大ブロック数
-		static const Vec2<int>MAX_BLOCK_NUM_AXIS = { 20,15 };
+		extern Vec2<int>MAX_BLOCK_NUM_AXIS;
 		//縦横分けなしの最大ブロック数
-		static const int MAX_BLOCK_NUM = MAX_BLOCK_NUM_AXIS.x * MAX_BLOCK_NUM_AXIS.y;
+		extern int MAX_BLOCK_NUM;
 		//ブロックの一辺長さ
-		const float BLOCK_LEN = 2.0f;
+		extern float BLOCK_LEN;
 		//ブロックの一辺長さ半分
-		const float BLOCK_LEN_HALF = BLOCK_LEN / 2.0f;
+		extern float BLOCK_LEN_HALF;
 
 		void ImGuiDebug();
 	}

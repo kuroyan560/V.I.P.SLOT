@@ -4,9 +4,113 @@
 #include<functional>
 #include<array>
 
-float ConstParameter::Environment::FIELD_WIDTH = 60.0f;
-float ConstParameter::Environment::FIELD_HEIGHT_MAX = 25.5f;
-float ConstParameter::Environment::FIELD_HEIGHT_MIN = 0.0f;
+namespace ConstParameter
+{
+    namespace Environment
+    {
+        //ステージ横幅
+        float FIELD_WIDTH = 60.0f;
+        //フィールド位置のZ軸
+        float FIELD_DEPTH = -20.0f;
+        //フィールド位置のZ軸とのオフセット（モデルの位置ズレ）
+        float FIELD_DEPTH_MODEL_OFFSET = -5.2f;
+        //フィールド位置のZ軸（オフセット適用）
+        float FIELD_DEPTH_FIXED = FIELD_DEPTH + FIELD_DEPTH_MODEL_OFFSET;
+        //フィールドのY軸上限
+        float FIELD_HEIGHT_MAX = 25.5f;
+        //フィールドのY軸下限
+        float FIELD_HEIGHT_MIN = 0.0f;
+    };
+
+    namespace Player
+    {
+        //初期位置
+        Vec3<float>INIT_POS = { 0,0,Environment::FIELD_DEPTH };
+
+        //モデル中央に合わせるためのオフセット値
+        Vec3<float>FIX_MODEL_CENTER_OFFSET = { 0.0f,2.0f,ConstParameter::Environment::FIELD_DEPTH_MODEL_OFFSET };
+
+        //最大HP
+        int MAX_HP = 10;
+
+        /*--- 移動 ---*/
+        //入力による加速度強さ
+        float INPUT_ACCEL_POWER = 0.25f;
+        //入力による加速度変化率
+        float ACCEL_LERP_RATE = 0.8f;
+        //移動量の減衰変化率
+        float MOVE_DAMP_RATE = 0.3f;
+
+        /*--- 衝突判定 ---*/
+        //ダメージを受けたときのヒットストップ時間
+        int HIT_STOP_TIME_ON_DAMAGED = 30;
+        //ダメージを受けたときの落下速度
+        float FALL_SPEED_ON_DAMAGED = -1.0f;
+        //ダメージを受けた後の無敵時間
+        int INVINCIBLE_TIME_ON_DAMAGED = 120;
+        //ダメージを受けた後の無敵時間中の点滅スパン
+        int FLASH_SPAN_ON_DAMAGED_INVINCIBLE = 4;
+        //ダメージを受けた後、踏みつけ可能になるまでの時間
+        int CAN_STEP_TIME_AFTER_DAMAGED = 20;
+    }
+
+    namespace Slot
+    {
+        /*--- スロット ---*/
+        //スロットが終わってから次を開始出来るようになるまでの時間
+        int SLOT_WAIT_TIME = 13;
+
+        /*--- リール回転 ---*/
+        //最高速度になるまでの時間
+        int UNTIL_MAX_SPEED_TIME = 14;
+        //最高回転速度
+        float MAX_SPIN_SPEED = -0.0065f;
+        //回転終了後のリール振動時間
+        int FINISH_SPIN_TIME = 30;
+        //回転終了時のリール振動最大
+        float FINISH_SPIN_SHAKE_MAX = 0.02f;
+
+        /*--- メガホン ---*/
+        Vec3<float>MEGA_PHONE_POS = { 0.0f,18.0f,22.0f };
+    }
+
+    namespace GameObject
+    {
+        //種別ごとのコライダー振る舞い名称
+        std::array<std::string, static_cast<int>(TYPE::NUM)>COLLIDER_ATTRIBUTE =
+        {
+            "Enemy"
+        };
+
+        //種別ごとの最大数
+        std::array<int, static_cast<int>(TYPE::NUM)>INSTANCE_NUM_MAX =
+        {
+            100
+        };
+
+        //敵がいる空間のX軸座標絶対値
+        float POS_X_ABS = 43.0f;
+
+        /*--- 衝突判定 ---*/
+        //ダメージを受けた後の無敵時間
+        int INVINCIBLE_TIME_ON_DAMAGED = 20;
+        //被ダメージ時の下降時間
+        int OFFSET_Y_TIME_ON_DAMAGED = 15;
+    }
+
+    namespace Stage
+    {
+        //縦横の最大ブロック数
+        Vec2<int>MAX_BLOCK_NUM_AXIS = { 20,15 };
+        //縦横分けなしの最大ブロック数
+        int MAX_BLOCK_NUM = MAX_BLOCK_NUM_AXIS.x * MAX_BLOCK_NUM_AXIS.y;
+        //ブロックの一辺長さ
+        float BLOCK_LEN = 2.0f;
+        //ブロックの一辺長さ半分
+        float BLOCK_LEN_HALF = BLOCK_LEN / 2.0f;
+    }
+};
+
 
 void ConstParameter::ImguiDebug()
 {
