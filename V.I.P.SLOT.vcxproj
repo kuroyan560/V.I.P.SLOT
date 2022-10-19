@@ -166,6 +166,7 @@
     <ClCompile Include="lib\imgui\imgui_draw.cpp" />
     <ClCompile Include="lib\imgui\imgui_impl_dx12.cpp" />
     <ClCompile Include="lib\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="lib\imgui\imgui_spectrum.cpp" />
     <ClCompile Include="lib\imgui\imgui_tables.cpp" />
     <ClCompile Include="lib\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\engine\AudioApp.cpp" />
@@ -223,6 +224,7 @@
     <ClCompile Include="src\user\Block.cpp" />
     <ClCompile Include="src\user\CoinObjectManager.cpp" />
     <ClCompile Include="src\user\Coins.cpp" />
+    <ClCompile Include="src\user\ConstParameters.cpp" />
     <ClCompile Include="src\user\GameObject.cpp" />
     <ClCompile Include="src\user\ObjectController.cpp" />
     <ClCompile Include="src\user\EnemyKillCoinEffect.cpp" />
@@ -249,6 +251,7 @@
     <ClInclude Include="lib\imgui\imgui_impl_dx12.h" />
     <ClInclude Include="lib\imgui\imgui_impl_win32.h" />
     <ClInclude Include="lib\imgui\imgui_internal.h" />
+    <ClInclude Include="lib\imgui\imgui_spectrum.h" />
     <ClInclude Include="lib\imgui\imstb_rectpack.h" />
     <ClInclude Include="lib\imgui\imstb_textedit.h" />
     <ClInclude Include="lib\imgui\imstb_truetype.h" />

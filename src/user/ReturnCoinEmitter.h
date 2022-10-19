@@ -4,6 +4,7 @@
 #include"Transform.h"
 #include<forward_list>
 #include"Timer.h"
+#include"ValueMinMax.h"
 class Camera;
 
 class ReturnCoinEmitter
@@ -16,9 +17,12 @@ class ReturnCoinEmitter
 		float m_fallAccel = 0.0f;
 		//移動量
 		Vec3<float>m_move;
+		//コインにかかる重力
+		const float m_coinGravity;
 
 	public:
-		ReturnCoinPerform(Vec3<float>arg_initMove) : m_move(arg_initMove) {	}
+		ReturnCoinPerform(Vec3<float>arg_initMove, float arg_coinGravity)
+			: m_move(arg_initMove),m_coinGravity(arg_coinGravity) {	}
 		void OnUpdate(Coins& arg_coin, float arg_timeScale)override;
 		void OnEmit(Coins& arg_coin)override {};
 		bool IsDead(Coins& arg_coin)override;
@@ -39,11 +43,22 @@ class ReturnCoinEmitter
 	//コイン返却SE
 	int m_coinReturnSE;
 
+	//一度に放出するコイン枚数
+	int m_emitOnceCoinCountMin;
+	int m_emitOnceCoinCountMax;
+
+	//コインにかかる重力
+	float m_coinGravity;
+
 public:
 	ReturnCoinEmitter();
 
 	//初期化
-	void Init();
+	void Init(
+		float arg_coinEmitSpan,
+		int arg_emitOnceCoinCountMin,
+		int arg_emitOnceCoinCountMax,
+		float arg_coinGravity);
 	/// <summary>
 	/// 更新
 	/// </summary>

@@ -70,7 +70,7 @@ void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>
 
 	//地形構成
 	Vec2<float>scale = { 1.0f,1.0f };
-	scale.y = (FIELD_HEIGHT - FLOOR_HEIGHT) / (BLOCK_LEN * m_blockNum.y);
+	scale.y = (FIELD_HEIGHT_MAX - FIELD_HEIGHT_MIN) / (BLOCK_LEN * m_blockNum.y);
 	scale.x = FIELD_WIDTH / (BLOCK_LEN * m_blockNum.x);
 
 	//スケール適用後のブロックの一辺の長さ
@@ -81,7 +81,7 @@ void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>
 	Vec2<float>offset = sideFixed;
 
 	const float leftX = -((floor(m_blockNum.x / 2.0f) - 1) * sideFixed.x) + (-sideFixedHalf.x * (m_blockNum.x % 2 == 0 ? 1 : 2));
-	const float topY = FIELD_HEIGHT - sideFixedHalf.y;
+	const float topY = FIELD_HEIGHT_MAX - sideFixedHalf.y;
 
 	Transform initTransform;
 	initTransform.SetScale({ scale.x,scale.y,1.0f });

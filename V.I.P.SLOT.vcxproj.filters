@@ -328,6 +328,12 @@
     <ClCompile Include="src\user\Block.cpp">
       <Filter>src\user\Stage</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\ConstParameters.cpp">
+      <Filter>src\user\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\imgui\imgui_spectrum.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -623,6 +629,9 @@
     </ClInclude>
     <ClInclude Include="src\user\Block.h">
       <Filter>src\user\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\imgui\imgui_spectrum.h">
+      <Filter>imgui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

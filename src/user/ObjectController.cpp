@@ -19,6 +19,7 @@ void ObjectController::OnDraw(GameObject& arg_enemy, std::weak_ptr<LightManager>
 void ObjectSlideMove::OnInit(GameObject& arg_enemy)
 {
 	using namespace ConstParameter::GameObject;
+	using namespace ConstParameter::Environment;
 
 	//初期化位置
 	Vec3<float>initPos;
@@ -37,10 +38,10 @@ void ObjectSlideMove::OnInit(GameObject& arg_enemy)
 	}
 
 	//高さランダム
-	initPos.y = KuroFunc::GetRand(POS_Y_MIN + 3.0f, POS_Y_MAX);
+	initPos.y = KuroFunc::GetRand(FIELD_HEIGHT_MIN + 3.0f, FIELD_HEIGHT_MAX);
 
 	//フィールドのZに合わせる
-	initPos.z = POS_Z;
+	initPos.z = FIELD_DEPTH_FIXED;
 
 	//初期位置設定
 	arg_enemy.m_transform.SetPos(initPos);

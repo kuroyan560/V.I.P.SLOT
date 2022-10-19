@@ -7,11 +7,20 @@ ReturnCoinEmitter::ReturnCoinEmitter()
 	m_coinReturnSE = AudioApp::Instance()->LoadAudio("resource/user/sound/coin.wav", 0.15f);
 }
 
-void ReturnCoinEmitter::Init()
+void ReturnCoinEmitter::Init(
+	float arg_coinEmitSpan, 
+	int arg_emitOnceCoinCountMin,
+	int arg_emitOnceCoinCountMax,
+	float arg_coinGravity)
 {
 	m_returnCoinObjManager.Init();
 	m_returnCoins.clear();
-	m_emitTimer.Reset(ConstParameter::Slot::RETURN_COIN_EMIT_SPAN);
+	m_emitTimer.Reset(arg_coinEmitSpan);
+
+	m_emitOnceCoinCountMin = arg_emitOnceCoinCountMin;
+	m_emitOnceCoinCountMax = arg_emitOnceCoinCountMax;
+
+	m_coinGravity = arg_coinGravity;
 }
 
 int ReturnCoinEmitter::Update(float arg_timeScale)
@@ -38,7 +47,7 @@ int ReturnCoinEmitter::Update(float arg_timeScale)
 		if (m_emitTimer.IsTimeUp())
 		{
 			//１度に放出する数
-			const int emitCoinCount = KuroFunc::GetRand(EMIT_COIN_COUNT_MIN, EMIT_COIN_COUNT_MAX);
+			const int emitCoinCount = KuroFunc::GetRand(m_emitOnceCoinCountMin, m_emitOnceCoinCountMax);
 
 			//放出した数
 			int count = 0;
@@ -63,7 +72,7 @@ int ReturnCoinEmitter::Update(float arg_timeScale)
 
 				//返却コイン描画
 				m_returnCoinObjManager.Add(returnCoin.m_perCoinNum,
-					returnCoin.m_initTransform, new ReturnCoinPerform(initMove));
+					returnCoin.m_initTransform, new ReturnCoinPerform(initMove, m_coinGravity));
 
 				//放出した数カウント
 				count++;
@@ -76,7 +85,7 @@ int ReturnCoinEmitter::Update(float arg_timeScale)
 			m_returnCoins.pop_front();
 
 			//放出タイマーリセット
-			m_emitTimer.Reset(ConstParameter::Slot::RETURN_COIN_EMIT_SPAN);
+			m_emitTimer.Reset();
 		}
 
 		//放出タイマーカウント
@@ -110,7 +119,7 @@ void ReturnCoinEmitter::Emit(int arg_coinNumSum, int arg_perCoinNum, const Trans
 void ReturnCoinEmitter::ReturnCoinPerform::OnUpdate(Coins& arg_coin, float arg_timeScale)
 {
 	m_move.y += m_fallAccel;
-	m_fallAccel += ConstParameter::Environment::COIN_GRAVITY * arg_timeScale;
+	m_fallAccel += m_coinGravity * arg_timeScale;
 
 	auto pos = arg_coin.m_transform.GetPos();
 	pos += m_move * arg_timeScale;

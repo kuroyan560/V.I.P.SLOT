@@ -161,6 +161,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	}
 
 	//押し戻し（ステージ端）
+	const float FIELD_WIDTH_HALF = FIELD_WIDTH / 2.0f;
 	if (pos.x < -FIELD_WIDTH_HALF)
 	{
 		pos.x = -FIELD_WIDTH_HALF;
