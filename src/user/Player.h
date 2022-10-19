@@ -7,9 +7,7 @@
 #include<vector>
 #include"CollisionCallBack.h"
 #include"Transform.h"
-#include"PlayerAttackHitEffect.h"
 #include"ColliderParentObject.h"
-#include"PlayerAttackHitEffect.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -41,9 +39,6 @@ class Player : public ColliderParentObject
 
 	//HP
 	int m_hp;
-
-	//プレイヤーの攻撃によるヒットエフェクト
-	PlayerAttackHitEffect m_attackHitEffect;
 
 	/*--- コールバック関数 ---*/
 	//被ダメージ

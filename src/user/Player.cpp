@@ -98,9 +98,6 @@ void Player::Init(std::weak_ptr<GameCamera>arg_cam)
 
 	//被ダメージコールバック
 	m_damegedCallBack->Init(arg_cam);
-
-	//攻撃ヒットエフェクト
-	m_attackHitEffect.Init();
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
@@ -178,9 +175,6 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 
 	//被ダメージコールバック
 	m_damegedCallBack->Update(arg_timeScale);
-
-	//攻撃ヒットエフェクト
-	m_attackHitEffect.Update(arg_timeScale.GetTimeScale());
 }
 
 #include"DrawFunc3D.h"
@@ -194,7 +188,6 @@ void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>
 
 void Player::EffectDraw(std::weak_ptr<Camera> arg_cam)
 {
-	m_attackHitEffect.Draw(arg_cam);
 }
 
 Vec3<float> Player::GetCenterPos() const
@@ -269,7 +262,6 @@ void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
 
 void Player::CallBackWithBlock::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
 {
-	m_parent->m_attackHitEffect.Emit(arg_inter);
 	AudioApp::Instance()->PlayWaveDelay(m_brokenSE, 3);
 
 	auto block = arg_otherCollider.lock()->GetParentObject<Block>();

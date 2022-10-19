@@ -319,9 +319,6 @@
     <ClCompile Include="src\user\EnemyKillCoinEffect.cpp">
       <Filter>src\user\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\PlayerAttackHitEffect.cpp">
-      <Filter>src\user\Player</Filter>
-    </ClCompile>
     <ClCompile Include="src\user\StageMgr.cpp">
       <Filter>src\user\Stage</Filter>
     </ClCompile>
@@ -333,6 +330,9 @@
     </ClCompile>
     <ClCompile Include="lib\imgui\imgui_spectrum.cpp">
       <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\TexHitEffect.cpp">
+      <Filter>src\user</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -621,9 +621,6 @@
     <ClInclude Include="src\user\EnemyKillCoinEffect.h">
       <Filter>src\user\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\PlayerAttackHitEffect.h">
-      <Filter>src\user\Player</Filter>
-    </ClInclude>
     <ClInclude Include="src\user\StageMgr.h">
       <Filter>src\user\Stage</Filter>
     </ClInclude>
@@ -632,6 +629,9 @@
     </ClInclude>
     <ClInclude Include="lib\imgui\imgui_spectrum.h">
       <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\TexHitEffect.h">
+      <Filter>src\user</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
