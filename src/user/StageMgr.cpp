@@ -129,7 +129,7 @@ void StageMgr::Update(TimeScale& arg_timeScale)
 			//ƒuƒƒbƒN‚È‚µ
 			if (block == nullptr)continue;
 
-			block->Update();
+			block->Update(arg_timeScale);
 		}
 	}
 
