@@ -9,6 +9,14 @@
 #include"TexHitEffect.h"
 #include"TimeScale.h"
 
+void StageMgr::DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<CollisionManager> arg_collisionMgr)
+{
+	//アタッチされていたコライダー解除
+	arg_collisionMgr.lock()->Remove(arg_block->GetCollider());
+	arg_block->GetCollider()->SetCallBack("Player", nullptr);
+	arg_block->GetCollider()->SetParentTransform(nullptr);
+}
+
 StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 {
 	using namespace ConstParameter::Stage;
@@ -68,10 +76,7 @@ void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>
 			//ブロックなし
 			if (t == nullptr)continue;
 
-			//アタッチされていたコライダー解除
-			arg_collisionMgr.lock()->Remove(t->GetCollider());
-			t->GetCollider()->SetCallBack("Player",nullptr);
-			t->GetCollider()->SetParentTransform(nullptr);
+			DisappearBlock(t, arg_collisionMgr);
 		}
 	m_terrianBlockArray.clear();
 
@@ -120,7 +125,7 @@ void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>
 	m_hitEffect->Init();
 }
 
-void StageMgr::Update(TimeScale& arg_timeScale)
+void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	for (auto& blockArray : m_terrianBlockArray)
 	{
@@ -130,6 +135,12 @@ void StageMgr::Update(TimeScale& arg_timeScale)
 			if (block == nullptr)continue;
 
 			block->Update(arg_timeScale);
+
+			if (block->IsDisappear())
+			{
+				DisappearBlock(block, arg_collisionMgr);
+				block = nullptr;
+			}
 		}
 	}
 
@@ -160,8 +171,7 @@ void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Came
 			{
 				//コイン既に排出済か
 				auto coinBlock = std::dynamic_pointer_cast<CoinBlock>(block);
-				if (coinBlock->IsEmpty())emptyCoinBlockTransformArray.emplace_back(block->m_transform.GetMat());
-				else coinBlockTransformArray.emplace_back(block->m_transform.GetMat());
+				coinBlockTransformArray.emplace_back(block->m_transform.GetMat());
 			}
 			block->Draw(block->m_transform, arg_lightMgr, arg_cam);
 		}

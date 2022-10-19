@@ -21,13 +21,19 @@ private:
 		Block* m_parent;
 		Timer m_timer;
 		Vec3<float>m_startScale;
+		bool m_finish;
 
 	public:
 		Bomber(Block* arg_parent) :m_parent(arg_parent) {}
-		void Init() { m_phase = NONE; }
+		void Init() 
+		{ 
+			m_phase = NONE;
+			m_finish = false;
+		}
 		void Update(const TimeScale& arg_timeScale);
 
 		void Explosion(Vec3<float>arg_startScale);
+		const bool& IsFinish()const { return m_finish; }
 
 	}m_explosion;
 
@@ -85,7 +91,7 @@ public:
 	void Draw(Transform& arg_transform, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam);
 
 	//消滅したか
-	bool IsDisappear() { return false; }
+	bool IsDisappear() { return m_explosion.IsFinish(); }
 
 	virtual TYPE GetType() = 0;
 
@@ -104,16 +110,13 @@ class CoinBlock : public Block
 	void OnHitTrigger()override;
 	bool IsDead()override
 	{
-		return false;
+		return m_hp <= m_hitCount;
 	}
 
 	
 	void OnExplosionFinishTrigger()override { isExplosion = true; }
 public:
 	CoinBlock(int arg_hp = 1);
-
-	//コインを所持しているか（一度でも叩かれていたらもう持ってない）
-	bool IsEmpty() { return isExplosion; }
 
 	TYPE GetType()override { return COIN; }
 };

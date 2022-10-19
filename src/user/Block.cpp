@@ -14,7 +14,7 @@ void Block::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Colli
 
 	if (this->IsDead())
 	{
-
+		m_explosion.Explosion(m_transform.GetScale());
 	}
 }
 
@@ -136,6 +136,7 @@ void Block::Bomber::Update(const TimeScale& arg_timeScale)
 			m_parent->OnExplosionFinishTrigger();
 			m_phase = NONE;
 			m_parent->m_transform.SetScale(m_startScale);
+			m_finish = true;
 		}
 		break;
 	}

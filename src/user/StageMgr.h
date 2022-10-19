@@ -45,10 +45,12 @@ class StageMgr
 	//ブロック生成の確立
 	float m_generateBlockRate = 45.0f;
 
+	void DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<CollisionManager>arg_collisionMgr);
+
 public:
 	StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine);
 	void Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>arg_collisionMgr);
-	void Update(TimeScale& arg_timeScale);
+	void Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);
 	void EffectDraw(std::weak_ptr<Camera>arg_cam);
 

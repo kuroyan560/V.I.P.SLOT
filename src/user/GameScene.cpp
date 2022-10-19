@@ -78,7 +78,7 @@ void GameScene::OnUpdate()
 	m_slotMachine->Update(m_player, m_timeScale);
 
 	//ステージマネージャ
-	m_stageMgr->Update(m_timeScale);
+	m_stageMgr->Update(m_timeScale,m_collisionMgr);
 }
 
 
