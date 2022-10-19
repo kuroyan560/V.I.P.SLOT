@@ -40,10 +40,12 @@ namespace ConstParameter
 		const int MAX_HP = 10;
 
 		/*--- 移動 ---*/
-		//移動速度
-		const float MOVE_SPEED = 0.45f;
-		//移動の動き計算のLerpRate
-		const float MOVE_LERP_RATE = 0.3f;
+		//入力による加速度強さ
+		const float INPUT_ACCEL_POWER = 0.25f;
+		//入力による加速度変化率
+		const float ACCEL_LERP_RATE = 0.8f;
+		//移動量の減衰変化率
+		const float MOVE_DAMP_RATE = 0.3f;
 
 		/*--- ジャンプ ---*/
 		//ジャンプ力

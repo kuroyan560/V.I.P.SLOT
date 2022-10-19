@@ -142,14 +142,6 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	}
 
 //ì¸óÕèÓïÒÇå≥Ç…ëÄçÏ
-	//â°à⁄ìÆ
-	const float MOVE_LERP_RATE = 0.5f;
-	//m_move.x = KuroMath::Lerp(m_move.x, MOVE_SPEED * m_inputMoveVec.x, MOVE_LERP_RATE);
-	//ècà⁄ìÆ
-	//m_move.y = KuroMath::Lerp(m_move.y, MOVE_SPEED * m_inputMoveVec.y, MOVE_LERP_RATE);
-
-	//m_move = m_inputMoveVec * MOVE_SPEED;
-
 	//â¡ë¨
 	m_move += m_accel;
 
@@ -158,12 +150,10 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	pos += m_move * arg_timeScale.GetTimeScale();
 
 	//â¡ë¨ìxå∏êä
-	const float ACCEL_DAMP_RATE = 0.8f;
-	m_accel = KuroMath::Lerp(m_accel, m_inputMoveVec * 1.0f, 0.8f);
-	m_accel = KuroMath::Lerp(m_accel, Vec3<float>(0, 0, 0), ACCEL_DAMP_RATE);
+	m_accel = KuroMath::Lerp(m_accel, m_inputMoveVec * INPUT_ACCEL_POWER, ACCEL_LERP_RATE);
 
 	//à⁄ìÆó å∏êä
-	m_move = KuroMath::Lerp(m_move, Vec3<float>(0, 0, 0), 0.2f);
+	m_move = KuroMath::Lerp(m_move, Vec3<float>(0, 0, 0), MOVE_DAMP_RATE);
 
 	//âüÇµñﬂÇµÅiè∞Åj
 	if (pos.y < 0.0f)
