@@ -78,7 +78,7 @@ void GameScene::OnUpdate()
 	m_slotMachine->Update(m_player, m_timeScale);
 
 	//ステージマネージャ
-	m_stageMgr->Update();
+	m_stageMgr->Update(m_timeScale);
 }
 
 
@@ -117,6 +117,7 @@ void GameScene::OnDraw()
 	rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_STENCIL);
 	//エフェクト描画
 	m_player->EffectDraw(m_gameCam->GetFrontCam());
+	m_stageMgr->EffectDraw(m_gameCam->GetFrontCam());
 }
 
 void GameScene::OnImguiDebug()

@@ -6,6 +6,8 @@
 #include"DrawFunc3D.h"
 #include"Collider.h"
 #include"CollisionManager.h"
+#include"TexHitEffect.h"
+#include"TimeScale.h"
 
 StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 {
@@ -25,6 +27,10 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 	m_coinBlockModel = Importer::Instance()->LoadModel("resource/user/model/", "coinBlock.glb");
 	m_emptyCoinBlockModel = Importer::Instance()->LoadModel("resource/user/model/", "coinBlock_empty.glb");
 
+	//ヒットエフェクト生成
+	m_hitEffect = std::make_shared<TexHitEffect>();
+	m_hitEffect->Set("resource/user/img/hitEffect.png", 5, { 5,1 }, { 6.0f,6.0f }, 3);
+
 	//ブロックのコライダー用プリミティブ配列
 	Vec3<ValueMinMax>val;
 	val.x.m_min = -BLOCK_LEN_HALF;
@@ -33,10 +39,11 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 	val.y.m_max = BLOCK_LEN_HALF;
 	val.z.m_min = -BLOCK_LEN_HALF;
 	val.z.m_max = BLOCK_LEN_HALF;
+
+	//ブロックのコライダー生成
 	for (int i = 0; i < MAX_BLOCK_NUM; ++i)
 	{
 		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
-		//colPrimitiveArray.emplace_back(std::make_shared<CollisionAABB>(val));
 		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(2.0f, Vec3<float>(0, 0, 0)));
 
 		m_coinBlocks.emplace_back(std::make_shared<CoinBlock>());
@@ -106,12 +113,14 @@ void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>
 
 			//ブロック初期化、コライダーアタッチ
 			arg_collisionMgr.lock()->Register(m_colliders[colliderIdx]);
-			block->Init(initTransform, m_colliders[colliderIdx++]);
+			block->Init(initTransform, m_colliders[colliderIdx++],m_hitEffect);
 		}
 	}
+
+	m_hitEffect->Init();
 }
 
-void StageMgr::Update()
+void StageMgr::Update(TimeScale& arg_timeScale)
 {
 	for (auto& blockArray : m_terrianBlockArray)
 	{
@@ -123,6 +132,8 @@ void StageMgr::Update()
 			block->Update();
 		}
 	}
+
+	m_hitEffect->Update(arg_timeScale.GetTimeScale());
 }
 
 void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
@@ -161,6 +172,11 @@ void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Came
 		DrawFunc3D::DrawNonShadingModel(m_coinBlockModel, coinBlockTransformArray, *arg_cam.lock(), AlphaBlendMode_None);
 	if (!emptyCoinBlockTransformArray.empty())
 		DrawFunc3D::DrawNonShadingModel(m_emptyCoinBlockModel, emptyCoinBlockTransformArray, *arg_cam.lock(), AlphaBlendMode_None);
+}
+
+void StageMgr::EffectDraw(std::weak_ptr<Camera> arg_cam)
+{
+	m_hitEffect->Draw(arg_cam);
 }
 
 #include"imguiApp.h"

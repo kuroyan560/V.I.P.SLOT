@@ -4,6 +4,7 @@
 #include<vector>
 #include<memory>
 #include<forward_list>
+#include<string>
 class TextureBuffer;
 class Camera;
 
@@ -38,27 +39,34 @@ class TexHitEffect
 	std::forward_list<Info>m_infoArray;
 
 	//ヒットエフェクトテクスチャ
-	int m_texNum;
-	std::shared_ptr<TextureBuffer>* m_texArray;
+	std::vector<std::shared_ptr<TextureBuffer>>m_texArray;
 
 	//エフェクトのサイズ
 	Vec2<float>m_effectSize;
+
+	//テクスチャのアニメーション速さ
+	float m_texChangeSpan;
 
 public:
 	TexHitEffect() {}
 
 	/// <summary>
-	/// 初期化
+	/// パラメータ設定、テクスチャ読み込み
 	/// </summary>
-	/// <param name="arg_texArray">エフェクトのテクスチャ配列先頭ポインタ</param>
-	/// <param name="arg_texElementNum">テクスチャ配列サイズ</param>
+	/// <param name="arg_texPath">テクスチャのファイルパス</param>
+	/// <param name="arg_texNum">テクスチャの数</param>
+	/// <param name="arg_texSplitNum">テクスチャの分割数</param>
 	/// <param name="arg_effectSize">エフェクトの大きさ（３D空間縮尺）</param>
-	void Init(
-		std::shared_ptr<TextureBuffer>* arg_texArray,
-		int arg_texElementNum,
-		Vec2<float>arg_effectSize);
+	/// <param name="arg_texChangeSpan">テクスチャのアニメーション速さ</param>
+	void Set(
+		std::string arg_texPath,
+		int arg_texNum,
+		Vec2<int> arg_texSplitNum,
+		Vec2<float>arg_effectSize,
+		float arg_texChangeSpan);
+	void Init();
 	void Update(float arg_timeScale);
 	void Draw(std::weak_ptr<Camera> arg_cam);
-	void Emit(Vec3<float>arg_emitPos, float arg_texChangeSpan);
+	void Emit(Vec3<float>arg_emitPos);
 };
 

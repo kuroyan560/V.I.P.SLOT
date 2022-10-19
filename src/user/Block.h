@@ -8,6 +8,7 @@ class SlotMachine;
 class Camera;
 class LightManager;
 class Collider;
+class TexHitEffect;
 
 class Block : public CollisionCallBack, public ColliderParentObject
 {
@@ -18,11 +19,7 @@ private:
 
 	void OnCollisionTrigger(
 		const Vec3<float>& arg_inter,
-		std::weak_ptr<Collider>arg_otherCollider)override
-	{
-		m_hitCount++;
-		OnHitTrigger();
-	}
+		std::weak_ptr<Collider>arg_otherCollider)override;
 
 protected:
 	//コライダー
@@ -31,6 +28,9 @@ protected:
 	Transform m_initTransform;
 	//叩かれた回数
 	int m_hitCount;
+
+	//ヒットエフェクトポインタ
+	std::weak_ptr<TexHitEffect>m_hitEffect;
 
 	//初期化処理で呼び出される
 	virtual void OnInit() = 0;
@@ -45,12 +45,12 @@ protected:
 public:
 	//トランスフォーム
 	Transform m_transform;
-	enum TYPE { COIN, SLOT };
+	enum TYPE { COIN, SLOT, NUM };
 
 	Block();
 	virtual ~Block() {}
 	//初期化
-	void Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_attachCollider);
+	void Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_attachCollider, const std::shared_ptr<TexHitEffect>& arg_hitEffect);
 	//更新
 	void Update();
 	//描画

@@ -3,12 +3,20 @@
 #include"Collision.h"
 #include"ConstParameters.h"
 #include"Collider.h"
+#include"TexHitEffect.h"
+
+void Block::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
+{
+	m_hitEffect.lock()->Emit(arg_inter);
+	m_hitCount++;
+	OnHitTrigger();
+}
 
 Block::Block()
 {
 }
 
-void Block::Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_attachCollider)
+void Block::Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_attachCollider, const std::shared_ptr<TexHitEffect>& arg_hitEffect)
 {
 	//初期化トランスフォームの記録と適用
 	m_initTransform = arg_initTransform;
@@ -24,6 +32,9 @@ void Block::Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_at
 	arg_attachCollider->SetParentTransform(&m_transform);
 	arg_attachCollider->SetCallBack("Player", this);
 	arg_attachCollider->SetActive(true);
+
+	//ヒットエフェクトアタッチ
+	m_hitEffect = arg_hitEffect;
 
 	OnInit();
 }

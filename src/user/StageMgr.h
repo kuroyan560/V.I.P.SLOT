@@ -5,7 +5,7 @@
 #include<memory>
 #include"Vec.h"
 #include"ConstParameters.h"
-class Block;
+#include"Block.h"
 class SlotBlock;
 class CoinBlock;
 class SlotMachine;
@@ -14,6 +14,8 @@ class Camera;
 class Model;
 class Collider;
 class CollisionManager;
+class TexHitEffect;
+class TimeScale;
 
 class StageMgr
 {
@@ -27,6 +29,9 @@ class StageMgr
 	std::vector<std::shared_ptr<CoinBlock>>m_coinBlocks;
 	std::shared_ptr<Model>m_coinBlockModel;
 	std::shared_ptr<Model>m_emptyCoinBlockModel;
+
+	//ヒットエフェクト
+	std::shared_ptr<TexHitEffect>m_hitEffect;
 
 	//コライダーインスタンス
 	std::vector<std::shared_ptr<Collider>>m_colliders;
@@ -43,8 +48,9 @@ class StageMgr
 public:
 	StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine);
 	void Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>arg_collisionMgr);
-	void Update();
+	void Update(TimeScale& arg_timeScale);
 	void Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);
+	void EffectDraw(std::weak_ptr<Camera>arg_cam);
 
 	void ImguiDebug(std::weak_ptr<CollisionManager>arg_collisionMgr);
 };
