@@ -263,8 +263,7 @@ bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherM
 		if (arg_inter)
 		{
 			//球の中心とAABBの中心間の中心点
-			Vec3<float>aabbCenter(ptVal.x.GetCenter(), ptVal.y.GetCenter(), ptVal.z.GetCenter());
-			*arg_inter = spCenter.GetCenter(aabbCenter);
+			*arg_inter = spCenter.GetCenter(ptMin.GetCenter(ptMax));
 		}
 		return true;
 	}

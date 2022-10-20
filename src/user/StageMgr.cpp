@@ -49,10 +49,19 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 	val.z.m_max = BLOCK_LEN_HALF;
 
 	//ブロックのコライダー生成
+	const float BOX_SIZE = 1.0f;
 	for (int i = 0; i < MAX_BLOCK_NUM; ++i)
 	{
 		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
-		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(2.0f, Vec3<float>(0, 0, 0)));
+		//colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(2.0f, Vec3<float>(0, 0, 0)));
+		Vec3<ValueMinMax>box;
+		box.x.m_min = -BOX_SIZE;
+		box.y.m_min = -BOX_SIZE;
+		box.z.m_min = -BOX_SIZE;
+		box.x.m_max = BOX_SIZE;
+		box.y.m_max = BOX_SIZE;
+		box.z.m_max = BOX_SIZE;
+		colPrimitiveArray.emplace_back(std::make_shared<CollisionAABB>(box));
 
 		m_coinBlocks.emplace_back(std::make_shared<CoinBlock>());
 		m_colliders.emplace_back(std::make_shared<Collider>());

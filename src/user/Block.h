@@ -113,7 +113,6 @@ class CoinBlock : public Block
 		return m_hp <= m_hitCount;
 	}
 
-	
 	void OnExplosionFinishTrigger()override { isExplosion = true; }
 public:
 	CoinBlock(int arg_hp = 1);

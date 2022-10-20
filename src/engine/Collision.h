@@ -240,6 +240,11 @@ private:
 	std::shared_ptr<ConstantBuffer>m_constBuff;
 	void DebugDraw(const bool& arg_hit, Camera& arg_cam, const Matrix& arg_parentMat, const float& arg_depth)override;
 
+	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionSphere* arg_other, Vec3<float>* arg_inter)override
+	{
+		return this->HitCheckDispatch(arg_myMat, arg_otherMat, arg_other, arg_inter);
+	}
+
 	//頂点バッファ
 	std::shared_ptr<VertexBuffer>m_vertBuff;
 	//各軸の最小値と最大値
@@ -261,7 +266,7 @@ public:
 
 	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
 	{
-		return arg_other->HitCheck(arg_myMat, arg_otherMat, this, arg_inter);
+		return arg_other->HitCheck(arg_otherMat, arg_myMat, this, arg_inter);
 	}
 };
 
