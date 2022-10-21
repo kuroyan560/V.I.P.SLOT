@@ -17,6 +17,9 @@ int DrawFunc2D::s_DrawExtendGraphCount = 0;
 //DrawRotaGraph
 int DrawFunc2D::s_DrawRotaGraphCount = 0;
 
+//DrawRadialWipeGraph
+int DrawFunc2D::s_DrawRadialWipeGraphCount = 0;
+
 void DrawFunc2D::DrawLine2D(const Vec2<float>& FromPos, const Vec2<float>& ToPos, const Color& LineColor, const AlphaBlendMode& BlendMode)
 {
 	static std::shared_ptr<GraphicsPipeline>LINE_PIPELINE[AlphaBlendModeNum];
@@ -403,6 +406,87 @@ void DrawFunc2D::DrawRotaGraph2D(const Vec2<float>& Center, const Vec2<float>& E
 		}, 0.0f, true);
 
 	s_DrawRotaGraphCount++;
+}
+
+void DrawFunc2D::DrawRadialWipeGraph2D(
+	const Vec2<float>& arg_center,
+	const Vec2<float>& arg_extRate, 
+	const Angle& arg_startAngle, 
+	const Angle& arg_endAngle,
+	const Vec2<float>& arg_anchor,
+	const std::shared_ptr<TextureBuffer>& arg_tex,
+	const AlphaBlendMode& BlendMode)
+{
+	static std::shared_ptr<GraphicsPipeline>RADIAL_WIPE_GRAPH_PIPELINE[AlphaBlendModeNum];
+	static std::vector<std::shared_ptr<VertexBuffer>>RADIAL_WIPE_GRAPH_VERTEX_BUFF;
+
+	//DrawRadialWipeGraph専用頂点
+	class RadialWipeGraphVertex
+	{
+	public:
+		Vec2<float>m_center;
+		Vec2<float>m_extRate;
+		float m_sRadian;
+		float m_eRadian;
+		Vec2<float>m_anchor;
+		RadialWipeGraphVertex(const Vec2<float>& arg_center, const Vec2<float>& arg_extRate, const float& arg_sRadian, const float& arg_eRadian, const Vec2<float>& arg_anchor)
+			:m_center(arg_center), m_extRate(arg_extRate), m_sRadian(arg_sRadian), m_eRadian(arg_eRadian), m_anchor(arg_anchor) {}
+	};
+
+	//パイプライン未生成
+	if (!RADIAL_WIPE_GRAPH_PIPELINE[BlendMode])
+	{
+		//パイプライン設定
+		static PipelineInitializeOption PIPELINE_OPTION(D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT, D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+		PIPELINE_OPTION.m_depthTest = false;
+
+		//シェーダー情報
+		static Shaders SHADERS;
+		SHADERS.m_vs = D3D12App::Instance()->CompileShader("resource/engine/DrawRadialWipeGraph.hlsl", "VSmain", "vs_6_4");
+		SHADERS.m_gs = D3D12App::Instance()->CompileShader("resource/engine/DrawRadialWipeGraph.hlsl", "GSmain", "gs_6_4");
+		SHADERS.m_ps = D3D12App::Instance()->CompileShader("resource/engine/DrawRadialWipeGraph.hlsl", "PSmain", "ps_6_4");
+
+		//インプットレイアウト
+		static std::vector<InputLayoutParam>INPUT_LAYOUT =
+		{
+			InputLayoutParam("CENTER",DXGI_FORMAT_R32G32_FLOAT),
+			InputLayoutParam("EXT_RATE",DXGI_FORMAT_R32G32_FLOAT),
+			InputLayoutParam("START_RADIAN",DXGI_FORMAT_R32_FLOAT),
+			InputLayoutParam("END_RADIAN",DXGI_FORMAT_R32_FLOAT),
+			InputLayoutParam("ANCHOR",DXGI_FORMAT_R32G32_FLOAT),
+		};
+
+		//ルートパラメータ
+		static std::vector<RootParam>ROOT_PARAMETER =
+		{
+			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"平行投影行列定数バッファ"),
+			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,"テクスチャリソース")
+		};
+
+		//レンダーターゲット描画先情報
+		std::vector<RenderTargetInfo>RENDER_TARGET_INFO = { RenderTargetInfo(D3D12App::Instance()->GetBackBuffFormat(), BlendMode) };
+		//パイプライン生成
+		RADIAL_WIPE_GRAPH_PIPELINE[BlendMode] = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, INPUT_LAYOUT, ROOT_PARAMETER, RENDER_TARGET_INFO, { WrappedSampler(true, false) });
+	}
+
+	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(RADIAL_WIPE_GRAPH_PIPELINE[BlendMode]);
+
+	if (RADIAL_WIPE_GRAPH_VERTEX_BUFF.size() < (s_DrawRadialWipeGraphCount + 1))
+	{
+		RADIAL_WIPE_GRAPH_VERTEX_BUFF.emplace_back(D3D12App::Instance()->GenerateVertexBuffer(sizeof(RadialWipeGraphVertex), 1, nullptr, ("DrawRadialWipeGraph -" + std::to_string(s_DrawRadialWipeGraphCount)).c_str()));
+	}
+
+	RadialWipeGraphVertex vertex(arg_center, arg_extRate, arg_startAngle, arg_endAngle, arg_anchor);
+	RADIAL_WIPE_GRAPH_VERTEX_BUFF[s_DrawRadialWipeGraphCount]->Mapping(&vertex);
+
+	KuroEngine::Instance()->Graphics().ObjectRender(RADIAL_WIPE_GRAPH_VERTEX_BUFF[s_DrawRadialWipeGraphCount],
+		{
+			{KuroEngine::Instance()->GetParallelMatProjBuff(),CBV},
+			{arg_tex,SRV }
+		}, 0.0f, 
+		BlendMode == AlphaBlendMode_Trans);
+
+	s_DrawRadialWipeGraphCount++;
 }
 
 void DrawFunc2D::DrawNumber2D(const int& Num, const Vec2<float>& Pos, const std::array<std::shared_ptr<TextureBuffer>, 10>& NumTex, const Vec2<float>& ExpRate,

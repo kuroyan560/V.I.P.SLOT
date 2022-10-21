@@ -24,6 +24,9 @@ class DrawFunc2D
 	//DrawRotaGraph
 	static int s_DrawRotaGraphCount;
 
+	//DrawRadialWipeGraph2D
+	static int s_DrawRadialWipeGraphCount;
+
 public:
 	//呼び出しカウントリセット
 	static void CountReset()
@@ -33,6 +36,7 @@ public:
 		s_DrawCircleCount = 0;
 		s_DrawExtendGraphCount = 0;
 		s_DrawRotaGraphCount = 0;
+		s_DrawRadialWipeGraphCount = 0;
 	}
 
 	/// <summary>
@@ -111,6 +115,25 @@ public:
 	static void DrawRotaGraph2D(const Vec2<float>& Center, const Vec2<float>& ExtRate, const float& Radian,
 		const std::shared_ptr<TextureBuffer>& Tex, const float& Alpha = 1.0f, const Vec2<float>& RotaCenterUV = { 0.5f,0.5f },
 		const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans, const Vec2<bool>& Mirror = { false,false });
+
+	/// <summary>
+	/// 放射状ワイプ画像描画
+	/// </summary>
+	/// <param name="arg_center">中心座標</param>
+	/// <param name="arg_extRate">拡大率</param>
+	/// <param name="arg_startAngle">放射状ワイプの始端角度</param>
+	/// <param name="arg_endAngle">放射状ワイプの終端角度</param>
+	/// <param name="arg_anchor">放射状ワイプのアンカーポイント</param>
+	/// <param name="arg_tex">テクスチャ</param>
+	/// <param name="BlendMode">ブレンドモード</param>
+	static void DrawRadialWipeGraph2D(
+		const Vec2<float>& arg_center,
+		const Vec2<float>& arg_extRate,
+		const Angle& arg_startAngle,
+		const Angle& arg_endAngle,
+		const Vec2<float>& arg_anchor,
+		const std::shared_ptr<TextureBuffer>& arg_tex,
+		const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans);
 
 	static void DrawNumber2D(const int& Num, const Vec2<float>& Pos, const std::array<std::shared_ptr<TextureBuffer>, 10>& NumTex, const Vec2<float>& ExpRate = { 1.0f,1.0f },
 		const float& LetterSpace = 0.0f, const HORIZONTAL_ALIGN& HorizontalAlign = HORIZONTAL_ALIGN::LEFT, const VERTICAL_ALIGN& VerticalAlign = VERTICAL_ALIGN::TOP);
