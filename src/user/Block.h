@@ -21,19 +21,19 @@ private:
 		Block* m_parent;
 		Timer m_timer;
 		Vec3<float>m_startScale;
-		bool m_finish;
+		bool m_isStart;
 
 	public:
 		Bomber(Block* arg_parent) :m_parent(arg_parent) {}
 		void Init() 
 		{ 
 			m_phase = NONE;
-			m_finish = false;
+			m_isStart = false;
 		}
 		void Update(const TimeScale& arg_timeScale);
 
 		void Explosion(Vec3<float>arg_startScale);
-		const bool& IsFinish()const { return m_finish; }
+		const bool& IsStart()const { return m_isStart; }
 
 	}m_explosion;
 
@@ -67,7 +67,7 @@ protected:
 	virtual void OnHitTrigger() = 0;
 
 	//死亡判定
-	virtual bool IsDead() = 0;
+	virtual bool IsDead()const = 0;
 
 	//爆発演出
 	void Explosion() { m_explosion.Explosion(m_transform.GetScale()); }
@@ -91,9 +91,10 @@ public:
 	void Draw(Transform& arg_transform, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam);
 
 	//消滅したか
-	bool IsDisappear() { return m_explosion.IsFinish(); }
+	virtual bool IsDisappear() = 0;
 
-	virtual TYPE GetType() = 0;
+	//ブロックの種別ゲッタ
+	virtual TYPE GetType()const = 0;
 
 	//コライダーゲッタ
 	std::shared_ptr<Collider>GetCollider() { return m_attachCollider.lock(); }
@@ -108,7 +109,7 @@ class CoinBlock : public Block
 	void OnUpdate()override {}
 	void OnDraw(Transform& arg_transform, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam)override;
 	void OnHitTrigger()override;
-	bool IsDead()override
+	bool IsDead()const override
 	{
 		return m_hp <= m_hitCount;
 	}
@@ -117,7 +118,9 @@ class CoinBlock : public Block
 public:
 	CoinBlock(int arg_hp = 1);
 
-	TYPE GetType()override { return COIN; }
+	bool IsDisappear()override { return isExplosion; }
+
+	TYPE GetType()const override { return COIN; }
 };
 
 class SlotBlock : public Block
@@ -131,13 +134,14 @@ class SlotBlock : public Block
 	void OnUpdate()override;
 	void OnDraw(Transform& arg_transform, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam)override;
 	void OnHitTrigger()override;
-	bool IsDead()override
+	bool IsDead()const override
 	{
 		return m_hp <= m_hitCount;
 	}
 public:
 	SlotBlock(const std::shared_ptr<SlotMachine>& arg_slotMachine, int arg_hp = 3);
 
-	TYPE GetType()override { return SLOT; }
+	bool IsDisappear()override { return IsDead(); }
 
+	TYPE GetType()const override { return SLOT; }
 };

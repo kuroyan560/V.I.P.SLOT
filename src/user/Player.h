@@ -16,6 +16,7 @@ class TimeScale;
 class Collider;
 class CollisionManager;
 class GameCamera;
+class CollisionSphere;
 
 class Player : public ColliderParentObject
 {
@@ -25,6 +26,9 @@ class Player : public ColliderParentObject
 	//入力による移動方向
 	Vec3<float>m_inputMoveVec;
 
+	//前フレームの座標
+	Vec3<float>m_prePos;
+
 	//移動
 	Vec3<float>m_move = { 0,0,0 };
 
@@ -33,6 +37,9 @@ class Player : public ColliderParentObject
 
 	//所持金
 	CoinVault m_coinVault;
+
+	//モデル全体を覆う球
+	std::shared_ptr<CollisionSphere>m_bodySphereCol;
 
 	//コライダー
 	std::shared_ptr<Collider>m_bodyCollider;
@@ -97,7 +104,7 @@ class Player : public ColliderParentObject
 
 		void OnCollisionEnter(
 			const Vec3<float>& arg_inter,
-			std::weak_ptr<Collider>arg_otherCollider)override {}
+			std::weak_ptr<Collider>arg_otherCollider)override {};
 
 		void OnCollisionTrigger(
 			const Vec3<float>& arg_inter,

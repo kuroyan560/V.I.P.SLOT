@@ -60,7 +60,7 @@ void CoinBlock::OnDraw(Transform& arg_transform, std::weak_ptr<LightManager>& ar
 
 void CoinBlock::OnHitTrigger()
 {
-	m_attachCollider.lock()->SetActive(false);
+	//m_attachCollider.lock()->SetActive(false);
 	this->Explosion();
 }
 
@@ -136,7 +136,6 @@ void Block::Bomber::Update(const TimeScale& arg_timeScale)
 			m_parent->OnExplosionFinishTrigger();
 			m_phase = NONE;
 			m_parent->m_transform.SetScale(m_startScale);
-			m_finish = true;
 		}
 		break;
 	}
@@ -145,8 +144,11 @@ void Block::Bomber::Update(const TimeScale& arg_timeScale)
 
 void Block::Bomber::Explosion(Vec3<float> arg_startScale)
 {
+	if (m_isStart)return;
+
 	static const float EXPAND_TIME = 10.0f;
 	m_phase = EXPAND;
 	m_startScale = arg_startScale;
 	m_timer.Reset(EXPAND_TIME);
+	m_isStart = true;
 }

@@ -33,7 +33,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	/*--- コライダー用プリミティブ生成 ---*/
 
 	//モデル全体を覆う球
-	std::shared_ptr<CollisionPrimitive>bodySphereCol = std::make_shared<CollisionSphere>(
+	m_bodySphereCol = std::make_shared<CollisionSphere>(
 		1.2f,
 		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -0.2f, 0.0f));
 
@@ -56,7 +56,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	{
 		std::vector<std::shared_ptr<CollisionPrimitive>>coverModelPrimitiveArray =
 		{
-			bodySphereCol
+			m_bodySphereCol
 		};
 		m_bodyCollider = std::make_shared<Collider>();
 		m_bodyCollider->Generate("Player_Body", "Player", coverModelPrimitiveArray);
@@ -105,6 +105,10 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	using namespace ConstParameter::Player;
 	using namespace ConstParameter::Environment;
 
+//前フレームの座標記録
+	auto pos = m_modelObj->m_transform.GetPos();
+	m_prePos = pos;
+
 //入力情報取得
 	const auto& input = *UsersInput::Instance();
 
@@ -143,7 +147,6 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	m_move += m_accel;
 
 	//移動量加算
-	auto pos = m_modelObj->m_transform.GetPos();
 	pos += m_move * arg_timeScale.GetTimeScale();
 
 	//加速度減衰
@@ -265,6 +268,7 @@ void Player::CallBackWithBlock::OnCollisionTrigger(const Vec3<float>& arg_inter,
 	AudioApp::Instance()->PlayWaveDelay(m_brokenSE, 3);
 
 	auto block = arg_otherCollider.lock()->GetParentObject<Block>();
+
 	auto accelVec = block->m_transform.GetPos() - m_parent->GetCenterPos();
 
 	const float ACCEL_POWER = 0.7f;
