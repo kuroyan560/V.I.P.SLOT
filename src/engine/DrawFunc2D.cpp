@@ -411,8 +411,8 @@ void DrawFunc2D::DrawRotaGraph2D(const Vec2<float>& Center, const Vec2<float>& E
 void DrawFunc2D::DrawRadialWipeGraph2D(
 	const Vec2<float>& arg_center,
 	const Vec2<float>& arg_extRate, 
-	const Angle& arg_startAngle, 
-	const Angle& arg_endAngle,
+	const float& arg_startRadian, 
+	const float& arg_endRadian,
 	const Vec2<float>& arg_anchor,
 	const std::shared_ptr<TextureBuffer>& arg_tex,
 	const AlphaBlendMode& BlendMode)
@@ -476,7 +476,7 @@ void DrawFunc2D::DrawRadialWipeGraph2D(
 		RADIAL_WIPE_GRAPH_VERTEX_BUFF.emplace_back(D3D12App::Instance()->GenerateVertexBuffer(sizeof(RadialWipeGraphVertex), 1, nullptr, ("DrawRadialWipeGraph -" + std::to_string(s_DrawRadialWipeGraphCount)).c_str()));
 	}
 
-	RadialWipeGraphVertex vertex(arg_center, arg_extRate, arg_startAngle, arg_endAngle, arg_anchor);
+	RadialWipeGraphVertex vertex(arg_center, arg_extRate, arg_startRadian, arg_endRadian, arg_anchor);
 	RADIAL_WIPE_GRAPH_VERTEX_BUFF[s_DrawRadialWipeGraphCount]->Mapping(&vertex);
 
 	KuroEngine::Instance()->Graphics().ObjectRender(RADIAL_WIPE_GRAPH_VERTEX_BUFF[s_DrawRadialWipeGraphCount],

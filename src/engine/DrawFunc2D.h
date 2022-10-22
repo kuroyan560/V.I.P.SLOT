@@ -129,8 +129,8 @@ public:
 	static void DrawRadialWipeGraph2D(
 		const Vec2<float>& arg_center,
 		const Vec2<float>& arg_extRate,
-		const Angle& arg_startAngle,
-		const Angle& arg_endAngle,
+		const float& arg_startRadian,
+		const float& arg_endRadian,
 		const Vec2<float>& arg_anchor,
 		const std::shared_ptr<TextureBuffer>& arg_tex,
 		const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans);
