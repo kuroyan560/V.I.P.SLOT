@@ -6,6 +6,7 @@
 #include"Vec.h"
 #include"ConstParameters.h"
 #include"Block.h"
+#include"Timer.h"
 class SlotBlock;
 class CoinBlock;
 class SlotMachine;
@@ -16,6 +17,7 @@ class Collider;
 class CollisionManager;
 class TexHitEffect;
 class TimeScale;
+class TextureBuffer;
 
 class StageMgr
 {
@@ -44,6 +46,15 @@ class StageMgr
 
 	//ブロック生成の確立
 	float m_generateBlockRate = 45.0f;
+
+	//地形クリア時間計測
+	Timer m_terrianClearTimer;
+	//地形クリア時間ゲージ画像
+	std::shared_ptr<TextureBuffer>m_terrianClearTimerGauge;
+	//地形クリア時間ゲージ位置
+	Vec2<float>m_terrianClearTimerGaugePos = { 640.0f,70.0f };
+	//地形クリア時間ゲージ拡大率
+	Vec2<float>m_terrianClearTimerGaugeExt = { 1.0f,1.0f };
 
 	void DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<CollisionManager>arg_collisionMgr);
 

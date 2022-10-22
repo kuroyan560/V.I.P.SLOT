@@ -8,6 +8,7 @@
 #include"CollisionManager.h"
 #include"TexHitEffect.h"
 #include"TimeScale.h"
+#include"DrawFunc2D.h"
 
 void StageMgr::DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
@@ -67,6 +68,8 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 		m_colliders.emplace_back(std::make_shared<Collider>());
 		m_colliders.back()->Generate("BlockCollider", "Block", colPrimitiveArray);
 	}
+
+	m_terrianClearTimerGauge = D3D12App::Instance()->GenerateTextureBuffer("resource/user/img/terrianTimeGauge.png");
 }
 
 void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>arg_collisionMgr)
@@ -132,6 +135,9 @@ void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>
 	}
 
 	m_hitEffect->Init();
+
+	//時間設定
+	m_terrianClearTimer.Reset(600.0f);
 }
 
 void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
@@ -154,6 +160,9 @@ void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>a
 	}
 
 	m_hitEffect->Update(arg_timeScale.GetTimeScale());
+
+	//地形クリア時間計測
+	m_terrianClearTimer.UpdateTimer(arg_timeScale.GetTimeScale());
 }
 
 void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
@@ -196,6 +205,16 @@ void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Came
 void StageMgr::EffectDraw(std::weak_ptr<Camera> arg_cam)
 {
 	m_hitEffect->Draw(arg_cam);
+
+	static float startRadian = Angle::ConvertToRadian(-90);
+	DrawFunc2D::DrawRadialWipeGraph2D(
+		m_terrianClearTimerGaugePos,
+		m_terrianClearTimerGaugeExt,
+		startRadian,
+		startRadian + Angle::ConvertToRadian(-360.0f * m_terrianClearTimer.GetInverseTimeRate()),
+		{ 0.5f,0.5f },
+		m_terrianClearTimerGauge
+	);
 }
 
 #include"imguiApp.h"
