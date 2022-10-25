@@ -51,18 +51,19 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 
 	//ブロックのコライダー生成
 	const float BOX_SIZE = 1.0f;
+	Vec3<ValueMinMax>box;
+	box.x.m_min = -BOX_SIZE;
+	box.y.m_min = -BOX_SIZE;
+	box.z.m_min = -BOX_SIZE;
+	box.x.m_max = BOX_SIZE;
+	box.y.m_max = BOX_SIZE;
+	box.z.m_max = BOX_SIZE;
+
 	for (int i = 0; i < MAX_BLOCK_NUM; ++i)
 	{
 		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
-		//colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(2.0f, Vec3<float>(0, 0, 0)));
-		Vec3<ValueMinMax>box;
-		box.x.m_min = -BOX_SIZE;
-		box.y.m_min = -BOX_SIZE;
-		box.z.m_min = -BOX_SIZE;
-		box.x.m_max = BOX_SIZE;
-		box.y.m_max = BOX_SIZE;
-		box.z.m_max = BOX_SIZE;
-		colPrimitiveArray.emplace_back(std::make_shared<CollisionAABB>(box));
+		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(1.0f, Vec3<float>(0, 0, 0)));
+		//colPrimitiveArray.emplace_back(std::make_shared<CollisionAABB>(box));
 
 		m_coinBlocks.emplace_back(std::make_shared<CoinBlock>());
 		m_colliders.emplace_back(std::make_shared<Collider>());
@@ -142,6 +143,9 @@ void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>
 
 void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
+	//すべてのコイン排出済か
+	bool isAllCoinEmit = true;
+
 	for (auto& blockArray : m_terrianBlockArray)
 	{
 		for (auto& block : blockArray)
@@ -150,6 +154,11 @@ void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>a
 			if (block == nullptr)continue;
 
 			block->Update(arg_timeScale);
+
+			if (block->GetType() == Block::COIN)
+			{
+				isAllCoinEmit = false;
+			}
 
 			if (block->IsDisappear())
 			{
@@ -161,8 +170,9 @@ void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>a
 
 	m_hitEffect->Update(arg_timeScale.GetTimeScale());
 
-	//地形クリア時間計測
-	m_terrianClearTimer.UpdateTimer(arg_timeScale.GetTimeScale());
+
+	//地形クリア時間経過か、全コイン排出で地形変更
+	if (m_terrianClearTimer.UpdateTimer(arg_timeScale.GetTimeScale()) || isAllCoinEmit)Init("", arg_collisionMgr);
 }
 
 void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
