@@ -9,6 +9,7 @@
 #include"TexHitEffect.h"
 #include"TimeScale.h"
 #include"DrawFunc2D.h"
+#include<vector>
 
 void StageMgr::DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
@@ -73,7 +74,7 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 	m_terrianClearTimerGauge = D3D12App::Instance()->GenerateTextureBuffer("resource/user/img/terrianTimeGauge.png");
 }
 
-void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>arg_collisionMgr)
+void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>arg_collisionMgr, int arg_slotBlockNum)
 {
 	using namespace ConstParameter::Environment;
 	using namespace ConstParameter::Stage;
@@ -113,8 +114,16 @@ void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>
 
 	//※本来ならファイルから地形読み込み
 
-	int coinBlockIdx = 0;
+	//スロットブロック位置
+	std::vector<Vec2<int>>slotBlockRandIdx(arg_slotBlockNum);
+	for (auto& idx : slotBlockRandIdx)
+	{
+		idx.x = KuroFunc::GetRand(m_blockNum.x - 1);
+		idx.y = KuroFunc::GetRand(m_blockNum.y - 1);
+	}
+
 	int slotBlockIdx = 0;
+	int coinBlockIdx = 0;
 	int colliderIdx = 0;
 
 	m_terrianBlockArray.resize(m_blockNum.y);
@@ -127,7 +136,16 @@ void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>
 
 			auto& block = m_terrianBlockArray[y][x];
 			initTransform.SetPos({ leftX + x * offset.x,topY - y * offset.y,FIELD_DEPTH_FIXED });
-			block = std::dynamic_pointer_cast<Block>(m_coinBlocks[coinBlockIdx++]);
+
+			auto itr = std::find(slotBlockRandIdx.begin(), slotBlockRandIdx.end(), Vec2<int>(x, y));
+			if (itr == slotBlockRandIdx.end())
+			{
+				block = std::dynamic_pointer_cast<Block>(m_coinBlocks[coinBlockIdx++]);
+			}
+			else
+			{
+				block = std::dynamic_pointer_cast<Block>(m_slotBlocks[slotBlockIdx++]);
+			}
 
 			//ブロック初期化、コライダーアタッチ
 			arg_collisionMgr.lock()->Register(m_colliders[colliderIdx]);

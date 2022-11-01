@@ -60,7 +60,7 @@ class StageMgr
 
 public:
 	StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine);
-	void Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>arg_collisionMgr);
+	void Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>arg_collisionMgr, int arg_slotBlockNum = 4);
 	void Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);
 	void EffectDraw(std::weak_ptr<Camera>arg_cam);
