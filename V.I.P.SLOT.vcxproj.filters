@@ -265,7 +265,7 @@
     <ClCompile Include="src\user\RenderTargetManager.cpp">
       <Filter>src\user</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\GameScene.cpp">
+    <ClCompile Include="src\user\InGameScene.cpp">
       <Filter>src\user\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\user\TitleScene.cpp">
@@ -336,6 +336,9 @@
     </ClCompile>
     <ClCompile Include="src\user\GameManager.cpp">
       <Filter>src\user\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\OutGameScene.cpp">
+      <Filter>src\user\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -555,7 +558,7 @@
     <ClInclude Include="src\user\RenderTargetManager.h">
       <Filter>src\user</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\GameScene.h">
+    <ClInclude Include="src\user\InGameScene.h">
       <Filter>src\user\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\user\TitleScene.h">
@@ -638,6 +641,9 @@
     </ClInclude>
     <ClInclude Include="src\user\GameManager.h">
       <Filter>src\user\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\OutGameScene.h">
+      <Filter>src\user\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -13,9 +13,6 @@ void TitleScene::OnInitialize()
 
 void TitleScene::OnUpdate()
 {
-	//デバッグ用
-	KuroEngine::Instance()->ChangeScene(1, m_sceneTrans);
-
 	//入力取得
 	auto input = UsersInput::Instance();
 	//上入力
@@ -33,7 +30,8 @@ void TitleScene::OnUpdate()
 	else if (0 < m_item && up)m_item = (ITEM)(m_item - 1);
 
 	//決定
-	if (enter)
+	//if (enter)
+	if (true)
 	{
 		switch (m_item)
 		{

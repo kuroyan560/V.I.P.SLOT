@@ -1,4 +1,4 @@
-#include "GameScene.h"
+#include "InGameScene.h"
 #include"Collider.h"
 #include"Player.h"
 #include"RenderTargetManager.h"
@@ -14,13 +14,16 @@
 #include"StageMgr.h"
 #include"GameManager.h"
 
-GameScene::GameScene()
+InGameScene::InGameScene()
 {
 	//コリジョンマネージャ生成
 	m_collisionMgr = std::make_shared<CollisionManager>();
 
+	//ゲームカメラ生成
+	m_gameCam = std::make_shared<GameCamera>();
+
 	//プレイヤー生成
-	m_player = std::make_shared<Player>(m_collisionMgr);
+	m_player = std::make_shared<Player>(m_collisionMgr, m_gameCam);
 
 	//スロットマシン生成
 	m_slotMachine = std::make_shared<SlotMachine>();
@@ -36,16 +39,13 @@ GameScene::GameScene()
 	//背景画像読み込み
 	m_backGround = D3D12App::Instance()->GenerateTextureBuffer("resource/user/img/backGround.png");
 
-	//ゲームカメラ生成
-	m_gameCam = std::make_shared<GameCamera>();
-
 	//ステージマネージャ生成
 	m_stageMgr = std::make_shared<StageMgr>(m_slotMachine);
 
-	m_player->Awake(m_gameCam);
+	Block::StaticAwake(m_player);
 }
 
-void GameScene::OnInitialize()
+void InGameScene::OnInitialize()
 {
 	auto gameMgr = GameManager::Instance();
 
@@ -62,7 +62,7 @@ void GameScene::OnInitialize()
 	m_stageMgr->Init("",m_collisionMgr);
 }
 
-void GameScene::OnUpdate()
+void InGameScene::OnUpdate()
 {
 	//デバッグ用
 	if (UsersInput::Instance()->KeyOnTrigger(DIK_I))
@@ -88,12 +88,13 @@ void GameScene::OnUpdate()
 	//クリアしたか
 	if (m_stageMgr->IsClear(m_player->GetCoinNum()))
 	{
-		KuroEngine::Instance()->ChangeScene(0, m_sceneTrans);
+		//アウトゲームへ
+		KuroEngine::Instance()->ChangeScene(2, m_sceneTrans);
 	}
 }
 
 
-void GameScene::OnDraw()
+void InGameScene::OnDraw()
 {
 	auto& rtMgr = *RenderTargetManager::Instance();
 
@@ -131,18 +132,21 @@ void GameScene::OnDraw()
 	m_stageMgr->EffectDraw(m_gameCam->GetFrontCam());
 }
 
-void GameScene::OnImguiDebug()
+void InGameScene::OnImguiDebug()
 {
 	ConstParameter::ImguiDebug();
 	m_stageMgr->ImguiDebug(m_collisionMgr);
 	m_slotMachine->ImguiDebug();
 	m_player->ImguiDebug();
+	m_collisionMgr->ImguiDebug();
 }
 
-void GameScene::OnFinalize()
+void InGameScene::OnFinalize()
 {
 	auto gameMgr = GameManager::Instance();
 
 	//ゲーム終了時のプレイヤーの状態を記録
 	gameMgr->UpdatePlayersInfo(m_player->GetCoinNum(), m_player->GetHp());
+
+	m_stageMgr->Finalize(m_collisionMgr);
 }

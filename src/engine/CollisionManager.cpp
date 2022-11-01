@@ -72,6 +72,27 @@ void CollisionManager::DebugDraw(Camera& Cam)
 	}
 }
 
+#include"ImguiApp.h"
+void CollisionManager::ImguiDebug()
+{
+	ImGui::Begin("CollisionManager");
+	static ImVec4 GRAY = ImVec4(0.0f, 0.0f, 0.0f, 0.2f);
+	static ImVec4 BLACK = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+	static ImVec4 RED = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+
+	int num = 0;
+	for (auto& c : m_colliderList)
+	{
+		ImVec4 textCol = c->m_isActive ? BLACK : GRAY;
+		if (c->m_isHit)
+		{
+			textCol = RED;
+		}
+		ImGui::TextColored(textCol, "%d - %s : { %s }", num++, c->m_name.c_str(), c->m_tag.c_str());
+	}
+	ImGui::End();
+}
+
 bool CollisionManager::RaycastHit(Vec3<float> arg_start, Vec3<float> arg_dir, RaycastHitInfo* arg_hitInfo, std::string arg_targetTag, float arg_maxDist)
 {
 	bool result = false;

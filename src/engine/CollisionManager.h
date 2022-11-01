@@ -33,6 +33,7 @@ public:
 
 	void Update();
 	void DebugDraw(Camera& Cam);
+	void ImguiDebug();
 
 	/// <summary>
 	/// レイを発射して登録されている全てのコライダーと当たり判定

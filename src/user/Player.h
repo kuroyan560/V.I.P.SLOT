@@ -78,11 +78,10 @@ class Player : public ColliderParentObject
 			std::weak_ptr<Collider>arg_otherCollider)override;
 
 	public:
-		DamagedCallBack(Player* arg_player, int arg_hitStopSE, int arg_damageSE)
-			:m_parent(arg_player), m_hitStopSE(arg_hitStopSE), m_damageSE(arg_damageSE) {}
-		void Init(std::weak_ptr<GameCamera>arg_cam)
+		DamagedCallBack(Player* arg_player, std::weak_ptr<GameCamera>arg_cam, int arg_hitStopSE, int arg_damageSE)
+			:m_parent(arg_player), m_cam(arg_cam), m_hitStopSE(arg_hitStopSE), m_damageSE(arg_damageSE) {}
+		void Init()
 		{
-			m_cam = arg_cam;
 			m_invincibleTimer.Reset(0);
 			m_hitStopTimer.Reset(0);
 			m_isDraw = true;
@@ -120,10 +119,7 @@ class Player : public ColliderParentObject
 	INPUT_CONFIG m_inputConfig = INPUT_CONFIG::CONTROLLER;
 	
 public:
-	Player(std::weak_ptr<CollisionManager>arg_collisionMgr);
-
-	//起動時に呼ぶ
-	void Awake(std::weak_ptr<GameCamera>arg_cam);
+	Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<GameCamera>arg_cam);
 
 	//初期化
 	void Init(int arg_initHp,int arg_initCoinNum);
@@ -133,6 +129,12 @@ public:
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 	//エフェクト描画
 	void EffectDraw(std::weak_ptr<Camera>arg_cam);
+
+	//コインゲット関数
+	void GetCoin(int arg_coinNum)
+	{
+		m_coinVault.Add(arg_coinNum);
+	}
 
 	//imguiデバッグ
 	void ImguiDebug();

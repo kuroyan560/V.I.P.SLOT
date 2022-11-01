@@ -11,7 +11,7 @@
 #include"GameCamera.h"
 #include"Block.h"
 
-Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
+Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<GameCamera>arg_cam)
 {
 	using namespace ConstParameter::Player;
 
@@ -44,7 +44,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 
 	/*--- コールバック生成 ---*/
 	//被ダメージコールバック
-	m_damegedCallBack = std::make_shared<DamagedCallBack>(this, onDamagedHitStopSE, onDamagedSE);
+	m_damegedCallBack = std::make_shared<DamagedCallBack>(this, arg_cam, onDamagedHitStopSE, onDamagedSE);
 	//ジャンプ権回復コールバック
 	m_callBackWithBlock = std::make_shared<CallBackWithBlock>(this, arg_collisionMgr, blockBrokenSE);
 
@@ -74,12 +74,6 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	arg_collisionMgr.lock()->Register(colliders);
 }
 
-void Player::Awake(std::weak_ptr<GameCamera> arg_cam)
-{
-	//被ダメージコールバック
-	m_damegedCallBack->Init(arg_cam);
-}
-
 void Player::Init(int arg_initHp, int arg_initCoinNum)
 {
 	using namespace ConstParameter::Player;
@@ -101,6 +95,9 @@ void Player::Init(int arg_initHp, int arg_initCoinNum)
 
 	//加速度
 	m_accel = { 0,0,0 };
+
+	//被ダメージコールバック
+	m_damegedCallBack->Init();
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)

@@ -12,7 +12,7 @@ class ObjectManager;
 class CollisionManager;
 class StageMgr;
 
-class GameScene : public BaseScene
+class InGameScene : public BaseScene
 {
 	SceneTransition m_sceneTrans;
 
@@ -46,7 +46,7 @@ class GameScene : public BaseScene
 	std::shared_ptr<StageMgr>m_stageMgr;
 
 public:
-	GameScene();
+	InGameScene();
 	void OnInitialize()override;
 	void OnUpdate()override;
 	void OnDraw()override;
