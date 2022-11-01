@@ -4,6 +4,9 @@
 class TitleScene : public BaseScene
 {
 	SceneTransition m_sceneTrans;
+
+	enum ITEM { GAME_START, EXIT, NUM };
+	ITEM m_item = GAME_START;
 public:
 	TitleScene();
 	void OnInitialize()override;
