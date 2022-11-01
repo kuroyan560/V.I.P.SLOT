@@ -12,6 +12,7 @@
 #include"ObjectManager.h"
 #include"CollisionManager.h"
 #include"StageMgr.h"
+#include"GameManager.h"
 
 GameScene::GameScene()
 {
@@ -40,12 +41,16 @@ GameScene::GameScene()
 
 	//ステージマネージャ生成
 	m_stageMgr = std::make_shared<StageMgr>(m_slotMachine);
+
+	m_player->Awake(m_gameCam);
 }
 
 void GameScene::OnInitialize()
 {
+	auto gameMgr = GameManager::Instance();
+
 	//プレイヤー初期化
-	m_player->Init(m_gameCam);
+	m_player->Init(gameMgr->GetPlayerHp(), gameMgr->GetCoinNum());
 
 	//スロットマシン初期化
 	m_slotMachine->Init();
@@ -79,6 +84,12 @@ void GameScene::OnUpdate()
 
 	//ステージマネージャ
 	m_stageMgr->Update(m_timeScale,m_collisionMgr);
+
+	//クリアしたか
+	if (m_stageMgr->IsClear(m_player->GetCoinNum()))
+	{
+		KuroEngine::Instance()->ChangeScene(0, m_sceneTrans);
+	}
 }
 
 
@@ -125,8 +136,13 @@ void GameScene::OnImguiDebug()
 	ConstParameter::ImguiDebug();
 	m_stageMgr->ImguiDebug(m_collisionMgr);
 	m_slotMachine->ImguiDebug();
+	m_player->ImguiDebug();
 }
 
 void GameScene::OnFinalize()
 {
+	auto gameMgr = GameManager::Instance();
+
+	//ゲーム終了時のプレイヤーの状態を記録
+	gameMgr->UpdatePlayersInfo(m_player->GetCoinNum(), m_player->GetHp());
 }

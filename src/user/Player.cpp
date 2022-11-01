@@ -74,12 +74,21 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	arg_collisionMgr.lock()->Register(colliders);
 }
 
-void Player::Init(std::weak_ptr<GameCamera>arg_cam)
+void Player::Awake(std::weak_ptr<GameCamera> arg_cam)
+{
+	//被ダメージコールバック
+	m_damegedCallBack->Init(arg_cam);
+}
+
+void Player::Init(int arg_initHp, int arg_initCoinNum)
 {
 	using namespace ConstParameter::Player;
 
 	//HP初期化
-	m_hp = MAX_HP;
+	m_hp = arg_initHp;
+
+	//所持金リセット
+	m_coinVault.Set(arg_initCoinNum);
 
 	//スタート位置に移動
 	m_modelObj->m_transform.SetPos(INIT_POS);
@@ -92,12 +101,6 @@ void Player::Init(std::weak_ptr<GameCamera>arg_cam)
 
 	//加速度
 	m_accel = { 0,0,0 };
-
-	//所持金リセット
-	m_coinVault.Set(300000);
-
-	//被ダメージコールバック
-	m_damegedCallBack->Init(arg_cam);
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
@@ -191,6 +194,15 @@ void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>
 
 void Player::EffectDraw(std::weak_ptr<Camera> arg_cam)
 {
+}
+
+#include"imguiApp.h"
+void Player::ImguiDebug()
+{
+	ImGui::Begin("Player");
+	ImGui::Text("Coin : { %d }", m_coinVault.GetNum());
+	ImGui::Text("Hp : { %d }", m_hp);
+	ImGui::End();
 }
 
 Vec3<float> Player::GetCenterPos() const

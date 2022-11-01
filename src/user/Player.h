@@ -121,8 +121,12 @@ class Player : public ColliderParentObject
 	
 public:
 	Player(std::weak_ptr<CollisionManager>arg_collisionMgr);
+
+	//起動時に呼ぶ
+	void Awake(std::weak_ptr<GameCamera>arg_cam);
+
 	//初期化
-	void Init(std::weak_ptr<GameCamera>arg_cam);
+	void Init(int arg_initHp,int arg_initCoinNum);
 	//更新
 	void Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale);
 	//描画
@@ -130,6 +134,13 @@ public:
 	//エフェクト描画
 	void EffectDraw(std::weak_ptr<Camera>arg_cam);
 
+	//imguiデバッグ
+	void ImguiDebug();
+
 	//プレイヤーのモデル中央に合わせた座標ゲッタ
 	Vec3<float>GetCenterPos()const;
+
+	//ゲッタ
+	const int GetCoinNum()const { return m_coinVault.GetNum(); }
+	const int GetHp()const { return m_hp; }
 };

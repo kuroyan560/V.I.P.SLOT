@@ -1,5 +1,6 @@
 #include "TitleScene.h"
 #include<magic_enum.h>
+#include"GameManager.h"
 
 TitleScene::TitleScene()
 {
@@ -12,6 +13,9 @@ void TitleScene::OnInitialize()
 
 void TitleScene::OnUpdate()
 {
+	//デバッグ用
+	KuroEngine::Instance()->ChangeScene(1, m_sceneTrans);
+
 	//入力取得
 	auto input = UsersInput::Instance();
 	//上入力
@@ -35,6 +39,7 @@ void TitleScene::OnUpdate()
 		{
 		case GAME_START:
 			KuroEngine::Instance()->ChangeScene(1, m_sceneTrans);
+			GameManager::Instance()->FlowStart();
 			break;
 		case EXIT:
 			KuroEngine::Instance()->GameEnd();

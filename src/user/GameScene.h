@@ -14,6 +14,8 @@ class StageMgr;
 
 class GameScene : public BaseScene
 {
+	SceneTransition m_sceneTrans;
+
 	//ƒvƒŒƒCƒ„[
 	std::shared_ptr<Player>m_player;
 
