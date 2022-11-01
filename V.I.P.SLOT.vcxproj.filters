@@ -334,6 +334,9 @@
     <ClCompile Include="src\user\TexHitEffect.cpp">
       <Filter>src\user</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\GameManager.cpp">
+      <Filter>src\user\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -632,6 +635,9 @@
     </ClInclude>
     <ClInclude Include="src\user\TexHitEffect.h">
       <Filter>src\user</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\GameManager.h">
+      <Filter>src\user\Game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

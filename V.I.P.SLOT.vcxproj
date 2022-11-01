@@ -225,6 +225,7 @@
     <ClCompile Include="src\user\CoinObjectManager.cpp" />
     <ClCompile Include="src\user\Coins.cpp" />
     <ClCompile Include="src\user\ConstParameters.cpp" />
+    <ClCompile Include="src\user\GameManager.cpp" />
     <ClCompile Include="src\user\GameObject.cpp" />
     <ClCompile Include="src\user\ObjectController.cpp" />
     <ClCompile Include="src\user\EnemyKillCoinEffect.cpp" />
@@ -325,6 +326,7 @@
     <ClInclude Include="src\user\Coins.h" />
     <ClInclude Include="src\user\CoinVault.h" />
     <ClInclude Include="src\user\ConstParameters.h" />
+    <ClInclude Include="src\user\GameManager.h" />
     <ClInclude Include="src\user\GameObject.h" />
     <ClInclude Include="src\user\ObjectBreed.h" />
     <ClInclude Include="src\user\ObjectController.h" />
