@@ -124,6 +124,7 @@ void GameScene::OnImguiDebug()
 {
 	ConstParameter::ImguiDebug();
 	m_stageMgr->ImguiDebug(m_collisionMgr);
+	m_slotMachine->ImguiDebug();
 }
 
 void GameScene::OnFinalize()

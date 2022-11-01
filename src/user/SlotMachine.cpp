@@ -77,28 +77,71 @@ void SlotMachine::Init()
 	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Init(nullptr, testPatternArray);
 
 	//レバー初期化
-	m_lever = -1;
+	m_lever = REEL::NONE;
 
-	//最後のリールを止めてからの時間計測用タイマーリセット
-	m_slotWaitTimer.Reset(ConstParameter::Slot::SLOT_WAIT_TIME);
+	//スロット回転予約リセット
+	m_startSlotCount = 0;
 }
-
-//デバッグ用
-#include"UsersInput.h"
 
 void SlotMachine::Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_timeScale)
 {
-	//リール更新
-	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Update(arg_timeScale.GetTimeScale());
+	const float timeScale = arg_timeScale.GetTimeScale();
 
-	//全リール停止済
-	if (REEL::RIGHT < m_lever)
+	//リール更新
+	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Update(timeScale);
+
+	//時間
+	const std::array<float, AUTO_OPERATE_NUM>AUTO_OPERATE_TIME =
 	{
-		//次のスロット回転可能に
-		if (m_slotWaitTimer.UpdateTimer(arg_timeScale.GetTimeScale()))
+		120.0f,
+		60.0f,
+		120.0f
+	};
+
+	//停止中
+	if (m_lever == REEL::NONE)
+	{
+		//スロット予約がある
+		if (m_startSlotCount)
 		{
-			m_lever = -1;
-			m_slotWaitTimer.Reset();
+			//予約数消費
+			m_startSlotCount--;
+			//スロットスタート
+			Lever();
+			//最初のリール停止までのタイマーセット
+			m_autoTimer[AUTO_OPERATE::UNTIL_FIRST_REEL].Reset(AUTO_OPERATE_TIME[AUTO_OPERATE::UNTIL_FIRST_REEL]);
+		}
+	}
+	//稼働中
+	else if(m_lever < REEL::NUM)
+	{
+		m_autoTimer[AUTO_OPERATE::UNTIL_FIRST_REEL].UpdateTimer(timeScale);
+		m_autoTimer[AUTO_OPERATE::REEL_STOP_SPAN].UpdateTimer(timeScale);
+
+		//リール停止
+		if (m_autoTimer[AUTO_OPERATE::UNTIL_FIRST_REEL].IsTimeUpOnTrigger()
+			|| m_autoTimer[AUTO_OPERATE::REEL_STOP_SPAN].IsTimeUpOnTrigger())
+		{
+			if (Lever())
+			{
+				//最後のリール停止
+				m_autoTimer[AUTO_OPERATE::AFTER_STOP_ALL_REEL].Reset(
+					AUTO_OPERATE_TIME[AUTO_OPERATE::AFTER_STOP_ALL_REEL]);
+			}
+			else
+			{
+				//次のリールへ
+				m_autoTimer[AUTO_OPERATE::REEL_STOP_SPAN].Reset(
+					AUTO_OPERATE_TIME[AUTO_OPERATE::REEL_STOP_SPAN]);
+			}
+		}
+
+	}
+	else
+	{
+		if (m_autoTimer[AUTO_OPERATE::AFTER_STOP_ALL_REEL].UpdateTimer(timeScale))
+		{
+			m_lever = REEL::NONE;
 		}
 	}
 }
@@ -110,10 +153,18 @@ void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<G
 	DrawFunc3D::DrawNonShadingModel(m_megaPhoneObj, *arg_gameCam.lock()->GetBackCam(), 1.0f, AlphaBlendMode_None);
 }
 
-void SlotMachine::Lever()
+#include"imguiApp.h"
+void SlotMachine::ImguiDebug()
+{
+	ImGui::Begin("SlotMachine");
+	ImGui::Text("StartSlotCount : %d", m_startSlotCount);
+	ImGui::End();
+}
+
+bool SlotMachine::Lever()
 {
 	//スロット回転開始
-	if (m_lever == -1)
+	if (m_lever == REEL::NONE)
 	{
 		for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Start();
 		AudioApp::Instance()->PlayWaveDelay(m_spinStartSE);
@@ -130,6 +181,14 @@ void SlotMachine::Lever()
 		{
 			//効果を確認して演出の処理
 			SlotPerform(m_reels[REEL::LEFT].GetNowPattern());
+			return true;
 		}
 	}
+	return false;
+}
+
+void SlotMachine::Booking()
+{
+	//スロット予約
+	++m_startSlotCount;
 }

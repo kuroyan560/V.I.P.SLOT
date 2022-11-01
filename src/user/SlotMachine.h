@@ -25,7 +25,7 @@ class SlotMachine
 	std::shared_ptr<ModelObject>m_megaPhoneObj;
 
 	//リール
-	enum REEL { LEFT, CENTER, RIGHT, NUM };
+	enum REEL { LEFT, CENTER, RIGHT, NUM, NONE = -1 };
 	const std::array<std::string, REEL::NUM>REEL_MATERIAL_NAME =
 	{
 		"Reel_Left","Reel_Center","Reel_Right"
@@ -34,8 +34,6 @@ class SlotMachine
 
 	//スロットのレバーフラグ（StartかStopか）
 	int m_lever;
-	//最後のリールを止めてからの時間計測
-	Timer m_slotWaitTimer;
 
 	//サウンド
 	int m_spinStartSE;	//回転スタート
@@ -44,11 +42,27 @@ class SlotMachine
 	//絵柄の定義クラス
 	PatternManager m_patternMgr;
 
+	//スロット回転予約
+	int m_startSlotCount = 0;
+
+	enum AUTO_OPERATE
+	{
+		UNTIL_FIRST_REEL,	//最初のリール停止までの時間
+		REEL_STOP_SPAN,	//リールごとの停止までの時間
+		AFTER_STOP_ALL_REEL,	//全リール停止後の待ち時間
+		AUTO_OPERATE_NUM
+	};
+	//自動操作タイマー
+	std::array<Timer, AUTO_OPERATE_NUM> m_autoTimer;
+
 	//絵柄を確認して全て一緒なら効果発動
 	bool CheckReelPattern();
 	//スロットの結果から演出を選ぶ
 	void SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern);
 	
+	//全リールが停止中か
+	bool IsStop()const { return m_lever == REEL::NONE; }
+
 public:
 	SlotMachine();
 	//初期化
@@ -57,7 +71,12 @@ public:
 	void Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_timeScale);
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<GameCamera>arg_gameCam);
+	//imguiデバッグ
+	void ImguiDebug();
 
-	//レバー操作
-	void Lever();
+	//レバー操作（絵柄発動でtrueを返す）
+	bool Lever();
+
+	//スロット予約
+	void Booking();
 };
