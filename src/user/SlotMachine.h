@@ -18,6 +18,10 @@ class Player;
 
 class SlotMachine
 {
+public:
+	enum REEL { LEFT, CENTER, RIGHT, NUM, NONE = -1 };
+
+private:
 	//スロットマシン
 	std::shared_ptr<ModelObject>m_slotMachineObj;
 
@@ -25,7 +29,6 @@ class SlotMachine
 	std::shared_ptr<ModelObject>m_megaPhoneObj;
 
 	//リール
-	enum REEL { LEFT, CENTER, RIGHT, NUM, NONE = -1 };
 	const std::array<std::string, REEL::NUM>REEL_MATERIAL_NAME =
 	{
 		"Reel_Left","Reel_Center","Reel_Right"
@@ -66,7 +69,7 @@ class SlotMachine
 public:
 	SlotMachine();
 	//初期化
-	void Init();
+	void Init(	);
 	//更新
 	void Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_timeScale);
 	//描画
@@ -79,4 +82,7 @@ public:
 
 	//スロット予約
 	void Booking();
+
+	//リール設定
+	void ReelSet(REEL arg_which, std::shared_ptr<TextureBuffer>& arg_reelTex, std::vector<ConstParameter::Slot::PATTERN>& arg_patternArray);
 };

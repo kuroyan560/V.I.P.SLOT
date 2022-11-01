@@ -10,6 +10,7 @@
 #include"TimeScale.h"
 #include"DrawFunc2D.h"
 #include<vector>
+#include"SlotMachine.h"
 
 void StageMgr::DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
@@ -22,6 +23,8 @@ void StageMgr::DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<C
 StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 {
 	using namespace ConstParameter::Stage;
+
+	m_slotMachine = arg_slotMachine;
 
 	for (auto& b : m_slotBlocks)
 	{
@@ -74,7 +77,7 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 	m_terrianClearTimerGauge = D3D12App::Instance()->GenerateTextureBuffer("resource/user/img/terrianTimeGauge.png");
 }
 
-void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>arg_collisionMgr, int arg_slotBlockNum)
+void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	using namespace ConstParameter::Environment;
 	using namespace ConstParameter::Stage;
@@ -112,10 +115,20 @@ void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>
 	Transform initTransform;
 	initTransform.SetScale({ scale.x,scale.y,1.0f });
 
-	//※本来ならファイルから地形読み込み
+//※以下、本来ならファイルから読み込み
+	//スロットリール交換
+	//m_slotMachine.lock()->ReelSet(SlotMachine::LEFT, );
+	//m_slotMachine.lock()->ReelSet(SlotMachine::CENTER, );
+	//m_slotMachine.lock()->ReelSet(SlotMachine::RIGHT, );
+
+	//コインノルマ
+	m_norma = 10;
+
+	//スロットポップ数
+	int slotBlockNum = 4;
 
 	//スロットブロック位置
-	std::vector<Vec2<int>>slotBlockRandIdx(arg_slotBlockNum);
+	std::vector<Vec2<int>>slotBlockRandIdx(slotBlockNum);
 	for (auto& idx : slotBlockRandIdx)
 	{
 		idx.x = KuroFunc::GetRand(m_blockNum.x - 1);
@@ -153,9 +166,7 @@ void StageMgr::Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>
 		}
 	}
 
-	m_hitEffect->Init();
-
-	//時間設定
+	//地形クリア時間設定
 	m_terrianClearTimer.Reset(600.0f);
 }
 
@@ -230,6 +241,12 @@ void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Came
 		DrawFunc3D::DrawNonShadingModel(m_emptyCoinBlockModel, emptyCoinBlockTransformArray, *arg_cam.lock(), AlphaBlendMode_None);
 }
 
+void StageMgr::Finalize()
+{
+	//ヒットエフェクト初期化
+	m_hitEffect->Init();
+}
+
 void StageMgr::EffectDraw(std::weak_ptr<Camera> arg_cam)
 {
 	m_hitEffect->Draw(arg_cam);
@@ -249,6 +266,10 @@ void StageMgr::EffectDraw(std::weak_ptr<Camera> arg_cam)
 void StageMgr::ImguiDebug(std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	ImGui::Begin("StageMgr");
+
+	ImGui::Text("Norma : { %d }", m_norma);
+
+	ImGui::Separator();
 
 	bool changeRate = ImGui::DragFloat("BlockGenerateRate", &m_generateBlockRate, 0.5f, 0.0f, 100.0f);
 

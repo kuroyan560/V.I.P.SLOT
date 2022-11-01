@@ -60,11 +60,9 @@ SlotMachine::SlotMachine()
 	//サウンド読み込み
 	m_spinStartSE = AudioApp::Instance()->LoadAudio("resource/user/sound/slot_start.wav");
 	m_reelStopSE = AudioApp::Instance()->LoadAudio("resource/user/sound/slot_stop.wav");
-}
 
-void SlotMachine::Init()
-{
-	//デバッグ用
+	//リール初期絵柄セット（デバッグ用、何も効果なし）
+		//デバッグ用
 	using PATTERN = ConstParameter::Slot::PATTERN;
 	std::vector<PATTERN>testPatternArray;
 	testPatternArray.resize(20);
@@ -74,8 +72,11 @@ void SlotMachine::Init()
 	}
 
 	//リール初期化
-	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Init(nullptr, testPatternArray);
+	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].SetPattern(nullptr, testPatternArray);
+}
 
+void SlotMachine::Init()
+{
 	//レバー初期化
 	m_lever = REEL::NONE;
 
@@ -191,4 +192,11 @@ void SlotMachine::Booking()
 {
 	//スロット予約
 	++m_startSlotCount;
+}
+
+void SlotMachine::ReelSet(REEL arg_which,
+	std::shared_ptr<TextureBuffer>& arg_reelTex,
+	std::vector<ConstParameter::Slot::PATTERN>& arg_patternArray)
+{
+	m_reels[arg_which].SetPattern(arg_reelTex, arg_patternArray);
 }

@@ -21,6 +21,9 @@ class TextureBuffer;
 
 class StageMgr
 {
+	//スロットマシン参照
+	std::weak_ptr<SlotMachine>m_slotMachine;
+
 	//同時間に存在するスロットブロックの最大数
 	static const int SLOT_BLOCK_MAX = 4;
 	//スロットブロックインスタンス
@@ -31,6 +34,9 @@ class StageMgr
 	std::vector<std::shared_ptr<CoinBlock>>m_coinBlocks;
 	std::shared_ptr<Model>m_coinBlockModel;
 	std::shared_ptr<Model>m_emptyCoinBlockModel;
+
+	//コインノルマ
+	int m_norma;
 
 	//ヒットエフェクト
 	std::shared_ptr<TexHitEffect>m_hitEffect;
@@ -60,10 +66,18 @@ class StageMgr
 
 public:
 	StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine);
-	void Init(std::string arg_mapFilePath, std::weak_ptr<CollisionManager>arg_collisionMgr, int arg_slotBlockNum = 4);
+	void Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);
+	void Finalize();
+
 	void EffectDraw(std::weak_ptr<Camera>arg_cam);
 
 	void ImguiDebug(std::weak_ptr<CollisionManager>arg_collisionMgr);
+
+	//クリアしたか
+	bool IsClear(const int& arg_playersCoinNum)
+	{
+		return m_norma <= arg_playersCoinNum;
+	}
 };

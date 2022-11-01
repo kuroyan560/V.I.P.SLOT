@@ -15,7 +15,16 @@ void Reel::Attach(ModelMesh* arg_reelMesh)
 	}
 }
 
-void Reel::Init(std::shared_ptr<TextureBuffer>arg_reelTex, std::vector<PATTERN>arg_patternArray)
+void Reel::SetPattern(std::shared_ptr<TextureBuffer> arg_reelTex, std::vector<PATTERN> arg_patternArray)
+{
+	//リールのテクスチャ
+	if (arg_reelTex)m_meshPtr->material->texBuff[COLOR_TEX] = arg_reelTex;
+
+	//絵柄の配列
+	m_patternArray = arg_patternArray;
+}
+
+void Reel::Init()
 {
 	//リールのメッシュが見つけられていない
 	if (m_meshPtr == nullptr)
@@ -23,12 +32,6 @@ void Reel::Init(std::shared_ptr<TextureBuffer>arg_reelTex, std::vector<PATTERN>a
 		printf("The reel hasn't found its mesh pointer.It is nullptr.");
 		assert(0);
 	}
-
-	//リールのテクスチャ指定
-	if (arg_reelTex)m_meshPtr->material->texBuff[COLOR_TEX] = arg_reelTex;
-
-	//絵柄の数指定
-	m_patternArray = arg_patternArray;
 
 	//回転量リセット
 	m_vOffset = 0.0f;

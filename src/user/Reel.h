@@ -47,8 +47,11 @@ private:
 public:
 	//リールメッシュアタッチ
 	void Attach(ModelMesh* arg_reelMesh);
+	//絵柄セット
+	void SetPattern(std::shared_ptr<TextureBuffer>arg_reelTex = nullptr, std::vector<PATTERN>arg_patternArray = {});
+
 	//初期化
-	void Init(std::shared_ptr<TextureBuffer>arg_reelTex = nullptr, std::vector<PATTERN>arg_patternArray = {});
+	void Init();
 	//更新（回転）
 	void Update(float arg_timeScale);
 
