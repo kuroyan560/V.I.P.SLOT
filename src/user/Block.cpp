@@ -5,6 +5,9 @@
 #include"Collider.h"
 #include"TexHitEffect.h"
 #include"TimeScale.h"
+#include"Player.h"
+
+std::weak_ptr<Player>Block::s_player;
 
 void Block::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
 {
@@ -15,10 +18,11 @@ void Block::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Colli
 	if (this->IsDead())
 	{
 		m_explosion.Explosion(m_transform.GetScale());
+		m_collider->SetActive(false);
 	}
 }
 
-void Block::Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_attachCollider, const std::shared_ptr<TexHitEffect>& arg_hitEffect)
+void Block::Init(Transform& arg_initTransform, const std::shared_ptr<TexHitEffect>& arg_hitEffect)
 {
 	//初期化トランスフォームの記録と適用
 	m_initTransform = arg_initTransform;
@@ -28,19 +32,21 @@ void Block::Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_at
 	//叩かれた回数リセット
 	m_hitCount = 0;
 
-	//アタッチされたコライダーを記録
-	m_attachCollider = arg_attachCollider;
-	arg_attachCollider->SetParentObject(this);
-	arg_attachCollider->SetParentTransform(&m_transform);
-	arg_attachCollider->SetCallBack("Player", this);
-	arg_attachCollider->SetActive(true);
-
 	//ヒットエフェクトアタッチ
 	m_hitEffect = arg_hitEffect;
 
 	OnInit();
 
 	m_explosion.Init();
+	m_collider->SetActive(true);
+}
+
+Block::Block(std::shared_ptr<Collider>arg_origin) :m_explosion(this)
+{
+	m_collider = std::make_shared<Collider>(arg_origin->Clone(&m_transform, this));
+	m_collider->SetParentObject(this);
+	m_collider->SetParentTransform(&m_transform);
+	m_collider->SetCallBack("Player", this);
 }
 
 void Block::Update(const TimeScale& arg_timeScale)
@@ -60,12 +66,12 @@ void CoinBlock::OnDraw(Transform& arg_transform, std::weak_ptr<LightManager>& ar
 
 void CoinBlock::OnHitTrigger()
 {
-	//m_attachCollider.lock()->SetActive(false);
 	this->Explosion();
+	s_player.lock()->GetCoin(1);
 }
 
-CoinBlock::CoinBlock(int arg_hp)
-	:m_hp(arg_hp)
+CoinBlock::CoinBlock(std::shared_ptr<Collider>arg_origin, int arg_hp)
+	:Block(arg_origin), m_hp(arg_hp)
 {
 
 }
@@ -87,12 +93,11 @@ void SlotBlock::OnHitTrigger()
 	if (IsDead())
 	{
 		m_slotMachinePtr.lock()->Lever();
-		m_attachCollider.lock()->SetActive(false);
 	}
 }
 
-SlotBlock::SlotBlock(const std::shared_ptr<SlotMachine>& arg_slotMachine, int arg_hp)
-	:m_slotMachinePtr(arg_slotMachine), m_hp(arg_hp)
+SlotBlock::SlotBlock(std::shared_ptr<Collider>arg_origin, const std::shared_ptr<SlotMachine>& arg_slotMachine, int arg_hp)
+	:Block(arg_origin), m_slotMachinePtr(arg_slotMachine), m_hp(arg_hp)
 {
 }
 

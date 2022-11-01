@@ -11,6 +11,7 @@ class LightManager;
 class Collider;
 class TexHitEffect;
 class TimeScale;
+class Player;
 
 class Block : public CollisionCallBack, public ColliderParentObject
 {
@@ -46,8 +47,10 @@ private:
 		std::weak_ptr<Collider>arg_otherCollider)override;
 
 protected:
+	static std::weak_ptr<Player>s_player;
+
 	//コライダー
-	std::weak_ptr<Collider>m_attachCollider;
+	std::shared_ptr<Collider>m_collider;
 	//初期化時のトランスフォーム
 	Transform m_initTransform;
 	//叩かれた回数
@@ -74,17 +77,20 @@ protected:
 	virtual void OnExplosionFinishTrigger() {};
 
 public:
+	static void StaticAwake(std::weak_ptr<Player>arg_player)
+	{
+		s_player = arg_player;
+	}
+
 	//トランスフォーム
 	Transform m_transform;
 	enum TYPE { COIN, SLOT, NUM };
 
-	Block() :m_explosion(this)
-	{
-	}
+	Block(std::shared_ptr<Collider>arg_origin);
 
 	virtual ~Block() {}
 	//初期化
-	void Init(Transform& arg_initTransform, std::shared_ptr<Collider>& arg_attachCollider, const std::shared_ptr<TexHitEffect>& arg_hitEffect);
+	void Init(Transform& arg_initTransform, const std::shared_ptr<TexHitEffect>& arg_hitEffect);
 	//更新
 	void Update(const TimeScale& arg_timeScale);
 	//描画
@@ -97,7 +103,7 @@ public:
 	virtual TYPE GetType()const = 0;
 
 	//コライダーゲッタ
-	std::shared_ptr<Collider>GetCollider() { return m_attachCollider.lock(); }
+	std::shared_ptr<Collider>GetCollider() { return m_collider; }
 };
 
 class CoinBlock : public Block
@@ -116,7 +122,7 @@ class CoinBlock : public Block
 
 	void OnExplosionFinishTrigger()override { isExplosion = true; }
 public:
-	CoinBlock(int arg_hp = 1);
+	CoinBlock(std::shared_ptr<Collider>arg_origin, int arg_hp = 1);
 
 	bool IsDisappear()override { return isExplosion; }
 
@@ -139,7 +145,7 @@ class SlotBlock : public Block
 		return m_hp <= m_hitCount;
 	}
 public:
-	SlotBlock(const std::shared_ptr<SlotMachine>& arg_slotMachine, int arg_hp = 3);
+	SlotBlock(std::shared_ptr<Collider>arg_origin, const std::shared_ptr<SlotMachine>& arg_slotMachine, int arg_hp = 3);
 
 	bool IsDisappear()override { return IsDead(); }
 

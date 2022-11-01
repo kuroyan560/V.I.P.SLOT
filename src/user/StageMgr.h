@@ -41,9 +41,6 @@ class StageMgr
 	//ヒットエフェクト
 	std::shared_ptr<TexHitEffect>m_hitEffect;
 
-	//コライダーインスタンス
-	std::vector<std::shared_ptr<Collider>>m_colliders;
-
 	//縦横ブロック数
 	Vec2<int>m_blockNum = { 20,20 };
 
@@ -69,7 +66,7 @@ public:
 	void Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);
-	void Finalize();
+	void Finalize(std::weak_ptr<CollisionManager>arg_collisionMgr);
 
 	void EffectDraw(std::weak_ptr<Camera>arg_cam);
 

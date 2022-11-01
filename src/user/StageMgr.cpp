@@ -16,8 +16,6 @@ void StageMgr::DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<C
 {
 	//アタッチされていたコライダー解除
 	arg_collisionMgr.lock()->Remove(arg_block->GetCollider());
-	arg_block->GetCollider()->SetCallBack("Player", nullptr);
-	arg_block->GetCollider()->SetParentTransform(nullptr);
 }
 
 StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
@@ -25,17 +23,7 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 	using namespace ConstParameter::Stage;
 
 	m_slotMachine = arg_slotMachine;
-
-	for (auto& b : m_slotBlocks)
-	{
-		b = std::make_shared<SlotBlock>(arg_slotMachine);
-	}
 	
-	for (auto& b : m_coinBlocks)
-	{
-		b = std::make_shared<CoinBlock>();
-	}
-
 	m_slotBlockModel = Importer::Instance()->LoadModel("resource/user/model/", "slotBlock.glb");
 	m_coinBlockModel = Importer::Instance()->LoadModel("resource/user/model/", "coinBlock.glb");
 	m_emptyCoinBlockModel = Importer::Instance()->LoadModel("resource/user/model/", "coinBlock_empty.glb");
@@ -63,15 +51,18 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 	box.y.m_max = BOX_SIZE;
 	box.z.m_max = BOX_SIZE;
 
+	std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
+	colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(1.0f, Vec3<float>(0, 0, 0)));
+	auto originCol = std::make_shared<Collider>();
+	originCol->Generate("BlockCollider", "Block", colPrimitiveArray);
+
 	for (int i = 0; i < MAX_BLOCK_NUM; ++i)
 	{
-		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
-		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(1.0f, Vec3<float>(0, 0, 0)));
-		//colPrimitiveArray.emplace_back(std::make_shared<CollisionAABB>(box));
-
-		m_coinBlocks.emplace_back(std::make_shared<CoinBlock>());
-		m_colliders.emplace_back(std::make_shared<Collider>());
-		m_colliders.back()->Generate("BlockCollider", "Block", colPrimitiveArray);
+		m_coinBlocks.emplace_back(std::make_shared<CoinBlock>(originCol));
+	}
+	for (auto& b : m_slotBlocks)
+	{
+		b = std::make_shared<SlotBlock>(originCol, arg_slotMachine);
 	}
 
 	m_terrianClearTimerGauge = D3D12App::Instance()->GenerateTextureBuffer("resource/user/img/terrianTimeGauge.png");
@@ -137,7 +128,6 @@ void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManage
 
 	int slotBlockIdx = 0;
 	int coinBlockIdx = 0;
-	int colliderIdx = 0;
 
 	m_terrianBlockArray.resize(m_blockNum.y);
 	for (int y = 0; y < m_blockNum.y; ++y)
@@ -161,8 +151,8 @@ void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManage
 			}
 
 			//ブロック初期化、コライダーアタッチ
-			arg_collisionMgr.lock()->Register(m_colliders[colliderIdx]);
-			block->Init(initTransform, m_colliders[colliderIdx++],m_hitEffect);
+			arg_collisionMgr.lock()->Register(block->GetCollider());
+			block->Init(initTransform, m_hitEffect);
 		}
 	}
 
@@ -241,8 +231,18 @@ void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Came
 		DrawFunc3D::DrawNonShadingModel(m_emptyCoinBlockModel, emptyCoinBlockTransformArray, *arg_cam.lock(), AlphaBlendMode_None);
 }
 
-void StageMgr::Finalize()
+void StageMgr::Finalize(std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
+	for (auto& blockArray : m_terrianBlockArray)
+	{
+		for (auto& block : blockArray)
+		{
+			//何もないならスルー
+			if (block == nullptr)continue;
+			DisappearBlock(block, arg_collisionMgr);
+		}
+	}
+
 	//ヒットエフェクト初期化
 	m_hitEffect->Init();
 }
