@@ -3,6 +3,10 @@
 class OutGameScene : public BaseScene
 {
 	SceneTransition m_sceneTrans;
+
+	enum ITEM { RETRY, TITLE, NUM };
+	ITEM m_item = RETRY;
+
 public:
 	OutGameScene() {}
 	void OnInitialize()override;
