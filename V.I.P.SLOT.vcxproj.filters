@@ -89,6 +89,9 @@
     <Filter Include="src\user\Stage">
       <UniqueIdentifier>{6477cd29-1f1f-40ff-ae03-d27465c6f341}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\user\Event">
+      <UniqueIdentifier>{cbc77ab6-6263-4419-9184-bb619a7c26f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\D3D12App.cpp">
@@ -339,6 +342,12 @@
     </ClCompile>
     <ClCompile Include="src\engine\Common\PerlinNoise.cpp">
       <Filter>src\engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\HandShake.cpp">
+      <Filter>src\user\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\TitleCamera.cpp">
+      <Filter>src\user\Event</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -644,6 +653,12 @@
     </ClInclude>
     <ClInclude Include="src\engine\Common\PerlinNoise.h">
       <Filter>src\engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\HandShake.h">
+      <Filter>src\user\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\TitleCamera.h">
+      <Filter>src\user\Event</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

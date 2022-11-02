@@ -227,6 +227,7 @@
     <ClCompile Include="src\user\ConstParameters.cpp" />
     <ClCompile Include="src\user\GameManager.cpp" />
     <ClCompile Include="src\user\GameObject.cpp" />
+    <ClCompile Include="src\user\HandShake.cpp" />
     <ClCompile Include="src\user\ObjectController.cpp" />
     <ClCompile Include="src\user\EnemyKillCoinEffect.cpp" />
     <ClCompile Include="src\user\ObjectManager.cpp" />
@@ -243,6 +244,7 @@
     <ClCompile Include="src\user\SlotMachine.cpp" />
     <ClCompile Include="src\user\StageMgr.cpp" />
     <ClCompile Include="src\user\TimeScale.cpp" />
+    <ClCompile Include="src\user\TitleCamera.cpp" />
     <ClCompile Include="src\user\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -329,6 +331,7 @@
     <ClInclude Include="src\user\ConstParameters.h" />
     <ClInclude Include="src\user\GameManager.h" />
     <ClInclude Include="src\user\GameObject.h" />
+    <ClInclude Include="src\user\HandShake.h" />
     <ClInclude Include="src\user\ObjectBreed.h" />
     <ClInclude Include="src\user\ObjectController.h" />
     <ClInclude Include="src\user\EnemyKillCoinEffect.h" />
@@ -346,6 +349,7 @@
     <ClInclude Include="src\user\SlotMachine.h" />
     <ClInclude Include="src\user\StageMgr.h" />
     <ClInclude Include="src\user\TimeScale.h" />
+    <ClInclude Include="src\user\TitleCamera.h" />
     <ClInclude Include="src\user\TitleScene.h" />
   </ItemGroup>
   <ItemGroup>
