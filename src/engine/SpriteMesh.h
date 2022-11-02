@@ -3,6 +3,7 @@
 #include<memory>
 #include<string>
 #include"D3D12Data.h"
+#include<array>
 
 template<typename VertexType>
 class Mesh;
@@ -10,6 +11,8 @@ class Mesh;
 class SpriteMesh
 {
 public:
+	//頂点インデックス
+	enum VERT_IDX { LB, LT, RB, RT, IDX_NUM };
 	//スプライト専用頂点クラス
 	class Vertex
 	{
@@ -28,10 +31,6 @@ public:
 		}
 	};
 private:
-
-	//頂点インデックス
-	enum { LB, LT, RB, RT, IDX_NUM };
-
 	//メッシュ情報
 	std::shared_ptr<Mesh<SpriteMesh::Vertex>>mesh;
 
@@ -46,7 +45,8 @@ private:
 	Vec2<float>size = { 64,64 };
 	//反転フラグ
 	Vec2<bool>flip = { false,false };
-
+	//頂点ごとの位置オフセット
+	std::array<Vec2<float>, IDX_NUM>offset = { Vec2<float>(0,0) };
 	//内部パラメータZバッファ
 	float zLayer = 0.0f;
 
@@ -82,6 +82,9 @@ public:
 		trans = TransFlg;
 	}
 
+	//ゲッタ
+	const Vec2<float>& GetSize()const { return size; }
+
 	//画像上の座標比率（0.0f ~ 1.0f）を指定してトリミング
 	void Trimming(const float& Top = 0.0f, const float& Bottom = 1.0f, const float& Left = 0.0f, const float& Right = 1.0f) {
 		if (Top < 0 || 1.0f < Top)assert(0);
@@ -97,6 +100,13 @@ public:
 		trim[LEFT] = Left;
 		trim[RIGHT] = Right;
 
+		dirty = true;
+	}
+
+	//頂点ごとの位置オフセット
+	void SetOffset(VERT_IDX VertIdx, Vec2<float>Offset)
+	{
+		offset[VertIdx] = Offset;
 		dirty = true;
 	}
 

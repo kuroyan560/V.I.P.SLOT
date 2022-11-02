@@ -88,6 +88,9 @@ void SpriteMesh::Render(const std::vector<RegisterDescriptorData>& DescDatas, co
 			mesh->vertices[RB].uv.x += -(1 - trim[RIGHT]);
 		}
 
+		//頂点の位置オフセット
+		for (int i = 0; i < IDX_NUM; ++i)mesh->vertices[i].pos += offset[i];
+
 		//マッピング
 		mesh->Mapping();
 
