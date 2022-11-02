@@ -50,4 +50,6 @@ public:
 
 	std::shared_ptr<DescriptorData>GetLigNumInfo();
 	std::shared_ptr<DescriptorData>GetLigInfo(const Light::TYPE& Type);
+
+	void ImguiDebug();
 };
