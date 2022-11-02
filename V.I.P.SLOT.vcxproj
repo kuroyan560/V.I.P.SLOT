@@ -225,6 +225,7 @@
     <ClCompile Include="src\user\CoinObjectManager.cpp" />
     <ClCompile Include="src\user\Coins.cpp" />
     <ClCompile Include="src\user\ConstParameters.cpp" />
+    <ClCompile Include="src\user\RandBox2D.cpp" />
     <ClCompile Include="src\user\GameManager.cpp" />
     <ClCompile Include="src\user\GameObject.cpp" />
     <ClCompile Include="src\user\HandShake.cpp" />
@@ -246,6 +247,7 @@
     <ClCompile Include="src\user\TimeScale.cpp" />
     <ClCompile Include="src\user\TitleCamera.cpp" />
     <ClCompile Include="src\user\TitleScene.cpp" />
+    <ClCompile Include="src\user\TitleUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\dxcompiler\inc\d3d12shader.h" />
@@ -329,6 +331,7 @@
     <ClInclude Include="src\user\Coins.h" />
     <ClInclude Include="src\user\CoinVault.h" />
     <ClInclude Include="src\user\ConstParameters.h" />
+    <ClInclude Include="src\user\RandBox2D.h" />
     <ClInclude Include="src\user\GameManager.h" />
     <ClInclude Include="src\user\GameObject.h" />
     <ClInclude Include="src\user\HandShake.h" />
@@ -351,6 +354,7 @@
     <ClInclude Include="src\user\TimeScale.h" />
     <ClInclude Include="src\user\TitleCamera.h" />
     <ClInclude Include="src\user\TitleScene.h" />
+    <ClInclude Include="src\user\TitleUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="lib\DirectXTex\DirectXTex_Desktop_2019_Win10.vcxproj">

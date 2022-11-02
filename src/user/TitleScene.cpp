@@ -27,7 +27,6 @@ TitleScene::TitleScene()
 	m_signSpot.SetInfluenceRange(11.0f);
 	m_signSpot.SetAngle(Angle(73));
 	m_signSpot.SetTarget(m_signBoard->m_transform.GetPos());
-
 }
 
 void TitleScene::OnInitialize()
@@ -36,6 +35,8 @@ void TitleScene::OnInitialize()
 
 	m_debugCam->Init({ 0,1,0 }, { 0,1,1 });
 	m_titleCam->Init();
+
+	m_randBox.Init();
 }
 
 void TitleScene::OnUpdate()
@@ -75,7 +76,7 @@ void TitleScene::OnUpdate()
 	m_debugCam->Move();
 	m_titleCam->Update(1.0f);
 
-
+	m_randBox.Update();
 }
 
 #include"DrawFunc3D.h"
@@ -94,6 +95,9 @@ void TitleScene::OnDraw()
 	DrawFunc3D::DrawADSShadingModel(*m_lightMgr, m_signBoard, *m_titleCam);
 	//DrawFunc3D::DrawPBRShadingModel(*m_lightMgr, m_signBoard, *m_titleCam,
 		//nullptr,AlphaBlendMode_None);
+
+	m_randBox.Transform().SetPos({ 300,300 });
+	m_randBox.Draw();
 }
 
 void TitleScene::OnImguiDebug()
@@ -105,6 +109,8 @@ void TitleScene::OnImguiDebug()
 	m_lightMgr->ImguiDebug();
 
 	m_titleCam->ImguiDebug();
+
+	m_randBox.ImguiDebug();
 }
 
 void TitleScene::OnFinalize()

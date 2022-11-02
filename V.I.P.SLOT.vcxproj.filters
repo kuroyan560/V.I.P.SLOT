@@ -89,8 +89,8 @@
     <Filter Include="src\user\Stage">
       <UniqueIdentifier>{6477cd29-1f1f-40ff-ae03-d27465c6f341}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\user\Event">
-      <UniqueIdentifier>{cbc77ab6-6263-4419-9184-bb619a7c26f0}</UniqueIdentifier>
+    <Filter Include="src\user\Title">
+      <UniqueIdentifier>{e520173b-3797-42b5-a990-955302011a5b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -343,11 +343,17 @@
     <ClCompile Include="src\engine\Common\PerlinNoise.cpp">
       <Filter>src\engine\Common</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\HandShake.cpp">
-      <Filter>src\user\Event</Filter>
-    </ClCompile>
     <ClCompile Include="src\user\TitleCamera.cpp">
-      <Filter>src\user\Event</Filter>
+      <Filter>src\user\Title</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\HandShake.cpp">
+      <Filter>src\user\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\TitleUI.cpp">
+      <Filter>src\user\Title</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\RandBox2D.cpp">
+      <Filter>src\user</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -654,11 +660,17 @@
     <ClInclude Include="src\engine\Common\PerlinNoise.h">
       <Filter>src\engine\Common</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\HandShake.h">
-      <Filter>src\user\Event</Filter>
-    </ClInclude>
     <ClInclude Include="src\user\TitleCamera.h">
-      <Filter>src\user\Event</Filter>
+      <Filter>src\user\Title</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\HandShake.h">
+      <Filter>src\user\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\TitleUI.h">
+      <Filter>src\user\Title</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\RandBox2D.h">
+      <Filter>src\user</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
