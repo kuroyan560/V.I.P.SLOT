@@ -271,6 +271,8 @@ void StageMgr::ImguiDebug(std::weak_ptr<CollisionManager>arg_collisionMgr)
 
 	ImGui::Separator();
 
+	ImGui::Checkbox("InfinityMode", &m_isInfinity);
+
 	bool changeRate = ImGui::DragFloat("BlockGenerateRate", &m_generateBlockRate, 0.5f, 0.0f, 100.0f);
 
 	bool changeX = ImGui::DragInt("BlockNumX", &m_blockNum.x);

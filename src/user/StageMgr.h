@@ -37,6 +37,8 @@ class StageMgr
 
 	//コインノルマ
 	int m_norma;
+	//デバッグ用、ノルマ達成判定を切る
+	bool m_isInfinity = false;
 
 	//ヒットエフェクト
 	std::shared_ptr<TexHitEffect>m_hitEffect;
@@ -75,6 +77,6 @@ public:
 	//クリアしたか
 	bool IsClear(const int& arg_playersCoinNum)
 	{
-		return m_norma <= arg_playersCoinNum;
+		return !m_isInfinity && m_norma <= arg_playersCoinNum;
 	}
 };
