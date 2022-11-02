@@ -10,8 +10,7 @@ Transform2D& RandBox2D::Transform()
 
 RandBox2D::RandBox2D()
 {
-	static auto WHITE_TEX = D3D12App::Instance()->GenerateTextureBuffer(Color(1.0f, 0.0f, 0.0f, 1.0f));
-	m_sprite = std::make_shared<Sprite>(WHITE_TEX, "RandBox2D");
+	m_sprite = std::make_shared<Sprite>(nullptr, "RandBox2D");
 }
 
 void RandBox2D::Init()
@@ -77,6 +76,16 @@ void RandBox2D::ImguiDebug()
 	ImGui::DragFloat("MaxOffsetY", &m_maxVal.y);
 
 	ImGui::End();
+}
+
+void RandBox2D::SetSize(Vec2<float> arg_size)
+{
+	m_sprite->m_mesh.SetSize(arg_size);
+}
+
+void RandBox2D::SetAnchorPoint(Vec2<float> arg_anchor)
+{
+	m_sprite->m_mesh.SetAnchorPoint(arg_anchor);
 }
 
 void RandBox2D::SetColor(Color arg_color)

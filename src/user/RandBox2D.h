@@ -25,6 +25,8 @@ public:
 
 	void ImguiDebug();
 
+	void SetSize(Vec2<float>arg_size);
+	void SetAnchorPoint(Vec2<float>arg_anchor);
 	void SetColor(Color arg_color);
 };
 
