@@ -6,6 +6,38 @@
 
 int NoiseInitializer::ID = 0;
 
+float PerlinNoise::GetGrad(int arg_x, int arg_y, int arg_elem, int arg_seed)
+{
+	static std::array<int, 256> HASH;
+	static bool HASH_INIT = false;
+	if (!HASH_INIT)
+	{
+		int idx = 0;
+		for (auto& key : HASH)key = idx++;
+
+		for (int i = static_cast<int>(HASH.size()) - 1; 0 < i; --i)
+		{
+			int r = static_cast<int>(floor(KuroFunc::GetRand(1.0f) * (i + 1)));
+			auto tmp = HASH[i];
+			HASH[i] = HASH[r];
+			HASH[r] = tmp;
+		}
+		HASH_INIT = true;
+	}
+
+	int hashX = HASH[arg_x % 256];
+	int hashXY = HASH[(hashX + arg_y) % 256];
+	int hashGrad = HASH[(hashXY + arg_elem) % 256];
+
+	unsigned r = xorshift32(arg_x + arg_seed);
+	r = xorshift32(r + arg_y);
+	r = xorshift32(r + arg_elem) % 10000;
+	return (float)r / 5000 - 1.0f;
+
+	//-1~1の範囲を返す
+	return (hashGrad / 255.0f) * 2.0f - 1.0f;
+}
+
 void PerlinNoise::DrawToTex(std::shared_ptr<TextureBuffer> DestTex, const NoiseInitializer& Config)
 {
 	//最大分割数
@@ -170,18 +202,39 @@ bool PerlinNoise::ImguiDebug(NoiseInitializer& arg_initializer)
 	return changed;
 }
 
-void PerlinNoise::Initialize(const NoiseInitializer& arg_initializer)
+float PerlinNoise::GetRand(float arg_x, float arg_y, int arg_seed)
 {
-	m_initializer = arg_initializer;
-	m_invalid = false;
-}
+	int floorX = static_cast<int>(floor(arg_x));
+	int ceilX = static_cast<int>(ceil(arg_x));
+	if (floorX == ceilX)ceilX++;
+	int floorY = static_cast<int>(floor(arg_y));
+	int ceilY = static_cast<int>(ceil(arg_y));
+	if (floorY == ceilY)ceilY++;
 
-float PerlinNoise::Get(Vec2<float> arg_xy)
-{
-	if (m_invalid)
-	{
-		printf("[Caution] This PerlinNoise isn't initialized.\n");
-		return 0.0f;
-	}
+	//境界整数座標
+	Vec2<int>upL = { floorX,floorY };
+	Vec2<int>upR = { ceilX,floorY };
+	Vec2<int>bottomL = { floorX,ceilY };
+	Vec2<int>bottomR = { ceilX,ceilY };
 
+	//勾配ベクトル取得
+	Vec2<float>gradUpL = { GetGrad(upL.x,upL.y,0,arg_seed),GetGrad(upL.x,upL.y,1,arg_seed) };
+	Vec2<float>gradUpR = { GetGrad(upR.x,upR.y,0,arg_seed),GetGrad(upR.x,upR.y,1,arg_seed) };
+	Vec2<float>gradBottomL = { GetGrad(bottomL.x,bottomL.y,0,arg_seed),GetGrad(bottomL.x,bottomL.y,1,arg_seed) };
+	Vec2<float>gradBottomR = { GetGrad(bottomR.x,bottomR.y,0,arg_seed),GetGrad(bottomR.x,bottomR.y,1,arg_seed) };
+
+	Vec2<float>uv = { arg_x - static_cast<int>(arg_x) ,arg_y - static_cast<int>(arg_y) };
+
+	//左上と右上の対で補間
+	float wUpL = GradWaveLet(uv, gradUpL);
+	float wUpR = GradWaveLet(Vec2<float>(-1.0f + uv.x, uv.y), gradUpR);
+	float wUp = KuroMath::Lerp(wUpL, wUpR, uv.x);
+
+	//左下と右下の対で補間
+	float wBottomL = GradWaveLet(Vec2<float>(uv.x, -1.0f + uv.y), gradBottomL);
+	float wBottomR = GradWaveLet(Vec2<float>(-1.0f + uv.x, -1.0f + uv.y), gradBottomR);
+	float wBottom = KuroMath::Lerp(wBottomL, wBottomR, uv.x);
+
+	//Y軸方向に補間
+	return KuroMath::Lerp(wUp, wBottom, uv.y);
 }

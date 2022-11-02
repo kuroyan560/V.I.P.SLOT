@@ -38,6 +38,38 @@ private:
 		};
 		return NAME[Interpolation];
 	}
+
+	//引数の整数をランダムなハッシュ値に返還
+	static unsigned xorshift32(unsigned v)
+	{
+		v = v ^ (v << 13);
+		v = v ^ (v << 17);
+		v = v ^ (v << 15);
+		return v;
+	}
+
+	static float Wavelet(float t)
+	{
+		return static_cast<float>(1 - (6 * abs(pow(t, 5)) - 15 * pow(t, 4) + 10 * abs(pow(t, 3))));
+	}
+
+	//勾配を設定したウェーブレット関数
+	static float GradWaveLet(Vec2<float>arg_uv, Vec2<float> arg_grad)
+	{
+		float l = arg_uv.x * arg_grad.x + arg_uv.y * arg_grad.y;
+		float c = Wavelet(arg_uv.x) * Wavelet(arg_uv.y);
+		return c * l;
+	}
+
+	/// <summary>
+	/// 勾配成分を取得
+	/// </summary>
+	/// <param name="x">境界整数座標X</param>
+	/// <param name="y">境界整数座標Y</param>
+	/// <param name="elem">勾配の軸番号（x軸->0,y軸->1など）</param>
+	/// <returns></returns>
+	static float GetGrad(int arg_x, int arg_y, int arg_elem, int arg_seed = 0);
+
 public:
 	//テクスチャにパーリンノイズ描画
 	static void DrawToTex(std::shared_ptr<TextureBuffer>DestTex, const NoiseInitializer& Config);
@@ -46,12 +78,6 @@ public:
 	//ノイズイニシャライザーのimguiデバッグ
 	static bool ImguiDebug(NoiseInitializer& arg_initializer);
 
-
-private:
-	bool m_invalid = true;
-	NoiseInitializer m_initializer;
-
-public:
-	void Initialize(const NoiseInitializer& arg_initializer);
-	float Get(Vec2<float>arg_xy);
+	//パーリンノイズから乱数取得
+	static float GetRand(float arg_x, float arg_y, int arg_seed = 0);
 };
