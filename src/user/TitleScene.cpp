@@ -1,14 +1,26 @@
 #include "TitleScene.h"
 #include<magic_enum.h>
 #include"GameManager.h"
+#include"Object.h"
+#include"RenderTargetManager.h"
+#include"TitleCamera.h"
+#include"DebugCamera.h"
 
 TitleScene::TitleScene()
 {
+	m_signBoard = std::make_shared<ModelObject>("resource/user/model/", "signboard.glb");
+	m_signBoard->m_transform.SetFront({ 1,0,0 });
+
+	m_debugCam = std::make_shared<DebugCamera>();
+	m_titleCam = std::make_shared<TitleCamera>();
 }
 
 void TitleScene::OnInitialize()
 {
 	m_item = GAME_START;
+
+	m_debugCam->Init({ 0,1,0 }, { 0,1,1 });
+	m_titleCam->Init();
 }
 
 void TitleScene::OnUpdate()
@@ -43,10 +55,23 @@ void TitleScene::OnUpdate()
 			break;
 		}
 	}
+
+	m_debugCam->Move();
+	m_titleCam->Update(1.0f);
 }
 
+#include"DrawFunc3D.h"
 void TitleScene::OnDraw()
 {
+	auto& rtMgr = *RenderTargetManager::Instance();
+
+	//レンダーターゲットクリア
+	rtMgr.Clear();
+
+	//レンダーターゲットセット
+	rtMgr.Set(true, { DRAW_TARGET_TAG::BACK_BUFF });
+
+	DrawFunc3D::DrawNonShadingModel(m_signBoard, *m_titleCam);
 }
 
 void TitleScene::OnImguiDebug()
@@ -54,6 +79,8 @@ void TitleScene::OnImguiDebug()
 	ImGui::Begin("Items");
 	ImGui::Text("Now : %s", std::string(magic_enum::enum_name(m_item)).c_str());
 	ImGui::End();
+
+	m_titleCam->ImguiDebug();
 }
 
 void TitleScene::OnFinalize()
