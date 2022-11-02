@@ -1,7 +1,8 @@
 #pragma once
 #include"KuroEngine.h"
+#include"LightManager.h"
 class ModelObject;
-class TitleCamera;;
+class TitleCamera;
 class DebugCamera;
 
 class TitleScene : public BaseScene
@@ -13,6 +14,9 @@ class TitleScene : public BaseScene
 
 	std::shared_ptr<ModelObject> m_signBoard;
 	
+	std::shared_ptr<LightManager>m_lightMgr;
+	Light::Spot m_signSpot;
+
 	std::shared_ptr<DebugCamera>m_debugCam;
 	std::shared_ptr<TitleCamera>m_titleCam;
 
