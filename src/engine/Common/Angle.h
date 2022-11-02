@@ -15,7 +15,7 @@ struct Angle
 	Angle(const float& Radian) :m_radian(Radian) {}
 
 	void SetByDegree(const int& Degree) { m_radian = Degree * RADIAN_PER_DEGREE(); }
-	float GetDegree() { return (m_radian / RADIAN_PER_DEGREE()); }
+	float GetDegree() { return static_cast<float>(Angle::ConvertToDegree(m_radian)); }
 	float GetNormalize()const {
 		float result = m_radian;
 		if (result < 0)result += ROUND();
