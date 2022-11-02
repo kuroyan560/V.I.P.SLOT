@@ -17,6 +17,22 @@ TitleScene::TitleScene()
 	m_lightMgr = std::make_shared<LightManager>();
 	m_lightMgr->RegisterSpotLight(&m_signSpot);
 
+	//画像リソースファイルパス
+	std::string imgFileDir = "resource/user/img/title/";
+
+	//タイトル項目テクスチャ読み込み
+	std::vector<TitleItemTex>itemTex;
+	//GAME START
+	itemTex.emplace_back();
+	itemTex.back().m_front = D3D12App::Instance()->GenerateTextureBuffer(imgFileDir + "game_start_front.png");
+	itemTex.back().m_back = D3D12App::Instance()->GenerateTextureBuffer(imgFileDir + "game_start_back.png");
+	//EXIT
+	itemTex.emplace_back();
+	itemTex.back().m_front = D3D12App::Instance()->GenerateTextureBuffer(imgFileDir + "exit_front.png");
+	itemTex.back().m_back = D3D12App::Instance()->GenerateTextureBuffer(imgFileDir + "exit_back.png");
+	//タイトル項目設定
+	m_titleUI.Awake(itemTex);
+
 	//看板
 	m_signBoard->m_transform.SetPos({ 2.0f,0.0f,-4.0f });
 	m_signBoard->m_transform.SetFront(KuroMath::TransformVec3(Vec3<float>(0, 0, 1), KuroMath::RotateMat(Vec3<Angle>(0.0f, 45.0f, 0.0f))));
@@ -36,7 +52,7 @@ void TitleScene::OnInitialize()
 	m_debugCam->Init({ 0,1,0 }, { 0,1,1 });
 	m_titleCam->Init();
 
-	m_randBox.Init();
+	m_titleUI.Init();
 }
 
 void TitleScene::OnUpdate()
@@ -50,8 +66,7 @@ void TitleScene::OnUpdate()
 	bool down = input->ControllerOnTrigger(0, XBOX_STICK::L_DOWN)
 		|| input->ControllerOnTrigger(0, XBOX_BUTTON::DPAD_DOWN);
 	//決定入力
-	bool enter = input->ControllerOnTrigger(0, XBOX_BUTTON::A)
-		|| input->KeyOnTrigger(DIK_SPACE);
+	bool enter = input->ControllerOnTrigger(0, XBOX_BUTTON::A);
 
 	//項目下へ
 	if (m_item < NUM - 1 && down)m_item = (ITEM)(m_item + 1);
@@ -76,7 +91,7 @@ void TitleScene::OnUpdate()
 	m_debugCam->Move();
 	m_titleCam->Update(1.0f);
 
-	m_randBox.Update();
+	m_titleUI.Update();
 }
 
 #include"DrawFunc3D.h"
@@ -96,8 +111,7 @@ void TitleScene::OnDraw()
 	//DrawFunc3D::DrawPBRShadingModel(*m_lightMgr, m_signBoard, *m_titleCam,
 		//nullptr,AlphaBlendMode_None);
 
-	m_randBox.Transform().SetPos({ 300,300 });
-	m_randBox.Draw();
+	m_titleUI.Draw(m_item);
 }
 
 void TitleScene::OnImguiDebug()
@@ -110,7 +124,7 @@ void TitleScene::OnImguiDebug()
 
 	m_titleCam->ImguiDebug();
 
-	m_randBox.ImguiDebug();
+	m_titleUI.ImguiDebug();
 }
 
 void TitleScene::OnFinalize()

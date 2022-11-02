@@ -5,6 +5,7 @@ class ModelObject;
 class TitleCamera;
 class DebugCamera;
 #include"RandBox2D.h"
+#include"TitleUI.h"
 
 class TitleScene : public BaseScene
 {
@@ -21,7 +22,7 @@ class TitleScene : public BaseScene
 	std::shared_ptr<DebugCamera>m_debugCam;
 	std::shared_ptr<TitleCamera>m_titleCam;
 
-	RandBox2D m_randBox;
+	TitleUI m_titleUI;
 
 public:
 	TitleScene();
