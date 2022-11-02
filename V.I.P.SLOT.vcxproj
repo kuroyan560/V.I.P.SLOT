@@ -178,6 +178,7 @@
     <ClCompile Include="src\engine\CollisionManager.cpp" />
     <ClCompile Include="src\engine\Common\KuroFunc.cpp" />
     <ClCompile Include="src\engine\Common\KuroMath.cpp" />
+    <ClCompile Include="src\engine\Common\PerlinNoise.cpp" />
     <ClCompile Include="src\engine\Common\Primitive.cpp" />
     <ClCompile Include="src\engine\Common\Subject.cpp" />
     <ClCompile Include="src\engine\Common\Transform.cpp" />
@@ -210,7 +211,6 @@
     <ClCompile Include="src\engine\Model.cpp" />
     <ClCompile Include="src\engine\ModelAnimator.cpp" />
     <ClCompile Include="src\engine\ModelMesh.cpp" />
-    <ClCompile Include="src\engine\NoiseGenerator.cpp" />
     <ClCompile Include="src\engine\Object.cpp" />
     <ClCompile Include="src\engine\ShadowMapDevice.cpp" />
     <ClCompile Include="src\engine\Skeleton.cpp" />
@@ -272,6 +272,7 @@
     <ClInclude Include="src\engine\Common\KuroFunc.h" />
     <ClInclude Include="src\engine\Common\KuroMath.h" />
     <ClInclude Include="src\engine\Common\Observer.h" />
+    <ClInclude Include="src\engine\Common\PerlinNoise.h" />
     <ClInclude Include="src\engine\Common\Primitive.h" />
     <ClInclude Include="src\engine\Common\Singleton.h" />
     <ClInclude Include="src\engine\Common\Subject.h" />
@@ -308,7 +309,6 @@
     <ClInclude Include="src\engine\Model.h" />
     <ClInclude Include="src\engine\ModelAnimator.h" />
     <ClInclude Include="src\engine\ModelMesh.h" />
-    <ClInclude Include="src\engine\NoiseGenerator.h" />
     <ClInclude Include="src\engine\Object.h" />
     <ClInclude Include="src\engine\ShadowMapDevice.h" />
     <ClInclude Include="src\engine\Skeleton.h" />

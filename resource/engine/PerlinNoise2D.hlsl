@@ -13,7 +13,7 @@ RWTexture2D<float4> pixels : register(u0);
 
 float Wavelet(float t)
 {
-    return 1 - (6 * abs(pow(t, 5)) - 15 * pow(t, 4) + 10 * abs(pow(t, 3)));
+    return 1 - (6 * abs(t * t * t * t * t) - 15 * (t * t * t * t) + 10 * abs(t * t * t));
 }
 
 //勾配を設定したウェーブレット関数
@@ -111,6 +111,5 @@ void CSmain(uint2 DTid : SV_DispatchThreadID)
     }
     
     float result = total / maxValue;
-    result = clamp(result, -1.0f, 1.0f);
     pixels[DTid] = float4(result, result, result, result);
 };

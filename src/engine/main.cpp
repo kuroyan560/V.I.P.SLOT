@@ -17,9 +17,6 @@
 
 #include"DrawFuncBillBoard.h"
 
-#include"NoiseGenerator.h"
-
-
 
 #ifdef _DEBUG
 int main()
@@ -100,8 +97,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		DrawFunc3D::CountReset();
 
 		DrawFuncBillBoard::CountReset();
-
-		NoiseGenerator::CountReset();
 	}
 
 	return 0;

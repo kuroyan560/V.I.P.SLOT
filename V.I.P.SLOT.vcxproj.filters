@@ -241,9 +241,6 @@
     <ClCompile Include="src\engine\ImguiDebugInterface.cpp">
       <Filter>src\engine\ユーザー向け</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\NoiseGenerator.cpp">
-      <Filter>src\engine\フレームワーク</Filter>
-    </ClCompile>
     <ClCompile Include="src\engine\LightBloomDevice.cpp">
       <Filter>src\engine\レンダリング関連</Filter>
     </ClCompile>
@@ -339,6 +336,9 @@
     </ClCompile>
     <ClCompile Include="src\user\OutGameScene.cpp">
       <Filter>src\user\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\Common\PerlinNoise.cpp">
+      <Filter>src\engine\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -528,9 +528,6 @@
     <ClInclude Include="src\engine\ImguiDebugInterface.h">
       <Filter>src\engine\ユーザー向け</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\NoiseGenerator.h">
-      <Filter>src\engine\フレームワーク</Filter>
-    </ClInclude>
     <ClInclude Include="src\engine\LightBloomDevice.h">
       <Filter>src\engine\レンダリング関連</Filter>
     </ClInclude>
@@ -644,6 +641,9 @@
     </ClInclude>
     <ClInclude Include="src\user\OutGameScene.h">
       <Filter>src\user\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\Common\PerlinNoise.h">
+      <Filter>src\engine\Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
