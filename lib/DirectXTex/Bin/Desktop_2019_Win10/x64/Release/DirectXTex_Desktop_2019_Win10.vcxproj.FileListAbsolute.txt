@@ -1,0 +1,2 @@
+C:\K020G1167\個人\DirectX12\_Engine\KuroEngine3.0\lib\DirectXTex\Bin\Desktop_2019_Win10\x64\Release\DirectXTex.lib
+C:\Git\V.I.P.SLOT\lib\DirectXTex\Bin\Desktop_2019_Win10\x64\Release\DirectXTex.lib
