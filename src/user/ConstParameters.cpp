@@ -34,12 +34,23 @@ namespace ConstParameter
         int MAX_HP = 10;
 
         /*--- 移動 ---*/
-        //入力による加速度強さ
-        float INPUT_ACCEL_POWER = 0.25f;
-        //入力による加速度変化率
-        float ACCEL_LERP_RATE = 0.8f;
-        //移動量の減衰変化率
-        float MOVE_DAMP_RATE = 0.3f;
+        //移動速度
+        float MOVE_SPEED = 0.45f;
+        //移動の動き計算のLerpRate
+        float MOVE_LERP_RATE = 0.3f;
+
+        /*--- ジャンプ ---*/
+        //ジャンプ力
+        float JUMP_POWER = 0.62f;
+
+        /*--- 落下 ---*/
+        //※素早くジャンプ → ゆっくり下降
+        //ジャンプ中の重力
+        float STRONG_GRAVITY = 0.34f;
+        //落下中の重力
+        float WEAK_GRAVITY = 0.00005f;
+        //落下速度の下限
+        float FALL_SPEED_MIN = -0.2f;
 
         /*--- 衝突判定 ---*/
         //ダメージを受けたときのヒットストップ時間

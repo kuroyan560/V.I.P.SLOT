@@ -36,12 +36,22 @@ namespace ConstParameter
 		extern int MAX_HP;
 
 		/*--- 移動 ---*/
-		//入力による加速度強さ
-		extern float INPUT_ACCEL_POWER;
-		//入力による加速度変化率
-		extern float ACCEL_LERP_RATE;
-		//移動量の減衰変化率
-		extern float MOVE_DAMP_RATE;
+		//移動速度
+		extern float MOVE_SPEED;
+		//移動の動き計算のLerpRate
+		extern float MOVE_LERP_RATE;
+
+		/*--- ジャンプ ---*/
+		extern float JUMP_POWER;
+
+		/*--- 落下 ---*/
+		//※素早くジャンプ → ゆっくり下降
+		//ジャンプ中の重力
+		extern float STRONG_GRAVITY;
+		//落下中の重力
+		extern float WEAK_GRAVITY;
+		//落下速度の下限
+		extern float FALL_SPEED_MIN;
 
 		/*--- 衝突判定 ---*/
 		//ダメージを受けたときのヒットストップ時間

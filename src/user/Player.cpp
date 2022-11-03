@@ -11,12 +11,21 @@
 #include"GameCamera.h"
 #include"Block.h"
 
+void Player::Jump(Vec3<float>* arg_rockOnPos)
+{
+	m_move.y = 0.0f;
+	m_fallSpeed = ConstParameter::Player::JUMP_POWER;
+}
+
 Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<GameCamera>arg_cam)
 {
 	using namespace ConstParameter::Player;
 
 	//モデル読み込み
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "player.glb");
+
+	//ジャンプSE読み込み
+	m_jumpSE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_jump.wav",0.6f);
 
 	//被ダメージヒットストップSE
 	int onDamagedHitStopSE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_damage_hitStop.wav",0.5f);
@@ -87,17 +96,24 @@ void Player::Init(int arg_initHp, int arg_initCoinNum)
 	//スタート位置に移動
 	m_modelObj->m_transform.SetPos(INIT_POS);
 
-	//入力による移動方向初期化
-	m_inputMoveVec = { 0,0,0 };
-
 	//移動速度
 	m_move = { 0,0,0 };
 
-	//加速度
-	m_accel = { 0,0,0 };
+	//落下速度初期化
+	m_fallSpeed = 0.0f;
+
+	//接地フラグ初期化
+	m_isOnGround = true;
+
+	//所持金リセット
+	m_coinVault.Set(300000);
 
 	//被ダメージコールバック
 	m_damegedCallBack->Init();
+
+	//入力情報初期化
+	m_inputVec = { 0,0 };
+	m_isJumpInput = false;
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
@@ -105,12 +121,13 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	using namespace ConstParameter::Player;
 	using namespace ConstParameter::Environment;
 
-//前フレームの座標記録
-	auto pos = m_modelObj->m_transform.GetPos();
-	m_prePos = pos;
+	Vec3<float>pos = m_modelObj->m_transform.GetPos();
 
 //入力情報取得
 	const auto& input = *UsersInput::Instance();
+
+	//ジャンプのトリガー入力
+	bool jumpTrigger = false;
 
 	//入力設定
 	switch (m_inputConfig)
@@ -119,10 +136,12 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	case Player::INPUT_CONFIG::KEY_BOARD:
 	{
 		//方向入力
-		if (input.KeyInput(DIK_LEFT))m_inputMoveVec.x = -1.0f;
-		else if (input.KeyInput(DIK_RIGHT))m_inputMoveVec.x = 1.0f;
-		if (input.KeyInput(DIK_UP))m_inputMoveVec.y = 1.0f;
-		else if (input.KeyInput(DIK_DOWN))m_inputMoveVec.y = -1.0f;
+		if (input.KeyInput(DIK_LEFT))m_inputVec.x = -1.0f;
+		else if (input.KeyInput(DIK_RIGHT))m_inputVec.x = 1.0f;
+		//ジャンプ入力
+		auto jumpKeyCode = DIK_UP;
+		jumpTrigger = input.KeyOnTrigger(jumpKeyCode);
+		m_isJumpInput = input.KeyInput(jumpKeyCode);
 		break;
 	}
 
@@ -130,9 +149,11 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	case Player::INPUT_CONFIG::CONTROLLER:
 	{
 		//方向入力
-		auto inputVec = input.GetLeftStickVec(0);
-		m_inputMoveVec.x = inputVec.x;
-		m_inputMoveVec.y = -inputVec.y;	//Y軸逆
+		m_inputVec = input.GetLeftStickVec(0);
+		//ジャンプ入力
+		auto jumpButton = XBOX_BUTTON::A;
+		jumpTrigger = input.ControllerOnTrigger(0, jumpButton);
+		m_isJumpInput = input.ControllerInput(0, jumpButton);
 		break;
 	}
 
@@ -143,21 +164,53 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	}
 
 //入力情報を元に操作
-	//加速
-	m_move += m_accel;
+	const Vec2<float>moveInput = m_inputVec;
+	//横移動
+	if (0.0f < moveInput.x)
+	{
+		m_move.x = KuroMath::Lerp(m_move.x, MOVE_SPEED, MOVE_LERP_RATE);
+	}
+	else if (moveInput.x < 0.0f)
+	{
+		m_move.x = KuroMath::Lerp(m_move.x, -MOVE_SPEED, MOVE_LERP_RATE);
+	}
+	else
+	{
+		m_move.x = KuroMath::Lerp(m_move.x, 0.0f, MOVE_LERP_RATE);
+	}
+
+	//ジャンプ
+	if (jumpTrigger && m_isOnGround)
+	{
+		Jump();
+		AudioApp::Instance()->PlayWaveDelay(m_jumpSE, 3);
+		m_isOnGround = false;
+	}
+
+	//落下（ジャンプ中と落下中で重力変化、素早くジャンプ → ゆっくり降下）
+	m_move.y += m_fallSpeed * arg_timeScale.GetTimeScale();
+	if (0.0f < m_fallSpeed)
+	{
+		m_fallSpeed -= STRONG_GRAVITY * arg_timeScale.GetTimeScale();
+	}
+	else
+	{
+		m_fallSpeed -= WEAK_GRAVITY * arg_timeScale.GetTimeScale();
+	}
+
+	//落下速度加減
+	if (m_fallSpeed < FALL_SPEED_MIN)m_fallSpeed = FALL_SPEED_MIN;
 
 	//移動量加算
 	pos += m_move * arg_timeScale.GetTimeScale();
 
-	//加速度減衰
-	m_accel = KuroMath::Lerp(m_accel, m_inputMoveVec * INPUT_ACCEL_POWER, ACCEL_LERP_RATE);
-
-	//移動量減衰
-	m_move = KuroMath::Lerp(m_move, Vec3<float>(0, 0, 0), MOVE_DAMP_RATE);
-
 	//押し戻し（床）
 	if (pos.y < 0.0f)
 	{
+		pos.y = 0.0f;
+		m_fallSpeed = 0.0f;
+		m_move.y = 0.0f;
+		m_isOnGround = true;
 	}
 
 	//押し戻し（ステージ端）
@@ -233,6 +286,10 @@ void Player::DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter,
 	//カメラ振動
 	m_cam.lock()->Shake(60, 2, 2.0f, 1.0f);
 
+	//落下
+	m_parent->m_fallSpeed = FALL_SPEED_ON_DAMAGED;
+	m_parent->m_move.y = 0.0f;
+
 	printf("Player : Damaged : remain hp %d\n", m_parent->m_hp);
 }
 
@@ -274,12 +331,36 @@ void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
 
 void Player::CallBackWithBlock::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
 {
+	//ブロック破壊SE再生
 	AudioApp::Instance()->PlayWaveDelay(m_brokenSE, 3);
 
-	auto block = arg_otherCollider.lock()->GetParentObject<Block>();
+	//連続ジャンプ入力（長押しと方向入力）
+	if (m_parent->m_isJumpInput && !m_parent->m_inputVec.IsZero())
+	{
+		//レイの飛ばす方向
+		Vec3<float>rayDir = { m_parent->m_inputVec.x,m_parent->m_inputVec.y,0.0f };
+		//レイの判定情報格納先
+		RaycastHitInfo hitInfo;
+		//レイの長さ
+		const float CONTINUITY_JUMP_RAY_DIST = 5.0f;
 
-	auto accelVec = block->m_transform.GetPos() - m_parent->GetCenterPos();
-
-	const float ACCEL_POWER = 0.7f;
-	m_parent->m_accel = accelVec.GetNormal() * ACCEL_POWER;
+		//入力があった方にレイを飛ばす
+		if (m_collisionMgr.lock()->RaycastHit(m_parent->GetCenterPos(), rayDir, &hitInfo, "Block", CONTINUITY_JUMP_RAY_DIST))
+		{
+			//ブロッククラスに変換して座標取得
+			Vec3<float>nextBlockPos = hitInfo.m_otherCol.lock()->GetParentObject<Block>()->m_transform.GetPos();
+			//次のブロックに向かってジャンプ
+			m_parent->Jump(&nextBlockPos);
+		}
+		else
+		{
+			//通常ジャンプ
+			m_parent->Jump();
+		}
+	}
+	//通常ジャンプ
+	else
+	{
+		m_parent->Jump();
+	}
 }
