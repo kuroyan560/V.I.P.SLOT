@@ -242,7 +242,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	//“Š‚°‚é
 	if (throwYoyoTrigger)
 	{
-		m_yoYo->Throw(YoYo::LEFT);
+		m_yoYo->Throw(moveInput);
 	}
 
 	//ƒˆ[ƒˆ[

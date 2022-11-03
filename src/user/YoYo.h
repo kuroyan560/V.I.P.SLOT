@@ -15,6 +15,10 @@ class YoYo
 {
 	//トランスフォーム
 	Transform m_transform;
+
+	//投げる方向
+	enum THROW_VEC { LEFT, LEFT_UP, RIGHT_UP, RIGHT, THROW_VEC_NUM };
+
 	//カプセルの形を成す当たり判定用球配列
 	std::vector<std::shared_ptr<CollisionSphere>>m_capsuleSphereArray;
 	//球が連なってできたカプセルコライダー
@@ -40,7 +44,6 @@ class YoYo
 
 
 public:
-	enum THROW_VEC { LEFT, LEFT_UP, RIGHT, RIGHT_UP };
 
 	YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform,Vec3<float>arg_modelOffset);
 
@@ -62,5 +65,5 @@ public:
 	void AddImguiDebugItem();
 
 	//投げる
-	void Throw(THROW_VEC arg_vec);
+	void Throw(Vec2<float>arg_vec);
 };

@@ -71,15 +71,64 @@ void YoYo::AddImguiDebugItem()
 	ImGui::Text("TimeRate : { %f }", m_timer.GetTimeRate());
 }
 
-void YoYo::Throw(THROW_VEC arg_vec)
+void YoYo::Throw(Vec2<float>arg_vec)
 {
-	if (m_status == HAND)
+	if (arg_vec.IsZero())
 	{
-		m_status = THROW_0;
-		m_throwCol->SetActive(true);
+		m_status = NEUTRAL;
 	}
-	else if (m_status == THROW_0)m_status = THROW_1;
-	else if (m_status == THROW_1)m_status = THROW_2;
+	else
+	{
+		//判定用
+		static std::array<Angle, THROW_VEC_NUM>throwAngleJudge =
+		{
+			Angle(180),Angle(135),Angle(45),Angle(0)
+		};
+
+		THROW_VEC throwVec = LEFT;
+		arg_vec.y *= -1.0f;
+		auto angle = KuroMath::GetAngle(arg_vec).GetNormalize();
+		float angleAbsMin = FLT_MAX;
+
+		//入力方向と一番近い角度を判定
+		for (int i = 0; i < THROW_VEC_NUM; ++i)
+		{
+			float angleAbs = abs((angle + Angle::ConvertToRadian(270))
+				- (throwAngleJudge[i].m_radian + Angle::ConvertToRadian(270)));
+			if (angleAbs < angleAbsMin)
+			{
+				angleAbsMin = angleAbs;
+				throwVec = (THROW_VEC)i;
+			}
+		}
+
+		//コライダーの向きを決定
+		if (throwVec == RIGHT)
+		{
+			//右向きは初期
+			m_transform.SetRotate(XMMatrixIdentity());
+		}
+		else if (throwVec == RIGHT_UP)
+		{
+			m_transform.SetRotate(Angle(0), Angle(0), Angle(45));
+		}
+		else if (throwVec == LEFT)
+		{
+			m_transform.SetRotate(Angle(0), Angle(180), Angle(0));
+		}
+		else if (throwVec == LEFT_UP)
+		{
+			m_transform.SetRotate(Angle(0), Angle(180), Angle(45));
+		}
+
+		if (m_status == HAND)
+		{
+			m_status = THROW_0;
+			m_throwCol->SetActive(true);
+		}
+		else if (m_status == THROW_0)m_status = THROW_1;
+		else if (m_status == THROW_1)m_status = THROW_2;
+	}
 
 	m_timer.Reset(m_finishInterval[m_status]);
 }
