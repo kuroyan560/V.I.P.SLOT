@@ -50,8 +50,8 @@ void CollisionManager::Update()
 			auto colB = (*itrB);
 
 			//お互いにコールバック関数が用意されていないなら、当たっても何も起こらないので判定を行う必要は無い
-			if (colA->m_callBackList.find(colB->m_tag) == colA->m_callBackList.end())continue;
-			if (colB->m_callBackList.find(colA->m_tag) == colB->m_callBackList.end())continue;
+			if (colA->m_callBackList.find(colB->m_tag) == colA->m_callBackList.end()
+				&& colB->m_callBackList.find(colA->m_tag) == colB->m_callBackList.end())continue;
 
 			Vec3<float>inter;
 			if (colA->CheckHitCollision(colB, &inter))
