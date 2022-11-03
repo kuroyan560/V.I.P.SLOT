@@ -97,9 +97,6 @@ class Player : public ColliderParentObject
 		Player* m_parent;
 		std::weak_ptr<CollisionManager>m_collisionMgr;
 
-		//ÉuÉçÉbÉNîjâÛSE
-		int m_brokenSE;
-
 		void OnCollisionEnter(
 			const Vec3<float>& arg_inter,
 			std::weak_ptr<Collider>arg_otherCollider)override {};
@@ -108,8 +105,8 @@ class Player : public ColliderParentObject
 			const Vec3<float>& arg_inter,
 			std::weak_ptr<Collider>arg_otherCollider)override;
 	public:
-		CallBackWithBlock(Player* arg_player, const std::weak_ptr<CollisionManager>& arg_collisionMgr, int arg_brokenSE)
-			:m_parent(arg_player), m_collisionMgr(arg_collisionMgr),m_brokenSE(arg_brokenSE) {}
+		CallBackWithBlock(Player* arg_player, const std::weak_ptr<CollisionManager>& arg_collisionMgr)
+			:m_parent(arg_player), m_collisionMgr(arg_collisionMgr) {}
 	};
 	std::shared_ptr<CallBackWithBlock>m_callBackWithBlock;
 

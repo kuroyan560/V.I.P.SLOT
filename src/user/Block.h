@@ -48,6 +48,7 @@ private:
 
 protected:
 	static std::weak_ptr<Player>s_player;
+	static int s_hitSE;
 
 	//コライダー
 	std::shared_ptr<Collider>m_collider;
@@ -77,9 +78,10 @@ protected:
 	virtual void OnExplosionFinishTrigger() {};
 
 public:
-	static void StaticAwake(std::weak_ptr<Player>arg_player)
+	static void StaticAwake(std::weak_ptr<Player>arg_player,int arg_hitSE)
 	{
 		s_player = arg_player;
+		s_hitSE = arg_hitSE;
 	}
 
 	//トランスフォーム

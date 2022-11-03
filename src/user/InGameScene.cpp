@@ -42,7 +42,11 @@ InGameScene::InGameScene()
 	//ステージマネージャ生成
 	m_stageMgr = std::make_shared<StageMgr>(m_slotMachine);
 
-	Block::StaticAwake(m_player);
+	//ブロックヒットSE
+	int blockBrokenSE = AudioApp::Instance()->LoadAudio("resource/user/sound/block_broken.wav", 0.5f);
+
+	//ブロックの静的パラメータ設定
+	Block::StaticAwake(m_player, blockBrokenSE);
 }
 
 void InGameScene::OnInitialize()

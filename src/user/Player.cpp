@@ -36,9 +36,6 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 	//敵の踏みつけSE
 	int onStepEnemySE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_step.wav",0.8f);
 
-	//ブロック破壊SE
-	int blockBrokenSE = AudioApp::Instance()->LoadAudio("resource/user/sound/block_broken.wav", 0.5f);
-
 	/*--- コライダー用プリミティブ生成 ---*/
 
 	//モデル全体を覆う球
@@ -55,7 +52,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 	//被ダメージコールバック
 	m_damegedCallBack = std::make_shared<DamagedCallBack>(this, arg_cam, onDamagedHitStopSE, onDamagedSE);
 	//ジャンプ権回復コールバック
-	m_callBackWithBlock = std::make_shared<CallBackWithBlock>(this, arg_collisionMgr, blockBrokenSE);
+	m_callBackWithBlock = std::make_shared<CallBackWithBlock>(this, arg_collisionMgr);
 
 	/*--- コライダー生成（判定順） ---*/
 
@@ -327,6 +324,4 @@ void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
 
 void Player::CallBackWithBlock::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
 {
-	//ブロック破壊SE再生
-	AudioApp::Instance()->PlayWaveDelay(m_brokenSE, 3);
 }

@@ -6,18 +6,31 @@
 #include"TexHitEffect.h"
 #include"TimeScale.h"
 #include"Player.h"
+#include"AudioApp.h"
 
 std::weak_ptr<Player>Block::s_player;
+int Block::s_hitSE = 0;
 
 void Block::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
 {
+	//ヒットSE呼び出し
+	AudioApp::Instance()->PlayWave(s_hitSE);
+
+	//ヒットエフェクト
 	m_hitEffect.lock()->Emit(arg_inter);
+
+	//ヒット回数インクリメント
 	m_hitCount++;
+
+	//継承先の当たった瞬間の処理呼び出し
 	OnHitTrigger();
 
+	//ブロック破壊判定
 	if (this->IsDead())
 	{
+		//爆発
 		m_explosion.Explosion(m_transform.GetScale());
+		//コライダーを切る
 		m_collider->SetActive(false);
 	}
 }
