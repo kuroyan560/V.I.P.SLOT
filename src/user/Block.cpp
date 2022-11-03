@@ -59,7 +59,7 @@ Block::Block(std::shared_ptr<Collider>arg_origin) :m_explosion(this)
 	m_collider = std::make_shared<Collider>(arg_origin->Clone(&m_transform, this));
 	m_collider->SetParentObject(this);
 	m_collider->SetParentTransform(&m_transform);
-	//m_collider->SetCallBack("Player", this);
+	m_collider->SetCallBack("Player_Attack", this);
 }
 
 void Block::Update(const TimeScale& arg_timeScale)

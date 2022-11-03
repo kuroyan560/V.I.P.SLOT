@@ -355,6 +355,9 @@
     <ClCompile Include="src\user\RandBox2D.cpp">
       <Filter>src\user</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\YoYo.cpp">
+      <Filter>src\user\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -671,6 +674,9 @@
     </ClInclude>
     <ClInclude Include="src\user\RandBox2D.h">
       <Filter>src\user</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\YoYo.h">
+      <Filter>src\user\Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

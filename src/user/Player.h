@@ -17,6 +17,7 @@ class Collider;
 class CollisionManager;
 class GameCamera;
 class CollisionSphere;
+class YoYo;
 
 class Player : public ColliderParentObject
 {
@@ -116,6 +117,9 @@ class Player : public ColliderParentObject
 	//操作がキーボードかコントローラーか
 	enum struct INPUT_CONFIG { KEY_BOARD, CONTROLLER };
 	INPUT_CONFIG m_inputConfig = INPUT_CONFIG::CONTROLLER;
+
+	//ヨーヨー
+	std::shared_ptr<YoYo>m_yoYo;
 	
 public:
 	Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<GameCamera>arg_cam);

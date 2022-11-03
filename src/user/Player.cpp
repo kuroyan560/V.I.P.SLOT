@@ -10,6 +10,7 @@
 #include"CollisionManager.h"
 #include"GameCamera.h"
 #include"Block.h"
+#include"YoYo.h"
 
 void Player::Jump(Vec3<float>* arg_rockOnPos)
 {
@@ -78,6 +79,10 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 
 	/*--- コライダー配列登録 ---*/
 	arg_collisionMgr.lock()->Register(colliders);
+
+	/*--- ヨーヨー生成 ---*/
+	m_yoYo = std::make_shared<YoYo>(arg_collisionMgr, &m_modelObj->m_transform, FIX_MODEL_CENTER_OFFSET);
+	m_yoYo->Awake(5.0f, 2.0f);
 }
 
 void Player::Init(int arg_initHp, int arg_initCoinNum)
@@ -107,6 +112,9 @@ void Player::Init(int arg_initHp, int arg_initCoinNum)
 
 	//被ダメージコールバック
 	m_damegedCallBack->Init();
+
+	//ヨーヨー
+	m_yoYo->Init();
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
@@ -122,6 +130,9 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	//ジャンプのトリガー入力
 	bool jumpTrigger = false;
 
+	//ヨーヨー投げ入力
+	bool throwYoyoTrigger = false;
+
 	//移動方向入力
 	Vec2<float>moveInput = { 0,0 };
 
@@ -135,8 +146,9 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 		if (input.KeyInput(DIK_LEFT))moveInput.x = -1.0f;
 		else if (input.KeyInput(DIK_RIGHT))moveInput.x = 1.0f;
 		//ジャンプ入力
-		auto jumpKeyCode = DIK_UP;
-		jumpTrigger = input.KeyOnTrigger(jumpKeyCode);
+		jumpTrigger = input.KeyOnTrigger(DIK_UP);
+		//ヨーヨー投げ入力
+		throwYoyoTrigger = input.KeyOnTrigger(DIK_SPACE);
 		break;
 	}
 
@@ -146,8 +158,9 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 		//方向入力
 		moveInput = input.GetLeftStickVec(0);
 		//ジャンプ入力
-		auto jumpButton = XBOX_BUTTON::A;
-		jumpTrigger = input.ControllerOnTrigger(0, jumpButton);
+		jumpTrigger = input.ControllerOnTrigger(0, XBOX_BUTTON::A);
+		//ヨーヨー投げ入力
+		throwYoyoTrigger = input.ControllerOnTrigger(0, XBOX_BUTTON::X);
 		break;
 	}
 
@@ -224,15 +237,29 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 
 	//被ダメージコールバック
 	m_damegedCallBack->Update(arg_timeScale);
+
+//ヨーヨー（攻撃）
+	//投げる
+	if (throwYoyoTrigger)
+	{
+		m_yoYo->Throw(YoYo::LEFT);
+	}
+
+	//ヨーヨー
+	m_yoYo->Update(arg_timeScale);
 }
 
 #include"DrawFunc3D.h"
 void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
 {
-	if (!m_damegedCallBack->GetIsDraw())return;
+	if (m_damegedCallBack->GetIsDraw())
+	{
+		//DrawFunc3D::DrawADSShadingModel(*LigMgr.lock(), m_modelObj, *Cam.lock(), AlphaBlendMode_None);
+		DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
+	}
 
-	//DrawFunc3D::DrawADSShadingModel(*LigMgr.lock(), m_modelObj, *Cam.lock(), AlphaBlendMode_None);
-	DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
+	//ヨーヨー
+	m_yoYo->Draw(arg_lightMgr, arg_cam);
 }
 
 void Player::EffectDraw(std::weak_ptr<Camera> arg_cam)
@@ -245,6 +272,7 @@ void Player::ImguiDebug()
 	ImGui::Begin("Player");
 	ImGui::Text("Coin : { %d }", m_coinVault.GetNum());
 	ImGui::Text("Hp : { %d }", m_hp);
+	m_yoYo->AddImguiDebugItem();
 	ImGui::End();
 }
 
