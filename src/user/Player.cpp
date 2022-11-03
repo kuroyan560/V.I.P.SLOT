@@ -110,10 +110,6 @@ void Player::Init(int arg_initHp, int arg_initCoinNum)
 
 	//被ダメージコールバック
 	m_damegedCallBack->Init();
-
-	//入力情報初期化
-	m_inputVec = { 0,0 };
-	m_isJumpInput = false;
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
@@ -129,6 +125,9 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	//ジャンプのトリガー入力
 	bool jumpTrigger = false;
 
+	//移動方向入力
+	Vec2<float>moveInput = { 0,0 };
+
 	//入力設定
 	switch (m_inputConfig)
 	{
@@ -136,12 +135,11 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	case Player::INPUT_CONFIG::KEY_BOARD:
 	{
 		//方向入力
-		if (input.KeyInput(DIK_LEFT))m_inputVec.x = -1.0f;
-		else if (input.KeyInput(DIK_RIGHT))m_inputVec.x = 1.0f;
+		if (input.KeyInput(DIK_LEFT))moveInput.x = -1.0f;
+		else if (input.KeyInput(DIK_RIGHT))moveInput.x = 1.0f;
 		//ジャンプ入力
 		auto jumpKeyCode = DIK_UP;
 		jumpTrigger = input.KeyOnTrigger(jumpKeyCode);
-		m_isJumpInput = input.KeyInput(jumpKeyCode);
 		break;
 	}
 
@@ -149,11 +147,10 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	case Player::INPUT_CONFIG::CONTROLLER:
 	{
 		//方向入力
-		m_inputVec = input.GetLeftStickVec(0);
+		moveInput = input.GetLeftStickVec(0);
 		//ジャンプ入力
 		auto jumpButton = XBOX_BUTTON::A;
 		jumpTrigger = input.ControllerOnTrigger(0, jumpButton);
-		m_isJumpInput = input.ControllerInput(0, jumpButton);
 		break;
 	}
 
@@ -164,7 +161,6 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	}
 
 //入力情報を元に操作
-	const Vec2<float>moveInput = m_inputVec;
 	//横移動
 	if (0.0f < moveInput.x)
 	{
@@ -333,34 +329,4 @@ void Player::CallBackWithBlock::OnCollisionTrigger(const Vec3<float>& arg_inter,
 {
 	//ブロック破壊SE再生
 	AudioApp::Instance()->PlayWaveDelay(m_brokenSE, 3);
-
-	//連続ジャンプ入力（長押しと方向入力）
-	if (m_parent->m_isJumpInput && !m_parent->m_inputVec.IsZero())
-	{
-		//レイの飛ばす方向
-		Vec3<float>rayDir = { m_parent->m_inputVec.x,m_parent->m_inputVec.y,0.0f };
-		//レイの判定情報格納先
-		RaycastHitInfo hitInfo;
-		//レイの長さ
-		const float CONTINUITY_JUMP_RAY_DIST = 5.0f;
-
-		//入力があった方にレイを飛ばす
-		if (m_collisionMgr.lock()->RaycastHit(m_parent->GetCenterPos(), rayDir, &hitInfo, "Block", CONTINUITY_JUMP_RAY_DIST))
-		{
-			//ブロッククラスに変換して座標取得
-			Vec3<float>nextBlockPos = hitInfo.m_otherCol.lock()->GetParentObject<Block>()->m_transform.GetPos();
-			//次のブロックに向かってジャンプ
-			m_parent->Jump(&nextBlockPos);
-		}
-		else
-		{
-			//通常ジャンプ
-			m_parent->Jump();
-		}
-	}
-	//通常ジャンプ
-	else
-	{
-		m_parent->Jump();
-	}
 }

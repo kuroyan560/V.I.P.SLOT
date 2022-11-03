@@ -43,10 +43,6 @@ class Player : public ColliderParentObject
 	//コライダー
 	std::shared_ptr<Collider>m_bodyCollider;
 
-	//入力情報の記録
-	Vec2<float>m_inputVec;
-	bool m_isJumpInput;
-
 	//HP
 	int m_hp;
 
