@@ -126,7 +126,7 @@ public:
     static Vec4<float> GetSpline(const int& Timer, const int& TotalTime, const int& P1Idx, const std::vector<Vec4<float>>& Array, bool Loop = false);
 
     //x,y,z‚ÌŠp“x‚©‚ç‰ñ“]s—ñ‚ğ¶¬
-    static Matrix RotateMat(const Vec3<Angle>& Rotate);
+    static Matrix RotateMat(const Angle& X, const Angle& Y, const Angle& Z);
     //²‚ÆŠp“x‚ğw’è‚µ‚Ä‰ñ“]s—ñ‚ğ¶¬
     static Matrix RotateMat(const Vec3<float>& Axis, const float& Radian);
     //a‚ğb‚ÉŒü‚©‚¹‚é‰ñ“]s—ñ‚ğ‹‚ß‚é

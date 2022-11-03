@@ -98,7 +98,7 @@ void EnemyKillCoinEffect::Info::Update(float arg_timeScale)
 	//変更後の回転量を各オフセットトランスフォームに適用
 	for (auto& num : m_numbers)
 	{
-		num.m_transform.SetRotate(Vec3<Angle>(0, m_angleY, 0));
+		num.m_transform.SetRotate(0, m_angleY, 0);
 	}
 }
 

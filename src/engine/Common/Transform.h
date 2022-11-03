@@ -96,8 +96,8 @@ public:
 		m_scale = s;
 		MatReset();
 	}
-	void SetRotate(const Vec3<Angle>& Rotate) { 
-		m_rotate = KuroMath::RotateMat(Rotate);
+	void SetRotate(const Angle& X, const Angle& Y, const Angle& Z) {
+		m_rotate = KuroMath::RotateMat(X, Y, Z);
 		MatReset();
 	}
 	void SetRotate(const XMVECTOR& Quaternion) {

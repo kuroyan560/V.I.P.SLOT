@@ -54,7 +54,7 @@ void StaticallyCubeMap::ResetMeshVertices()
 	static const std::array<Matrix, SURFACE_NUM>OFFSET_MAT =
 	{
 		XMMatrixIdentity(),	//äÓèÄ
-		KuroMath::RotateMat({0.0f,Angle(180),0.0f}),
+		KuroMath::RotateMat(0.0f,Angle(180),0.0f),
 		KuroMath::RotateMat({0,0,1},{1,0,0}),
 		KuroMath::RotateMat({0,0,1},{-1,0,0}),
 		KuroMath::RotateMat({0,0,1},{0,1,0}),

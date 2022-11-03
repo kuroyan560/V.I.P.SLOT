@@ -529,9 +529,9 @@ Vec4<float> KuroMath::GetSpline(const int& Timer, const int& TotalTime, const in
 #pragma endregion
 
 #pragma region Matrix
-Matrix KuroMath::RotateMat(const Vec3<Angle>& Rotate)
+Matrix KuroMath::RotateMat(const Angle& X, const Angle& Y, const Angle& Z)
 {
-    return XMMatrixRotationRollPitchYaw(Rotate.x, Rotate.y, Rotate.z);
+    return XMMatrixRotationRollPitchYaw(X, Y, Z);
 }
 
 Matrix KuroMath::RotateMat(const Vec3<float>& Axis, const float& Radian)
