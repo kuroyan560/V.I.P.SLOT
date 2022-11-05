@@ -4,6 +4,7 @@
 #include<memory>
 #include"Transform.h"
 #include"Timer.h"
+class Model;
 class CollisionManager;
 class CollisionSphere;
 class Collider;
@@ -13,8 +14,13 @@ class Camera;
 
 class YoYo
 {
+	//ヨーヨーモデル
+	std::shared_ptr<Model>m_model;
+
 	//トランスフォーム
 	Transform m_transform;
+	//向き指定用トランスフォーム
+	Transform m_vecTransform;
 
 	//投げる方向
 	enum THROW_VEC { LEFT, LEFT_UP, RIGHT_UP, RIGHT, THROW_VEC_NUM };
@@ -42,10 +48,9 @@ class YoYo
 	//ステータス終了計測用タイマー
 	Timer m_timer;
 
-
 public:
 
-	YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform,Vec3<float>arg_modelOffset);
+	YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform);
 
 	/// <summary>
 	/// ヨーヨーの固定パラメータ設定（≠初期化）

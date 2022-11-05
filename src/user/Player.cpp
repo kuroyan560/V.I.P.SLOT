@@ -25,6 +25,10 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 	//モデル読み込み
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "player.glb");
 
+	//モデルの中心に合わせたトランスフォーム用意
+	m_fixedTransform.SetParent(&m_modelObj->m_transform);
+	m_fixedTransform.SetPos(FIX_MODEL_CENTER_OFFSET);
+
 	//ジャンプSE読み込み
 	m_jumpSE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_jump.wav",0.6f);
 
@@ -42,12 +46,12 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 	//モデル全体を覆う球
 	m_bodySphereCol = std::make_shared<CollisionSphere>(
 		1.2f,
-		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -0.2f, 0.0f));
+		Vec3<float>(0.0f, -0.2f, 0.0f));
 
 	//足元の当たり判定球
 	std::shared_ptr<CollisionPrimitive>footSphereCol = std::make_shared<CollisionSphere>(
 		1.0f,
-		FIX_MODEL_CENTER_OFFSET + Vec3<float>(0.0f, -1.5f, 0.0f));
+		 Vec3<float>(0.0f, -1.5f, 0.0f));
 
 	/*--- コールバック生成 ---*/
 	//被ダメージコールバック
@@ -68,7 +72,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 		m_bodyCollider = std::make_shared<Collider>();
 		m_bodyCollider->Generate("Player_Body", "Player", coverModelPrimitiveArray);
 		m_bodyCollider->SetParentObject(this);
-		m_bodyCollider->SetParentTransform(&m_modelObj->m_transform);
+		m_bodyCollider->SetParentTransform(&m_fixedTransform);
 
 		//被ダメージコールバックアタッチ
 		m_bodyCollider->SetCallBack("Enemy", m_damegedCallBack.get());
@@ -81,7 +85,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 	arg_collisionMgr.lock()->Register(colliders);
 
 	/*--- ヨーヨー生成 ---*/
-	m_yoYo = std::make_shared<YoYo>(arg_collisionMgr, &m_modelObj->m_transform, FIX_MODEL_CENTER_OFFSET);
+	m_yoYo = std::make_shared<YoYo>(arg_collisionMgr, &m_fixedTransform);
 	m_yoYo->Awake(5.0f, 2.0f);
 }
 

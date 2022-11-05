@@ -4,11 +4,14 @@
 #include"CollisionManager.h"
 #include"TimeScale.h"
 #include<magic_enum.h>
+#include"Importer.h"
 
-YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform, Vec3<float>arg_modelOffset)
+YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform)
 {
-	m_transform.SetParent(arg_playerTransform);
-	m_transform.SetPos(arg_modelOffset);
+	m_model = Importer::Instance()->LoadModel("resource/user/model/", "yoyo.glb");
+
+	m_vecTransform.SetParent(arg_playerTransform);
+	m_transform.SetParent(&m_vecTransform);
 
 	m_throwCol = std::make_shared<Collider>();
 	m_throwCol->SetParentTransform(&m_transform);
@@ -60,8 +63,10 @@ void YoYo::Update(const TimeScale& arg_timeScale)
 	}
 }
 
+#include"DrawFunc3D.h"
 void YoYo::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
+	DrawFunc3D::DrawNonShadingModel(m_model, m_transform, *arg_cam.lock());
 }
 
 #include"imguiApp.h"
@@ -73,11 +78,11 @@ void YoYo::AddImguiDebugItem()
 
 void YoYo::Throw(Vec2<float>arg_vec)
 {
-	if (arg_vec.IsZero())
-	{
-		m_status = NEUTRAL;
-	}
-	else
+	//if (arg_vec.IsZero())
+	//{
+	//	m_status = NEUTRAL;
+	//}
+	//else
 	{
 		//判定用
 		static std::array<Angle, THROW_VEC_NUM>throwAngleJudge =
@@ -106,28 +111,31 @@ void YoYo::Throw(Vec2<float>arg_vec)
 		if (throwVec == RIGHT)
 		{
 			//右向きは初期
-			m_transform.SetRotate(XMMatrixIdentity());
+			m_vecTransform.SetRotate(XMMatrixIdentity());
 		}
 		else if (throwVec == RIGHT_UP)
 		{
-			m_transform.SetRotate(Angle(0), Angle(0), Angle(45));
+			m_vecTransform.SetRotate(Angle(0), Angle(0), Angle(45));
 		}
 		else if (throwVec == LEFT)
 		{
-			m_transform.SetRotate(Angle(0), Angle(180), Angle(0));
+			m_vecTransform.SetRotate(Angle(0), Angle(180), Angle(0));
 		}
 		else if (throwVec == LEFT_UP)
 		{
-			m_transform.SetRotate(Angle(0), Angle(180), Angle(45));
+			m_vecTransform.SetRotate(Angle(0), Angle(180), Angle(45));
 		}
 
 		if (m_status == HAND)
 		{
 			m_status = THROW_0;
-			m_throwCol->SetActive(true);
+			//m_throwCol->SetActive(true);
 		}
 		else if (m_status == THROW_0)m_status = THROW_1;
 		else if (m_status == THROW_1)m_status = THROW_2;
+
+		//デバッグ用
+		else if (m_status == THROW_2)m_status = THROW_0;
 	}
 
 	m_timer.Reset(m_finishInterval[m_status]);
