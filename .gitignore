@@ -1,6 +1,6 @@
 .vs/
 Built/
-lib/
+lib/DirectXTex/Bin/
 packages/
 x64/
 imgui.ini
