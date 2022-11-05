@@ -6,7 +6,8 @@ KuroMath::EasingFunction KuroMath::easing[EASE_CHANGE_TYPE_NUM][EASING_TYPE_NUM]
 {
     {LinerFunc,QuadIn,CubicIn,QuartIn,QuintIn,SineIn,ExpIn,CircIn,ElasticIn,BackIn,BounceIn},
      {LinerFunc,QuadOut,CubicOut,QuartOut,QuintOut,SineOut,ExpOut,CircOut,ElasticOut,BackOut,BounceOut},
-     {LinerFunc,QuadInOut,CubicInOut,QuartInOut,QuintInOut,SineInOut,ExpInOut,CircInOut,ElasticInOut,BackInOut,BounceInOut}
+     {LinerFunc,QuadInOut,CubicInOut,QuartInOut,QuintInOut,SineInOut,ExpInOut,CircInOut,ElasticInOut,BackInOut,BounceInOut},
+     {LinerFunc,QuadOutIn,CubicOutIn,QuartOutIn,QuintOutIn,SineOutIn,ExpOutIn,CircOutIn,ElasticOutIn,BackOutIn,BounceOutIn}
 };
 
 const float PI = 3.14159265359f;
@@ -34,12 +35,20 @@ float KuroMath::QuadOut(float t, float totaltime, float min, float max)
 
 float KuroMath::QuadInOut(float t, float totaltime, float min, float max)
 {
-    max -= min;
-    t /= totaltime / 2;
-    if (t < 1) return max / 2 * t * t + min;
+    if (t < totaltime / 2.0f)
+    {
+        return QuadIn(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return QuadOut(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
+}
 
-    t = t - 1;
-    return -max / 2 * (t * (t - 2) - 1) + min;
+float KuroMath::QuadOutIn(float t, float totaltime, float min, float max)
+{
+    if (t < totaltime / 2.0f)
+    {
+        return QuadOut(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return QuadIn(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
 }
 
 float KuroMath::CubicIn(float t, float totaltime, float min, float max)
@@ -58,12 +67,20 @@ float KuroMath::CubicOut(float t, float totaltime, float min, float max)
 
 float KuroMath::CubicInOut(float t, float totaltime, float min, float max)
 {
-    max -= min;
-    t /= totaltime / 2;
-    if (t < 1) return max / 2 * t * t * t + min;
+    if (t < totaltime / 2.0f)
+    {
+        return CubicIn(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return CubicOut(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
+}
 
-    t = t - 2;
-    return max / 2 * (t * t * t + 2) + min;
+float KuroMath::CubicOutIn(float t, float totaltime, float min, float max)
+{
+    if (t < totaltime / 2.0f)
+    {
+        return CubicOut(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return CubicIn(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
 }
 
 float KuroMath::QuartIn(float t, float totaltime, float min, float max)
@@ -82,12 +99,20 @@ float KuroMath::QuartOut(float t, float totaltime, float min, float max)
 
 float KuroMath::QuartInOut(float t, float totaltime, float min, float max)
 {
-    max -= min;
-    t /= totaltime / 2;
-    if (t < 1) return max / 2 * t * t * t * t + min;
+    if (t < totaltime / 2.0f)
+    {
+        return QuartIn(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return QuartOut(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
+}
 
-    t = t - 2;
-    return -max / 2 * (t * t * t * t - 2) + min;
+float KuroMath::QuartOutIn(float t, float totaltime, float min, float max)
+{
+    if (t < totaltime / 2.0f)
+    {
+        return QuartOut(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return QuartIn(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
 }
 
 float KuroMath::QuintIn(float t, float totaltime, float min, float max)
@@ -106,12 +131,20 @@ float KuroMath::QuintOut(float t, float totaltime, float min, float max)
 
 float KuroMath::QuintInOut(float t, float totaltime, float min, float max)
 {
-    max -= min;
-    t /= totaltime / 2;
-    if (t < 1) return max / 2 * t * t * t * t * t + min;
+    if (t < totaltime / 2.0f)
+    {
+        return QuintIn(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return QuintOut(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
+}
 
-    t = t - 2;
-    return max / 2 * (t * t * t * t * t + 2) + min;
+float KuroMath::QuintOutIn(float t, float totaltime, float min, float max)
+{
+    if (t < totaltime / 2.0f)
+    {
+        return QuintOut(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return QuintIn(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
 }
 
 float KuroMath::SineIn(float t, float totaltime, float min, float max)
@@ -128,8 +161,20 @@ float KuroMath::SineOut(float t, float totaltime, float min, float max)
 
 float KuroMath::SineInOut(float t, float totaltime, float min, float max)
 {
-    max -= min;
-    return -max / 2 * (cos(t * PI / totaltime) - 1) + min;
+    if (t < totaltime / 2.0f)
+    {
+        return SineIn(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return SineOut(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
+}
+
+float KuroMath::SineOutIn(float t, float totaltime, float min, float max)
+{
+    if (t < totaltime / 2.0f)
+    {
+        return SineOut(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return SineIn(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
 }
 
 float KuroMath::ExpIn(float t, float totaltime, float min, float max)
@@ -146,15 +191,20 @@ float KuroMath::ExpOut(float t, float totaltime, float min, float max)
 
 float KuroMath::ExpInOut(float t, float totaltime, float min, float max)
 {
-    if (t == 0.0f) return min;
-    if (t == totaltime) return max;
-    max -= min;
-    t /= totaltime / 2;
+    if (t < totaltime / 2.0f)
+    {
+        return ExpIn(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return ExpOut(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
+}
 
-    if (t < 1) return static_cast<float>(max / 2 * pow(2, 10 * (t - 1)) + min);
-
-    t = t - 1;
-    return static_cast<float>(max / 2 * (-pow(2, -10 * t) + 2) + min);
+float KuroMath::ExpOutIn(float t, float totaltime, float min, float max)
+{
+    if (t < totaltime / 2.0f)
+    {
+        return ExpOut(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return ExpIn(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
 }
 
 float KuroMath::CircIn(float t, float totaltime, float min, float max)
@@ -173,12 +223,20 @@ float KuroMath::CircOut(float t, float totaltime, float min, float max)
 
 float KuroMath::CircInOut(float t, float totaltime, float min, float max)
 {
-    max -= min;
-    t /= totaltime / 2;
-    if (t < 1) return -max / 2 * (sqrt(1 - t * t) - 1) + min;
+    if (t < totaltime / 2.0f)
+    {
+        return CircIn(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return CircOut(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
+}
 
-    t = t - 2;
-    return max / 2 * (sqrt(1 - t * t) + 1) + min;
+float KuroMath::CircOutIn(float t, float totaltime, float min, float max)
+{
+    if (t < totaltime / 2.0f)
+    {
+        return CircOut(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return CircIn(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
 }
 
 float KuroMath::ElasticIn(float t, float totaltime, float min, float max)
@@ -234,33 +292,20 @@ float KuroMath::ElasticOut(float t, float totaltime, float min, float max)
 
 float KuroMath::ElasticInOut(float t, float totaltime, float min, float max)
 {
-    max -= min;
-    t /= totaltime / 2;
-
-    float s = 1.70158f;
-    float p = totaltime * (0.3f * 1.5f);
-    float a = max;
-
-    if (t == 0) return min;
-    if (t == 2) return min + max;
-
-    if (a < abs(max))
+    if (t < totaltime / 2.0f)
     {
-        a = max;
-        s = p / 4;
+        return ElasticIn(t, totaltime / 2.0f, min, max * 0.5f);
     }
-    else
-    {
-        s = p / (2 * PI) * asin(max / a);
-    }
+    return ElasticOut(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
+}
 
-    if (t < 1)
+float KuroMath::ElasticOutIn(float t, float totaltime, float min, float max)
+{
+    if (t < totaltime / 2.0f)
     {
-        return static_cast<float>(-0.5f * (a * pow(2, 10 * (t -= 1)) * sin((t * totaltime - s) * (2 * PI) / p)) + min);
+        return ElasticOut(t, totaltime / 2.0f, min, max * 0.5f);
     }
-
-    t = t - 1;
-    return static_cast<float>(a * pow(2, -10 * t) * sin((t * totaltime - s) * (2 * PI) / p) * 0.5f + max + min);
+    return ElasticIn(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
 }
 
 float KuroMath::BackIn(float t, float totaltime, float min, float max)
@@ -281,14 +326,20 @@ float KuroMath::BackOut(float t, float totaltime, float min, float max)
 
 float KuroMath::BackInOut(float t, float totaltime, float min, float max)
 {
-    float s = 1.70158f;
-    max -= min;
-    s *= 1.525f;
-    t /= totaltime / 2;
-    if (t < 1) return max / 2 * (t * t * ((s + 1) * t - s)) + min;
+    if (t < totaltime / 2.0f)
+    {
+        return BackIn(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return BackOut(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
+}
 
-    t = t - 2;
-    return max / 2 * (t * t * ((s + 1) * t + s) + 2) + min;
+float KuroMath::BackOutIn(float t, float totaltime, float min, float max)
+{
+    if (t < totaltime / 2.0f)
+    {
+        return BackOut(t, totaltime / 2.0f, min, max * 0.5f);
+    }
+    return BackIn(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
 }
 
 float KuroMath::BounceIn(float t, float totaltime, float min, float max)
@@ -325,14 +376,20 @@ float KuroMath::BounceOut(float t, float totaltime, float min, float max)
 
 float KuroMath::BounceInOut(float t, float totaltime, float min, float max)
 {
-    if (t < totaltime / 2)
+    if (t < totaltime / 2.0f)
     {
-        return BounceIn(t * 2, totaltime, 0, max - min) * 0.5f + min;
+        return BounceIn(t, totaltime / 2.0f, min, max * 0.5f);
     }
-    else
+    return BounceOut(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
+}
+
+float KuroMath::BounceOutIn(float t, float totaltime, float min, float max)
+{
+    if (t < totaltime / 2.0f)
     {
-        return BounceOut(t * 2 - totaltime, totaltime, 0, max - min) * 0.5f + min + (max - min) * 0.5f;
+        return BounceOut(t, totaltime / 2.0f, min, max * 0.5f);
     }
+    return BounceIn(t - totaltime / 2.0f, totaltime / 2.0f, max * 0.5f, max);
 }
 
 float KuroMath::Ease(EASE_CHANGE_TYPE EaseChangeType, EASING_TYPE EasingType, float T, float TotalTime, float Min, float Max)
