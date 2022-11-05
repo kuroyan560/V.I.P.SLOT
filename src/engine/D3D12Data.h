@@ -287,6 +287,10 @@ public:
 	{
 		m_resource->Mapping(m_dataSize, m_elementNum, SendData);
 	}
+	void Mapping(const void* SendData, int ElementNum)
+	{
+		m_resource->Mapping(m_dataSize, ElementNum, SendData);
+	}
 };
 
 //出力先バッファ
