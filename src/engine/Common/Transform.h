@@ -32,6 +32,11 @@ private:
 		m_dirty = true;
 	}
 
+	bool IsDirty()
+	{
+		return m_dirty || (m_parent != nullptr && m_parent->IsDirty());
+	}
+
 public:
 	Transform(Transform* Parent = nullptr) {
 		SetParent(Parent);
