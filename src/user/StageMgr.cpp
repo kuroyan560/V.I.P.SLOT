@@ -70,6 +70,8 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 
 void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
+	if (!m_generateTerrian)return;
+
 	using namespace ConstParameter::Environment;
 	using namespace ConstParameter::Stage;
 
@@ -162,6 +164,8 @@ void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManage
 
 void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
+	if (!m_generateTerrian)return;
+
 	//Ç∑Ç◊ÇƒÇÃÉRÉCÉìîrèoçœÇ©
 	bool isAllCoinEmit = true;
 
@@ -196,6 +200,8 @@ void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>a
 
 void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
+	if (!m_generateTerrian)return;
+
 	std::vector<Matrix>coinBlockTransformArray;
 	std::vector<Matrix>emptyCoinBlockTransformArray;
 
@@ -273,6 +279,12 @@ void StageMgr::ImguiDebug(std::weak_ptr<CollisionManager>arg_collisionMgr)
 
 	ImGui::Checkbox("InfinityMode", &m_isInfinity);
 
+	if (ImGui::Checkbox("GenerateTerrian", &m_generateTerrian))
+	{
+		Finalize(arg_collisionMgr);
+		Init("", arg_collisionMgr);
+	}
+
 	bool changeRate = ImGui::DragFloat("BlockGenerateRate", &m_generateBlockRate, 0.5f, 0.0f, 100.0f);
 
 	bool changeX = ImGui::DragInt("BlockNumX", &m_blockNum.x);
@@ -281,7 +293,11 @@ void StageMgr::ImguiDebug(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	if (m_blockNum.x < 1)m_blockNum.x = 1;
 	if (m_blockNum.y < 1)m_blockNum.y = 1;
 
-	if (changeRate || changeX || changeY)Init("", arg_collisionMgr);
+	if (changeRate || changeX || changeY)
+	{
+		Finalize(arg_collisionMgr);
+		Init("", arg_collisionMgr);
+	}
 
 	ImGui::End();
 }
