@@ -35,7 +35,7 @@ TitleScene::TitleScene()
 
 	//看板
 	m_signBoard->m_transform.SetPos({ 2.0f,0.0f,-4.0f });
-	m_signBoard->m_transform.SetFront(KuroMath::TransformVec3(Vec3<float>(0, 0, 1), KuroMath::RotateMat(Vec3<Angle>(0.0f, 45.0f, 0.0f))));
+	m_signBoard->m_transform.SetFront(KuroMath::TransformVec3(Vec3<float>(0, 0, 1), KuroMath::RotateMat(0, 45, 0)));
 
 	//看板に向けたスポットライト
 	m_signSpot.SetPos({ 0.15f,3.57f,-6.83f });
