@@ -1,38 +1,38 @@
 //ディレクションライト
 struct DirectionLight
 {
-    uint active;
     float4 color;
     float3 direction;
+    uint active;
 };
 
 //ポイントライト
 struct PointLight
 {
-    uint active;
     float4 color;
     float3 pos;
     float influenceRange;
+    uint active;
 };
 
 //スポットライト
 struct SpotLight
 {
-    uint active;
     float4 color;
     float3 pos;
     float influenceRange;
     float3 target;
     float angle;
+    uint active;
 };
 
 //天球
 struct HemiSphereLight
 {
-    uint active;
     float4 skyColor;
     float4 groundColor;
     float3 groundNormal;
+    uint active;
 };
 
 //アクティブ中のライトの数
