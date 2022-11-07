@@ -3,8 +3,8 @@
 class ConstantBuffer;
 #include"Transform.h"
 #include<string>
-class ModelAnimator;
-class Model;
+#include"ModelAnimator.h"
+#include"Model.h"
 
 class ModelObject
 {

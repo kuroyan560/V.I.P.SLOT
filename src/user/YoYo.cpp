@@ -5,16 +5,17 @@
 #include"TimeScale.h"
 #include<magic_enum.h>
 #include"Importer.h"
+#include"Object.h"
 
 YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform)
 {
-	m_model = Importer::Instance()->LoadModel("resource/user/model/", "yoyo.glb");
+	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "yoyo.glb");
 
 	m_vecTransform.SetParent(arg_playerTransform);
-	m_transform.SetParent(&m_vecTransform);
+	m_modelObj->m_transform.SetParent(&m_vecTransform);
 
 	m_throwCol = std::make_shared<Collider>();
-	m_throwCol->SetParentTransform(&m_transform);
+	m_throwCol->SetParentTransform(&m_modelObj->m_transform);
 	arg_collisionMgr.lock()->Register(m_throwCol);
 }
 
@@ -28,9 +29,9 @@ void YoYo::Awake(float arg_length, float arg_colSphereRadius)
 	m_capsuleSphereArray.resize(colSphereNum);
 
 	//オフセット
-	float offsetX = arg_length / static_cast<float>(colSphereNum);
+	float offsetX = -arg_length / static_cast<float>(colSphereNum);
 
-	//デフォルト＋X方向、始点０
+	//デフォルト-X方向、始点０
 	for (int i = 0; i < colSphereNum; ++i)
 	{
 		m_capsuleSphereArray[i] = std::make_shared<CollisionSphere>(arg_colSphereRadius, Vec3<float>(offsetX * i, 0.0f, 0.0f));
@@ -43,6 +44,9 @@ void YoYo::Awake(float arg_length, float arg_colSphereRadius)
 
 void YoYo::Init()
 {
+	//アニメーション初期化
+	m_modelObj->m_animator->Reset();
+
 	//コライダーオフに
 	m_throwCol->SetActive(false);
 
@@ -52,6 +56,9 @@ void YoYo::Init()
 
 void YoYo::Update(const TimeScale& arg_timeScale)
 {
+	//アニメーション更新
+	m_modelObj->m_animator->Update();
+
 	//手に持ってる状態なら何もしない
 	if (m_status == HAND)return;
 
@@ -66,7 +73,7 @@ void YoYo::Update(const TimeScale& arg_timeScale)
 #include"DrawFunc3D.h"
 void YoYo::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
-	DrawFunc3D::DrawNonShadingModel(m_model, m_transform, *arg_cam.lock());
+	DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock());
 }
 
 #include"imguiApp.h"
@@ -87,7 +94,7 @@ void YoYo::Throw(Vec2<float>arg_vec)
 		//判定用
 		static std::array<Angle, THROW_VEC_NUM>throwAngleJudge =
 		{
-			Angle(180),Angle(135),Angle(45),Angle(0)
+			Angle(-180),Angle(-135),Angle(-45),Angle(0)
 		};
 
 		THROW_VEC throwVec = LEFT;
@@ -108,20 +115,20 @@ void YoYo::Throw(Vec2<float>arg_vec)
 		}
 
 		//コライダーの向きを決定
-		if (throwVec == RIGHT)
+		if (throwVec == LEFT)
 		{
 			//右向きは初期
 			m_vecTransform.SetRotate(XMMatrixIdentity());
 		}
-		else if (throwVec == RIGHT_UP)
+		else if (throwVec == LEFT_UP)
 		{
 			m_vecTransform.SetRotate(Angle(0), Angle(0), Angle(45));
 		}
-		else if (throwVec == LEFT)
+		else if (throwVec == RIGHT)
 		{
 			m_vecTransform.SetRotate(Angle(0), Angle(180), Angle(0));
 		}
-		else if (throwVec == LEFT_UP)
+		else if (throwVec == RIGHT_UP)
 		{
 			m_vecTransform.SetRotate(Angle(0), Angle(180), Angle(45));
 		}
@@ -130,12 +137,25 @@ void YoYo::Throw(Vec2<float>arg_vec)
 		{
 			m_status = THROW_0;
 			m_throwCol->SetActive(true);
+			m_modelObj->m_animator->Play("Attack_0", false, false);
 		}
-		else if (m_status == THROW_0)m_status = THROW_1;
-		else if (m_status == THROW_1)m_status = THROW_2;
+		else if (m_status == THROW_0)
+		{
+			m_status = THROW_1;
+			m_modelObj->m_animator->Play("Attack_1", false, false);
+		}
+		else if (m_status == THROW_1)
+		{
+			m_status = THROW_2;
+			m_modelObj->m_animator->Play("Attack_2", false, false);
+		}
 
 		//デバッグ用
-		else if (m_status == THROW_2)m_status = THROW_0;
+		else if (m_status == THROW_2)
+		{
+			m_status = THROW_0;
+			m_modelObj->m_animator->Play("Attack_0", false, false);
+		}
 	}
 
 	m_timer.Reset(m_finishInterval[m_status]);

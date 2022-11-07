@@ -4,7 +4,7 @@
 #include<memory>
 #include"Transform.h"
 #include"Timer.h"
-class Model;
+class ModelObject;
 class CollisionManager;
 class CollisionSphere;
 class Collider;
@@ -15,10 +15,8 @@ class Camera;
 class YoYo
 {
 	//ヨーヨーモデル
-	std::shared_ptr<Model>m_model;
+	std::shared_ptr<ModelObject>m_modelObj;
 
-	//トランスフォーム
-	Transform m_transform;
 	//向き指定用トランスフォーム
 	Transform m_vecTransform;
 
