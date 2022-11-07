@@ -4,6 +4,7 @@
 #include"Light.h"
 #include<wrl.h>
 #include<d3d12.h>
+#include<array>
 
 class ConstantBuffer;
 class StructuredBuffer;
@@ -15,7 +16,7 @@ private:
 	template<class T>
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
 
-	static const int MAX_LIG_NUM[Light::TYPE_NUM];
+	static const std::array<int, Light::TYPE_NUM>MAX_LIG_NUM;
 private:
 	std::vector<Light::Direction*>dirLights;
 	std::vector<Light::Point*>ptLights;
@@ -25,10 +26,10 @@ private:
 	//アクティブ中のライトの数を送るための定数バッファデータ
 	struct LightNum
 	{
-		int dirLigNum;
-		int ptLigNum;
-		int spotLigNum;
-		int hemiSphereNum;
+		int dirLigNum = 0;
+		int ptLigNum = 0;
+		int spotLigNum = 0;
+		int hemiSphereNum = 0;
 	};
 	std::shared_ptr<ConstantBuffer>ligNumConstBuff;
 

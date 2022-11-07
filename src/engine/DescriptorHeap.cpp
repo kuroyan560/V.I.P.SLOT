@@ -20,7 +20,7 @@ DescriptorHeapBase::DescriptorHeapBase(ComPtr<ID3D12Device>Device, const D3D12_D
     };
     result = Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&m_heap));
     m_headHandleCpu = m_heap.Get()->GetCPUDescriptorHandleForHeapStart();
-  /*  if(flag == D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE)*/m_headHandleGpu = m_heap.Get()->GetGPUDescriptorHandleForHeapStart();
+    if (flag == D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE)m_headHandleGpu = m_heap.Get()->GetGPUDescriptorHandleForHeapStart();
     m_incrementSize = Device->GetDescriptorHandleIncrementSize(heapDesc.Type);
 }
 
