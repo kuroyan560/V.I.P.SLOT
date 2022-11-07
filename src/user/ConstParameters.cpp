@@ -8,27 +8,27 @@ namespace ConstParameter
 {
     namespace Environment
     {
-        //ステージ横幅
-        float FIELD_WIDTH = 60.0f;
-        //フィールド位置のZ軸
-        float FIELD_DEPTH = -20.0f;
-        //フィールド位置のZ軸とのオフセット（モデルの位置ズレ）
-        float FIELD_DEPTH_MODEL_OFFSET = -5.2f;
-        //フィールド位置のZ軸（オフセット適用）
-        float FIELD_DEPTH_FIXED = FIELD_DEPTH + FIELD_DEPTH_MODEL_OFFSET;
+        //ステージサイズ（縦幅・横幅）
+        Vec2<float>FIELD_FLOOR_SIZE = { 60.0f,1.0f };
+        //ステージ床座標
+        Vec3<float>FIELD_FLOOR_POS = { 0.0f,-2.0f,-25.0f };
+        //ステージ床上面の高さ
+        float FIELD_FLOOR_TOP_SURFACE_HEIGHT = FIELD_FLOOR_POS.y + FIELD_FLOOR_SIZE.y / 2.0f;
+        //フィールドのX軸幅
+        float FIELD_WIDTH = 64.0f;
         //フィールドのY軸上限
-        float FIELD_HEIGHT_MAX = 25.5f;
+        float FIELD_HEIGHT_MAX = 32.0f;
         //フィールドのY軸下限
-        float FIELD_HEIGHT_MIN = 0.0f;
+        float FIELD_HEIGHT_MIN = -1.0f;
     };
 
     namespace Player
     {
         //初期位置
-        Vec3<float>INIT_POS = { 0,0,Environment::FIELD_DEPTH };
+        Vec3<float>INIT_POS = { 0,Environment::FIELD_FLOOR_TOP_SURFACE_HEIGHT,Environment::FIELD_FLOOR_POS.z };
 
-        //モデル中央に合わせるためのオフセット値
-        Vec3<float>FIX_MODEL_CENTER_OFFSET = { 0.0f,2.0f,ConstParameter::Environment::FIELD_DEPTH_MODEL_OFFSET };
+        //モデルサイズ
+        Vec3<float>MODEL_SIZE = { 1.0f,2.0f,1.0f };
 
         //最大HP
         int MAX_HP = 10;

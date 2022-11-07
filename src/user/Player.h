@@ -24,9 +24,6 @@ class Player : public ColliderParentObject
 	//モデルオブジェクト
 	std::shared_ptr<ModelObject>m_modelObj;
 
-	//モデルの中心に合わせたトランスフォーム
-	Transform m_fixedTransform;
-
 	//移動
 	Vec3<float>m_move = { 0,0,0 };
 

@@ -41,7 +41,7 @@ void ObjectSlideMove::OnInit(GameObject& arg_enemy)
 	initPos.y = KuroFunc::GetRand(FIELD_HEIGHT_MIN + 3.0f, FIELD_HEIGHT_MAX);
 
 	//フィールドのZに合わせる
-	initPos.z = FIELD_DEPTH_FIXED;
+	initPos.z = FIELD_FLOOR_POS.z;
 
 	//初期位置設定
 	arg_enemy.m_transform.SetPos(initPos);

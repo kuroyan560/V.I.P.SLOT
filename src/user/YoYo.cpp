@@ -129,7 +129,7 @@ void YoYo::Throw(Vec2<float>arg_vec)
 		if (m_status == HAND)
 		{
 			m_status = THROW_0;
-			//m_throwCol->SetActive(true);
+			m_throwCol->SetActive(true);
 		}
 		else if (m_status == THROW_0)m_status = THROW_1;
 		else if (m_status == THROW_1)m_status = THROW_2;

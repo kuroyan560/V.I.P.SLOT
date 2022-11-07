@@ -140,7 +140,7 @@ void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManage
 			if (!KuroFunc::Probability(m_generateBlockRate))continue;
 
 			auto& block = m_terrianBlockArray[y][x];
-			initTransform.SetPos({ leftX + x * offset.x,topY - y * offset.y,FIELD_DEPTH_FIXED });
+			initTransform.SetPos({ leftX + x * offset.x,topY - y * offset.y,FIELD_FLOOR_POS.z });
 
 			auto itr = std::find(slotBlockRandIdx.begin(), slotBlockRandIdx.end(), Vec2<int>(x, y));
 			if (itr == slotBlockRandIdx.end())

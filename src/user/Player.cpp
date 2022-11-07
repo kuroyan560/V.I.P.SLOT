@@ -25,10 +25,6 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 	//モデル読み込み
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "player.glb");
 
-	//モデルの中心に合わせたトランスフォーム用意
-	m_fixedTransform.SetParent(&m_modelObj->m_transform);
-	m_fixedTransform.SetPos(FIX_MODEL_CENTER_OFFSET);
-
 	//ジャンプSE読み込み
 	m_jumpSE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_jump.wav",0.6f);
 
@@ -72,7 +68,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 		m_bodyCollider = std::make_shared<Collider>();
 		m_bodyCollider->Generate("Player_Body", "Player", coverModelPrimitiveArray);
 		m_bodyCollider->SetParentObject(this);
-		m_bodyCollider->SetParentTransform(&m_fixedTransform);
+		m_bodyCollider->SetParentTransform(&m_modelObj->m_transform);
 
 		//被ダメージコールバックアタッチ
 		m_bodyCollider->SetCallBack("Enemy", m_damegedCallBack.get());
@@ -85,7 +81,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 	arg_collisionMgr.lock()->Register(colliders);
 
 	/*--- ヨーヨー生成 ---*/
-	m_yoYo = std::make_shared<YoYo>(arg_collisionMgr, &m_fixedTransform);
+	m_yoYo = std::make_shared<YoYo>(arg_collisionMgr, &m_modelObj->m_transform);
 	m_yoYo->Awake(5.0f, 2.0f);
 }
 
@@ -215,16 +211,16 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	pos += m_move * arg_timeScale.GetTimeScale();
 
 	//押し戻し（床）
-	if (pos.y < 0.0f)
+	if (pos.y < FIELD_FLOOR_TOP_SURFACE_HEIGHT + MODEL_SIZE.y / 2.0f)
 	{
-		pos.y = 0.0f;
+		pos.y = FIELD_FLOOR_TOP_SURFACE_HEIGHT + MODEL_SIZE.y / 2.0f;
 		m_fallSpeed = 0.0f;
 		m_move.y = 0.0f;
 		m_isOnGround = true;
 	}
 
 	//押し戻し（ステージ端）
-	const float FIELD_WIDTH_HALF = FIELD_WIDTH / 2.0f;
+	const float FIELD_WIDTH_HALF = FIELD_FLOOR_SIZE.x / 2.0f;
 	if (pos.x < -FIELD_WIDTH_HALF)
 	{
 		pos.x = -FIELD_WIDTH_HALF;
@@ -282,7 +278,7 @@ void Player::ImguiDebug()
 
 Vec3<float> Player::GetCenterPos() const
 {
-	return m_modelObj->m_transform.GetPos() + ConstParameter::Player::FIX_MODEL_CENTER_OFFSET;
+	return m_modelObj->m_transform.GetPos();
 }
 
 void Player::DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter, 

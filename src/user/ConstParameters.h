@@ -8,14 +8,14 @@ namespace ConstParameter
 {
 	namespace Environment
 	{
-		//ステージ横幅
+		//ステージサイズ（縦幅・横幅）
+		extern Vec2<float> FIELD_FLOOR_SIZE;
+		//ステージ床座標
+		extern Vec3<float>FIELD_FLOOR_POS;
+		//ステージ床上面の高さ
+		extern float FIELD_FLOOR_TOP_SURFACE_HEIGHT;
+		//フィールドのX軸幅
 		extern float FIELD_WIDTH;
-		//フィールド位置のZ軸
-		extern float FIELD_DEPTH;
-		//フィールド位置のZ軸とのオフセット（モデルの位置ズレ）
-		extern float FIELD_DEPTH_MODEL_OFFSET;
-		//フィールド位置のZ軸（オフセット適用）
-		extern float FIELD_DEPTH_FIXED;
 		//フィールドのY軸上限
 		extern float FIELD_HEIGHT_MAX;
 		//フィールドのY軸下限
@@ -29,8 +29,8 @@ namespace ConstParameter
 		//初期位置
 		extern Vec3<float>INIT_POS;
 
-		//モデル中央に合わせるためのオフセット値
-		extern Vec3<float>FIX_MODEL_CENTER_OFFSET;
+		//モデルサイズ
+		extern Vec3<float>MODEL_SIZE;
 
 		//最大HP
 		extern int MAX_HP;

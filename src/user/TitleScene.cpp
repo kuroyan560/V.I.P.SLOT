@@ -6,10 +6,12 @@
 #include"TitleCamera.h"
 #include"DebugCamera.h"
 #include"LightManager.h"
+#include"Model.h"
 
 TitleScene::TitleScene()
 {
 	m_signBoard = std::make_shared<ModelObject>("resource/user/model/", "signboard.glb");
+	m_signBoard->m_model->m_meshes[0].material->texBuff[0] = D3D12App::Instance()->GenerateTextureBuffer(Color(1, 1, 1, 1));
 
 	m_debugCam = std::make_shared<DebugCamera>();
 	m_titleCam = std::make_shared<TitleCamera>();
