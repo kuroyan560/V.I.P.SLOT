@@ -82,6 +82,9 @@ void SlotMachine::Init()
 
 	//スロット回転予約リセット
 	m_startSlotCount = 0;
+
+	//リール初期化
+	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Init();
 }
 
 void SlotMachine::Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_timeScale)
