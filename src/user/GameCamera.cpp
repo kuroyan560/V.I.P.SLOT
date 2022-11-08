@@ -3,13 +3,23 @@
 #include"KuroMath.h"
 #include<math.h>
 
-void GameCamera::SetPosAndTarget(Vec3<float>arg_offset)
+void GameCamera::SetPosAndTarget(Vec3<float>arg_absOffset, Vec3<float>arg_lerpOffset)
 {
-	for (int i = 0; i < NUM; ++i)
-	{
-		m_cam[i]->SetPos(m_defaultPos[i] + arg_offset);
-		m_cam[i]->SetTarget(m_targetPos[i] + arg_offset);
-	}
+	//床下はあまり見えないように高さ補正
+	Vec3<float>heightOffset = { 0.0f,(1.0f - std::min(arg_lerpOffset.y / 10.0f, 1.0f)) * 8.0f,0.0f };
+
+	//前景カメラ
+	Vec3<float>pos = m_cam[FRONT]->GetPos();
+	pos = KuroMath::Lerp(pos, m_defaultPos[FRONT] + heightOffset + arg_lerpOffset, 0.08f);
+	m_cam[FRONT]->SetPos(pos + arg_absOffset);
+
+	Vec3<float>target = m_cam[FRONT]->GetTarget();
+	target = KuroMath::Lerp(target, m_targetPos[FRONT] + heightOffset + arg_lerpOffset, 0.08f);
+	m_cam[FRONT]->SetTarget(target + arg_absOffset);
+
+	//背景カメラ
+	m_cam[BACK]->SetPos(m_defaultPos[BACK] + arg_absOffset);
+	m_cam[BACK]->SetTarget(m_targetPos[BACK] + arg_absOffset);
 }
 
 
@@ -25,10 +35,13 @@ void GameCamera::Init()
 	{
 		m_cam[i]->SetAngleOfView(Angle(m_defaultCapeView[i]));
 	}
-	SetPosAndTarget();
+	SetPosAndTarget({ 0,0,0 }, { 0,0,0 });
+
+	m_defaultPos[FRONT] = Vec3<float>(0.0f, 3.4f, -59.0f);
+	m_targetPos[FRONT] = Vec3<float>(0.0f, m_defaultPos[FRONT].y + 2.0f, 0.0f);
 }
 
-void GameCamera::Update(float arg_timeScale)
+void GameCamera::Update(float arg_timeScale, Vec3<float>arg_playersDisplacement)
 {
 	//振動中
 	if (!m_shake.m_activeTimer.UpdateTimer(arg_timeScale))
@@ -36,9 +49,6 @@ void GameCamera::Update(float arg_timeScale)
 		//振動スパン計測
 		if (m_shake.m_spanTimer.UpdateTimer(arg_timeScale))
 		{
-			//振動オフセット適用
-			SetPosAndTarget(m_shake.m_offset);
-
 			//時間が経つほど振動が弱くなっていく
 			float timeRate = m_shake.m_activeTimer.GetTimeRate();
 			float shakePowerScale = KuroMath::Ease(Out, Circ, timeRate, 1.0f, 0.0f);
@@ -52,16 +62,13 @@ void GameCamera::Update(float arg_timeScale)
 			m_shake.m_spanTimer.Reset(m_shake.m_span);
 		}
 	}
-
-	//振動が終わったら元の座標に戻す
-	if (m_shake.m_activeTimer.IsTimeUpOnTrigger())
+	else
 	{
-		for (int i = 0; i < NUM; ++i)
-		{
-			m_cam[i]->SetPos(m_defaultPos[i]);
-			m_cam[i]->SetTarget(m_targetPos[i]);
-		}
+		//振動終わり
+		m_shake.m_offset = { 0,0,0 };
 	}
+
+	SetPosAndTarget(m_shake.m_offset, arg_playersDisplacement);
 }
 
 void GameCamera::Shake(int arg_time, int arg_span, float arg_powerMin, float arg_powerMax)

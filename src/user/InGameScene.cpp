@@ -78,7 +78,8 @@ void InGameScene::OnUpdate()
 	m_collisionMgr->Update();
 
 	//カメラ
-	m_gameCam->Update(m_timeScale.GetTimeScale());
+	m_gameCam->Update(m_timeScale.GetTimeScale(),
+		m_player->GetCenterPos() - ConstParameter::Player::INIT_POS);
 
 	//プレイヤー
 	m_player->Update(m_slotMachine, m_timeScale);

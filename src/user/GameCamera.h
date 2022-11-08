@@ -14,7 +14,7 @@ class GameCamera
 	std::array<Vec3<float>, NUM>m_defaultPos =
 	{
 		Vec3<float>(0.0f,3.0f,-50.0f),
-		Vec3<float>(0.0f,13.4f,-59.0f)
+		Vec3<float>(0.0f,10.4f,-59.0f)
 	};
 
 	//注視点の高さオフセット
@@ -47,12 +47,18 @@ class GameCamera
 		Vec3<float>m_offset;
 	}m_shake;
 
-	void SetPosAndTarget(Vec3<float>arg_offset = { 0,0,0 });
+	void SetPosAndTarget(Vec3<float>arg_absOffset, Vec3<float>arg_lerpOffset);
 
 public:
 	GameCamera();
 	void Init();
-	void Update(float arg_timeScale);
+
+	/// <summary>
+	/// 更新
+	/// </summary>
+	/// <param name="arg_timeScale">タイムスケール</param>
+	/// <param name="arg_playersDisplacement">プレイヤーの初期位置からの変位</param>
+	void Update(float arg_timeScale, Vec3<float>arg_playersDisplacement);
 
 	//カメラ振動
 	void Shake(int arg_time, int arg_span, float arg_powerMin, float arg_powerMax);
