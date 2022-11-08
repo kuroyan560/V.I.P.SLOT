@@ -58,7 +58,8 @@ void YoYo::Init()
 	//アニメーション初期化
 	m_modelObj->m_animator->Reset();
 
-	//コライダーオフに
+	//コライダーオフ
+	m_neutralCol->SetActive(false);
 	m_throwCol->SetActive(false);
 
 	//手に持ってる状態
@@ -76,6 +77,7 @@ void YoYo::Update(const TimeScale& arg_timeScale)
 	//手に戻った状態に遷移
 	if (m_timer.UpdateTimer(arg_timeScale.GetTimeScale()))
 	{
+		m_neutralCol->SetActive(false);
 		m_throwCol->SetActive(false);
 		m_status = HAND;
 	}
@@ -96,11 +98,14 @@ void YoYo::AddImguiDebugItem()
 
 void YoYo::Throw(Vec2<float>arg_vec)
 {
-	//if (arg_vec.IsZero())
-	//{
-	//	m_status = NEUTRAL;
-	//}
-	//else
+	//N攻撃
+	if (arg_vec.IsZero())
+	{
+		m_status = NEUTRAL;
+		m_neutralCol->SetActive(true);
+	}
+	//投擲攻撃
+	else
 	{
 		static const Vec2<float>LEFT_VEC = { -1.0f,0.0f };
 		static const Vec2<float>RIGHT_VEC = { 1.0f,0.0f };
@@ -108,7 +113,6 @@ void YoYo::Throw(Vec2<float>arg_vec)
 		//スティック方向から攻撃左右方向選択
 		const auto lefAngle = KuroMath::GetAngleAbs(arg_vec, LEFT_VEC);
 		const auto rightAngle = KuroMath::GetAngleAbs(arg_vec, RIGHT_VEC);
-
 		if (lefAngle < rightAngle)
 		{
 			//左向き
@@ -120,28 +124,24 @@ void YoYo::Throw(Vec2<float>arg_vec)
 			m_vecTransform.SetRotate(Angle(0), Angle(180), Angle(0));
 		}
 
+		//攻撃0 - 発動
 		if (m_status == HAND)
 		{
 			m_status = THROW_0;
 			m_throwCol->SetActive(true);
 			m_modelObj->m_animator->Play("Attack_0", false, false);
 		}
+		//攻撃1 - 発動
 		else if (m_status == THROW_0)
 		{
 			m_status = THROW_1;
 			m_modelObj->m_animator->Play("Attack_1", false, false);
 		}
+		//攻撃2 - 発動
 		else if (m_status == THROW_1)
 		{
 			m_status = THROW_2;
 			m_modelObj->m_animator->Play("Attack_2", false, false);
-		}
-
-		//デバッグ用
-		else if (m_status == THROW_2)
-		{
-			m_status = THROW_0;
-			m_modelObj->m_animator->Play("Attack_0", false, false);
 		}
 	}
 

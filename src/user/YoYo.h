@@ -20,11 +20,10 @@ class YoYo
 	//向き指定用トランスフォーム
 	Transform m_vecTransform;
 
-	//当たり判定用球
+	//コライダー
 	//N攻撃
 	std::shared_ptr<CollisionSphere>m_neutralColSphere;
 	std::shared_ptr<Collider>m_neutralCol;
-	//コライダー
 	//投擲
 	std::shared_ptr<CollisionSphere>m_throwColSphere;
 	std::shared_ptr<Collider>m_throwCol;
