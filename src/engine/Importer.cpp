@@ -415,12 +415,17 @@ std::shared_ptr<Model> Importer::LoadGLTFModel(const std::string& Dir, const std
 		//アニメーションの詳細な情報を持つサンプラー（キーフレーム時刻リスト、補間形式、キーフレームに対応するアニメーションデータ）
 		auto animSamplers = gltfAnimNode.samplers.Elements();
 
+		//全てのボーンアニメーション終了時間
+		int animEndFrame = 0;
+
 		//ボーン、サンプラー、パス（translation,rotation,scale）が割り当てられている
 		for (const auto& animChannel : gltfAnimNode.channels.Elements())
 		{
 			const auto& sampler = animSamplers[gltfAnimNode.samplers.GetIndex(animChannel.samplerId)];
-			const auto& boneNode = doc.nodes.Get(animChannel.target.nodeId);	//対応するボーンノード取得
-			auto& boneAnim = modelAnim.boneAnim[boneNode.name];	//ボーン単位のアニメーション
+			//対応するボーンノード取得
+			const auto& boneNode = doc.nodes.Get(animChannel.target.nodeId);
+			//ボーン単位のアニメーション
+			auto& boneAnim = modelAnim.boneAnim[boneNode.name];
 
 			//アニメーション情報のターゲット（POS、ROTATE、SCALE）
 			auto& path = animChannel.target.path;
@@ -432,6 +437,7 @@ std::shared_ptr<Model> Importer::LoadGLTFModel(const std::string& Dir, const std
 			const auto& input = doc.accessors.Get(sampler.inputAccessorId);
 			const int startFrame = static_cast<int>(input.min[0] * 60);	//単位が秒なので 60f / 1sec としてフレームに変換
 			const int endFrame = static_cast<int>(input.max[0] * 60);	//単位が秒なので 60f / 1sec としてフレームに変換
+			if (animEndFrame < endFrame)animEndFrame = endFrame;
 
 			//キーフレーム情報
 			auto keyFrames = resourceReader->ReadBinaryData<float>(doc, input);
@@ -478,6 +484,9 @@ std::shared_ptr<Model> Importer::LoadGLTFModel(const std::string& Dir, const std
 				}
 			}
 		}
+
+		//全てのボーンのアニメーション終了時間記録
+		modelAnim.finishTime = animEndFrame;
 	}
 
 	skel.CreateBoneTree();

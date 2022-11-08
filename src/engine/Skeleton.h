@@ -35,7 +35,10 @@ public:
 	};
 	struct ModelAnimation
 	{
-		std::map<std::string, BoneAnimation>boneAnim;	//ボーン単位のアニメーション
+		//全てのボーンのアニメーションが終了する時間
+		int finishTime;
+		//ボーン単位のアニメーション
+		std::map<std::string, BoneAnimation>boneAnim;
 	};
 
 	std::vector<Bone>bones;
