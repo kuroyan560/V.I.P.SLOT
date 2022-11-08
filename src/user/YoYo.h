@@ -49,6 +49,8 @@ class YoYo
 		int m_finishInterval = 60;
 		//中断入力が可能になる時間
 		int m_interruptInterval = 60;
+		//最大加速度スカラー
+		Vec3<float>m_maxAccelVal = { 0,0,0 };
 	};
 	std::array<StatusParameter, STATUS_NUM>m_statusParams;
 
@@ -58,14 +60,21 @@ class YoYo
 	//ステータス終了計測用タイマー
 	Timer m_timer;
 
+	//攻撃の勢いによる加速度
+	Vec3<float>m_accel;
+	//攻撃トリガー時の加速度（初期値）
+	Vec3<float>m_iniAccel;
+
 	//現在の攻撃が中断可能か
 	bool CanInterrupt()
 	{
 		return (float)m_statusParams[(int)m_status].m_interruptInterval < m_timer.GetElaspedTime();
 	}
 
-public:
+	//ステータスの動的更新時に呼び出す
+	void StatusInit(Vec3<float>arg_accelVec);
 
+public:
 	YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform);
 
 	/// <summary>
@@ -93,4 +102,8 @@ public:
 
 	//攻撃中か
 	bool IsActive() { return m_status != HAND; }
+
+	//勢いの加速度ゲッタ
+	const float& GetAccelX()const { return m_accel.x; }
+	const float& GetAccelY()const { return m_accel.y; }
 };

@@ -7,6 +7,26 @@
 #include"Importer.h"
 #include"Object.h"
 
+void YoYo::StatusInit(Vec3<float>arg_accelVec)
+{
+	//ステータスのパラメータ取得
+	auto& param = m_statusParams[(int)m_status];
+
+	//アニメーション再生
+	if (!param.m_animName.empty())
+	{
+		m_modelObj->m_animator->Play(
+			param.m_animName, false, false);
+	}
+
+	//タイマーリセット
+	m_timer.Reset(param.m_finishInterval);
+
+	//加速度初期化
+	m_iniAccel = param.m_maxAccelVal * arg_accelVec;
+	m_accel = m_iniAccel;
+}
+
 YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform)
 {
 	//モデルオブジェクト生成
@@ -43,18 +63,21 @@ YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playe
 
 	//攻撃0
 	m_statusParams[THROW_0].m_animName = "Attack_0";
-	m_statusParams[THROW_0].m_finishInterval = m_modelObj->m_model->m_skelton->animations["Attack_0"].finishTime;
+	m_statusParams[THROW_0].m_finishInterval = 32;
 	m_statusParams[THROW_0].m_interruptInterval = 18;
+	m_statusParams[THROW_0].m_maxAccelVal = { 0.5f,0.0f,0.0f };
 
 	//攻撃1
 	m_statusParams[THROW_1].m_animName = "Attack_1";
-	m_statusParams[THROW_1].m_finishInterval = m_modelObj->m_model->m_skelton->animations["Attack_1"].finishTime;
+	m_statusParams[THROW_1].m_finishInterval = 37;
 	m_statusParams[THROW_1].m_interruptInterval = 20;
+	m_statusParams[THROW_1].m_maxAccelVal = { 0.6f,0.0f,0.0f };
 
 	//攻撃2
 	m_statusParams[THROW_2].m_animName = "Attack_2";
-	m_statusParams[THROW_2].m_finishInterval = m_modelObj->m_model->m_skelton->animations["Attack_2"].finishTime;
-	m_statusParams[THROW_2].m_interruptInterval = 44;
+	m_statusParams[THROW_2].m_finishInterval = 33;
+	m_statusParams[THROW_2].m_interruptInterval = 33;
+	m_statusParams[THROW_2].m_maxAccelVal = { 0.7f,0.22f,0.0f };
 }
 
 
@@ -88,6 +111,10 @@ void YoYo::Init()
 
 	//先行入力フラグリセット
 	m_previousInput = false;
+
+	//加速度リセット
+	m_accel = { 0,0,0 };
+	m_iniAccel = { 0,0,0 };
 }
 
 void YoYo::Update(const TimeScale& arg_timeScale, float arg_playersVecX)
@@ -112,6 +139,9 @@ void YoYo::Update(const TimeScale& arg_timeScale, float arg_playersVecX)
 		m_throwCol->SetActive(false);
 		m_status = HAND;
 	}
+
+	//勢いの加速度更新
+	m_accel = KuroMath::Ease(Out, Exp, m_timer.GetTimeRate(), m_iniAccel, { 0,0,0 });
 }
 
 #include"DrawFunc3D.h"
@@ -137,12 +167,19 @@ void YoYo::AddImguiDebugItem()
 	for (int i = 0; i < (int)STATUS::STATUS_NUM; ++i)
 	{
 		STATUS status = (STATUS)i;
+		auto& param = m_statusParams[i];
 		if (ImGui::TreeNode(std::string(magic_enum::enum_name(status)).c_str()))
 		{
-			ImGui::DragInt("FinishInterval", &m_statusParams[i].m_finishInterval);
-			ImGui::DragInt("InterruptInterval", &m_statusParams[i].m_interruptInterval);
-			if (m_statusParams[i].m_finishInterval < m_statusParams[i].m_interruptInterval)
-				m_statusParams[i].m_interruptInterval = m_statusParams[i].m_finishInterval;
+			ImGui::DragInt("FinishInterval", &param.m_finishInterval);
+			ImGui::DragInt("InterruptInterval", &param.m_interruptInterval);
+			if (param.m_finishInterval < param.m_interruptInterval)
+				param.m_interruptInterval = param.m_finishInterval;
+
+			ImGui::DragFloat("AccelX", &param.m_maxAccelVal.x);
+			if (param.m_maxAccelVal.x < 0.0f)param.m_maxAccelVal.x = 0.0f;
+			ImGui::DragFloat("AccelY", &param.m_maxAccelVal.y);
+			if (param.m_maxAccelVal.y < 0.0f)param.m_maxAccelVal.y = 0.0f;
+
 			ImGui::TreePop();
 		}
 	}
@@ -181,10 +218,7 @@ void YoYo::Throw(float arg_vecX)
 	if (m_status == HAND)m_status = THROW_0;
 	else if(m_status != THROW_2) m_status = (STATUS)(m_status + 1);
 
-	m_modelObj->m_animator->Play(
-		m_statusParams[(int)m_status].m_animName, false, false);
-
-	m_timer.Reset(m_statusParams[(int)m_status].m_finishInterval);
+	StatusInit({ arg_vecX <= 0.0f ? -1.0f : 1.0f,1.0f,0.0f });
 }
 
 void YoYo::Neutral()
@@ -199,5 +233,8 @@ void YoYo::Neutral()
 	//投擲中のコライダーを非アクティブに
 	m_throwCol->SetActive(false);
 
-	m_timer.Reset(m_statusParams[(int)m_status].m_finishInterval);
+	//ステータスのパラメータ取得
+	auto& param = m_statusParams[(int)m_status];
+
+	StatusInit({ 0.0f,0.0f,0.0f });
 }

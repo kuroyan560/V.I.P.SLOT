@@ -201,6 +201,10 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 		AudioApp::Instance()->PlayWaveDelay(m_jumpSE, 3);
 		m_isOnGround = false;
 	}
+	
+	//攻撃勢い
+	m_move.x += m_yoYo->GetAccelX();
+	m_fallSpeed += m_yoYo->GetAccelY();
 
 	//落下（ジャンプ中と落下中で重力変化、素早くジャンプ → ゆっくり降下）
 	m_move.y += m_fallSpeed * arg_timeScale.GetTimeScale();
