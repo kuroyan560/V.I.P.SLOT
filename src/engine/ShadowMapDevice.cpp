@@ -67,7 +67,7 @@ void ShadowMapDevice::DrawShadowMap(const std::vector<std::weak_ptr<ModelObject>
 		std::shared_ptr<ConstantBuffer>boneBuff;
 		if (obj->m_animator)boneBuff = obj->m_animator->GetBoneMatBuff();
 
-		TRANSFORM_BUFF[i]->Mapping(&obj->m_transform.GetMat());
+		TRANSFORM_BUFF[i]->Mapping(&obj->m_transform.GetWorldMat());
 
 		for (int meshIdx = 0; meshIdx < obj->m_model->m_meshes.size(); ++meshIdx)
 		{
@@ -138,7 +138,7 @@ void ShadowMapDevice::DrawShadowReceiver(const std::vector<std::weak_ptr<ModelOb
 	{
 		auto obj = Models[i].lock();
 
-		TRANSFORM_BUFF[i]->Mapping(&obj->m_transform.GetMat());
+		TRANSFORM_BUFF[i]->Mapping(&obj->m_transform.GetWorldMat());
 
 		auto model = obj->m_model;
 

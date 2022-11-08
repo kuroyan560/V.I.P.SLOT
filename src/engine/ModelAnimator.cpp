@@ -276,7 +276,7 @@ void ModelAnimator::BoneMatrixRecursive(const int& BoneIdx, const float& Past, b
 	//アニメーションは終了していない
 	if (*Finish && !finish)*Finish = false;
 
-	boneMatricies[BoneIdx] = skel->bones[BoneIdx].invBindMat * m_boneTransform[BoneIdx].GetMat();
+	boneMatricies[BoneIdx] = skel->bones[BoneIdx].invBindMat * m_boneTransform[BoneIdx].GetLocalMat();
 
 	//子を呼び出して再帰的に計算
 	for (auto& child : bone.children)
@@ -399,7 +399,15 @@ void ModelAnimator::Update()
 	boneBuff->Mapping(boneMatricies.data());
 }
 
-const Transform& ModelAnimator::GetBoneTransform(const std::string& BoneName)
+void ModelAnimator::SetParentTransform(Transform& arg_parent)
+{
+	for (auto& boneTransform : m_boneTransform)
+	{
+		boneTransform.SetParent(&arg_parent);
+	}
+}
+
+Transform& ModelAnimator::GetBoneTransform(const std::string& BoneName)
 {
 	assert(attachSkelton.lock()->boneIdxTable.contains(BoneName));
 	return m_boneTransform[attachSkelton.lock()->boneIdxTable[BoneName]];

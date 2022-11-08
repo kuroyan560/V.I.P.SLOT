@@ -224,7 +224,7 @@ void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Came
 			{
 				//ƒRƒCƒ“Šù‚É”roÏ‚©
 				auto coinBlock = std::dynamic_pointer_cast<CoinBlock>(block);
-				coinBlockTransformArray.emplace_back(block->m_transform.GetMat());
+				coinBlockTransformArray.emplace_back(block->m_transform.GetWorldMat());
 			}
 			block->Draw(block->m_transform, arg_lightMgr, arg_cam);
 		}

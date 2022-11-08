@@ -89,7 +89,7 @@ public:
 	//親トランスフォームより行列取得（アタッチされていなければ単位行列）
 	Matrix GetTransformMat()
 	{
-		return m_parentTransform ? m_parentTransform->GetMat() : XMMatrixIdentity();
+		return m_parentTransform ? m_parentTransform->GetWorldMat() : XMMatrixIdentity();
 	}
 	//親トランスフォームより深度取得（アタッチされていなければ０）
 	float GetDepth()

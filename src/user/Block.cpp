@@ -39,7 +39,7 @@ void Block::Init(Transform& arg_initTransform, const std::shared_ptr<TexHitEffec
 {
 	//初期化トランスフォームの記録と適用
 	m_initTransform = arg_initTransform;
-	m_initTransform.GetMat();
+	m_initTransform.GetWorldMat();
 	m_transform = m_initTransform;
 
 	//叩かれた回数リセット

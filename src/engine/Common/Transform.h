@@ -20,7 +20,8 @@ public:
 private:
 	Transform* m_parent = nullptr;
 
-	Matrix m_mat = XMMatrixIdentity();
+	Matrix m_worldMat = XMMatrixIdentity();
+	Matrix m_localMat = XMMatrixIdentity();
 	Vec3<float>m_pos = { 0,0,0 };
 	Vec3<float>m_scale = { 1,1,1 };
 	Matrix m_rotate = DirectX::XMMatrixIdentity();
@@ -36,6 +37,8 @@ private:
 	{
 		return m_dirty || (m_parent != nullptr && m_parent->IsDirty());
 	}
+
+	void CalculateMat();
 
 public:
 	Transform(Transform* Parent = nullptr) {
@@ -151,6 +154,12 @@ public:
 		MatReset();
 	}
 
-	const Matrix& GetMat(const Matrix& BillBoardMat = XMMatrixIdentity());
+	//ローカル行列
+	const Matrix& GetLocalMat();
+	//ワールド行列
+	const Matrix& GetWorldMat();
+	//ワールド行列（ビルボード適用）
+	Matrix GetWorldMat(const Matrix& arg_billBoardMat);
+	//Dirtyフラグゲッタ
 	const bool& GetDirty() { return m_dirty; }
 };

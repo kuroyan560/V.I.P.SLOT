@@ -239,7 +239,7 @@ void StaticallyCubeMap::Draw(Camera& Cam)
 
 	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(PIPELINE);
 
-	m_transformBuff->Mapping(&m_transform.GetMat());
+	m_transformBuff->Mapping(&m_transform.GetWorldMat());
 
 	for (int surfaceIdx = 0; surfaceIdx < SURFACE_NUM; ++surfaceIdx)
 	{

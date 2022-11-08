@@ -149,7 +149,7 @@ void DrawFunc3D::DrawNonShadingModel(const std::weak_ptr<Model> arg_model, Trans
 	}
 
 	DrawData drawData;
-	drawData.m_transformMat = arg_transform.GetMat();
+	drawData.m_transformMat = arg_transform.GetWorldMat();
 	drawData.m_alpha = arg_alpha;
 	DRWA_DATA_BUFF[s_drawNonShadingCount]->Mapping(&drawData);
 
@@ -293,7 +293,7 @@ void DrawFunc3D::DrawADSShadingModel(LightManager& arg_ligManager, const std::we
 		TRANSFORM_BUFF.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("DrawADSShadingModel_Transform -" + std::to_string(s_drawAdsShadingCount)).c_str()));
 	}
 
-	TRANSFORM_BUFF[s_drawAdsShadingCount]->Mapping(&arg_transform.GetMat());
+	TRANSFORM_BUFF[s_drawAdsShadingCount]->Mapping(&arg_transform.GetWorldMat());
 
 	auto model = arg_model.lock();
 	std::shared_ptr<ConstantBuffer>boneBuff;
@@ -374,7 +374,7 @@ void DrawFunc3D::DrawPBRShadingModel(LightManager& arg_ligManager, const std::we
 		TRANSFORM_BUFF.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("DrawPBRShadingModel_Transform -" + std::to_string(s_drawPbrShadingCount)).c_str()));
 	}
 
-	TRANSFORM_BUFF[s_drawPbrShadingCount]->Mapping(&arg_transform.GetMat());
+	TRANSFORM_BUFF[s_drawPbrShadingCount]->Mapping(&arg_transform.GetWorldMat());
 
 
 	//ボーン行列バッファ取得（アニメーターがnullptrなら空）
@@ -461,7 +461,7 @@ void DrawFunc3D::DrawToonModel(const std::weak_ptr<TextureBuffer> arg_toonTex, L
 		TRANSFORM_BUFF.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("DrawShadingModel_Transform -" + std::to_string(s_drawToonCount)).c_str()));
 	}
 
-	TRANSFORM_BUFF[s_drawToonCount]->Mapping(&arg_transform.GetMat());
+	TRANSFORM_BUFF[s_drawToonCount]->Mapping(&arg_transform.GetWorldMat());
 
 	auto model = arg_model.lock();
 

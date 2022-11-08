@@ -63,7 +63,7 @@ void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transf
 		TRANSFORM_BUFF.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("BasicDraw - Transform -" + std::to_string(s_drawCount)).c_str()));
 	}
 
-	TRANSFORM_BUFF[s_drawCount]->Mapping(&Transform.GetMat());
+	TRANSFORM_BUFF[s_drawCount]->Mapping(&Transform.GetWorldMat());
 
 
 	auto model = Model.lock();

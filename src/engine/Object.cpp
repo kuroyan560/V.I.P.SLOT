@@ -26,7 +26,7 @@ const std::shared_ptr<ConstantBuffer>& ModelObject::GetTransformBuff()
 		m_transformBuff = D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, (m_model->m_header.fileName + " - ModelObject - Transform").c_str());
 	}
 
-	m_transformBuff->Mapping(&m_transform.GetMat());
+	m_transformBuff->Mapping(&m_transform.GetWorldMat());
 
 	return m_transformBuff;
 }

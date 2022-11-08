@@ -2,19 +2,39 @@
 
 std::list<Transform*> Transform::s_transformList;
 
-const Matrix& Transform::GetMat(const Matrix& BillBoardMat)
+void Transform::CalculateMat()
 {
-	if (!IsDirty())return m_mat;
-
-	//•Ï‰»‚ ‚èA–¢ŒvZ
-	m_mat = XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z) * m_rotate;
-	m_mat *= BillBoardMat;
-	m_mat *= XMMatrixTranslation(m_pos.x, m_pos.y, m_pos.z);
+	m_localMat = XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z) * m_rotate;
+	m_localMat *= XMMatrixTranslation(m_pos.x, m_pos.y, m_pos.z);
+	m_worldMat = m_localMat;
 
 	if (m_parent != nullptr)
 	{
-		m_mat *= (m_parent->GetMat());
+		m_worldMat *= (m_parent->GetWorldMat());
 	}
+}
 
-	return m_mat;
+const Matrix& Transform::GetLocalMat()
+{
+	if (IsDirty())CalculateMat();
+	return m_localMat;
+}
+
+const Matrix& Transform::GetWorldMat()
+{
+	if (IsDirty())CalculateMat();
+	return m_worldMat;
+}
+
+Matrix Transform::GetWorldMat(const Matrix& arg_billBoardMat)
+{
+	Matrix result = XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z) * m_rotate;
+	result *= arg_billBoardMat;
+	result *= XMMatrixTranslation(m_pos.x, m_pos.y, m_pos.z);
+
+	if (m_parent != nullptr)
+	{
+		result *= (m_parent->GetWorldMat());
+	}
+	return result;
 }

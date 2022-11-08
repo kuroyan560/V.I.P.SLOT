@@ -60,8 +60,12 @@ public:
 			});
 		return result != playAnimations.end();
 	}
+	//アニメーション更新
 	void Update();
 
+	//ボーントランスフォームに親設定
+	void SetParentTransform(Transform& arg_parent);
+
 	const std::shared_ptr<ConstantBuffer>& GetBoneMatBuff() { return boneBuff; }
-	const Transform& GetBoneTransform(const std::string& BoneName);
+	Transform& GetBoneTransform(const std::string& BoneName);
 };
