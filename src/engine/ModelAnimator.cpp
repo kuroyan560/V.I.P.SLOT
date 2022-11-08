@@ -356,12 +356,11 @@ void ModelAnimator::Play(const std::string& AnimationName, const bool& Loop, con
 	playAnimations.emplace_back(AnimationName, Loop);
 }
 
-void ModelAnimator::Update()
+void ModelAnimator::Update(const float& arg_timeScale)
 {
 	auto skel = attachSkelton.lock();
 	if (!skel)return;	//スケルトンがアタッチされていない
 	if (playAnimations.empty())return;	//アニメーション再生中でない
-	if (stop)return;	//停止フラグ
 
 	//単位行列で埋めてリセット
 	std::fill(boneMatricies.begin(), boneMatricies.end(), XMMatrixIdentity());
@@ -379,7 +378,7 @@ void ModelAnimator::Update()
 		BoneMatrixRecursive(static_cast<int>(skel->bones.size() - 1), playAnim.past, &animFinish, anim);
 
 		//フレーム経過
-		playAnim.past += speed;
+		playAnim.past += arg_timeScale;
 		//アニメーションの終了情報記録
 		playAnim.finish = animFinish;
 	}

@@ -7,8 +7,10 @@
 #include"Skeleton.h"
 #include<vector>
 #include"Transform.h"
+#include"Timer.h"
 class Model;
 class ConstantBuffer;
+class TimeScale;
 
 class ModelAnimator
 {
@@ -26,8 +28,8 @@ class ModelAnimator
 	struct PlayAnimation
 	{
 		std::string name;	//アニメーション名
-		float past = 0;	//経過フレーム(スローモーションなど考慮して浮動小数点)
-		bool loop;
+		float past = 0.0f;
+		bool loop = false;
 		bool finish = false;
 
 		PlayAnimation(const std::string& Name, const bool& Loop) :name(Name), loop(Loop) {}
@@ -40,9 +42,6 @@ class ModelAnimator
 	void BoneMatrixRecursive(const int& BoneIdx, const float& Past, bool* Finish, Skeleton::ModelAnimation& Anim);
 
 public:
-	float speed = 1.0f;
-	bool stop = false;
-
 	ModelAnimator() {}
 	ModelAnimator(std::weak_ptr<Model>Model);
 	void Attach(std::weak_ptr<Model>Model);
@@ -61,7 +60,7 @@ public:
 		return result != playAnimations.end();
 	}
 	//アニメーション更新
-	void Update();
+	void Update(const float& arg_timeScale);
 
 	//ボーントランスフォームに親設定
 	void SetParentTransform(Transform& arg_parent);
