@@ -152,8 +152,8 @@ public:
     static float GetLineSlope(Vec2<float> From, Vec2<float> To);
     //1つのベクトルから角度を取得
     static Angle GetAngle(Vec2<float>Vec);
-    //２つのベクトルから角度を取得
-    static Angle GetAngle(Vec2<float>From, Vec2<float>To);
+    //２つのベクトルの角度差を取得
+    static Angle GetAngleAbs(Vec2<float>From, Vec2<float>To);
 
     //Vec3に行列を反映
     static Vec3<float>TransformVec3(const Vec3<float>& Value, const Matrix& Mat);

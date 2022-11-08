@@ -670,11 +670,9 @@ Angle KuroMath::GetAngle(Vec2<float> Vec)
     return Angle((float)atan2(Vec.y, Vec.x));
 }
 
-Angle KuroMath::GetAngle(Vec2<float> From, Vec2<float> To)
+Angle KuroMath::GetAngleAbs(Vec2<float> From, Vec2<float> To)
 {
-    auto vec = To - From;
-    vec.Normalize();
-    return GetAngle(vec);
+    return acos(From.Dot(To));
 }
 Vec3<float> KuroMath::TransformVec3(const Vec3<float>& Value, const Matrix& Mat)
 {
