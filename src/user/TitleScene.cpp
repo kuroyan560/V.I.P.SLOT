@@ -11,7 +11,7 @@
 TitleScene::TitleScene()
 {
 	m_signBoard = std::make_shared<ModelObject>("resource/user/model/", "signboard.glb");
-	m_signBoard->m_model->m_meshes[0].material->texBuff[0] = D3D12App::Instance()->GenerateTextureBuffer(Color(1, 1, 1, 1));
+	m_signBoard->m_model->m_meshes[0].material->texBuff[0] = D3D12App::Instance()->GenerateTextureBuffer(Color(1.0f, 1.0f, 1.0f, 1.0f));
 
 	m_debugCam = std::make_shared<DebugCamera>();
 	m_titleCam = std::make_shared<TitleCamera>();
@@ -37,7 +37,7 @@ TitleScene::TitleScene()
 
 	//看板
 	m_signBoard->m_transform.SetPos({ 2.0f,0.0f,-4.0f });
-	m_signBoard->m_transform.SetFront(KuroMath::TransformVec3(Vec3<float>(0, 0, 1), KuroMath::RotateMat(0, 45, 0)));
+	m_signBoard->m_transform.SetFront(KuroMath::TransformVec3(Vec3<float>(0, 0, 1), KuroMath::RotateMat(0.0f, 45.0f, 0.0f)));
 
 	//看板に向けたスポットライト
 	m_signSpot.SetPos({ 0.15f,3.57f,-6.83f });
@@ -77,6 +77,7 @@ void TitleScene::OnUpdate()
 
 	//決定
 	if (enter)
+	//if (true)
 	{
 		switch (m_item)
 		{
