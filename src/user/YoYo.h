@@ -54,7 +54,6 @@ class YoYo
 
 	//予約入力
 	bool m_previousInput = false;
-	Vec2<float>m_previousVec = { 0,0 };
 
 	//ステータス終了計測用タイマー
 	Timer m_timer;
@@ -79,15 +78,18 @@ public:
 	//初期化
 	void Init();
 	//更新
-	void Update(const TimeScale& arg_timeScale);
+	void Update(const TimeScale& arg_timeScale, float arg_playersVecX);
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 
 	//imguiデバッグ
 	void AddImguiDebugItem();
 
-	//投げる
-	void Throw(Vec2<float>arg_vec);
+	//投擲
+	void Throw(float arg_vecX);
+
+	//N攻撃
+	void Neutral();
 
 	//攻撃中か
 	bool IsActive() { return m_status != HAND; }

@@ -120,6 +120,9 @@ class Player : public ColliderParentObject
 
 	//ƒˆ[ƒˆ[
 	std::shared_ptr<YoYo>m_yoYo;
+
+	//Œü‚¢‚Ä‚¢‚é•ûŒüX
+	float m_vecX;
 	
 public:
 	Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<GameCamera>arg_cam);

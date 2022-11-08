@@ -90,7 +90,7 @@ void YoYo::Init()
 	m_previousInput = false;
 }
 
-void YoYo::Update(const TimeScale& arg_timeScale)
+void YoYo::Update(const TimeScale& arg_timeScale, float arg_playersVecX)
 {
 	//アニメーション更新
 	m_modelObj->m_animator->Update(arg_timeScale.GetTimeScale());
@@ -101,7 +101,7 @@ void YoYo::Update(const TimeScale& arg_timeScale)
 	//先行入力があった場合、中断可能なら即時移行
 	if (m_previousInput && CanInterrupt())
 	{
-		Throw(m_previousVec);
+		Throw(arg_playersVecX);
 		m_previousInput = false;
 	}
 
@@ -131,9 +131,6 @@ void YoYo::AddImguiDebugItem()
 
 	//先行入力
 	ImGui::Text("PreviousInput : { %s }", m_previousInput ? "true" : "false");
-	ImGui::Indent(16.0f);
-	ImGui::Text("Vec : { %f,%f }", m_previousVec.x, m_previousVec.y);
-	ImGui::Indent();
 
 	ImGui::Separator();
 
@@ -151,57 +148,56 @@ void YoYo::AddImguiDebugItem()
 	}
 }
 
-void YoYo::Throw(Vec2<float>arg_vec)
+void YoYo::Throw(float arg_vecX)
 {
-	//N攻撃（パリィ狙うため条件なしで即時発動）
-	if (arg_vec.IsZero())
-	{
-		m_status = NEUTRAL;
-		//N攻撃コライダーアクティブ
-		m_neutralCol->SetActive(true);
-	}
 	//攻撃中か
-	else if (IsActive())
+	if (IsActive())
 	{
 		//中断可能でない
 		if (!CanInterrupt())
 		{	
 			//先行入力として受付
 			m_previousInput = true;
-			m_previousVec = arg_vec;
 			return;
 		}
 	}
 
-	//投擲攻撃
-	if (m_status == HAND || m_status <= THROW_1)
+	if (!(m_status == HAND || m_status <= THROW_1))return;
+
+	//投擲用コライダーアクティブ
+	m_throwCol->SetActive(true);
+
+	if (arg_vecX <= 0.0f)
 	{
-		//投擲用コライダーアクティブ
-		m_throwCol->SetActive(true);
-
-		static const Vec2<float>LEFT_VEC = { -1.0f,0.0f };
-		static const Vec2<float>RIGHT_VEC = { 1.0f,0.0f };
-
-		//スティック方向から攻撃左右方向選択
-		const auto lefAngle = KuroMath::GetAngleAbs(arg_vec, LEFT_VEC);
-		const auto rightAngle = KuroMath::GetAngleAbs(arg_vec, RIGHT_VEC);
-		if (lefAngle < rightAngle)
-		{
-			//左向き
-			m_vecTransform.SetRotate(XMMatrixIdentity());
-		}
-		else
-		{
-			//右向き
-			m_vecTransform.SetRotate(Angle(0), Angle(180), Angle(0));
-		}
-
-		if (m_status == HAND)m_status = THROW_0;
-		else if(m_status != THROW_2) m_status = (STATUS)(m_status + 1);
-
-		m_modelObj->m_animator->Play(
-			m_statusParams[(int)m_status].m_animName, false, false);
+		//左向き
+		m_vecTransform.SetRotate(XMMatrixIdentity());
 	}
+	else
+	{
+		//右向き
+		m_vecTransform.SetRotate(Angle(0), Angle(180), Angle(0));
+	}
+
+	if (m_status == HAND)m_status = THROW_0;
+	else if(m_status != THROW_2) m_status = (STATUS)(m_status + 1);
+
+	m_modelObj->m_animator->Play(
+		m_statusParams[(int)m_status].m_animName, false, false);
+
+	m_timer.Reset(m_statusParams[(int)m_status].m_finishInterval);
+}
+
+void YoYo::Neutral()
+{
+	//既に発動済
+	if (m_status == NEUTRAL)return;
+
+	m_status = NEUTRAL;
+	//N攻撃コライダーアクティブ
+	m_neutralCol->SetActive(true);
+
+	//投擲中のコライダーを非アクティブに
+	m_throwCol->SetActive(false);
 
 	m_timer.Reset(m_statusParams[(int)m_status].m_finishInterval);
 }

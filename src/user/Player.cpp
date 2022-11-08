@@ -115,6 +115,9 @@ void Player::Init(int arg_initHp, int arg_initCoinNum)
 
 	//ヨーヨー
 	m_yoYo->Init();
+
+	//デフォルト右向き
+	m_vecX = 1.0f;
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
@@ -170,6 +173,9 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 		break;
 	}
 
+	//向き記録
+	if (!moveInput.IsZero())m_vecX = moveInput.x;
+
 //入力情報を元に操作
 	float moveSpeed = m_yoYo->IsActive() ? MOVE_SPEED_WHILE_ATTACK : MOVE_SPEED;
 
@@ -188,8 +194,9 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	}
 
 	//ジャンプ
-	if (jumpTrigger && m_isOnGround)
+	if (jumpTrigger/* && m_isOnGround*/)
 	{
+		m_yoYo->Neutral();
 		Jump();
 		AudioApp::Instance()->PlayWaveDelay(m_jumpSE, 3);
 		m_isOnGround = false;
@@ -244,11 +251,11 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	//投げる
 	if (throwYoyoTrigger)
 	{
-		m_yoYo->Throw(moveInput);
+		m_yoYo->Throw(m_vecX);
 	}
 
 	//ヨーヨー
-	m_yoYo->Update(arg_timeScale);
+	m_yoYo->Update(arg_timeScale, m_vecX);
 }
 
 #include"DrawFunc3D.h"
