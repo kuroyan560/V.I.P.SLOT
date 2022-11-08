@@ -105,7 +105,7 @@ void SlotBlock::OnHitTrigger()
 {
 	if (IsDead())
 	{
-		m_slotMachinePtr.lock()->Lever();
+		m_slotMachinePtr.lock()->Booking();
 	}
 }
 
