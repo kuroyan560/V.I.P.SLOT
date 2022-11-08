@@ -73,7 +73,7 @@ public:
 	//更新
 	void Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_timeScale);
 	//描画
-	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<GameCamera>arg_gameCam);
+	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 	//imguiデバッグ
 	void ImguiDebug();
 
