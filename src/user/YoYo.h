@@ -40,11 +40,30 @@ class YoYo
 		HAND
 	}m_status;
 
-	//ステータス終了計測タイマー
-	std::array<int, STATUS_NUM>m_finishInterval = { 90,90,90,90 };
+	//ステータスごとの設定項目
+	struct StatusParameter
+	{
+		//再生するアニメーション名
+		std::string m_animName = "";
+		//ステータス終了時間
+		int m_finishInterval = 60;
+		//中断入力が可能になる時間
+		int m_interruptInterval = 60;
+	};
+	std::array<StatusParameter, STATUS_NUM>m_statusParams;
+
+	//予約入力
+	bool m_previousInput = false;
+	Vec2<float>m_previousVec = { 0,0 };
 
 	//ステータス終了計測用タイマー
 	Timer m_timer;
+
+	//現在の攻撃が中断可能か
+	bool CanInterrupt()
+	{
+		return (float)m_statusParams[(int)m_status].m_interruptInterval < m_timer.GetElaspedTime();
+	}
 
 public:
 
