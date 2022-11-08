@@ -69,4 +69,7 @@ public:
 
 	//“Š‚°‚é
 	void Throw(Vec2<float>arg_vec);
+
+	//ï¿½Uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	bool IsActive() { return m_status != HAND; }
 };

@@ -36,6 +36,8 @@ namespace ConstParameter
         /*--- ˆÚ“® ---*/
         //ˆÚ“®‘¬“x
         float MOVE_SPEED = 0.45f;
+        //UŒ‚’†‚ÌˆÚ“®‘¬“x
+        float MOVE_SPEED_WHILE_ATTACK = MOVE_SPEED * 0.3f;
         //ˆÚ“®‚Ì“®‚«ŒvZ‚ÌLerpRate
         float MOVE_LERP_RATE = 0.3f;
 

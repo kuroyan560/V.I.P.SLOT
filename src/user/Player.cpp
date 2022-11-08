@@ -82,7 +82,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 
 	/*--- ƒˆ[ƒˆ[¶¬ ---*/
 	m_yoYo = std::make_shared<YoYo>(arg_collisionMgr, &m_modelObj->m_transform);
-	m_yoYo->Awake(5.0f, 2.0f);
+	m_yoYo->Awake(1.2f);
 }
 
 void Player::Init(int arg_initHp, int arg_initCoinNum)
@@ -171,14 +171,16 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	}
 
 //“ü—Íî•ñ‚ðŒ³‚É‘€ì
+	float moveSpeed = m_yoYo->IsActive() ? MOVE_SPEED_WHILE_ATTACK : MOVE_SPEED;
+
 	//‰¡ˆÚ“®
 	if (0.0f < moveInput.x)
 	{
-		m_move.x = KuroMath::Lerp(m_move.x, MOVE_SPEED, MOVE_LERP_RATE);
+		m_move.x = KuroMath::Lerp(m_move.x, moveSpeed, MOVE_LERP_RATE);
 	}
 	else if (moveInput.x < 0.0f)
 	{
-		m_move.x = KuroMath::Lerp(m_move.x, -MOVE_SPEED, MOVE_LERP_RATE);
+		m_move.x = KuroMath::Lerp(m_move.x, -moveSpeed, MOVE_LERP_RATE);
 	}
 	else
 	{

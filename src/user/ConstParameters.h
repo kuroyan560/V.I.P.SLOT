@@ -38,6 +38,8 @@ namespace ConstParameter
 		/*--- ˆÚ“® ---*/
 		//ˆÚ“®‘¬“x
 		extern float MOVE_SPEED;
+		//UŒ‚’†‚ÌˆÚ“®‘¬“x
+		extern float MOVE_SPEED_WHILE_ATTACK;
 		//ˆÚ“®‚Ì“®‚«ŒvZ‚ÌLerpRate
 		extern float MOVE_LERP_RATE;
 
