@@ -13,32 +13,44 @@ YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playe
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "yoyo.glb");
 
 	//コライダー生成
-	m_collider = std::make_shared<Collider>();
+	m_neutralCol = std::make_shared<Collider>();
+	m_throwCol = std::make_shared<Collider>();
 
 	/*
 		[トランスフォーム親子関係]
-		プレイヤー ← 攻撃方向指定 ← ヨーヨー ← 各ボーン ← 当たり判定用
+		プレイヤー ← 攻撃方向指定 ← ヨーヨー ← 各ボーン
 	*/
 	m_vecTransform.SetParent(arg_playerTransform);
 	m_modelObj->m_transform.SetParent(&m_vecTransform);
 	m_modelObj->m_animator->SetParentTransform(m_modelObj->m_transform);
-	m_collider->SetParentTransform(&m_modelObj->m_animator->GetBoneTransform("Bone"));
+
+	/*
+		・N攻撃の当たり判定親：ヨーヨー
+		・投擲用の当たり判定親：各ボーン
+	*/
+	m_neutralCol->SetParentTransform(&m_modelObj->m_transform);
+	m_throwCol->SetParentTransform(&m_modelObj->m_animator->GetBoneTransform("Bone"));
 
 	//コライダー登録
-	arg_collisionMgr.lock()->Register(m_collider);
-
+	arg_collisionMgr.lock()->Register(m_neutralCol);
+	arg_collisionMgr.lock()->Register(m_throwCol);
 }
 
 
-void YoYo::Awake(float arg_colSphereRadius)
+void YoYo::Awake(float arg_neutralColSphereRadius, float arg_throwColSphereRadius)
 {
-	//当たり判定用球生成
+	static const std::string TAG = "Player_Attack";
 	std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
-	m_sphereCol = std::make_shared<CollisionSphere>(arg_colSphereRadius, Vec3<float>(0.0f, 0.0f, 0.0f));
-	colPrimitiveArray.emplace_back(m_sphereCol);
 
-	//コライダー設定
-	m_collider->Generate("YoYo", "Player_Attack", colPrimitiveArray);
+	//N攻撃用コライダー生成
+	m_neutralColSphere = std::make_shared<CollisionSphere>(arg_neutralColSphereRadius, Vec3<float>(0, 0, 0));
+	colPrimitiveArray = { m_neutralColSphere };
+	m_neutralCol->Generate("YoYo - Neutral", TAG, colPrimitiveArray);
+
+	//投擲用コライダー生成
+	m_throwColSphere = std::make_shared<CollisionSphere>(arg_throwColSphereRadius, Vec3<float>(0, 0, 0));
+	colPrimitiveArray = { m_throwColSphere };
+	m_throwCol->Generate("YoYo - Throw", TAG, colPrimitiveArray);
 }
 
 void YoYo::Init()
@@ -47,7 +59,7 @@ void YoYo::Init()
 	m_modelObj->m_animator->Reset();
 
 	//コライダーオフに
-	m_collider->SetActive(false);
+	m_throwCol->SetActive(false);
 
 	//手に持ってる状態
 	m_status = HAND;
@@ -64,7 +76,7 @@ void YoYo::Update(const TimeScale& arg_timeScale)
 	//手に戻った状態に遷移
 	if (m_timer.UpdateTimer(arg_timeScale.GetTimeScale()))
 	{
-		m_collider->SetActive(false);
+		m_throwCol->SetActive(false);
 		m_status = HAND;
 	}
 }
@@ -111,7 +123,7 @@ void YoYo::Throw(Vec2<float>arg_vec)
 		if (m_status == HAND)
 		{
 			m_status = THROW_0;
-			m_collider->SetActive(true);
+			m_throwCol->SetActive(true);
 			m_modelObj->m_animator->Play("Attack_0", false, false);
 		}
 		else if (m_status == THROW_0)

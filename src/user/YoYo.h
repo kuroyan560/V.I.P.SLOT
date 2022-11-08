@@ -21,9 +21,14 @@ class YoYo
 	Transform m_vecTransform;
 
 	//当たり判定用球
-	std::shared_ptr<CollisionSphere>m_sphereCol;
+	//N攻撃
+	std::shared_ptr<CollisionSphere>m_neutralColSphere;
+	std::shared_ptr<Collider>m_neutralCol;
 	//コライダー
-	std::shared_ptr<Collider>m_collider;
+	//投擲
+	std::shared_ptr<CollisionSphere>m_throwColSphere;
+	std::shared_ptr<Collider>m_throwCol;
+
 
 	//状態遷移
 	enum STATUS
@@ -49,8 +54,9 @@ public:
 	/// <summary>
 	/// ヨーヨーの固定パラメータ設定（≠初期化）
 	/// </summary>
-	/// <param name="arg_colSphereRadius">当たり判定用球の半径</param>
-	void Awake(float arg_colSphereRadius);
+	/// <param name="arg_neutralColSphereRadius">当たり判定用球の半径（N攻撃）</param>
+	/// <param name="arg_throwColSphereRadius">当たり判定用球の半径（投擲）</param>
+	void Awake(float arg_neutralColSphereRadius, float arg_throwColSphereRadius);
 
 	//初期化
 	void Init();
