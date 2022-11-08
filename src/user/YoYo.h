@@ -20,14 +20,10 @@ class YoYo
 	//Œü‚«w’è—pƒgƒ‰ƒ“ƒXƒtƒH[ƒ€
 	Transform m_vecTransform;
 
-	//“Š‚°‚é•ûŒü
-	enum THROW_VEC { LEFT, LEFT_UP, RIGHT_UP, RIGHT, THROW_VEC_NUM };
-
-	//ƒJƒvƒZƒ‹‚ÌŒ`‚ğ¬‚·“–‚½‚è”»’è—p‹…”z—ñ
-	std::vector<std::shared_ptr<CollisionSphere>>m_capsuleSphereArray;
-	//‹…‚ª˜A‚È‚Á‚Ä‚Å‚«‚½ƒJƒvƒZƒ‹ƒRƒ‰ƒCƒ_[
-	//¦ƒJƒvƒZƒ‹‚ÌCollisionPrimitive‚ÌÀ‘•ŠÔ‚ª‚à‚Á‚½‚¢‚È‚¢‚Ì‚ÅA‚Æ‚è‚ ‚¦‚¸‹…‚ÅB
-	std::shared_ptr<Collider>m_throwCol;
+	//“–‚½‚è”»’è—p‹…
+	std::shared_ptr<CollisionSphere>m_sphereCol;
+	//ƒRƒ‰ƒCƒ_[
+	std::shared_ptr<Collider>m_collider;
 
 	//ó‘Ô‘JˆÚ
 	enum STATUS
@@ -53,9 +49,8 @@ public:
 	/// <summary>
 	/// ƒˆ[ƒˆ[‚ÌŒÅ’èƒpƒ‰ƒ[ƒ^İ’èi‚‰Šú‰»j
 	/// </summary>
-	/// <param name="arg_length">ƒˆ[ƒˆ[‚Ì’·‚³</param>
 	/// <param name="arg_colSphereRadius">“–‚½‚è”»’è—p‹…‚Ì”¼Œa</param>
-	void Awake(float arg_length,float arg_colSphereRadius);
+	void Awake(float arg_colSphereRadius);
 
 	//‰Šú‰»
 	void Init();
@@ -70,6 +65,6 @@ public:
 	//“Š‚°‚é
 	void Throw(Vec2<float>arg_vec);
 
-	//ï¿½Uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	//UŒ‚’†‚©
 	bool IsActive() { return m_status != HAND; }
 };

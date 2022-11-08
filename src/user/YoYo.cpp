@@ -9,37 +9,36 @@
 
 YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform)
 {
+	//モデルオブジェクト生成
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "yoyo.glb");
 
+	//コライダー生成
+	m_collider = std::make_shared<Collider>();
+
+	/*
+		[トランスフォーム親子関係]
+		プレイヤー ← 攻撃方向指定 ← ヨーヨー ← 各ボーン ← 当たり判定用
+	*/
 	m_vecTransform.SetParent(arg_playerTransform);
 	m_modelObj->m_transform.SetParent(&m_vecTransform);
+	m_modelObj->m_animator->SetParentTransform(m_modelObj->m_transform);
+	m_collider->SetParentTransform(&m_modelObj->m_animator->GetBoneTransform("Bone"));
 
-	m_throwCol = std::make_shared<Collider>();
-	m_throwCol->SetParentTransform(&m_modelObj->m_transform);
-	arg_collisionMgr.lock()->Register(m_throwCol);
+	//コライダー登録
+	arg_collisionMgr.lock()->Register(m_collider);
+
 }
 
 
-void YoYo::Awake(float arg_length, float arg_colSphereRadius)
+void YoYo::Awake(float arg_colSphereRadius)
 {
-	//必要な当たり判定用球の数
-	int colSphereNum = static_cast<int>(ceil(arg_length / arg_colSphereRadius));
-
 	//当たり判定用球生成
-	m_capsuleSphereArray.resize(colSphereNum);
+	std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
+	m_sphereCol = std::make_shared<CollisionSphere>(arg_colSphereRadius, Vec3<float>(0.0f, 0.0f, 0.0f));
+	colPrimitiveArray.emplace_back(m_sphereCol);
 
-	//オフセット
-	float offsetX = -arg_length / static_cast<float>(colSphereNum);
-
-	//デフォルト-X方向、始点０
-	for (int i = 0; i < colSphereNum; ++i)
-	{
-		m_capsuleSphereArray[i] = std::make_shared<CollisionSphere>(arg_colSphereRadius, Vec3<float>(offsetX * i, 0.0f, 0.0f));
-	}
-
-	std::vector<std::shared_ptr<CollisionPrimitive>>capsulePrimitiveArray;
-	for (auto& sp : m_capsuleSphereArray)capsulePrimitiveArray.emplace_back(sp);
-	m_throwCol->Generate("YoYo", "Player_Attack", capsulePrimitiveArray);
+	//コライダー設定
+	m_collider->Generate("YoYo", "Player_Attack", colPrimitiveArray);
 }
 
 void YoYo::Init()
@@ -48,7 +47,7 @@ void YoYo::Init()
 	m_modelObj->m_animator->Reset();
 
 	//コライダーオフに
-	m_throwCol->SetActive(false);
+	m_collider->SetActive(false);
 
 	//手に持ってる状態
 	m_status = HAND;
@@ -65,7 +64,7 @@ void YoYo::Update(const TimeScale& arg_timeScale)
 	//手に戻った状態に遷移
 	if (m_timer.UpdateTimer(arg_timeScale.GetTimeScale()))
 	{
-		m_throwCol->SetActive(false);
+		m_collider->SetActive(false);
 		m_status = HAND;
 	}
 }
@@ -91,52 +90,28 @@ void YoYo::Throw(Vec2<float>arg_vec)
 	//}
 	//else
 	{
-		//判定用
-		static std::array<Angle, THROW_VEC_NUM>throwAngleJudge =
-		{
-			Angle(-180),Angle(-135),Angle(-45),Angle(0)
-		};
+		static const Vec2<float>LEFT_VEC = { -1.0f,0.0f };
+		static const Vec2<float>RIGHT_VEC = { 1.0f,0.0f };
 
-		THROW_VEC throwVec = LEFT;
-		arg_vec.y *= -1.0f;
-		auto angle = KuroMath::GetAngle(arg_vec).GetNormalize();
-		float angleAbsMin = FLT_MAX;
+		//スティック方向から攻撃左右方向選択
+		const auto lefAngle = KuroMath::GetAngleAbs(arg_vec, LEFT_VEC);
+		const auto rightAngle = KuroMath::GetAngleAbs(arg_vec, RIGHT_VEC);
 
-		//入力方向と一番近い角度を判定
-		for (int i = 0; i < THROW_VEC_NUM; ++i)
+		if (lefAngle < rightAngle)
 		{
-			float angleAbs = abs((angle + Angle::ConvertToRadian(270))
-				- (throwAngleJudge[i].m_radian + Angle::ConvertToRadian(270)));
-			if (angleAbs < angleAbsMin)
-			{
-				angleAbsMin = angleAbs;
-				throwVec = (THROW_VEC)i;
-			}
-		}
-
-		//コライダーの向きを決定
-		if (throwVec == LEFT)
-		{
-			//右向きは初期
+			//左向き
 			m_vecTransform.SetRotate(XMMatrixIdentity());
 		}
-		else if (throwVec == LEFT_UP)
+		else
 		{
-			m_vecTransform.SetRotate(Angle(0), Angle(0), Angle(45));
-		}
-		else if (throwVec == RIGHT)
-		{
+			//右向き
 			m_vecTransform.SetRotate(Angle(0), Angle(180), Angle(0));
-		}
-		else if (throwVec == RIGHT_UP)
-		{
-			m_vecTransform.SetRotate(Angle(0), Angle(180), Angle(45));
 		}
 
 		if (m_status == HAND)
 		{
 			m_status = THROW_0;
-			m_throwCol->SetActive(true);
+			m_collider->SetActive(true);
 			m_modelObj->m_animator->Play("Attack_0", false, false);
 		}
 		else if (m_status == THROW_0)
