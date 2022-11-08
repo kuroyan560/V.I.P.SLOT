@@ -6,7 +6,7 @@
 
 class GameCamera
 {
-	enum { BACK, FRONT, NUM };
+	enum { SUB, MAIN, NUM };
 
 	std::array<std::shared_ptr<Camera>, NUM>m_cam;
 
@@ -20,8 +20,8 @@ class GameCamera
 	//注視点の高さオフセット
 	std::array<Vec3<float>, NUM>m_targetPos =
 	{
-		Vec3<float>(0.0f,m_defaultPos[BACK].y + 2.0f,0.0f),
-		Vec3<float>(0.0f,m_defaultPos[FRONT].y + 2.0f,0.0f),
+		Vec3<float>(0.0f,m_defaultPos[SUB].y + 2.0f,0.0f),
+		Vec3<float>(0.0f,m_defaultPos[MAIN].y + 2.0f,0.0f),
 	};
 
 	//視野角
@@ -64,6 +64,6 @@ public:
 	void Shake(int arg_time, int arg_span, float arg_powerMin, float arg_powerMax);
 
 	//カメラゲッタ
-	std::shared_ptr<Camera>& GetBackCam() { return m_cam[BACK]; }
-	std::shared_ptr<Camera>& GetFrontCam() { return m_cam[FRONT]; }
+	std::shared_ptr<Camera>& GetSubCam() { return m_cam[SUB]; }
+	std::shared_ptr<Camera>& GetMainCam() { return m_cam[MAIN]; }
 };

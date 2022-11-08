@@ -113,28 +113,28 @@ void InGameScene::OnDraw()
 	DrawFunc2D::DrawGraph({ 0,0 }, m_backGround, 1.0f, AlphaBlendMode_None);
 
 	//スロットマシン
-	m_slotMachine->Draw(m_ligMgr, m_gameCam);
+	m_slotMachine->Draw(m_ligMgr, m_gameCam->GetSubCam());
 
 	//床
-	DrawFunc3D::DrawNonShadingModel(m_squareFloorObj, *m_gameCam->GetFrontCam(), 1.0f, AlphaBlendMode_None);
+	DrawFunc3D::DrawNonShadingModel(m_squareFloorObj, *m_gameCam->GetMainCam(), 1.0f, AlphaBlendMode_None);
 
 	//ステージマネージャ
-	m_stageMgr->Draw(m_ligMgr, m_gameCam->GetFrontCam());
+	m_stageMgr->Draw(m_ligMgr, m_gameCam->GetMainCam());
 
 	//プレイヤー
-	m_player->Draw(m_ligMgr, m_gameCam->GetFrontCam());
+	m_player->Draw(m_ligMgr, m_gameCam->GetMainCam());
 
 	//デバッグ描画
 #ifdef _DEBUG
-	//Collider::DebugDrawAllColliders(*m_gameCam->GetFrontCam());
-	m_collisionMgr->DebugDraw(*m_gameCam->GetFrontCam());
+	//Collider::DebugDrawAllColliders(*m_gameCam->GetMainCam());
+	m_collisionMgr->DebugDraw(*m_gameCam->GetMainCam());
 #endif
 
 	//デプスステンシルクリア
 	rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_STENCIL);
 	//エフェクト描画
-	m_player->EffectDraw(m_gameCam->GetFrontCam());
-	m_stageMgr->EffectDraw(m_gameCam->GetFrontCam());
+	m_player->EffectDraw(m_gameCam->GetMainCam());
+	m_stageMgr->EffectDraw(m_gameCam->GetMainCam());
 }
 
 void InGameScene::OnImguiDebug()

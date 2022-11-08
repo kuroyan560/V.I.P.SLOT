@@ -9,24 +9,24 @@ void GameCamera::SetPosAndTarget(Vec3<float>arg_absOffset, Vec3<float>arg_lerpOf
 	Vec3<float>heightOffset = { 0.0f,(1.0f - std::min(arg_lerpOffset.y / 10.0f, 1.0f)) * 8.0f,0.0f };
 
 	//ëOåiÉJÉÅÉâ
-	Vec3<float>pos = m_cam[FRONT]->GetPos();
-	pos = KuroMath::Lerp(pos, m_defaultPos[FRONT] + heightOffset + arg_lerpOffset, 0.08f);
-	m_cam[FRONT]->SetPos(pos + arg_absOffset);
+	Vec3<float>pos = m_cam[MAIN]->GetPos();
+	pos = KuroMath::Lerp(pos, m_defaultPos[MAIN] + heightOffset + arg_lerpOffset, 0.08f);
+	m_cam[MAIN]->SetPos(pos + arg_absOffset);
 
-	Vec3<float>target = m_cam[FRONT]->GetTarget();
-	target = KuroMath::Lerp(target, m_targetPos[FRONT] + heightOffset + arg_lerpOffset, 0.08f);
-	m_cam[FRONT]->SetTarget(target + arg_absOffset);
+	Vec3<float>target = m_cam[MAIN]->GetTarget();
+	target = KuroMath::Lerp(target, m_targetPos[MAIN] + heightOffset + arg_lerpOffset, 0.08f);
+	m_cam[MAIN]->SetTarget(target + arg_absOffset);
 
 	//îwåiÉJÉÅÉâ
-	m_cam[BACK]->SetPos(m_defaultPos[BACK] + arg_absOffset);
-	m_cam[BACK]->SetTarget(m_targetPos[BACK] + arg_absOffset);
+	m_cam[SUB]->SetPos(m_defaultPos[SUB] + arg_absOffset);
+	m_cam[SUB]->SetTarget(m_targetPos[SUB] + arg_absOffset);
 }
 
 
 GameCamera::GameCamera()
 {
-	m_cam[BACK] = std::make_shared<Camera>("GameCamera - Back");
-	m_cam[FRONT] = std::make_shared<Camera>("GameCamera - Front");
+	m_cam[SUB] = std::make_shared<Camera>("GameCamera - Back");
+	m_cam[MAIN] = std::make_shared<Camera>("GameCamera - Front");
 }
 
 void GameCamera::Init()
@@ -37,8 +37,8 @@ void GameCamera::Init()
 	}
 	SetPosAndTarget({ 0,0,0 }, { 0,0,0 });
 
-	m_defaultPos[FRONT] = Vec3<float>(0.0f, 3.4f, -59.0f);
-	m_targetPos[FRONT] = Vec3<float>(0.0f, m_defaultPos[FRONT].y + 2.0f, 0.0f);
+	m_defaultPos[MAIN] = Vec3<float>(0.0f, 3.4f, -59.0f);
+	m_targetPos[MAIN] = Vec3<float>(0.0f, m_defaultPos[MAIN].y + 2.0f, 0.0f);
 }
 
 void GameCamera::Update(float arg_timeScale, Vec3<float>arg_playersDisplacement)
