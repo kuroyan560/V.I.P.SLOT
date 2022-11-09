@@ -30,6 +30,8 @@ SlotMachine::SlotMachine()
 {
 	//スロットマシン生成
 	m_slotMachineObj = std::make_shared<ModelObject>("resource/user/model/", "slotMachine.glb");
+	//トランスフォーム調整
+	m_slotMachineObj->m_transform.SetScale(0.4f);
 
 	//モデルからリールの情報取得
 	for (auto& mesh : m_slotMachineObj->m_model->m_meshes)
@@ -77,6 +79,10 @@ SlotMachine::SlotMachine()
 
 void SlotMachine::Init()
 {
+	//m_slotMachineObj->m_transform.SetScale(1.4f);
+	m_slotMachineObj->m_transform.SetScale(2.0f);
+	m_slotMachineObj->m_transform.SetPos({ 0.0f,3.0f,0.0f });
+
 	//レバー初期化
 	m_lever = REEL::NONE;
 
