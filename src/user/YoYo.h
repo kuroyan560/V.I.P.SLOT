@@ -94,14 +94,21 @@ public:
 	//imguiデバッグ
 	void AddImguiDebugItem();
 
-	//投擲
-	void Throw(float arg_vecX);
+	/// <summary>
+	/// 投擲
+	/// </summary>
+	/// <param name="arg_vecX">X軸に対する投擲方向</param>
+	/// <returns>成功したか</returns>
+	bool Throw(float arg_vecX);
 
-	//N攻撃
-	void Neutral();
+	/// <summary>
+	/// N攻撃
+	/// </summary>
+	/// <returns>成功したか</returns>
+	bool Neutral();
 
 	//攻撃中か
-	bool IsActive() { return m_status != HAND; }
+	bool IsThrow() { return THROW_0 <= m_status && m_status <= THROW_2; }
 
 	//勢いの加速度ゲッタ
 	const float& GetAccelX()const { return m_accel.x; }

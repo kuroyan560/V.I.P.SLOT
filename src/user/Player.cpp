@@ -177,7 +177,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	if (!moveInput.IsZero())m_vecX = moveInput.x;
 
 //“ü—Íî•ñ‚ðŒ³‚É‘€ì
-	float moveSpeed = m_yoYo->IsActive() ? MOVE_SPEED_WHILE_ATTACK : MOVE_SPEED;
+	float moveSpeed = m_yoYo->IsThrow() ? MOVE_SPEED_WHILE_THROW : MOVE_SPEED;
 
 	//‰¡ˆÚ“®
 	if (0.0f < moveInput.x)

@@ -58,7 +58,8 @@ YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playe
 //ステータスごとのパラメータ設定
 	//N攻撃
 	m_statusParams[NEUTRAL].m_animName = "";
-	m_statusParams[NEUTRAL].m_finishInterval = 32;
+	m_statusParams[NEUTRAL].m_finishInterval = 13;
+	m_statusParams[NEUTRAL].m_interruptInterval = 9;
 	m_statusParams[NEUTRAL].m_interruptInterval = m_statusParams[NEUTRAL].m_finishInterval;
 
 	//攻撃0
@@ -185,21 +186,21 @@ void YoYo::AddImguiDebugItem()
 	}
 }
 
-void YoYo::Throw(float arg_vecX)
+bool YoYo::Throw(float arg_vecX)
 {
 	//攻撃中か
-	if (IsActive())
+	if (IsThrow())
 	{
 		//中断可能でない
 		if (!CanInterrupt())
 		{	
 			//先行入力として受付
 			m_previousInput = true;
-			return;
+			return false;
 		}
 	}
 
-	if (!(m_status == HAND || m_status <= THROW_1))return;
+	if (!(m_status == HAND || m_status <= THROW_1))return false;
 
 	//投擲用コライダーアクティブ
 	m_throwCol->SetActive(true);
@@ -219,13 +220,12 @@ void YoYo::Throw(float arg_vecX)
 	else if(m_status != THROW_2) m_status = (STATUS)(m_status + 1);
 
 	StatusInit({ arg_vecX <= 0.0f ? -1.0f : 1.0f,1.0f,0.0f });
+
+	return true;
 }
 
-void YoYo::Neutral()
+bool YoYo::Neutral()
 {
-	//既に発動済
-	if (m_status == NEUTRAL)return;
-
 	m_status = NEUTRAL;
 	//N攻撃コライダーアクティブ
 	m_neutralCol->SetActive(true);
@@ -237,4 +237,6 @@ void YoYo::Neutral()
 	auto& param = m_statusParams[(int)m_status];
 
 	StatusInit({ 0.0f,0.0f,0.0f });
+
+	return true;
 }
