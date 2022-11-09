@@ -110,6 +110,9 @@ public:
 	//攻撃中か
 	bool IsThrow() { return THROW_0 <= m_status && m_status <= THROW_2; }
 
+	//空中状態か（落下速度加算するか）
+	bool IsAir() { return m_status == THROW_0 || m_status == THROW_1; }
+
 	//勢いの加速度ゲッタ
 	const float& GetAccelX()const { return m_accel.x; }
 	const float& GetAccelY()const { return m_accel.y; }

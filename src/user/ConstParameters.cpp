@@ -48,9 +48,12 @@ namespace ConstParameter
         /*--- 落下 ---*/
         //※素早くジャンプ → ゆっくり下降
         //ジャンプ中の重力
-        float STRONG_GRAVITY = 0.34f;
+        float GRAVITY_WHILE_JUMP = 0.34f;
         //落下中の重力
-        float WEAK_GRAVITY = 0.0015f;
+        float GRAVITY_WHILE_FALL = 0.0015f;
+        //攻撃中の重力
+        float GRAVITY_WHILE_ATTACK = GRAVITY_WHILE_FALL * 0.4f;
+
         //落下速度の下限
         float FALL_SPEED_MIN = -0.2f;
 
@@ -183,8 +186,8 @@ void ConstParameter::Environment::ImGuiDebug()
 void ConstParameter::Player::ImGuiDebug()
 {
     ImGui::DragFloat("JUMP_POWER", &JUMP_POWER);
-    ImGui::DragFloat("STRONG_GRAVITY", &STRONG_GRAVITY);
-    ImGui::DragFloat("WEAK_GRAVITY", &WEAK_GRAVITY, 1.0f, 0.0f, 0.0f, "%f");
+    ImGui::DragFloat("GRAVITY_WHILE_JUMP", &GRAVITY_WHILE_JUMP);
+    ImGui::DragFloat("GRAVITY_WHILE_FALL", &GRAVITY_WHILE_FALL, 1.0f, 0.0f, 0.0f, "%f");
     ImGui::DragFloat("FALL_SPEED_MIN", &FALL_SPEED_MIN);
 }
 

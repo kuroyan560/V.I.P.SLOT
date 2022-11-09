@@ -49,9 +49,11 @@ namespace ConstParameter
 		/*--- 落下 ---*/
 		//※素早くジャンプ → ゆっくり下降
 		//ジャンプ中の重力
-		extern float STRONG_GRAVITY;
+		extern float GRAVITY_WHILE_JUMP;
 		//落下中の重力
-		extern float WEAK_GRAVITY;
+		extern float GRAVITY_WHILE_FALL;
+		//攻撃中の重力
+		extern float GRAVITY_WHILE_ATTACK;
 		//落下速度の下限
 		extern float FALL_SPEED_MIN;
 

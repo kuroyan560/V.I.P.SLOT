@@ -211,11 +211,18 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 
 	if (0.0f < m_fallSpeed)
 	{
-		m_fallSpeed -= STRONG_GRAVITY * arg_timeScale.GetTimeScale();
+		m_fallSpeed -= GRAVITY_WHILE_JUMP * arg_timeScale.GetTimeScale();
 	}
 	else
 	{
-		m_fallSpeed -= WEAK_GRAVITY * arg_timeScale.GetTimeScale();
+		if (m_yoYo->IsAir())
+		{
+			m_fallSpeed -= GRAVITY_WHILE_ATTACK * arg_timeScale.GetTimeScale();
+		}
+		else
+		{
+			m_fallSpeed -= GRAVITY_WHILE_FALL * arg_timeScale.GetTimeScale();
+		}
 	}
 
 	//—Ž‰º‘¬“x‰ÁŒ¸
