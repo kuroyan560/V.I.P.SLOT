@@ -698,6 +698,18 @@ Vec3<float> KuroMath::TransformVec3(const Vec3<float>& Value, const Vec3<float>&
     return Vec3<float>(valueVec.m128_f32[0], valueVec.m128_f32[1], valueVec.m128_f32[2]);
 }
 
+float KuroMath::GetRateInRange(float arg_min, float arg_max, float arg_val)
+{
+    float result = (arg_val - arg_min) / (arg_max - arg_min);
+    result = std::clamp(result, 0.0f, 1.0f);
+    return result;
+}
+
+float KuroMath::GetRateInRange(int arg_min, int arg_max, int arg_val)
+{
+    return GetRateInRange(static_cast<float>(arg_min), static_cast<float>(arg_max), static_cast<float>(arg_val));
+}
+
 #include<array>
 #include"imguiApp.h"
 #include<magic_enum.h>

@@ -159,6 +159,16 @@ public:
     static Vec3<float>TransformVec3(const Vec3<float>& Value, const Matrix& Mat);
     //回転軸を指定して回転
     static Vec3<float>TransformVec3(const Vec3<float>& Value, const Vec3<float>& Axis, const Angle& Angle);
+
+    /// <summary>
+    /// 指定した値が範囲内においてどの位置にいるか
+    /// </summary>
+    /// <param name="arg_min">範囲下限（下回る場合は0）</param>
+    /// <param name="arg_max">範囲上限（上回る場合は1）</param>
+    /// <param name="arg_val">対象の値</param>
+    /// <returns>0.0f ~ 1.0f</returns>
+    static float GetRateInRange(float arg_min, float arg_max, float arg_val);
+    static float GetRateInRange(int arg_min, int arg_max, int arg_val);
 };
 
 struct EasingParameter
