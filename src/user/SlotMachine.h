@@ -10,6 +10,7 @@
 #include"CoinObjectManager.h"
 #include"CoinPerform.h"
 #include"ReturnCoinEmitter.h"
+#include"ConstParameters.h"
 class ModelObject;
 class LightManager;
 class GameCamera;
@@ -48,15 +49,11 @@ private:
 	//スロット回転予約
 	int m_startSlotCount = 0;
 
-	enum AUTO_OPERATE
-	{
-		UNTIL_FIRST_REEL,	//最初のリール停止までの時間
-		REEL_STOP_SPAN,	//リールごとの停止までの時間
-		AFTER_STOP_ALL_REEL,	//全リール停止後の待ち時間
-		AUTO_OPERATE_NUM
-	};
+
 	//自動操作タイマー
-	std::array<Timer, AUTO_OPERATE_NUM> m_autoTimer;
+	std::array<Timer, ConstParameter::Slot::AUTO_OPERATE_NUM> m_autoTimer;
+	//スロットゲージ自動操作タイムスケール（ゲージ量が多いほど時間間隔が早まる）
+	float m_autoOperateTimeScale = 1.0f;
 
 	//絵柄を確認して全て一緒なら効果発動
 	bool CheckReelPattern();

@@ -89,18 +89,22 @@ void SlotMachine::Init()
 
 void SlotMachine::Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_timeScale)
 {
+	using namespace ConstParameter::Slot;
+
 	const float timeScale = arg_timeScale.GetTimeScale();
+
+	//自動操作時間計測のタイムスケール
+	//ゲージ量が多いほど時間が早まる
+	const float autoOperateTimeScale =
+		KuroMath::Lerp(1.0f,
+			AUTO_OPERATE_TIME_SCALE_MAX,
+			KuroMath::GetRateInRange(
+				DEFAULT_TIME_SCALE_SLOT_GAUGE_NUM,
+				MAX_TIME_SCALE_SLOT_GAUGE_NUM,
+				m_startSlotCount)) * timeScale;
 
 	//リール更新
 	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Update(timeScale);
-
-	//時間
-	const std::array<float, AUTO_OPERATE_NUM>AUTO_OPERATE_TIME =
-	{
-		120.0f,
-		60.0f,
-		120.0f
-	};
 
 	//停止中
 	if (m_lever == REEL::NONE)
@@ -119,8 +123,8 @@ void SlotMachine::Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_t
 	//稼働中
 	else if(m_lever < REEL::NUM)
 	{
-		m_autoTimer[AUTO_OPERATE::UNTIL_FIRST_REEL].UpdateTimer(timeScale);
-		m_autoTimer[AUTO_OPERATE::REEL_STOP_SPAN].UpdateTimer(timeScale);
+		m_autoTimer[AUTO_OPERATE::UNTIL_FIRST_REEL].UpdateTimer(autoOperateTimeScale);
+		m_autoTimer[AUTO_OPERATE::REEL_STOP_SPAN].UpdateTimer(autoOperateTimeScale);
 
 		//リール停止
 		if (m_autoTimer[AUTO_OPERATE::UNTIL_FIRST_REEL].IsTimeUpOnTrigger()
@@ -143,7 +147,7 @@ void SlotMachine::Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_t
 	}
 	else
 	{
-		if (m_autoTimer[AUTO_OPERATE::AFTER_STOP_ALL_REEL].UpdateTimer(timeScale))
+		if (m_autoTimer[AUTO_OPERATE::AFTER_STOP_ALL_REEL].UpdateTimer(autoOperateTimeScale))
 		{
 			m_lever = REEL::NONE;
 		}
@@ -161,7 +165,18 @@ void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<C
 void SlotMachine::ImguiDebug()
 {
 	ImGui::Begin("SlotMachine");
-	ImGui::Text("StartSlotCount : %d", m_startSlotCount);
+	ImGui::Text("StartSlotCount : { %d }", m_startSlotCount);
+
+	using namespace ConstParameter::Slot;
+	const float autoOperateTimeScale =
+		KuroMath::Lerp(1.0f,
+			AUTO_OPERATE_TIME_SCALE_MAX,
+			KuroMath::GetRateInRange(
+				DEFAULT_TIME_SCALE_SLOT_GAUGE_NUM,
+				MAX_TIME_SCALE_SLOT_GAUGE_NUM,
+				m_startSlotCount));
+	ImGui::Text("AutoOperateTimeScale : { %f }", autoOperateTimeScale);
+
 	ImGui::End();
 }
 
@@ -193,8 +208,8 @@ bool SlotMachine::Lever()
 
 void SlotMachine::Booking()
 {
-	//スロット予約
-	++m_startSlotCount;
+	//スロット予約（スロットゲージ）、上限を超えないように
+	m_startSlotCount = std::min(ConstParameter::Slot::SLOT_GAUGE_MAX, m_startSlotCount + 1);
 }
 
 void SlotMachine::ReelSet(REEL arg_which,

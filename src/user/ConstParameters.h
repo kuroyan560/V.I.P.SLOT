@@ -91,6 +91,27 @@ namespace ConstParameter
 		//回転終了時のリール振動最大
 		extern float FINISH_SPIN_SHAKE_MAX;
 
+		/*--- スロットゲージ ---*/
+		//貯められる施行回数の最大
+		extern int SLOT_GAUGE_MAX;
+
+		/*--- 自動操作 ---*/
+		enum AUTO_OPERATE
+		{
+			UNTIL_FIRST_REEL,	//最初のリール停止までの時間
+			REEL_STOP_SPAN,	//リールごとの停止までの時間
+			AFTER_STOP_ALL_REEL,	//全リール停止後の待ち時間
+			AUTO_OPERATE_NUM
+		};
+		//自動操作の時間間隔
+		extern std::array<float, AUTO_OPERATE_NUM>AUTO_OPERATE_TIME;
+		//自動操作のタイムスケール最速
+		extern float AUTO_OPERATE_TIME_SCALE_MAX;
+		//自動操作タイムスケールがデフォルト値（1.0f）であるスロットゲージ量
+		extern int DEFAULT_TIME_SCALE_SLOT_GAUGE_NUM;
+		//自動操作タイムスケールが最速（AUTO_OPERATE_TIME_SCALE_MAX）であるスロットゲージ量
+		extern int MAX_TIME_SCALE_SLOT_GAUGE_NUM;		// < SLOT_GAUGE_MAX
+
 		/*--- メガホン ---*/
 		extern Vec3<float>MEGA_PHONE_POS;
 

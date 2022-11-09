@@ -86,6 +86,25 @@ namespace ConstParameter
         //回転終了時のリール振動最大
         float FINISH_SPIN_SHAKE_MAX = 0.02f;
 
+        /*--- スロットゲージ ---*/
+        //貯められる施行回数の最大
+        int SLOT_GAUGE_MAX = 12;
+
+        /*--- 自動操作 ---*/
+        //操作の時間間隔
+        std::array<float, AUTO_OPERATE_NUM>AUTO_OPERATE_TIME =
+        {
+            120.0f,
+            60.0f,
+            120.0f
+        };
+        //自動操作のタイムスケール最速
+        float AUTO_OPERATE_TIME_SCALE_MAX = 1.5f;
+        //自動操作タイムスケールがデフォルト値（1.0f）であるスロットゲージ量
+        int DEFAULT_TIME_SCALE_SLOT_GAUGE_NUM = 3;
+        //自動操作タイムスケールが最速（AUTO_OPERATE_TIME_SCALE_MAX）であるスロットゲージ量
+        int MAX_TIME_SCALE_SLOT_GAUGE_NUM = 9;		// < SLOT_GAUGE_MAX
+
         /*--- メガホン ---*/
         Vec3<float>MEGA_PHONE_POS = { 0.0f,18.0f,22.0f };
     }
@@ -193,6 +212,10 @@ void ConstParameter::Player::ImGuiDebug()
 
 void ConstParameter::Slot::ImGuiDebug()
 {
+    ImGui::DragInt("SLOT_GAUGE_MAX", &SLOT_GAUGE_MAX);
+    ImGui::DragFloat("AUTO_OPERATE_TIME_SCALE_MAX", &AUTO_OPERATE_TIME_SCALE_MAX);
+    ImGui::DragInt("DEFAULT_TIME_SCALE_SLOT_GAUGE_NUM", &DEFAULT_TIME_SCALE_SLOT_GAUGE_NUM);
+    ImGui::DragInt("MAX_TIME_SCALE_SLOT_GAUGE_NUM", &MAX_TIME_SCALE_SLOT_GAUGE_NUM);
 }
 
 void ConstParameter::GameObject::ImGuiDebug()
