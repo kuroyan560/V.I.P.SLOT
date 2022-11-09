@@ -208,6 +208,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 
 	//落下（ジャンプ中と落下中で重力変化、素早くジャンプ → ゆっくり降下）
 	m_move.y += m_fallSpeed * arg_timeScale.GetTimeScale();
+
 	if (0.0f < m_fallSpeed)
 	{
 		m_fallSpeed -= STRONG_GRAVITY * arg_timeScale.GetTimeScale();
@@ -253,9 +254,10 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 
 //ヨーヨー（攻撃）
 	//投げる
-	if (throwYoyoTrigger)
+	if (throwYoyoTrigger && m_yoYo->Throw(m_vecX))
 	{
-		m_yoYo->Throw(m_vecX);
+		m_fallSpeed = 0.0f;
+		m_move.y = 0.0f;
 	}
 
 	//ヨーヨー
