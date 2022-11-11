@@ -16,6 +16,7 @@ class LightManager;
 class GameCamera;
 class TimeScale;
 class Player;
+class RenderTarget;
 
 class SlotMachine
 {
@@ -46,10 +47,15 @@ private:
 	//絵柄の定義クラス
 	PatternManager m_patternMgr;
 
+	/*--- スロットゲージ ---*/
+	//スロットゲージを映す画面レンダーターゲット
+	std::shared_ptr<RenderTarget>m_slotGaugeScreen;
+	//スロットゲージ画像
+	std::shared_ptr<TextureBuffer>m_slotGaugeTex;
 	//スロット回転予約
 	int m_startSlotCount = 0;
 
-
+	/*--- 自動操作 ---*/
 	//自動操作タイマー
 	std::array<Timer, ConstParameter::Slot::AUTO_OPERATE_NUM> m_autoTimer;
 	//スロットゲージ自動操作タイムスケール（ゲージ量が多いほど時間間隔が早まる）
@@ -62,6 +68,9 @@ private:
 	
 	//全リールが停止中か
 	bool IsStop()const { return m_lever == REEL::NONE; }
+
+	//スロットゲージ画面更新
+	void UpdateSlotGaugeScreen();
 
 public:
 	SlotMachine();

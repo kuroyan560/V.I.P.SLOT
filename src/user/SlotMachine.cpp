@@ -7,6 +7,8 @@
 #include"GameCamera.h"
 #include"TimeScale.h"
 #include"Player.h"
+#include"KuroEngine.h"
+#include"DrawFunc2D.h"
 
 bool SlotMachine::CheckReelPattern()
 {
@@ -26,12 +28,57 @@ void SlotMachine::SlotPerform(const ConstParameter::Slot::PATTERN& arg_pattern)
 	using PATTERN = ConstParameter::Slot::PATTERN;
 }
 
+void SlotMachine::UpdateSlotGaugeScreen()
+{
+	using namespace ConstParameter::Slot;
+
+	auto& cmdList = D3D12App::Instance()->GetCmdList();
+	m_slotGaugeScreen->Clear(cmdList);
+
+	KuroEngine::Instance()->Graphics().SetRenderTargets({ m_slotGaugeScreen });
+
+	//スロットゲージ液晶画面画像サイズ
+	const auto slotGaugeScreenSize = m_slotGaugeScreen->GetGraphSize().Float();
+	//スロットゲージ画像サイズ
+	const auto slotGaugeTexSize = m_slotGaugeTex->GetGraphSize().Float();
+
+	//スロットゲージを描画する領域のレート
+	const Vec2<float>slotGaugeDrawScreenSizeRate = { 0.95f,0.95f };
+	//スロットゲージを描画する領域
+	const Vec2<float>slotGaugeDrawScreenSize = slotGaugeScreenSize * slotGaugeDrawScreenSizeRate;
+
+	//間隔
+	const float slotGaugeSpace = 30.0f;
+
+	//スロットゲージ最大からスロットゲージの描画サイズを算出（Xは余白を考慮）
+	const Vec2<float>slotGaugeDrawSize =
+	{
+		(slotGaugeDrawScreenSize.x - (SLOT_GAUGE_MAX - 1) * slotGaugeSpace) / SLOT_GAUGE_MAX,
+		slotGaugeDrawScreenSize.y / SLOT_GAUGE_MAX,
+	};
+
+	//描画位置一番左
+	const Vec2<float>minDrawPos = (slotGaugeScreenSize - slotGaugeDrawScreenSize) / 2.0f;
+
+	//スロットゲージ描画
+	for (int i = 0; i < m_startSlotCount; ++i)
+	{
+		Vec2<float>drawPos =
+		{
+			minDrawPos.x + i * (slotGaugeDrawSize.x + slotGaugeSpace),
+			minDrawPos.y
+		};
+		DrawFunc2D::DrawExtendGraph2D(drawPos, drawPos + slotGaugeDrawScreenSize, m_slotGaugeTex);
+	}
+}
+
 SlotMachine::SlotMachine()
 {
 	//スロットマシン生成
 	m_slotMachineObj = std::make_shared<ModelObject>("resource/user/model/", "slotMachine.glb");
 	//トランスフォーム調整
-	m_slotMachineObj->m_transform.SetScale(0.4f);
+	m_slotMachineObj->m_transform.SetScale(2.0f);
+	m_slotMachineObj->m_transform.SetPos({ 0.0f,3.0f,0.0f });
 
 	//モデルからリールの情報取得
 	for (auto& mesh : m_slotMachineObj->m_model->m_meshes)
@@ -63,6 +110,29 @@ SlotMachine::SlotMachine()
 	m_spinStartSE = AudioApp::Instance()->LoadAudio("resource/user/sound/slot_start.wav");
 	m_reelStopSE = AudioApp::Instance()->LoadAudio("resource/user/sound/slot_stop.wav");
 
+	/*--- スロットゲージ ---*/
+	//スロットゲージを映す画面レンダーターゲット生成
+	m_slotGaugeScreen = D3D12App::Instance()->GenerateRenderTarget(
+		D3D12App::Instance()->GetBackBuffFormat(),
+		Color(70, 60, 94, 255), 
+		Vec2<int>(1000,200),
+		L"SlotGauge - Screen");
+	//スロットゲージテクスチャ生成
+	m_slotGaugeTex = D3D12App::Instance()->GenerateTextureBuffer(
+		Color(74, 185, 163, 255));
+
+	//レンダーターゲットをスロットゲージを映す画面テクスチャにアタッチ
+	const std::string SLOT_GAUGE_SCREEN_MATERIAL_NAME = "SlotGaugeScreen";
+	for (auto& mesh : m_slotMachineObj->m_model->m_meshes)
+	{
+		auto& material = mesh.material;
+		if (material->name.compare(SLOT_GAUGE_SCREEN_MATERIAL_NAME) != 0)continue;
+
+		//目的のマテリアル発見、新しいテクスチャをアタッチ
+		material->texBuff[0] = m_slotGaugeScreen;
+		break;
+	}
+
 	//リール初期絵柄セット（デバッグ用、何も効果なし）
 		//デバッグ用
 	using PATTERN = ConstParameter::Slot::PATTERN;
@@ -79,10 +149,6 @@ SlotMachine::SlotMachine()
 
 void SlotMachine::Init()
 {
-	//m_slotMachineObj->m_transform.SetScale(1.4f);
-	m_slotMachineObj->m_transform.SetScale(2.0f);
-	m_slotMachineObj->m_transform.SetPos({ 0.0f,3.0f,0.0f });
-
 	//レバー初期化
 	m_lever = REEL::NONE;
 
@@ -91,6 +157,9 @@ void SlotMachine::Init()
 
 	//リール初期化
 	for (int reelIdx = 0; reelIdx < REEL::NUM; ++reelIdx)m_reels[reelIdx].Init();
+
+	//スロットゲージ画面更新
+	UpdateSlotGaugeScreen();
 }
 
 void SlotMachine::Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_timeScale)
