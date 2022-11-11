@@ -38,12 +38,13 @@ void SlotMachine::UpdateSlotGaugeScreen()
 	KuroEngine::Instance()->Graphics().SetRenderTargets({ m_slotGaugeScreen });
 
 	//スロットゲージ液晶画面画像サイズ
-	const auto slotGaugeScreenSize = m_slotGaugeScreen->GetGraphSize().Float();
+	const auto slotGaugeScreenSize = WinApp::Instance()->GetWinSize().Float();;
 	//スロットゲージ画像サイズ
 	const auto slotGaugeTexSize = m_slotGaugeTex->GetGraphSize().Float();
 
 	//スロットゲージを描画する領域のレート
-	const Vec2<float>slotGaugeDrawScreenSizeRate = { 0.95f,0.95f };
+	const Vec2<float>slotGaugeDrawScreenSizeRate = { 0.95f,0.7f };
+	//const Vec2<float>slotGaugeDrawScreenSizeRate = { 1.0f,1.0f };
 	//スロットゲージを描画する領域
 	const Vec2<float>slotGaugeDrawScreenSize = slotGaugeScreenSize * slotGaugeDrawScreenSizeRate;
 
@@ -54,7 +55,7 @@ void SlotMachine::UpdateSlotGaugeScreen()
 	const Vec2<float>slotGaugeDrawSize =
 	{
 		(slotGaugeDrawScreenSize.x - (SLOT_GAUGE_MAX - 1) * slotGaugeSpace) / SLOT_GAUGE_MAX,
-		slotGaugeDrawScreenSize.y / SLOT_GAUGE_MAX,
+		slotGaugeDrawScreenSize.y,
 	};
 
 	//描画位置一番左
@@ -68,7 +69,7 @@ void SlotMachine::UpdateSlotGaugeScreen()
 			minDrawPos.x + i * (slotGaugeDrawSize.x + slotGaugeSpace),
 			minDrawPos.y
 		};
-		DrawFunc2D::DrawExtendGraph2D(drawPos, drawPos + slotGaugeDrawScreenSize, m_slotGaugeTex);
+		DrawFunc2D::DrawExtendGraph2D(drawPos, drawPos + slotGaugeDrawSize, m_slotGaugeTex);
 	}
 }
 
@@ -160,6 +161,9 @@ void SlotMachine::Init()
 
 	//スロットゲージ画面更新
 	UpdateSlotGaugeScreen();
+
+	//スロットゲージ自動操作タイムスケール
+	m_autoOperateTimeScale = 1.0f;
 }
 
 void SlotMachine::Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_timeScale)
@@ -189,6 +193,8 @@ void SlotMachine::Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_t
 		{
 			//予約数消費
 			m_startSlotCount--;
+			//スロットゲージ画面更新
+			UpdateSlotGaugeScreen();
 			//スロットスタート
 			Lever();
 			//最初のリール停止までのタイマーセット
@@ -285,6 +291,11 @@ void SlotMachine::Booking()
 {
 	//スロット予約（スロットゲージ）、上限を超えないように
 	m_startSlotCount = std::min(ConstParameter::Slot::SLOT_GAUGE_MAX, m_startSlotCount + 1);
+
+
+	if (m_lever == REEL::NONE)return;
+	//スロットゲージ画面更新
+	UpdateSlotGaugeScreen();
 }
 
 void SlotMachine::ReelSet(REEL arg_which,
