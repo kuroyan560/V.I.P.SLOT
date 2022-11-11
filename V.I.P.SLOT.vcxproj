@@ -139,6 +139,14 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>dxcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>xcopy "$(SolutionDir)lib\dxcompiler\bin\x64\dxcompiler.dll" $(TargetDir) /Y
+xcopy "$(SolutionDir)lib\dxcompiler\bin\x64\dxil.dll" $(TargetDir) /Y</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -159,6 +167,14 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>dxcompiler.lib</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>xcopy "$(SolutionDir)lib\dxcompiler\bin\x64\dxcompiler.dll" $(TargetDir) /Y
+xcopy "$(SolutionDir)lib\dxcompiler\bin\x64\dxil.dll" $(TargetDir) /Y</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="lib\imgui\imgui.cpp" />
