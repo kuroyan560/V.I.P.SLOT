@@ -65,7 +65,37 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 		b = std::make_shared<SlotBlock>(originCol, arg_slotMachine);
 	}
 
-	m_terrianClearTimerGauge = D3D12App::Instance()->GenerateTextureBuffer("resource/user/img/terrianTimeGauge.png");
+	/*--- 地形評価 ---*/
+	const std::string terrianValuationTexDir = "resource/user/img/timeGauge/";
+	//地形クリア時間ゲージ画像
+	m_terrianValuationTimerGaugeTex = D3D12App::Instance()->GenerateTextureBuffer(terrianValuationTexDir + "terrianTimeGauge.png");
+
+	//評価文字列画像名前
+	std::array<std::string, TERRIAN_EVALUATION::NUM>terrianEvaluationTexName =
+	{
+		"failed","bad","good","great","excellent"
+	};
+	//地形評価ごとの色
+	std::array<Color, TERRIAN_EVALUATION::NUM>terrianEvaluationColor =
+	{
+		Color(93,71,118,255),
+		Color(202,96,174,255),
+		Color(141,216,148,255),
+		Color(255,93,204,255),
+		Color(94,253,247,255),
+	};
+	//数字画像
+	std::array<std::shared_ptr<TextureBuffer>, TERRIAN_EVALUATION::NUM>terrianEvaluationNumTex;
+	D3D12App::Instance()->GenerateTextureBuffer(terrianEvaluationNumTex.data(), terrianValuationTexDir + "slotBlockNum.png", 5, { 5,1 });
+	//各構造体にパラメータセット
+	for (int i = 0; i < TERRIAN_EVALUATION::NUM; ++i)
+	{
+		m_terrianEvaluationArray[i].m_strTex = D3D12App::Instance()->GenerateTextureBuffer(terrianValuationTexDir + terrianEvaluationTexName[i] + ".png");
+		m_terrianEvaluationArray[i].m_color = terrianEvaluationColor[i];
+		m_terrianEvaluationArray[i].m_numTex = terrianEvaluationNumTex[i];
+	}
+	//地形評価の「＋」画像
+	m_terrianValuationPlusTex = D3D12App::Instance()->GenerateTextureBuffer(terrianValuationTexDir + "plus.png");
 }
 
 void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr)
@@ -159,7 +189,7 @@ void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManage
 	}
 
 	//地形クリア時間設定
-	m_terrianClearTimer.Reset(600.0f);
+	m_terrianValuationTimer.Reset(600.0f);
 }
 
 void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
@@ -195,7 +225,12 @@ void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>a
 
 
 	//地形クリア時間経過か、全コイン排出で地形変更
-	if (m_terrianClearTimer.UpdateTimer(arg_timeScale.GetTimeScale()) || isAllCoinEmit)Init("", arg_collisionMgr);
+	if (m_terrianValuationTimer.UpdateTimer(arg_timeScale.GetTimeScale()) || isAllCoinEmit)
+	{
+		Init("", arg_collisionMgr);
+
+		//地形評価
+	}
 }
 
 void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
@@ -259,12 +294,12 @@ void StageMgr::EffectDraw(std::weak_ptr<Camera> arg_cam)
 
 	static float startRadian = Angle::ConvertToRadian(-90);
 	DrawFunc2D::DrawRadialWipeGraph2D(
-		m_terrianClearTimerGaugePos,
-		m_terrianClearTimerGaugeExt,
+		m_terrianValuationTimerGaugePos,
+		m_terrianValuationTimerGaugeExt,
 		startRadian,
-		startRadian + Angle::ConvertToRadian(-360.0f * m_terrianClearTimer.GetInverseTimeRate()),
+		startRadian + Angle::ConvertToRadian(-360.0f * m_terrianValuationTimer.GetInverseTimeRate()),
 		{ 0.5f,0.5f },
-		m_terrianClearTimerGauge
+		m_terrianValuationTimerGaugeTex
 	);
 }
 
