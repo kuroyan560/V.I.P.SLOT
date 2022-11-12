@@ -7,6 +7,8 @@
 #include"ConstParameters.h"
 #include"Block.h"
 #include"Timer.h"
+#include<forward_list>
+#include"Color.h"
 class SlotBlock;
 class CoinBlock;
 class SlotMachine;
@@ -84,12 +86,37 @@ class StageMgr
 		std::shared_ptr<TextureBuffer>m_numTex;
 	};
 	std::array<TerrianEvaluation, TERRIAN_EVALUATION::NUM>m_terrianEvaluationArray;
+	
+	//’nŒ`•]‰¿UI‰‰o••`‰æ
+	struct TerrianEvaluationUI
+	{
+		//’nŒ`•]‰¿
+		const TerrianEvaluation* m_evaluation = nullptr;
+
+		//“oêŠÔ
+		Timer m_appearTimer;
+		//‘Ò‹@ŠÔ
+		Timer m_waitTimer;
+
+		void Init()
+		{
+			m_evaluation = nullptr;
+		}
+		void Emit(TerrianEvaluation* arg_evaluation, float arg_appearTime,float arg_waitTime)
+		{
+			m_evaluation = arg_evaluation;
+			m_appearTimer.Reset(arg_appearTime);
+			m_waitTimer.Reset(arg_waitTime);
+		}
+		void Update(const float& arg_timeScale);
+		void Draw(const Vec2<float>& arg_timeGaugeCenter, std::weak_ptr<TextureBuffer>arg_plusTex);
+	}m_terrianEvaluationUI;
 
 	//’nŒ`•]‰¿‚Ìu{v‰æ‘œ
 	std::shared_ptr<TextureBuffer>m_terrianValuationPlusTex;
 
 	void DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<CollisionManager>arg_collisionMgr);
-
+	void GenerateTerrian(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr, int arg_slotBlockNum);
 public:
 	StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine);
 	void Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr);

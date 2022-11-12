@@ -11,11 +11,103 @@
 #include"DrawFunc2D.h"
 #include<vector>
 #include"SlotMachine.h"
+#include"KuroEngine.h"
 
 void StageMgr::DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
 	//アタッチされていたコライダー解除
 	arg_collisionMgr.lock()->Remove(arg_block->GetCollider());
+}
+
+void StageMgr::GenerateTerrian(std::string arg_stageDataPath, std::weak_ptr<CollisionManager> arg_collisionMgr, int arg_slotBlockNum)
+{
+	if (!m_generateTerrian)return;
+
+	using namespace ConstParameter::Environment;
+	using namespace ConstParameter::Stage;
+
+	//ブロック数上限肥えないようにする
+	if (MAX_BLOCK_NUM_AXIS.x < m_blockNum.x)m_blockNum.x = MAX_BLOCK_NUM_AXIS.x;
+	if (MAX_BLOCK_NUM_AXIS.y < m_blockNum.y)m_blockNum.y = MAX_BLOCK_NUM_AXIS.y;
+
+	//地形クリア
+	for (auto& terrianArray : m_terrianBlockArray)
+		for (auto& t : terrianArray)
+		{
+			//ブロックなし
+			if (t == nullptr)continue;
+
+			DisappearBlock(t, arg_collisionMgr);
+		}
+	m_terrianBlockArray.clear();
+
+	//地形構成
+	Vec2<float>scale = { 1.0f,1.0f };
+	scale.y = (FIELD_HEIGHT_MAX - FIELD_HEIGHT_MIN) / (BLOCK_LEN * m_blockNum.y);
+	scale.x = FIELD_WIDTH / (BLOCK_LEN * m_blockNum.x);
+
+	//スケール適用後のブロックの一辺の長さ
+	Vec2<float>sideFixed = { BLOCK_LEN * scale.x ,BLOCK_LEN * scale.y };
+	//スケール適用後のブロックの一辺の長さ半分
+	Vec2<float> sideFixedHalf = sideFixed / 2.0f;
+	//ブロック同士の座標オフセット
+	Vec2<float>offset = sideFixed;
+
+	const float leftX = -((floor(m_blockNum.x / 2.0f) - 1) * sideFixed.x) + (-sideFixedHalf.x * (m_blockNum.x % 2 == 0 ? 1 : 2));
+	const float topY = FIELD_HEIGHT_MAX - sideFixedHalf.y;
+
+	Transform initTransform;
+	initTransform.SetScale({ scale.x,scale.y,1.0f });
+
+	//※以下、本来ならファイルから読み込み
+		//スロットリール交換
+		//m_slotMachine.lock()->ReelSet(SlotMachine::LEFT, );
+		//m_slotMachine.lock()->ReelSet(SlotMachine::CENTER, );
+		//m_slotMachine.lock()->ReelSet(SlotMachine::RIGHT, );
+
+		//コインノルマ
+	m_norma = 10;
+
+	//スロットブロック位置
+	std::vector<Vec2<int>>slotBlockRandIdx(arg_slotBlockNum);
+	for (auto& idx : slotBlockRandIdx)
+	{
+		idx.x = KuroFunc::GetRand(m_blockNum.x - 1);
+		idx.y = KuroFunc::GetRand(m_blockNum.y - 1);
+	}
+
+	int slotBlockIdx = 0;
+	int coinBlockIdx = 0;
+
+	m_terrianBlockArray.resize(m_blockNum.y);
+	for (int y = 0; y < m_blockNum.y; ++y)
+	{
+		m_terrianBlockArray[y].resize(m_blockNum.x);
+		for (int x = 0; x < m_blockNum.x; ++x)
+		{
+			if (!KuroFunc::Probability(m_generateBlockRate))continue;
+
+			auto& block = m_terrianBlockArray[y][x];
+			initTransform.SetPos({ leftX + x * offset.x,topY - y * offset.y,FIELD_FLOOR_POS.z });
+
+			auto itr = std::find(slotBlockRandIdx.begin(), slotBlockRandIdx.end(), Vec2<int>(x, y));
+			if (itr == slotBlockRandIdx.end())
+			{
+				block = std::dynamic_pointer_cast<Block>(m_coinBlocks[coinBlockIdx++]);
+			}
+			else
+			{
+				block = std::dynamic_pointer_cast<Block>(m_slotBlocks[slotBlockIdx++]);
+			}
+
+			//ブロック初期化、コライダーアタッチ
+			arg_collisionMgr.lock()->Register(block->GetCollider());
+			block->Init(initTransform, m_hitEffect);
+		}
+	}
+
+	//地形クリア時間設定
+	m_terrianValuationTimer.Reset(600.0f);
 }
 
 StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
@@ -100,96 +192,10 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 
 void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
-	if (!m_generateTerrian)return;
+	GenerateTerrian(arg_stageDataPath, arg_collisionMgr, 4);
 
-	using namespace ConstParameter::Environment;
-	using namespace ConstParameter::Stage;
-
-	//ブロック数上限肥えないようにする
-	if (MAX_BLOCK_NUM_AXIS.x < m_blockNum.x)m_blockNum.x = MAX_BLOCK_NUM_AXIS.x;
-	if (MAX_BLOCK_NUM_AXIS.y < m_blockNum.y)m_blockNum.y = MAX_BLOCK_NUM_AXIS.y;
-
-	//地形クリア
-	for (auto& terrianArray : m_terrianBlockArray)
-		for (auto& t : terrianArray)
-		{
-			//ブロックなし
-			if (t == nullptr)continue;
-
-			DisappearBlock(t, arg_collisionMgr);
-		}
-	m_terrianBlockArray.clear();
-
-	//地形構成
-	Vec2<float>scale = { 1.0f,1.0f };
-	scale.y = (FIELD_HEIGHT_MAX - FIELD_HEIGHT_MIN) / (BLOCK_LEN * m_blockNum.y);
-	scale.x = FIELD_WIDTH / (BLOCK_LEN * m_blockNum.x);
-
-	//スケール適用後のブロックの一辺の長さ
-	Vec2<float>sideFixed = { BLOCK_LEN * scale.x ,BLOCK_LEN * scale.y };
-	//スケール適用後のブロックの一辺の長さ半分
-	Vec2<float> sideFixedHalf = sideFixed / 2.0f;
-	//ブロック同士の座標オフセット
-	Vec2<float>offset = sideFixed;
-
-	const float leftX = -((floor(m_blockNum.x / 2.0f) - 1) * sideFixed.x) + (-sideFixedHalf.x * (m_blockNum.x % 2 == 0 ? 1 : 2));
-	const float topY = FIELD_HEIGHT_MAX - sideFixedHalf.y;
-
-	Transform initTransform;
-	initTransform.SetScale({ scale.x,scale.y,1.0f });
-
-//※以下、本来ならファイルから読み込み
-	//スロットリール交換
-	//m_slotMachine.lock()->ReelSet(SlotMachine::LEFT, );
-	//m_slotMachine.lock()->ReelSet(SlotMachine::CENTER, );
-	//m_slotMachine.lock()->ReelSet(SlotMachine::RIGHT, );
-
-	//コインノルマ
-	m_norma = 10;
-
-	//スロットポップ数
-	int slotBlockNum = 4;
-
-	//スロットブロック位置
-	std::vector<Vec2<int>>slotBlockRandIdx(slotBlockNum);
-	for (auto& idx : slotBlockRandIdx)
-	{
-		idx.x = KuroFunc::GetRand(m_blockNum.x - 1);
-		idx.y = KuroFunc::GetRand(m_blockNum.y - 1);
-	}
-
-	int slotBlockIdx = 0;
-	int coinBlockIdx = 0;
-
-	m_terrianBlockArray.resize(m_blockNum.y);
-	for (int y = 0; y < m_blockNum.y; ++y)
-	{
-		m_terrianBlockArray[y].resize(m_blockNum.x);
-		for (int x = 0; x < m_blockNum.x; ++x)
-		{
-			if (!KuroFunc::Probability(m_generateBlockRate))continue;
-
-			auto& block = m_terrianBlockArray[y][x];
-			initTransform.SetPos({ leftX + x * offset.x,topY - y * offset.y,FIELD_FLOOR_POS.z });
-
-			auto itr = std::find(slotBlockRandIdx.begin(), slotBlockRandIdx.end(), Vec2<int>(x, y));
-			if (itr == slotBlockRandIdx.end())
-			{
-				block = std::dynamic_pointer_cast<Block>(m_coinBlocks[coinBlockIdx++]);
-			}
-			else
-			{
-				block = std::dynamic_pointer_cast<Block>(m_slotBlocks[slotBlockIdx++]);
-			}
-
-			//ブロック初期化、コライダーアタッチ
-			arg_collisionMgr.lock()->Register(block->GetCollider());
-			block->Init(initTransform, m_hitEffect);
-		}
-	}
-
-	//地形クリア時間設定
-	m_terrianValuationTimer.Reset(600.0f);
+	//地形評価UI
+	m_terrianEvaluationUI.Init();
 }
 
 void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
@@ -221,15 +227,25 @@ void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>a
 		}
 	}
 
+	//ヒットエフェクト
 	m_hitEffect->Update(arg_timeScale.GetTimeScale());
 
+	//地形評価UI
+	m_terrianEvaluationUI.Update(arg_timeScale.GetTimeScale());
+
+	//デバッグ用
+	bool terrianClearKey = UsersInput::Instance()->KeyOnTrigger(DIK_T);
 
 	//地形クリア時間経過か、全コイン排出で地形変更
-	if (m_terrianValuationTimer.UpdateTimer(arg_timeScale.GetTimeScale()) || isAllCoinEmit)
+	if (m_terrianValuationTimer.UpdateTimer(arg_timeScale.GetTimeScale()) || isAllCoinEmit || terrianClearKey)
 	{
-		Init("", arg_collisionMgr);
-
 		//地形評価
+		int evaluation = (int)std::ceil((1.0f - m_terrianValuationTimer.GetTimeRate()) / (1.0f / (TERRIAN_EVALUATION::NUM - 1)));
+		m_terrianEvaluationUI.Emit(
+			&m_terrianEvaluationArray[evaluation],
+			60.0f, 35.0f);
+
+		GenerateTerrian("", arg_collisionMgr,evaluation);
 	}
 }
 
@@ -301,6 +317,9 @@ void StageMgr::EffectDraw(std::weak_ptr<Camera> arg_cam)
 		{ 0.5f,0.5f },
 		m_terrianValuationTimerGaugeTex
 	);
+
+	//地形評価UI
+	m_terrianEvaluationUI.Draw(m_terrianValuationTimerGaugePos, m_terrianValuationPlusTex);
 }
 
 #include"imguiApp.h"
@@ -335,4 +354,45 @@ void StageMgr::ImguiDebug(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	}
 
 	ImGui::End();
+}
+
+void StageMgr::TerrianEvaluationUI::Update(const float& arg_timeScale)
+{
+	if (m_evaluation == nullptr)return;
+
+	if (m_appearTimer.UpdateTimer(arg_timeScale))
+	{
+		if (m_waitTimer.UpdateTimer(arg_timeScale))
+		{
+			m_evaluation = nullptr;
+		}
+	}
+}
+
+#include"DrawFunc2D_Color.h"
+void StageMgr::TerrianEvaluationUI::Draw(const Vec2<float>& arg_timeGaugeCenter, std::weak_ptr<TextureBuffer>arg_plusTex)
+{
+	if (m_evaluation == nullptr)return;
+
+	float rate = m_appearTimer.GetTimeRate();
+	Vec2<float>offset = { 0,0 };
+	offset.y = KuroMath::Ease(Out, Elastic, rate, 0.0f, 95.0f);
+	DrawFunc2D::DrawRotaGraph2D(arg_timeGaugeCenter + offset, { 1,1 }, 0.0f, m_evaluation->m_strTex);
+
+	Vec2<float>plusOffset = { -15.0f,40.0f };
+	DrawFunc2D_Color::DrawRotaGraph2D(
+		arg_timeGaugeCenter + offset + plusOffset,
+		{ 1,1 },
+		0.0f,
+		arg_plusTex.lock(),
+		m_evaluation->m_color);
+
+	Vec2<float>numOffset = Vec2<float>(-plusOffset.x, plusOffset.y);
+	DrawFunc2D_Color::DrawRotaGraph2D(
+		arg_timeGaugeCenter + offset + numOffset,
+		{ 1,1 },
+		0.0f,
+		m_evaluation->m_numTex,
+		m_evaluation->m_color);
+
 }
