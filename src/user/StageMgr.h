@@ -9,6 +9,7 @@
 #include"Timer.h"
 #include<forward_list>
 #include"Color.h"
+#include"Scaffold.h"
 class SlotBlock;
 class CoinBlock;
 class SlotMachine;
@@ -20,6 +21,8 @@ class CollisionManager;
 class TexHitEffect;
 class TimeScale;
 class TextureBuffer;
+class Scaffold;
+class Player;
 
 class StageMgr
 {
@@ -36,6 +39,9 @@ class StageMgr
 	std::vector<std::shared_ptr<CoinBlock>>m_coinBlocks;
 	std::shared_ptr<Model>m_coinBlockModel;
 	std::shared_ptr<Model>m_emptyCoinBlockModel;
+
+	//足場インスタンス
+	std::vector<std::shared_ptr<Scaffold>>m_scaffolds;
 
 	//コインノルマ
 	int m_norma;
@@ -55,6 +61,9 @@ class StageMgr
 
 	//ブロック生成の確立
 	float m_generateBlockRate = 45.0f;
+
+	//足場配列
+	std::vector<std::shared_ptr<Scaffold>>m_scaffoldArray;
 
 	/*--- 地形評価 ---*/
 	//地形クリア時間計測
@@ -120,7 +129,7 @@ class StageMgr
 public:
 	StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine);
 	void Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr);
-	void Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr);
+	void Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player);
 	void Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);
 	void Finalize(std::weak_ptr<CollisionManager>arg_collisionMgr);
 

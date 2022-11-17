@@ -18,12 +18,14 @@ class CollisionManager;
 class GameCamera;
 class CollisionSphere;
 class YoYo;
+class Scaffold;
 
 class Player : public ColliderParentObject
 {
 	//モデルオブジェクト
 	std::shared_ptr<ModelObject>m_modelObj;
 
+	Vec3<float>m_oldPos;
 	//移動
 	Vec3<float>m_move = { 0,0,0 };
 
@@ -111,9 +113,6 @@ class Player : public ColliderParentObject
 	};
 	std::shared_ptr<CallBackWithBlock>m_callBackWithBlock;
 
-	//ジャンプ
-	void Jump(Vec3<float>* arg_rockOnPos = nullptr);
-
 	//操作がキーボードかコントローラーか
 	enum struct INPUT_CONFIG { KEY_BOARD, CONTROLLER };
 	INPUT_CONFIG m_inputConfig = INPUT_CONFIG::CONTROLLER;
@@ -123,6 +122,12 @@ class Player : public ColliderParentObject
 
 	//向いている方向X
 	float m_vecX;
+
+	//ジャンプ
+	void Jump(Vec3<float>* arg_rockOnPos = nullptr);
+
+	//地面着地時に呼び出す
+	void OnLanding();
 	
 public:
 	Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<GameCamera>arg_cam);
@@ -144,6 +149,9 @@ public:
 
 	//imguiデバッグ
 	void ImguiDebug();
+
+	//足場との当たり判定
+	void HitCheckWithScaffold(const std::weak_ptr<Scaffold>arg_scaffold);
 
 	//プレイヤーのモデル中央に合わせた座標ゲッタ
 	Vec3<float>GetCenterPos()const;

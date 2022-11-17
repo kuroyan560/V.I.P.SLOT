@@ -144,8 +144,8 @@
       </Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>xcopy "$(SolutionDir)lib\dxcompiler\bin\x64\dxcompiler.dll" $(TargetDir) /Y
-xcopy "$(SolutionDir)lib\dxcompiler\bin\x64\dxil.dll" $(TargetDir) /Y</Command>
+      <Command>
+      </Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -172,8 +172,8 @@ xcopy "$(SolutionDir)lib\dxcompiler\bin\x64\dxil.dll" $(TargetDir) /Y</Command>
       </Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>xcopy "$(SolutionDir)lib\dxcompiler\bin\x64\dxcompiler.dll" $(TargetDir) /Y
-xcopy "$(SolutionDir)lib\dxcompiler\bin\x64\dxil.dll" $(TargetDir) /Y</Command>
+      <Command>
+      </Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -254,6 +254,7 @@ xcopy "$(SolutionDir)lib\dxcompiler\bin\x64\dxil.dll" $(TargetDir) /Y</Command>
     <ClCompile Include="src\user\Pattern.cpp" />
     <ClCompile Include="src\user\PatternManager.cpp" />
     <ClCompile Include="src\user\Player.cpp" />
+    <ClCompile Include="src\user\Scaffold.cpp" />
     <ClCompile Include="src\user\TexHitEffect.cpp" />
     <ClCompile Include="src\user\Reel.cpp" />
     <ClCompile Include="src\user\RenderTargetManager.cpp" />
@@ -362,6 +363,7 @@ xcopy "$(SolutionDir)lib\dxcompiler\bin\x64\dxil.dll" $(TargetDir) /Y</Command>
     <ClInclude Include="src\user\Pattern.h" />
     <ClInclude Include="src\user\PatternManager.h" />
     <ClInclude Include="src\user\Player.h" />
+    <ClInclude Include="src\user\Scaffold.h" />
     <ClInclude Include="src\user\TexHitEffect.h" />
     <ClInclude Include="src\user\Reel.h" />
     <ClInclude Include="src\user\RenderTargetManager.h" />

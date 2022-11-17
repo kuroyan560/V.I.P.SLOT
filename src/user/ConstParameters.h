@@ -152,6 +152,9 @@ namespace ConstParameter
 		//ƒuƒƒbƒN‚Ìˆê•Ó’·‚³”¼•ª
 		extern float BLOCK_LEN_HALF;
 
+		//‘«ê‚ÌÅ‘å”
+		extern int MAX_SCAFFOLD_NUM;
+
 		void ImGuiDebug();
 	}
 

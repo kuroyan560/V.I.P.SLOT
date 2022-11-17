@@ -73,6 +73,10 @@ void InGameScene::OnUpdate()
 	{
 		this->Initialize();
 	}
+	if (UsersInput::Instance()->KeyOnTrigger(DIK_S))
+	{
+		m_slotMachine->Booking();
+	}
 
 	//コリジョンマネージャ
 	m_collisionMgr->Update();
@@ -88,7 +92,7 @@ void InGameScene::OnUpdate()
 	m_slotMachine->Update(m_player, m_timeScale);
 
 	//ステージマネージャ
-	m_stageMgr->Update(m_timeScale,m_collisionMgr);
+	m_stageMgr->Update(m_timeScale, m_collisionMgr, m_player);
 
 	//クリアしたか
 	if (m_stageMgr->IsClear(m_player->GetCoinNum()))
@@ -113,7 +117,8 @@ void InGameScene::OnDraw()
 	DrawFunc2D::DrawGraph({ 0,0 }, m_backGround, 1.0f, AlphaBlendMode_None);
 
 	//スロットマシン
-	m_slotMachine->Draw(m_ligMgr, m_gameCam->GetSubCam());
+	//m_slotMachine->Draw(m_ligMgr, m_gameCam->GetSubCam());
+	m_slotMachine->Draw(m_ligMgr, m_gameCam->GetMainCam());
 
 	//床
 	DrawFunc3D::DrawNonShadingModel(m_squareFloorObj, *m_gameCam->GetMainCam(), 1.0f, AlphaBlendMode_None);

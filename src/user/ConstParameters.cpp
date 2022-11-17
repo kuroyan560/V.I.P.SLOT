@@ -143,6 +143,9 @@ namespace ConstParameter
         float BLOCK_LEN = 2.0f;
         //ƒuƒƒbƒN‚Ìˆê•Ó’·‚³”¼•ª
         float BLOCK_LEN_HALF = BLOCK_LEN / 2.0f;
+
+        //‘«ê‚ÌÅ‘å”
+        int MAX_SCAFFOLD_NUM = 10;
     }
 };
 

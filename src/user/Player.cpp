@@ -11,11 +11,19 @@
 #include"GameCamera.h"
 #include"Block.h"
 #include"YoYo.h"
+#include"Scaffold.h"
 
 void Player::Jump(Vec3<float>* arg_rockOnPos)
 {
 	m_move.y = 0.0f;
 	m_fallSpeed = ConstParameter::Player::JUMP_POWER;
+}
+
+void Player::OnLanding()
+{
+	m_fallSpeed = 0.0f;
+	m_move.y = 0.0f;
+	m_isOnGround = true;
 }
 
 Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<GameCamera>arg_cam)
@@ -41,7 +49,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 
 	//モデル全体を覆う球
 	m_bodySphereCol = std::make_shared<CollisionSphere>(
-		1.2f,
+		1.4f,
 		Vec3<float>(0.0f, -0.2f, 0.0f));
 
 	//足元の当たり判定球
@@ -98,6 +106,8 @@ void Player::Init(int arg_initHp, int arg_initCoinNum)
 	//スタート位置に移動
 	m_modelObj->m_transform.SetPos(INIT_POS);
 
+	m_oldPos = INIT_POS;
+
 	//移動速度
 	m_move = { 0,0,0 };
 
@@ -108,7 +118,7 @@ void Player::Init(int arg_initHp, int arg_initCoinNum)
 	m_isOnGround = true;
 
 	//所持金リセット
-	m_coinVault.Set(300000);
+	m_coinVault.Set(0);
 
 	//被ダメージコールバック
 	m_damegedCallBack->Init();
@@ -126,6 +136,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	using namespace ConstParameter::Environment;
 
 	Vec3<float>pos = m_modelObj->m_transform.GetPos();
+	m_oldPos = pos;
 
 //入力情報取得
 	const auto& input = *UsersInput::Instance();
@@ -235,9 +246,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	if (pos.y < FIELD_FLOOR_TOP_SURFACE_HEIGHT + MODEL_SIZE.y / 2.0f)
 	{
 		pos.y = FIELD_FLOOR_TOP_SURFACE_HEIGHT + MODEL_SIZE.y / 2.0f;
-		m_fallSpeed = 0.0f;
-		m_move.y = 0.0f;
-		m_isOnGround = true;
+		OnLanding();
 	}
 
 	//押し戻し（ステージ端）
@@ -296,6 +305,61 @@ void Player::ImguiDebug()
 	ImGui::Text("Hp : { %d }", m_hp);
 	m_yoYo->AddImguiDebugItem();
 	ImGui::End();
+}
+
+void Player::HitCheckWithScaffold(const std::weak_ptr<Scaffold> arg_scaffold)
+{
+	//自身の座標取得
+	auto pos = m_modelObj->m_transform.GetPos();
+
+	//落下していない
+	if (m_oldPos.y <= pos.y)return;
+
+	//足場ポインタ取得
+	auto scaffold = arg_scaffold.lock();
+
+	//１フレーム前の座標
+	auto oldPos = m_oldPos;
+
+	//当たり判定
+	auto scaffoldPos = scaffold->GetPos();
+	auto scaffoldNormal = scaffold->GetNormal();
+
+	float myRadius = m_bodySphereCol->m_radius;
+	auto v1 = pos + Vec3<float>(0.0f, -myRadius, 0.0f) - scaffoldPos;
+	auto v2 = oldPos+ Vec3<float>(0.0f, -myRadius, 0.0f) - scaffoldPos;
+
+	//足場面と衝突してない
+	if (0.0f < v1.Dot(scaffoldNormal) * v2.Dot(scaffoldNormal))return;
+
+	//足場面までの距離
+	auto d1 = abs(scaffoldNormal.Dot(v1));
+	auto d2 = abs(scaffoldNormal.Dot(v2));
+	float a = d1 / (d1 + d2);
+	auto v3 = v1 * (1 - a) + v2 * a;
+
+	//衝突点
+	auto inter = v3 + scaffoldPos;
+
+	//衝突点が足場面上に含まれているか
+	auto scaffoldWidth = scaffold->GetWidth();
+	//足場の各角
+	Vec3<float>p1 = scaffoldPos + Vec3<float>(-scaffoldWidth / 2.0f, 0.0f, 0.5f);
+	Vec3<float>p2 = scaffoldPos + Vec3<float>(scaffoldWidth / 2.0f, 0.0f, 0.5f);
+	Vec3<float>p3 = scaffoldPos + Vec3<float>(-scaffoldWidth / 2.0f, 0.0f, -0.5f);
+	Vec3<float>p4 = scaffoldPos + Vec3<float>(scaffoldWidth / 2.0f, 0.0f, -0.5f);
+	
+	if ((inter - p1).Cross(p1 - p2).GetNormal() != scaffoldNormal)return;
+	if ((inter - p2).Cross(p2 - p4).GetNormal() != scaffoldNormal)return;
+	if ((inter - p4).Cross(p4 - p3).GetNormal() != scaffoldNormal)return;
+	if ((inter - p3).Cross(p3 - p1).GetNormal() != scaffoldNormal)return;
+
+	//押し戻し
+	pos.y = inter.y + myRadius + 0.01f;
+	m_modelObj->m_transform.SetPos(pos);
+
+	//着地時の処理
+	OnLanding();
 }
 
 Vec3<float> Player::GetCenterPos() const

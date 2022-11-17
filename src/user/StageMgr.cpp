@@ -12,6 +12,7 @@
 #include<vector>
 #include"SlotMachine.h"
 #include"KuroEngine.h"
+#include"Player.h"
 
 void StageMgr::DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
@@ -108,6 +109,17 @@ void StageMgr::GenerateTerrian(std::string arg_stageDataPath, std::weak_ptr<Coll
 
 	//地形クリア時間設定
 	m_terrianValuationTimer.Reset(600.0f);
+
+	//足場生成
+	m_scaffoldArray.clear();
+
+	int scaffoldNum = 4;
+	float offsetY = 4.0f;
+	for (int i = 0; i < scaffoldNum; ++i)
+	{
+		m_scaffoldArray.emplace_back(m_scaffolds[i]);
+		m_scaffoldArray.back()->Init(0.0f, 5.2f * (i + 1), ConstParameter::Environment::FIELD_FLOOR_SIZE.x);
+	}
 }
 
 StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
@@ -116,6 +128,7 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 
 	m_slotMachine = arg_slotMachine;
 	
+	//モデル読み込み
 	m_slotBlockModel = Importer::Instance()->LoadModel("resource/user/model/", "slotBlock.glb");
 	m_coinBlockModel = Importer::Instance()->LoadModel("resource/user/model/", "coinBlock.glb");
 	m_emptyCoinBlockModel = Importer::Instance()->LoadModel("resource/user/model/", "coinBlock_empty.glb");
@@ -148,6 +161,7 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 	auto originCol = std::make_shared<Collider>();
 	originCol->Generate("BlockCollider", "Block", colPrimitiveArray);
 
+	//ブロックのインスタンス生成
 	for (int i = 0; i < MAX_BLOCK_NUM; ++i)
 	{
 		m_coinBlocks.emplace_back(std::make_shared<CoinBlock>(originCol));
@@ -155,6 +169,12 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 	for (auto& b : m_slotBlocks)
 	{
 		b = std::make_shared<SlotBlock>(originCol, arg_slotMachine);
+	}
+
+	//足場のインスタンス生成
+	for (int i = 0; i < MAX_SCAFFOLD_NUM; ++i)
+	{
+		m_scaffolds.emplace_back(std::make_shared<Scaffold>());
 	}
 
 	/*--- 地形評価 ---*/
@@ -198,7 +218,7 @@ void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManage
 	m_terrianEvaluationUI.Init();
 }
 
-void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
+void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player)
 {
 	if (!m_generateTerrian)return;
 
@@ -247,12 +267,25 @@ void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>a
 
 		GenerateTerrian("", arg_collisionMgr,evaluation);
 	}
+
+	//足場との判定
+	for (auto& scaffold : m_scaffoldArray)
+	{
+		arg_player.lock()->HitCheckWithScaffold(scaffold);
+	}
 }
 
 void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
 	if (!m_generateTerrian)return;
 
+	//足場描画
+	for (auto& scaffold : m_scaffoldArray)
+	{
+		scaffold->Draw(arg_lightMgr, arg_cam);
+	}
+
+	//ブロック描画
 	std::vector<Matrix>coinBlockTransformArray;
 	std::vector<Matrix>emptyCoinBlockTransformArray;
 
