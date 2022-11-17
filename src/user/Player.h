@@ -32,8 +32,11 @@ class Player : public ColliderParentObject
 	//落下速度
 	float m_fallSpeed;
 
-	//接地フラグ
+	//接地フラグ（地面）
 	bool m_isOnGround;
+	//接地フラグ（足場）
+	bool m_isOnScaffold;
+
 	//ジャンプSE
 	int m_jumpSE;
 
@@ -123,11 +126,19 @@ class Player : public ColliderParentObject
 	//向いている方向X
 	float m_vecX;
 
+	/* --- 足場から降りる動作 --- */
+	//足場との当たり判定を取らない時間計測
+	Timer m_stepDownTimer;
+	//足場から降りているか
+	bool m_stepDown;
+	//足場から降りたときの落下スピード
+	float m_stepDownAddFall = -0.06f;
+
 	//ジャンプ
 	void Jump(Vec3<float>* arg_rockOnPos = nullptr);
 
 	//地面着地時に呼び出す
-	void OnLanding();
+	void OnLanding(bool arg_isGround);
 	
 public:
 	Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<GameCamera>arg_cam);

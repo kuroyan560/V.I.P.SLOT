@@ -17,13 +17,16 @@ void Player::Jump(Vec3<float>* arg_rockOnPos)
 {
 	m_move.y = 0.0f;
 	m_fallSpeed = ConstParameter::Player::JUMP_POWER;
+	m_isOnGround = false;
+	m_isOnScaffold = false;
 }
 
-void Player::OnLanding()
+void Player::OnLanding(bool arg_isGround)
 {
 	m_fallSpeed = 0.0f;
 	m_move.y = 0.0f;
-	m_isOnGround = true;
+	if (arg_isGround)m_isOnGround = true;
+	else m_isOnScaffold = true;
 }
 
 Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<GameCamera>arg_cam)
@@ -128,6 +131,10 @@ void Player::Init(int arg_initHp, int arg_initCoinNum)
 
 	//デフォルト右向き
 	m_vecX = 1.0f;
+
+	//足場から降りる処理初期化
+	m_stepDownTimer.Reset(3);
+	m_stepDown = false;
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
@@ -205,12 +212,32 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	}
 
 	//ジャンプ
-	if (jumpTrigger/* && m_isOnGround*/)
+	bool canJump = m_isOnGround || m_isOnScaffold;
+	if (jumpTrigger/* && canJump*/)
 	{
 		m_yoYo->Neutral();
 		Jump();
 		AudioApp::Instance()->PlayWaveDelay(m_jumpSE, 3);
-		m_isOnGround = false;
+	}
+
+	//足場との当たり判定を切る時間更新
+	m_stepDownTimer.UpdateTimer(arg_timeScale.GetTimeScale());
+	//足場から降りる
+	bool stepDownInput = (-moveInput.y < 0.0f);
+	if (stepDownInput)
+	{
+		if (!m_stepDown && m_isOnScaffold)
+		{
+			m_stepDownTimer.Reset();
+			m_stepDown = true;
+			m_isOnScaffold = false;
+			m_fallSpeed = m_stepDownAddFall;
+		}
+	}
+	//入力をし直さないと足場降りを実行しない
+	else
+	{
+		m_stepDown = false;
 	}
 	
 	//攻撃勢い
@@ -246,7 +273,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	if (pos.y < FIELD_FLOOR_TOP_SURFACE_HEIGHT + MODEL_SIZE.y / 2.0f)
 	{
 		pos.y = FIELD_FLOOR_TOP_SURFACE_HEIGHT + MODEL_SIZE.y / 2.0f;
-		OnLanding();
+		OnLanding(true);
 	}
 
 	//押し戻し（ステージ端）
@@ -309,6 +336,9 @@ void Player::ImguiDebug()
 
 void Player::HitCheckWithScaffold(const std::weak_ptr<Scaffold> arg_scaffold)
 {
+	//足場との判定を切っている
+	if (!m_stepDownTimer.IsTimeUp())return;
+
 	//自身の座標取得
 	auto pos = m_modelObj->m_transform.GetPos();
 
@@ -359,7 +389,7 @@ void Player::HitCheckWithScaffold(const std::weak_ptr<Scaffold> arg_scaffold)
 	m_modelObj->m_transform.SetPos(pos);
 
 	//着地時の処理
-	OnLanding();
+	OnLanding(false);
 }
 
 Vec3<float> Player::GetCenterPos() const
