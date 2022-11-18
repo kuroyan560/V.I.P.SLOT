@@ -132,7 +132,7 @@ class Player : public ColliderParentObject
 	//足場から降りているか
 	bool m_stepDown;
 	//足場から降りたときの落下スピード
-	float m_stepDownAddFall = -0.06f;
+	float m_stepDownFallSpeed = -0.06f;
 
 	//ジャンプ
 	void Jump(Vec3<float>* arg_rockOnPos = nullptr);

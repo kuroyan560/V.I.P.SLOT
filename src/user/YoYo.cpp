@@ -66,19 +66,19 @@ YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playe
 	m_statusParams[THROW_0].m_animName = "Attack_0";
 	m_statusParams[THROW_0].m_finishInterval = 32;
 	m_statusParams[THROW_0].m_interruptInterval = 18;
-	m_statusParams[THROW_0].m_maxAccelVal = { 0.5f,0.0f,0.0f };
+	m_statusParams[THROW_0].m_maxAccelVal = { 0.2f,0.0f,0.0f };
 
 	//çUåÇ1
 	m_statusParams[THROW_1].m_animName = "Attack_1";
 	m_statusParams[THROW_1].m_finishInterval = 37;
 	m_statusParams[THROW_1].m_interruptInterval = 20;
-	m_statusParams[THROW_1].m_maxAccelVal = { 0.6f,0.0f,0.0f };
+	m_statusParams[THROW_1].m_maxAccelVal = { 0.3f,0.0f,0.0f };
 
 	//çUåÇ2
 	m_statusParams[THROW_2].m_animName = "Attack_2";
 	m_statusParams[THROW_2].m_finishInterval = 33;
 	m_statusParams[THROW_2].m_interruptInterval = 33;
-	m_statusParams[THROW_2].m_maxAccelVal = { 0.7f,0.22f,0.0f };
+	m_statusParams[THROW_2].m_maxAccelVal = { 0.6f,0.22f,0.0f };
 }
 
 

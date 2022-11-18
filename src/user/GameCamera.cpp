@@ -10,7 +10,7 @@ void GameCamera::SetPosAndTarget(Vec3<float>arg_absOffset, Vec3<float>arg_lerpOf
 
 	//‘OŒiƒJƒƒ‰
 	Vec3<float>pos = m_cam[MAIN]->GetPos();
-	pos = KuroMath::Lerp(pos, m_defaultPos[MAIN] + heightOffset + arg_lerpOffset, 0.08f);
+	pos = KuroMath::Lerp(pos, m_defaultPos[MAIN] + heightOffset + arg_lerpOffset, 0.05f);
 	m_cam[MAIN]->SetPos(pos + arg_absOffset);
 
 	Vec3<float>target = m_cam[MAIN]->GetTarget();

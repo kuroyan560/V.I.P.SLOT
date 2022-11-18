@@ -213,7 +213,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 
 	//ƒWƒƒƒ“ƒv
 	bool canJump = m_isOnGround || m_isOnScaffold;
-	if (jumpTrigger/* && canJump*/)
+	if (jumpTrigger && canJump)
 	{
 		m_yoYo->Neutral();
 		Jump();
@@ -231,7 +231,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 			m_stepDownTimer.Reset();
 			m_stepDown = true;
 			m_isOnScaffold = false;
-			m_fallSpeed = m_stepDownAddFall;
+			m_fallSpeed = m_stepDownFallSpeed;
 		}
 	}
 	//“ü—Í‚ğ‚µ’¼‚³‚È‚¢‚Æ‘«ê~‚è‚ğÀs‚µ‚È‚¢
