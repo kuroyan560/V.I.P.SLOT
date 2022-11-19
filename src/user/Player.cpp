@@ -405,6 +405,9 @@ void Player::DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter,
 	//–³“GŽžŠÔ’†‚©
 	if (!m_invincibleTimer.IsTimeUp())return;
 
+	//UŒ‚’†‚©
+	if (m_parent->m_yoYo->IsInvincible())return;
+
 	//HPŒ¸­
 	m_parent->m_hp--;
 
@@ -422,10 +425,6 @@ void Player::DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter,
 
 	//ƒJƒƒ‰U“®
 	m_cam.lock()->Shake(60, 2, 2.0f, 1.0f);
-
-	//—Ž‰º
-	m_parent->m_fallSpeed = FALL_SPEED_ON_DAMAGED;
-	m_parent->m_move.y = 0.0f;
 
 	printf("Player : Damaged : remain hp %d\n", m_parent->m_hp);
 }

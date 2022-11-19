@@ -4,6 +4,7 @@
 #include<memory>
 #include"Transform.h"
 #include"Timer.h"
+#include"CollisionCallBack.h"
 class ModelObject;
 class CollisionManager;
 class CollisionSphere;
@@ -12,8 +13,11 @@ class TimeScale;
 class LightManager;
 class Camera;
 
-class YoYo
+class YoYo : public CollisionCallBack
 {
+	//攻撃力
+	int m_offensive = 1;
+
 	//ヨーヨーモデル
 	std::shared_ptr<ModelObject>m_modelObj;
 
@@ -74,6 +78,14 @@ class YoYo
 	//ステータスの動的更新時に呼び出す
 	void StatusInit(Vec3<float>arg_accelVec);
 
+	void OnCollisionEnter(
+		const Vec3<float>& arg_inter,
+		std::weak_ptr<Collider>arg_otherCollider)override {};
+
+	void OnCollisionTrigger(
+		const Vec3<float>& arg_inter,
+		std::weak_ptr<Collider>arg_otherCollider)override;
+
 public:
 	YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform);
 
@@ -107,11 +119,14 @@ public:
 	/// <returns>成功したか</returns>
 	bool Neutral();
 
+	//投擲中か
+	bool IsThrow()const { return THROW_0 <= m_status && m_status <= THROW_2; }
+
 	//攻撃中か
-	bool IsThrow() { return THROW_0 <= m_status && m_status <= THROW_2; }
+	bool IsInvincible()const { return m_status == NEUTRAL; }
 
 	//空中状態か（落下速度加算するか）
-	bool IsAir() { return m_status == THROW_0 || m_status == THROW_1; }
+	bool IsAir()const { return m_status == THROW_0 || m_status == THROW_1; }
 
 	//勢いの加速度ゲッタ
 	const float& GetAccelX()const { return m_accel.x; }

@@ -6,6 +6,7 @@
 #include<magic_enum.h>
 #include"Importer.h"
 #include"Object.h"
+#include"GameObject.h"
 
 void YoYo::StatusInit(Vec3<float>arg_accelVec)
 {
@@ -25,6 +26,11 @@ void YoYo::StatusInit(Vec3<float>arg_accelVec)
 	//加速度初期化
 	m_iniAccel = param.m_maxAccelVal * arg_accelVec;
 	m_accel = m_iniAccel;
+}
+
+void YoYo::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
+{
+	arg_otherCollider.lock()->GetParentObject<GameObject>()->Damage(m_offensive);
 }
 
 YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform)
@@ -50,6 +56,10 @@ YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playe
 	*/
 	m_neutralCol->SetParentTransform(&m_modelObj->m_transform);
 	m_throwCol->SetParentTransform(&m_modelObj->m_animator->GetBoneTransform("Bone"));
+
+	//攻撃コールバック
+	m_neutralCol->SetCallBack("Enemy", this);
+	m_throwCol->SetCallBack("Enemy", this);
 
 	//コライダー登録
 	arg_collisionMgr.lock()->Register(m_neutralCol);
