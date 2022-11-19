@@ -48,7 +48,7 @@ class StageMgr
 	//デバッグ用、ノルマ達成判定を切る
 	bool m_isInfinity = true;
 	//デバッグ用、地形生成するか
-	bool m_generateTerrian = true;
+	bool m_generateTerrian = false;
 
 	//ヒットエフェクト
 	std::shared_ptr<TexHitEffect>m_hitEffect;

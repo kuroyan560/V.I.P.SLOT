@@ -22,6 +22,17 @@ void StageMgr::DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<C
 
 void StageMgr::GenerateTerrian(std::string arg_stageDataPath, std::weak_ptr<CollisionManager> arg_collisionMgr, int arg_slotBlockNum)
 {
+	//足場生成
+	m_scaffoldArray.clear();
+
+	int scaffoldNum = 4;
+	float offsetY = 4.0f;
+	for (int i = 0; i < scaffoldNum; ++i)
+	{
+		m_scaffoldArray.emplace_back(m_scaffolds[i]);
+		m_scaffoldArray.back()->Init(0.0f, 5.2f * (i + 1), ConstParameter::Environment::FIELD_FLOOR_SIZE.x);
+	}
+
 	if (!m_generateTerrian)return;
 
 	using namespace ConstParameter::Environment;
@@ -109,17 +120,6 @@ void StageMgr::GenerateTerrian(std::string arg_stageDataPath, std::weak_ptr<Coll
 
 	//地形クリア時間設定
 	m_terrianValuationTimer.Reset(600.0f);
-
-	//足場生成
-	m_scaffoldArray.clear();
-
-	int scaffoldNum = 4;
-	float offsetY = 4.0f;
-	for (int i = 0; i < scaffoldNum; ++i)
-	{
-		m_scaffoldArray.emplace_back(m_scaffolds[i]);
-		m_scaffoldArray.back()->Init(0.0f, 5.2f * (i + 1), ConstParameter::Environment::FIELD_FLOOR_SIZE.x);
-	}
 }
 
 StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
@@ -220,8 +220,6 @@ void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManage
 
 void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player)
 {
-	if (!m_generateTerrian)return;
-
 	//すべてのコイン排出済か
 	bool isAllCoinEmit = true;
 
@@ -277,8 +275,6 @@ void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>a
 
 void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
-	if (!m_generateTerrian)return;
-
 	//足場描画
 	for (auto& scaffold : m_scaffoldArray)
 	{
@@ -289,12 +285,10 @@ void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Came
 	std::vector<Matrix>coinBlockTransformArray;
 	std::vector<Matrix>emptyCoinBlockTransformArray;
 
-	for (int y = 0; y < m_blockNum.y; ++y)
+	for (auto& blockArray : m_terrianBlockArray)
 	{
-		for (int x = 0; x < m_blockNum.x; ++x)
+		for (auto& block : blockArray)
 		{
-			auto& block = m_terrianBlockArray[y][x];
-
 			//ブロックなし
 			if (block == nullptr)continue;
 
