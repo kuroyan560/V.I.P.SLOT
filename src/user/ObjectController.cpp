@@ -16,6 +16,16 @@ void ObjectController::OnDraw(GameObject& arg_enemy, std::weak_ptr<LightManager>
 		AlphaBlendMode_None);
 }
 
+bool ObjectController::IsObjsHpdZero(GameObject& arg_obj) const
+{
+	return arg_obj.m_hp <= 0;
+}
+
+bool ObjectController::IsDead(GameObject& arg_enemy)
+{
+	return IsObjsHpdZero(arg_enemy);
+}
+
 void ObjectSlideMove::OnInit(GameObject& arg_enemy)
 {
 	using namespace ConstParameter::GameObject;
@@ -67,5 +77,10 @@ bool ObjectSlideMove::IsDead(GameObject& arg_enemy)
 
 	auto pos = arg_enemy.m_transform.GetPos();
 	//フィールド外
-	return pos.x < -POS_X_ABS || POS_X_ABS < pos.x;
+	return (pos.x < -POS_X_ABS || POS_X_ABS < pos.x) || IsObjsHpdZero(arg_enemy);
+}
+
+int ObjectSlideMove::OnDamage(GameObject& arg_enemy, int arg_damageAmount)
+{
+	return 0;
 }

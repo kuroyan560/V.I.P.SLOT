@@ -24,6 +24,9 @@ void GameObject::Init()
 {
 	//‹““®§Œä‰Šú‰»
 	m_controller->OnInit(*this);
+
+	//HPƒŠƒZƒbƒg
+	m_hp = m_breed.lock()->m_maxHp;
 }
 
 void GameObject::Update(const TimeScale& arg_timeScale)
@@ -38,7 +41,8 @@ void GameObject::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Cam
 
 int GameObject::Damage(int arg_amount)
 {
-	return m_controller->OnDamage(*this);
+	m_hp = std::max(0, m_hp - arg_amount);
+	return m_controller->OnDamage(*this, arg_amount);
 }
 
 const int& GameObject::GetTypeID()

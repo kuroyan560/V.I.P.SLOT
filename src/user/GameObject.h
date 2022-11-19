@@ -4,6 +4,7 @@
 #include"Transform.h"
 #include"ColliderParentObject.h"
 #include"Timer.h"
+#include"CoinVault.h"
 class ObjectBreed;
 class ObjectController;
 class TimeScale;
@@ -15,12 +16,16 @@ class GameObject : public ColliderParentObject
 {
 private:
 	friend class ObjectManager;
+	friend class ObjectController;
 
 	//コントローラー
 	std::unique_ptr<ObjectController>m_controller;
 
 	//コライダー配列
 	std::vector<std::shared_ptr<Collider>>m_colliders;
+
+	//HP
+	int m_hp;
 
 public:
 	//トランスフォーム
