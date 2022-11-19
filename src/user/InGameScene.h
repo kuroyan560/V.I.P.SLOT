@@ -45,6 +45,9 @@ class InGameScene : public BaseScene
 	//ステージマネージャ
 	std::shared_ptr<StageMgr>m_stageMgr;
 
+	//オブジェクトマネージャ
+	std::shared_ptr<ObjectManager>m_objMgr;
+
 public:
 	InGameScene();
 	void OnInitialize()override;

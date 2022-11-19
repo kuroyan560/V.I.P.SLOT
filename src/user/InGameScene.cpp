@@ -42,6 +42,9 @@ InGameScene::InGameScene()
 	//ステージマネージャ生成
 	m_stageMgr = std::make_shared<StageMgr>(m_slotMachine);
 
+	//オブジェクトマネージャ生成
+	m_objMgr = std::make_shared<ObjectManager>();
+
 	//ブロックヒットSE
 	int blockBrokenSE = AudioApp::Instance()->LoadAudio("resource/user/sound/block_broken.wav", 0.5f);
 
@@ -64,6 +67,10 @@ void InGameScene::OnInitialize()
 
 	//ステージマネージャ
 	m_stageMgr->Init("",m_collisionMgr);
+
+	//オブジェクトマネージャ
+	m_objMgr->Init(m_collisionMgr);
+	m_objMgr->Appear(ConstParameter::GameObject::TYPE::ENEMY, m_collisionMgr);
 }
 
 void InGameScene::OnUpdate()
@@ -93,6 +100,9 @@ void InGameScene::OnUpdate()
 
 	//ステージマネージャ
 	m_stageMgr->Update(m_timeScale, m_collisionMgr, m_player);
+
+	//オブジェクトマネージャ
+	m_objMgr->Update(m_timeScale, m_collisionMgr, m_player);
 
 	//クリアしたか
 	if (m_stageMgr->IsClear(m_player->GetCoinNum()))
@@ -125,6 +135,9 @@ void InGameScene::OnDraw()
 
 	//ステージマネージャ
 	m_stageMgr->Draw(m_ligMgr, m_gameCam->GetMainCam());
+
+	//オブジェクトマネージャ
+	m_objMgr->Draw(m_ligMgr, m_gameCam->GetMainCam());
 
 	//プレイヤー
 	m_player->Draw(m_ligMgr, m_gameCam->GetMainCam());
