@@ -423,9 +423,6 @@ void Player::DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter,
 	//“_–Å
 	m_flashTimer.Reset(FLASH_SPAN_ON_DAMAGED_INVINCIBLE);
 
-	//ƒJƒƒ‰U“®
-	m_cam.lock()->Shake(60, 2, 2.0f, 1.0f);
-
 	printf("Player : Damaged : remain hp %d\n", m_parent->m_hp);
 }
 
@@ -444,6 +441,8 @@ void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
 	{
 		arg_timeScale.Set(1.0f);
 		AudioApp::Instance()->PlayWave(m_damageSE);
+		//ƒJƒƒ‰U“®
+		m_cam.lock()->Shake(60, 2, 2.0f, 1.0f);
 	}
 
 	m_hitStopTimer.UpdateTimer();

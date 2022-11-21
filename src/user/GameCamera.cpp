@@ -3,19 +3,17 @@
 #include"KuroMath.h"
 #include<math.h>
 
-void GameCamera::SetPosAndTarget(Vec3<float>arg_absOffset, Vec3<float>arg_lerpOffset)
+void GameCamera::SetPosAndTarget(Vec3<float>arg_absOffset, Vec3<float>arg_lerpOffset, float arg_timeScale)
 {
 	//è∞â∫ÇÕÇ†Ç‹ÇËå©Ç¶Ç»Ç¢ÇÊÇ§Ç…çÇÇ≥ï‚ê≥
 	Vec3<float>heightOffset = { 0.0f,(1.0f - std::min(arg_lerpOffset.y / 10.0f, 1.0f)) * 8.0f,0.0f };
 
 	//ëOåiÉJÉÅÉâ
-	Vec3<float>pos = m_cam[MAIN]->GetPos();
-	pos = KuroMath::Lerp(pos, m_defaultPos[MAIN] + heightOffset + arg_lerpOffset, 0.05f);
-	m_cam[MAIN]->SetPos(pos + arg_absOffset);
+	m_posLerpOffset = KuroMath::Lerp(m_posLerpOffset, heightOffset + arg_lerpOffset, 0.05f * arg_timeScale);
+	m_cam[MAIN]->SetPos(m_defaultPos[MAIN] + m_posLerpOffset + arg_absOffset);
 
-	Vec3<float>target = m_cam[MAIN]->GetTarget();
-	target = KuroMath::Lerp(target, m_targetPos[MAIN] + heightOffset + arg_lerpOffset, 0.08f);
-	m_cam[MAIN]->SetTarget(target + arg_absOffset);
+	m_targetLerpOffset = KuroMath::Lerp(m_targetLerpOffset, heightOffset + arg_lerpOffset, 0.08f * arg_timeScale);
+	m_cam[MAIN]->SetTarget(m_targetPos[MAIN] + m_targetLerpOffset + arg_absOffset);
 
 	//îwåiÉJÉÅÉâ
 	m_cam[SUB]->SetPos(m_defaultPos[SUB] + arg_absOffset);
@@ -35,10 +33,13 @@ void GameCamera::Init()
 	{
 		m_cam[i]->SetAngleOfView(Angle(m_defaultCapeView[i]));
 	}
-	SetPosAndTarget({ 0,0,0 }, { 0,0,0 });
 
 	m_defaultPos[MAIN] = Vec3<float>(0.0f, 3.4f, -59.0f);
 	m_targetPos[MAIN] = Vec3<float>(0.0f, m_defaultPos[MAIN].y + 2.0f, 0.0f);
+	m_posLerpOffset = { 0,0,0 };
+	m_targetLerpOffset = { 0,0,0 };
+	SetPosAndTarget({ 0,0,0 }, { 0,0,0 },1.0f);
+	m_shake.Init();
 }
 
 void GameCamera::Update(float arg_timeScale, Vec3<float>arg_playersDisplacement)
@@ -68,7 +69,7 @@ void GameCamera::Update(float arg_timeScale, Vec3<float>arg_playersDisplacement)
 		m_shake.m_offset = { 0,0,0 };
 	}
 
-	SetPosAndTarget(m_shake.m_offset, arg_playersDisplacement);
+	SetPosAndTarget(m_shake.m_offset, arg_playersDisplacement,1.0f);
 }
 
 void GameCamera::Shake(int arg_time, int arg_span, float arg_powerMin, float arg_powerMax)
