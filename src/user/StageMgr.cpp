@@ -331,7 +331,7 @@ void StageMgr::Finalize(std::weak_ptr<CollisionManager> arg_collisionMgr)
 	m_hitEffect->Init();
 }
 
-void StageMgr::EffectDraw(std::weak_ptr<Camera> arg_cam)
+void StageMgr::Draw2D(std::weak_ptr<Camera> arg_cam)
 {
 	m_hitEffect->Draw(arg_cam);
 

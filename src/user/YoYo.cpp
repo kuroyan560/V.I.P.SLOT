@@ -7,6 +7,8 @@
 #include"Importer.h"
 #include"Object.h"
 #include"GameObject.h"
+#include"TexHitEffect.h"
+#include"AudioApp.h"
 
 void YoYo::StatusInit(Vec3<float>arg_accelVec)
 {
@@ -30,10 +32,15 @@ void YoYo::StatusInit(Vec3<float>arg_accelVec)
 
 void YoYo::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
 {
+	//オブジェクトにダメージを与える
 	arg_otherCollider.lock()->GetParentObject<GameObject>()->Damage(m_offensive);
+	//ヒットエフェクト
+	m_hitEffect->Emit(arg_inter);
+	//SE
+	AudioApp::Instance()->PlayWave(m_hitSE);
 }
 
-YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform)
+YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform, int arg_hitSE)
 {
 	//モデルオブジェクト生成
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "yoyo.glb");
@@ -64,6 +71,12 @@ YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playe
 	//コライダー登録
 	arg_collisionMgr.lock()->Register(m_neutralCol);
 	arg_collisionMgr.lock()->Register(m_throwCol);
+
+	//ヒットエフェクト生成
+	m_hitEffect = std::make_shared<TexHitEffect>();
+	m_hitEffect->Set("resource/user/img/hitEffect.png", 5, { 5,1 }, { 6.0f,6.0f }, 3);
+	//ヒット時SE
+	m_hitSE = arg_hitSE;
 
 //ステータスごとのパラメータ設定
 	//N攻撃
@@ -126,12 +139,18 @@ void YoYo::Init()
 	//加速度リセット
 	m_accel = { 0,0,0 };
 	m_iniAccel = { 0,0,0 };
+
+	//ヒットエフェクト
+	m_hitEffect->Init();
 }
 
 void YoYo::Update(const TimeScale& arg_timeScale, float arg_playersVecX)
 {
 	//アニメーション更新
 	m_modelObj->m_animator->Update(arg_timeScale.GetTimeScale());
+
+	//ヒットエフェクト更新
+	m_hitEffect->Update(arg_timeScale.GetTimeScale());
 
 	//手に持ってる状態なら何もしない
 	if (m_status == HAND)return;
@@ -159,6 +178,12 @@ void YoYo::Update(const TimeScale& arg_timeScale, float arg_playersVecX)
 void YoYo::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
 	DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock());
+}
+
+void YoYo::Draw2D(std::weak_ptr<Camera> arg_cam)
+{
+	//ヒットエフェクト
+	m_hitEffect->Draw(arg_cam);
 }
 
 #include"imguiApp.h"

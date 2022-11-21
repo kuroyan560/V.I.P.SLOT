@@ -12,6 +12,7 @@ class Collider;
 class TimeScale;
 class LightManager;
 class Camera;
+class TexHitEffect;
 
 class YoYo : public CollisionCallBack
 {
@@ -31,6 +32,11 @@ class YoYo : public CollisionCallBack
 	//投擲
 	std::shared_ptr<CollisionSphere>m_throwColSphere;
 	std::shared_ptr<Collider>m_throwCol;
+
+	//ヒットエフェクト
+	std::shared_ptr<TexHitEffect>m_hitEffect;
+	//ヒット時SE
+	int m_hitSE;
 
 
 	//状態遷移
@@ -87,7 +93,7 @@ class YoYo : public CollisionCallBack
 		std::weak_ptr<Collider>arg_otherCollider)override;
 
 public:
-	YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform);
+	YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform, int arg_hitSE);
 
 	/// <summary>
 	/// ヨーヨーの固定パラメータ設定（≠初期化）
@@ -102,6 +108,8 @@ public:
 	void Update(const TimeScale& arg_timeScale, float arg_playersVecX);
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
+	//エフェクト描画
+	void Draw2D(std::weak_ptr<Camera>arg_cam);
 
 	//imguiデバッグ
 	void AddImguiDebugItem();

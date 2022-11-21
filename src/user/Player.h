@@ -150,7 +150,7 @@ public:
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 	//エフェクト描画
-	void EffectDraw(std::weak_ptr<Camera>arg_cam);
+	void Draw2D(std::weak_ptr<Camera>arg_cam);
 
 	//コインゲット関数
 	void GetCoin(int arg_coinNum)

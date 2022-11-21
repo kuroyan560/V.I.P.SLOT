@@ -48,6 +48,9 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 	//敵の踏みつけSE
 	int onStepEnemySE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_step.wav",0.8f);
 
+	//敵への攻撃SE
+	int enemyHitSE = AudioApp::Instance()->LoadAudio("resource/user/sound/block_broken.wav", 0.5f);
+
 	/*--- コライダー用プリミティブ生成 ---*/
 
 	//モデル全体を覆う球
@@ -92,7 +95,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 	arg_collisionMgr.lock()->Register(colliders);
 
 	/*--- ヨーヨー生成 ---*/
-	m_yoYo = std::make_shared<YoYo>(arg_collisionMgr, &m_modelObj->m_transform);
+	m_yoYo = std::make_shared<YoYo>(arg_collisionMgr, &m_modelObj->m_transform, enemyHitSE);
 	m_yoYo->Awake(2.5f, 1.2f);
 }
 
@@ -320,8 +323,9 @@ void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>
 	m_yoYo->Draw(arg_lightMgr, arg_cam);
 }
 
-void Player::EffectDraw(std::weak_ptr<Camera> arg_cam)
+void Player::Draw2D(std::weak_ptr<Camera> arg_cam)
 {
+	m_yoYo->Draw2D(arg_cam);
 }
 
 #include"imguiApp.h"

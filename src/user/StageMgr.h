@@ -133,7 +133,7 @@ public:
 	void Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);
 	void Finalize(std::weak_ptr<CollisionManager>arg_collisionMgr);
 
-	void EffectDraw(std::weak_ptr<Camera>arg_cam);
+	void Draw2D(std::weak_ptr<Camera>arg_cam);
 
 	void ImguiDebug(std::weak_ptr<CollisionManager>arg_collisionMgr);
 
