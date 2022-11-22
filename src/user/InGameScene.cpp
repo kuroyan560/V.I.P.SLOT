@@ -94,7 +94,8 @@ void InGameScene::OnInitialize()
 void InGameScene::OnUpdate()
 {
 	//デバッグ用
-	if (UsersInput::Instance()->KeyOnTrigger(DIK_I))
+	if (UsersInput::Instance()->KeyOnTrigger(DIK_I)
+		|| UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::BACK))
 	{
 		this->Initialize();
 	}

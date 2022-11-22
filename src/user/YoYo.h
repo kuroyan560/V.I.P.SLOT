@@ -61,11 +61,13 @@ class YoYo : public CollisionCallBack
 		int m_interruptInterval = 60;
 		//最大加速度スカラー
 		Vec3<float>m_maxAccelVal = { 0,0,0 };
+		//攻撃のインターバル
+		int m_attackGapInterval = 0;
 	};
 	std::array<StatusParameter, STATUS_NUM>m_statusParams;
 
-	//予約入力
-	bool m_previousInput = false;
+	//3連撃の予約入力
+	bool m_tripleAttackPreviousInput = false;
 
 	//ステータス終了計測用タイマー
 	Timer m_timer;
@@ -75,11 +77,22 @@ class YoYo : public CollisionCallBack
 	//攻撃トリガー時の加速度（初期値）
 	Vec3<float>m_iniAccel;
 
+	//インターバル（攻撃の隙）
+	Timer m_attackGapInterval;
+	//インターバル中の予約入力種別
+	enum PREVIOUS_INPUT { NONE_INPUT, THROW_INPUT, NEUTRAL_INPUT };
+	//インターバル中の予約入力
+	PREVIOUS_INPUT m_attackGapPreviousInput = NONE_INPUT;
+	//インターバル中の予約入力を受け付けるタイミング（残り時間）
+	int m_canAttackGapPreviousInputLeftTime = 10;
+
 	//現在の攻撃が中断可能か
 	bool CanInterrupt()
 	{
 		return (float)m_statusParams[(int)m_status].m_interruptInterval < m_timer.GetElaspedTime();
 	}
+	//インターバル（攻撃の隙）中か
+	bool IsAttackGapInterval(PREVIOUS_INPUT arg_input);
 
 	//ステータスの動的更新時に呼び出す
 	void StatusInit(Vec3<float>arg_accelVec);

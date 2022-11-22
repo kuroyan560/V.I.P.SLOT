@@ -152,14 +152,17 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 //入力情報取得
 	const auto& input = *UsersInput::Instance();
 
+	//移動方向入力
+	Vec2<float>moveInput = { 0,0 };
+
 	//ジャンプのトリガー入力
 	bool jumpTrigger = false;
 
 	//ヨーヨー投げ入力
 	bool throwYoyoTrigger = false;
 
-	//移動方向入力
-	Vec2<float>moveInput = { 0,0 };
+	//N攻撃入力
+	bool neutralTrigger = false;
 
 	//入力設定
 	switch (m_inputConfig)
@@ -174,6 +177,8 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 		jumpTrigger = input.KeyOnTrigger(DIK_UP);
 		//ヨーヨー投げ入力
 		throwYoyoTrigger = input.KeyOnTrigger(DIK_SPACE);
+		//N攻撃入力
+		neutralTrigger = input.KeyOnTrigger(DIK_LSHIFT);
 		break;
 	}
 
@@ -186,6 +191,8 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 		jumpTrigger = input.ControllerOnTrigger(0, XBOX_BUTTON::A);
 		//ヨーヨー投げ入力
 		throwYoyoTrigger = input.ControllerOnTrigger(0, XBOX_BUTTON::X);
+		//N攻撃入力
+		neutralTrigger = input.ControllerOnTrigger(0, XBOX_BUTTON::RB);
 		break;
 	}
 
@@ -219,7 +226,6 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	bool canJump = m_isOnGround || m_isOnScaffold;
 	if (jumpTrigger && canJump)
 	{
-		m_yoYo->Neutral();
 		Jump();
 		AudioApp::Instance()->PlayWaveDelay(m_jumpSE, 3);
 	}
@@ -305,6 +311,11 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	{
 		m_fallSpeed = 0.0f;
 		m_move.y = 0.0f;
+	}
+	//N攻撃
+	if (neutralTrigger && m_yoYo->Neutral())
+	{
+
 	}
 
 	//ヨーヨー

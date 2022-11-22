@@ -10,6 +10,20 @@
 #include"TexHitEffect.h"
 #include"AudioApp.h"
 
+bool YoYo::IsAttackGapInterval(PREVIOUS_INPUT arg_input)
+{
+	//インターバル中でない
+	if (m_attackGapInterval.IsTimeUp())return false;
+
+	//インターバル中で、予約入力可能なら入力を記録
+	if (m_attackGapInterval.GetLeftTime() <= static_cast<float>(m_canAttackGapPreviousInputLeftTime))
+	{
+		m_attackGapPreviousInput = arg_input;
+	}
+
+	return true;
+}
+
 void YoYo::StatusInit(Vec3<float>arg_accelVec)
 {
 	//ステータスのパラメータ取得
@@ -24,6 +38,9 @@ void YoYo::StatusInit(Vec3<float>arg_accelVec)
 
 	//タイマーリセット
 	m_timer.Reset(param.m_finishInterval);
+
+	//攻撃の隙となるインターバルタイマーリセット
+	m_attackGapInterval.Reset(param.m_attackGapInterval);
 
 	//加速度初期化
 	m_iniAccel = param.m_maxAccelVal * arg_accelVec;
@@ -80,10 +97,10 @@ YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playe
 
 //ステータスごとのパラメータ設定
 	//N攻撃
-	m_statusParams[NEUTRAL].m_animName = "";
-	m_statusParams[NEUTRAL].m_finishInterval = 13;
-	m_statusParams[NEUTRAL].m_interruptInterval = 9;
+	m_statusParams[NEUTRAL].m_animName = "Attack_N";
+	m_statusParams[NEUTRAL].m_finishInterval = 10;
 	m_statusParams[NEUTRAL].m_interruptInterval = m_statusParams[NEUTRAL].m_finishInterval;
+	m_statusParams[NEUTRAL].m_attackGapInterval = 30;
 
 	//攻撃0
 	m_statusParams[THROW_0].m_animName = "Attack_0";
@@ -102,6 +119,7 @@ YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playe
 	m_statusParams[THROW_2].m_finishInterval = 33;
 	m_statusParams[THROW_2].m_interruptInterval = 33;
 	m_statusParams[THROW_2].m_maxAccelVal = { 0.6f,0.22f,0.0f };
+	m_statusParams[THROW_2].m_attackGapInterval = 10;
 }
 
 
@@ -134,11 +152,16 @@ void YoYo::Init()
 	m_status = HAND;
 
 	//先行入力フラグリセット
-	m_previousInput = false;
+	m_tripleAttackPreviousInput = false;
 
 	//加速度リセット
 	m_accel = { 0,0,0 };
 	m_iniAccel = { 0,0,0 };
+
+	//攻撃の隙リセット
+	m_attackGapInterval.Reset(0);
+	//インターバル用の予約入力リセット
+	m_attackGapPreviousInput = NONE_INPUT;
 
 	//ヒットエフェクト
 	m_hitEffect->Init();
@@ -146,24 +169,38 @@ void YoYo::Init()
 
 void YoYo::Update(const TimeScale& arg_timeScale, float arg_playersVecX)
 {
+	//タイムスケールの取得
+	const float timeScale = arg_timeScale.GetTimeScale();
+
 	//アニメーション更新
-	m_modelObj->m_animator->Update(arg_timeScale.GetTimeScale());
+	m_modelObj->m_animator->Update(timeScale);
 
 	//ヒットエフェクト更新
-	m_hitEffect->Update(arg_timeScale.GetTimeScale());
+	m_hitEffect->Update(timeScale);
+
+	//攻撃の隙インターバル更新
+	if (m_attackGapInterval.UpdateTimer(timeScale))
+	{
+		//予約入力確認
+		if (m_attackGapPreviousInput == THROW_INPUT)Throw(arg_playersVecX);
+		else if (m_attackGapPreviousInput == NEUTRAL_INPUT)Neutral();
+
+		//予約入力リセット
+		m_attackGapPreviousInput = NONE_INPUT;
+	}
 
 	//手に持ってる状態なら何もしない
 	if (m_status == HAND)return;
 
 	//先行入力があった場合、中断可能なら即時移行
-	if (m_previousInput && CanInterrupt())
+	if (m_tripleAttackPreviousInput && CanInterrupt())
 	{
 		Throw(arg_playersVecX);
-		m_previousInput = false;
+		m_tripleAttackPreviousInput = false;
 	}
 
 	//手に戻った状態に遷移
-	if (m_timer.UpdateTimer(arg_timeScale.GetTimeScale()))
+	if (m_timer.UpdateTimer(timeScale))
 	{
 		m_neutralCol->SetActive(false);
 		m_throwCol->SetActive(false);
@@ -196,7 +233,7 @@ void YoYo::AddImguiDebugItem()
 	ImGui::Separator();
 
 	//先行入力
-	ImGui::Text("PreviousInput : { %s }", m_previousInput ? "true" : "false");
+	ImGui::Text("PreviousInput : { %s }", m_tripleAttackPreviousInput ? "true" : "false");
 
 	ImGui::Separator();
 
@@ -223,6 +260,9 @@ void YoYo::AddImguiDebugItem()
 
 bool YoYo::Throw(float arg_vecX)
 {
+	//インターバル（攻撃の隙）
+	if (IsAttackGapInterval(THROW_INPUT))return false;
+
 	//攻撃中か
 	if (IsThrow())
 	{
@@ -230,7 +270,7 @@ bool YoYo::Throw(float arg_vecX)
 		if (!CanInterrupt())
 		{	
 			//先行入力として受付
-			m_previousInput = true;
+			m_tripleAttackPreviousInput = true;
 			return false;
 		}
 	}
@@ -261,6 +301,9 @@ bool YoYo::Throw(float arg_vecX)
 
 bool YoYo::Neutral()
 {
+	//インターバル（攻撃の隙）
+	if (IsAttackGapInterval(NEUTRAL_INPUT))return false;
+
 	m_status = NEUTRAL;
 	//N攻撃コライダーアクティブ
 	m_neutralCol->SetActive(true);
