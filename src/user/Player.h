@@ -19,6 +19,7 @@ class GameCamera;
 class CollisionSphere;
 class YoYo;
 class Scaffold;
+class ObjectManager;
 
 class Player : public ColliderParentObject
 {
@@ -141,7 +142,7 @@ class Player : public ColliderParentObject
 	void OnLanding(bool arg_isGround);
 	
 public:
-	Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<GameCamera>arg_cam);
+	Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<ObjectManager>arg_objMgr, std::weak_ptr<GameCamera>arg_cam);
 
 	//èâä˙âª
 	void Init(int arg_initHp,int arg_initCoinNum);

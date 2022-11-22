@@ -131,7 +131,7 @@ ObjectManager::ObjectManager()
 			Importer::Instance()->LoadModel("resource/user/model/", "parry_bullet.glb"),
 			1,
 			1,
-			std::make_unique<OC_DestinationEaseMove>(In,Back,90.0f),
+			std::make_unique<OC_TargetObjectEaseMove>(In,Back,30.0f),
 			colliderArray
 			);
 	}
@@ -216,7 +216,7 @@ void ObjectManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr
 	m_dropCoinEffect.Draw(arg_lightMgr, arg_cam);
 }
 
-std::weak_ptr<GameObject> ObjectManager::AppearEnemyBullet(std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float> arg_startPos, Vec2<float> arg_moveDirXY, float arg_speed, bool arg_sinMeandeling, float arg_meandelingInterval, Angle arg_meandelingAngle)
+std::weak_ptr<GameObject> ObjectManager::AppearEnemyBullet(std::weak_ptr<CollisionManager> arg_collisionMgr, GameObject* arg_parentObj, Vec3<float> arg_startPos, Vec2<float> arg_moveDirXY, float arg_speed, bool arg_sinMeandeling, float arg_meandelingInterval, Angle arg_meandelingAngle)
 {
 	//“Gí•Ê”Ô†æ“¾
 	int typeIdx = static_cast<int>(OBJECT_TYPE::ENEMY_BULLET);
@@ -232,6 +232,8 @@ std::weak_ptr<GameObject> ObjectManager::AppearEnemyBullet(std::weak_ptr<Collisi
 		arg_sinMeandeling,
 		arg_meandelingInterval,
 		arg_meandelingAngle);
+
+	newBullet->SetParentObj(arg_parentObj);
 
 	//‰Šú‰»
 	newBullet->Init();
@@ -300,7 +302,7 @@ std::weak_ptr<GameObject> ObjectManager::AppearSlimeBattery(std::weak_ptr<Collis
 	return newEnemy;
 }
 
-std::weak_ptr<GameObject> ObjectManager::AppearParryBullet(std::weak_ptr<CollisionManager>arg_collisionMgr, Vec3<float> arg_startPos, Vec3<float> arg_destinationPos)
+std::weak_ptr<GameObject> ObjectManager::AppearParryBullet(std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float> arg_startPos, GameObject* arg_target)
 {
 	//“Gí•Ê”Ô†æ“¾
 	int typeIdx = static_cast<int>(OBJECT_TYPE::PARRY_BULLET);
@@ -309,7 +311,7 @@ std::weak_ptr<GameObject> ObjectManager::AppearParryBullet(std::weak_ptr<Collisi
 	auto newBullet = OnObjectAppear(typeIdx, arg_collisionMgr);
 
 	//ƒpƒ‰ƒ[ƒ^İ’è
-	((OC_DestinationEaseMove*)newBullet->m_controller.get())->SetParameters(arg_startPos, arg_destinationPos);
+	((OC_TargetObjectEaseMove*)newBullet->m_controller.get())->SetParameters(arg_startPos, arg_target);
 
 	//‰Šú‰»
 	newBullet->Init();

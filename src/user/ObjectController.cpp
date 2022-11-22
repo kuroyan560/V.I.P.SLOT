@@ -90,6 +90,32 @@ std::unique_ptr<ObjectController> OC_DestinationEaseMove::Clone()
 	return std::make_unique<OC_DestinationEaseMove>(m_easeChangeType, m_easeType, m_interval);
 }
 
+void OC_TargetObjectEaseMove::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager> arg_collisionMgr)
+{
+	//ターゲットが生きている
+	if (m_target && !m_target->IsDead())
+	{
+		//目的地を更新
+		m_destinationPos = m_target->m_transform.GetPos();
+	}
+	m_timer.UpdateTimer(arg_timeScale.GetTimeScale());
+	auto pos = KuroMath::Ease(m_easeChangeType, m_easeType, m_timer.GetTimeRate(), m_startPos, m_target->m_transform.GetPos());
+	arg_obj.m_transform.SetPos(pos);
+}
+
+std::unique_ptr<ObjectController> OC_TargetObjectEaseMove::Clone()
+{
+	return std::make_unique<OC_TargetObjectEaseMove>(m_easeChangeType, m_easeType, m_interval);
+}
+
+void OC_TargetObjectEaseMove::SetParameters(Vec3<float> arg_startPos, GameObject* arg_target)
+{
+	m_startPos = arg_startPos;
+	m_target = arg_target;
+	if (m_target)m_destinationPos = m_target->m_transform.GetPos();
+}
+
+
 float OC_SlimeBattery::GetNearEdgePosX(float arg_posX)const
 {
 	using namespace ConstParameter::GameObject;
@@ -205,6 +231,7 @@ void OC_SlimeBattery::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeSca
 			//ショット
 			s_objMgr.lock()->AppearEnemyBullet(
 				arg_collisionMgr,
+				&arg_obj,
 				pos,
 				Vec2<float>(0.0f, 1.0f),
 				0.2f,

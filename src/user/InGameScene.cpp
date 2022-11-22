@@ -20,11 +20,14 @@ InGameScene::InGameScene()
 	//コリジョンマネージャ生成
 	m_collisionMgr = std::make_shared<CollisionManager>();
 
+	//オブジェクトマネージャ生成
+	m_objMgr = std::make_shared<ObjectManager>();
+
 	//ゲームカメラ生成
 	m_gameCam = std::make_shared<GameCamera>();
 
 	//プレイヤー生成
-	m_player = std::make_shared<Player>(m_collisionMgr, m_gameCam);
+	m_player = std::make_shared<Player>(m_collisionMgr, m_objMgr, m_gameCam);
 
 	//スロットマシン生成
 	m_slotMachine = std::make_shared<SlotMachine>();
@@ -42,9 +45,6 @@ InGameScene::InGameScene()
 
 	//ステージマネージャ生成
 	m_stageMgr = std::make_shared<StageMgr>(m_slotMachine);
-
-	//オブジェクトマネージャ生成
-	m_objMgr = std::make_shared<ObjectManager>();
 
 	//オブジェクト挙動操作クラスにオブジェクトマネージャを渡す
 	ObjectController::AttachObjectManager(m_objMgr);

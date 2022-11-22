@@ -50,6 +50,7 @@ public:
 	/// 敵の弾
 	/// </summary>
 	/// <param name="arg_collisionMgr">コリジョンマネージャ</param>
+	/// <param name="arg_parentObj">弾の持ち主であるゲームオブジェクト</param>
 	/// <param name="arg_startPos">初期位置</param>
 	/// <param name="arg_moveDirXY">XY平面移動方向</param>
 	/// <param name="arg_speed">移動スピード</param>
@@ -57,7 +58,9 @@ public:
 	/// <param name="arg_meandelingInterval">蛇行のインターバル</param>
 	/// <param name="arg_meandelingAngle">蛇行の角度</param>
 	/// <returns>生成したオブジェクトのポインタ</returns>
-	std::weak_ptr<GameObject> AppearEnemyBullet(std::weak_ptr<CollisionManager>arg_collisionMgr,
+	std::weak_ptr<GameObject> AppearEnemyBullet(
+		std::weak_ptr<CollisionManager>arg_collisionMgr,
+		GameObject* arg_parentObj,
 		Vec3<float>arg_startPos,
 		Vec2<float>arg_moveDirXY,
 		float arg_speed,
@@ -87,8 +90,9 @@ public:
 	/// <summary>
 	/// パリーで返す弾
 	/// </summary>
+	/// <param name="arg_collisionMgr">コリジョンマネージャ</param>
 	/// <param name="arg_startPos">初期位置</param>
-	/// <param name="arg_destinationPos">目的地</param>
+	/// <param name="arg_target">ターゲットとなるオブジェクト</param>
 	/// <returns>生成したオブジェクトのポインタ</returns>
-	std::weak_ptr<GameObject>AppearParryBullet(std::weak_ptr<CollisionManager>arg_collisionMgr, Vec3<float>arg_startPos, Vec3<float>arg_destinationPos);
+	std::weak_ptr<GameObject>AppearParryBullet(std::weak_ptr<CollisionManager>arg_collisionMgr, Vec3<float>arg_startPos, GameObject* arg_target);
 };

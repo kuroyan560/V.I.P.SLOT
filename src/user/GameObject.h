@@ -28,6 +28,9 @@ private:
 	//HP
 	int m_hp;
 
+	//親（※トランスフォームの親ではない）
+	GameObject* m_parentObj;
+
 public:
 	//トランスフォーム
 	Transform m_transform;
@@ -51,8 +54,13 @@ public:
 	/// <returns>死亡した場合コイン数、死亡してなければ０を返す</returns>
 	int Damage(int arg_amount = 1);
 
+	//親オブジェクトセット
+	void SetParentObj(GameObject* arg_parentObj) { m_parentObj = arg_parentObj; }
+
 	//種別番号ゲッタ
 	const int& GetTypeID();
+	//親ゲームオブジェクト取得
+	GameObject* GetParentObj() { return m_parentObj; }
 
 	//生存フラグ
 	bool IsDead();

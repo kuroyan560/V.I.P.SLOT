@@ -38,8 +38,8 @@ protected:
 	//仮想関数（アレンジ可能）
 	//デフォルトではただモデルを描画するだけ
 	virtual void OnDraw(GameObject& arg_obj, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam);
-	//ダメージを受けたときの演出など（返り値：コイン数）
-	virtual int OnDamage(GameObject& arg_obj, int arg_damageAmount) { return 0; }
+	//ダメージを受けたときの演出など
+	virtual void OnDamage(GameObject& arg_obj, int arg_damageAmount) {}
 	//退場したか
 	virtual bool IsLeave(GameObject& arg_obj)const { return false; }
 
@@ -114,6 +114,7 @@ public:
 //指定した位置にイージング関数を用いて移動
 class OC_DestinationEaseMove : public ObjectController
 {
+protected:
 	//イージング種別
 	EASE_CHANGE_TYPE m_easeChangeType;
 	EASING_TYPE m_easeType;
@@ -145,6 +146,26 @@ public:
 		m_startPos = arg_startPos;
 		m_destinationPos = arg_destinationPos;
 	}
+};
+
+//指定した対象(GameObject)に向かってイージング関数を用いて移動
+class OC_TargetObjectEaseMove : public OC_DestinationEaseMove
+{
+	//対象となるゲームオブジェクト
+	GameObject* m_target;
+	void OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)override;
+	std::unique_ptr<ObjectController>Clone()override;
+
+public:
+	OC_TargetObjectEaseMove(EASE_CHANGE_TYPE arg_easeChangeType, EASING_TYPE arg_easeType, float arg_interval)
+		:OC_DestinationEaseMove(arg_easeChangeType, arg_easeType, arg_interval) {}
+
+	/// <summary>
+	/// パラメータ設定
+	/// </summary>
+	/// <param name="arg_startPos">スタート地点</param>
+	/// <param name="arg_destinationPos">目的地</param>
+	void SetParameters(Vec3<float>arg_startPos, GameObject* arg_target);
 };
 
 //飛び跳ね＆弾を発射（スライム砲台、画面外から登場後飛び跳ね＆ショットで移動）

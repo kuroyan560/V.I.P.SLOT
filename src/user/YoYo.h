@@ -13,9 +13,15 @@ class TimeScale;
 class LightManager;
 class Camera;
 class TexHitEffect;
+class ObjectManager;
 
 class YoYo : public CollisionCallBack
 {
+	//オブジェクトマネージャポインタ（パリィ弾発射用）
+	std::weak_ptr<ObjectManager>m_objMgr;
+	//コリジョンマネージャポインタ（パリィ弾発射用）
+	std::weak_ptr<CollisionManager>m_collisionMgr;
+
 	//攻撃力
 	int m_offensive = 1;
 
@@ -107,7 +113,7 @@ class YoYo : public CollisionCallBack
 		std::weak_ptr<Collider>arg_otherCollider)override;
 
 public:
-	YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform, int arg_hitSE, int arg_parrySE);
+	YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<ObjectManager>arg_objMgr, Transform* arg_playerTransform, int arg_hitSE, int arg_parrySE);
 
 	/// <summary>
 	/// ヨーヨーの固定パラメータ設定（≠初期化）

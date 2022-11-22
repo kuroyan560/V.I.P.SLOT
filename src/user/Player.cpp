@@ -29,7 +29,7 @@ void Player::OnLanding(bool arg_isGround)
 	else m_isOnScaffold = true;
 }
 
-Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<GameCamera>arg_cam)
+Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<ObjectManager>arg_objMgr, std::weak_ptr<GameCamera>arg_cam)
 {
 	using namespace ConstParameter::Player;
 
@@ -98,7 +98,12 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 	arg_collisionMgr.lock()->Register(colliders);
 
 	/*--- ÉàÅ[ÉàÅ[ê∂ê¨ ---*/
-	m_yoYo = std::make_shared<YoYo>(arg_collisionMgr, &m_modelObj->m_transform, enemyHitSE, parrySE);
+	m_yoYo = std::make_shared<YoYo>(
+		arg_collisionMgr, 
+		arg_objMgr,
+		&m_modelObj->m_transform, 
+		enemyHitSE, 
+		parrySE);
 	m_yoYo->Awake(3.0f, 2.5f);
 }
 

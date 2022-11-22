@@ -42,7 +42,10 @@ void GameObject::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Cam
 int GameObject::Damage(int arg_amount)
 {
 	m_hp = std::max(0, m_hp - arg_amount);
-	return m_controller->OnDamage(*this, arg_amount);
+	m_controller->OnDamage(*this, arg_amount);
+
+	if (m_hp <= 0)return m_breed.lock()->m_killCoinNum;
+	return 0;
 }
 
 const int& GameObject::GetTypeID()

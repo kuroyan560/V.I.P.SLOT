@@ -9,6 +9,7 @@
 #include"GameObject.h"
 #include"TexHitEffect.h"
 #include"AudioApp.h"
+#include"ObjectManager.h"
 
 bool YoYo::IsAttackGapInterval(PREVIOUS_INPUT arg_input)
 {
@@ -49,26 +50,46 @@ void YoYo::StatusInit(Vec3<float>arg_accelVec)
 
 void YoYo::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
 {
-	//敵
-	if (arg_otherCollider.lock()->GetTag().compare("Enemy") == 0)
-	{
-		//オブジェクトにダメージを与える
-		arg_otherCollider.lock()->GetParentObject<GameObject>()->Damage(m_offensive);
+	auto obj = arg_otherCollider.lock()->GetParentObject<GameObject>();
+
+	//オブジェクトにダメージを与える
+	obj->Damage(m_offensive);
+
+	if (arg_otherCollider.lock()->HaveTag("Enemy"))
+	{	
 		//ヒットエフェクト
 		m_hitEffect->Emit(arg_inter);
 		//SE
 		AudioApp::Instance()->PlayWave(m_hitSE);
 	}
-	//攻撃に対してはパリィ判定
-	else if (arg_otherCollider.lock()->GetTag().compare("Enemy_Attack") == 0)
+	//パリィ
+	else if (arg_otherCollider.lock()->HaveTag("Enemy_Attack"))
 	{
+		//敵の攻撃の親オブジェクト取得
+		auto parentObj = obj->GetParentObj();
+
+		//親オブジェクトに向かって弾発射
+		if (parentObj)
+		{
+			//パリィ弾の発射
+			m_objMgr.lock()->AppearParryBullet(
+				m_collisionMgr,
+				obj->m_transform.GetPos(),
+				parentObj);
+		}
+
 		//SE
 		AudioApp::Instance()->PlayWave(m_parrySE);
 	}
 }
 
-YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform, int arg_hitSE, int arg_parrySE)
+YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<ObjectManager>arg_objMgr, Transform* arg_playerTransform, int arg_hitSE, int arg_parrySE)
 {
+	//コリジョンマネージャポインタ記録
+	m_collisionMgr = arg_collisionMgr;
+	//オブジェクトマネージャポインタ記録
+	m_objMgr = arg_objMgr;
+
 	//モデルオブジェクト生成
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "yoyo.glb");
 
@@ -144,12 +165,12 @@ void YoYo::Awake(float arg_neutralColSphereRadius, float arg_throwColSphereRadiu
 	//N攻撃用コライダー生成
 	m_neutralColSphere = std::make_shared<CollisionSphere>(arg_neutralColSphereRadius, Vec3<float>(0, 0, 0));
 	colPrimitiveArray = { m_neutralColSphere };
-	m_neutralCol->Generate("YoYo - Neutral", TAG, colPrimitiveArray);
+	m_neutralCol->Generate("YoYo - Neutral", { "Player_Attack","Player_Parry" }, colPrimitiveArray);
 
 	//投擲用コライダー生成
 	m_throwColSphere = std::make_shared<CollisionSphere>(arg_throwColSphereRadius, Vec3<float>(0, 0, 0));
 	colPrimitiveArray = { m_throwColSphere };
-	m_throwCol->Generate("YoYo - Throw", TAG, colPrimitiveArray);
+	m_throwCol->Generate("YoYo - Throw", { "Player_Attack" }, colPrimitiveArray);
 }
 
 void YoYo::Init()
