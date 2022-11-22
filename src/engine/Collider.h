@@ -96,6 +96,8 @@ public:
 	{
 		return m_parentTransform ? m_parentTransform->GetPos().z : 0.0f;
 	}
+	//タグ取得
+	const std::string& GetTag()const { return m_tag; }
 
 	//コライダーがアタッチされてる親オブジェクト取得
 	template<typename T>
