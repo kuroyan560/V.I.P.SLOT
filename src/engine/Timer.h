@@ -31,7 +31,11 @@ public:
 	float GetInverseTimeRate()const { return 1.0f - GetTimeRate(); }
 
 	//c‚èŠÔ
-	float GetLeftTime()const { return m_intervalTime - m_elaspedTime; }
+	float GetLeftTime()const 
+	{
+		if (IsTimeUp())return 0.0f;
+		return m_intervalTime - m_elaspedTime; 
+	}
 
 	//Œo‰ßŠÔ
 	const float& GetElaspedTime()const { return m_elaspedTime; }
