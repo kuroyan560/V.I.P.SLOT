@@ -130,11 +130,17 @@ void InGameScene::OnDraw()
 	//m_slotMachine->Draw(m_ligMgr, m_gameCam->GetSubCam());
 	m_slotMachine->Draw(m_ligMgr, m_gameCam->GetMainCam());
 
+	//ステージマネージャ（ブロック）
+	m_stageMgr->BlockDraw(m_ligMgr, m_gameCam->GetMainCam());
+
 	//床
 	DrawFunc3D::DrawNonShadingModel(m_squareFloorObj, *m_gameCam->GetMainCam(), 1.0f, AlphaBlendMode_None);
 
-	//ステージマネージャ
-	m_stageMgr->Draw(m_ligMgr, m_gameCam->GetMainCam());
+	//デプスステンシルクリア
+	rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_STENCIL);
+
+	//ステージマネージャ（足場）
+	m_stageMgr->ScaffoldDraw(m_ligMgr, m_gameCam->GetMainCam());
 
 	//オブジェクトマネージャ
 	m_objMgr->Draw(m_ligMgr, m_gameCam->GetMainCam());
@@ -144,8 +150,10 @@ void InGameScene::OnDraw()
 
 	//デバッグ描画
 #ifdef _DEBUG
-	//Collider::DebugDrawAllColliders(*m_gameCam->GetMainCam());
-	m_collisionMgr->DebugDraw(*m_gameCam->GetMainCam());
+	if (m_isDrawCollider)
+	{
+		m_collisionMgr->DebugDraw(*m_gameCam->GetMainCam());
+	}
 #endif
 
 	//デプスステンシルクリア
@@ -157,6 +165,10 @@ void InGameScene::OnDraw()
 
 void InGameScene::OnImguiDebug()
 {
+	ImGui::Begin("InGame");
+	ImGui::Checkbox("IsDrawCollider", &m_isDrawCollider);
+	ImGui::End();
+
 	ConstParameter::ImguiDebug();
 	m_stageMgr->ImguiDebug(m_collisionMgr);
 	m_slotMachine->ImguiDebug();

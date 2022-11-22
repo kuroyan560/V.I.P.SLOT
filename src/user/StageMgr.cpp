@@ -273,14 +273,8 @@ void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>a
 	}
 }
 
-void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
+void StageMgr::BlockDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
-	//ë´èÍï`âÊ
-	for (auto& scaffold : m_scaffoldArray)
-	{
-		scaffold->Draw(arg_lightMgr, arg_cam);
-	}
-
 	//ÉuÉçÉbÉNï`âÊ
 	std::vector<Matrix>coinBlockTransformArray;
 	std::vector<Matrix>emptyCoinBlockTransformArray;
@@ -315,6 +309,15 @@ void StageMgr::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Came
 		DrawFunc3D::DrawNonShadingModel(m_emptyCoinBlockModel, emptyCoinBlockTransformArray, *arg_cam.lock(), AlphaBlendMode_None);
 }
 
+void StageMgr::ScaffoldDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
+{
+	//ë´èÍï`âÊ
+	for (auto& scaffold : m_scaffoldArray)
+	{
+		scaffold->Draw(arg_lightMgr, arg_cam);
+	}
+}
+
 void StageMgr::Finalize(std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
 	for (auto& blockArray : m_terrianBlockArray)
@@ -335,18 +338,21 @@ void StageMgr::Draw2D(std::weak_ptr<Camera> arg_cam)
 {
 	m_hitEffect->Draw(arg_cam);
 
-	static float startRadian = Angle::ConvertToRadian(-90);
-	DrawFunc2D::DrawRadialWipeGraph2D(
-		m_terrianValuationTimerGaugePos,
-		m_terrianValuationTimerGaugeExt,
-		startRadian,
-		startRadian + Angle::ConvertToRadian(-360.0f * m_terrianValuationTimer.GetInverseTimeRate()),
-		{ 0.5f,0.5f },
-		m_terrianValuationTimerGaugeTex
-	);
+	if (m_generateTerrian)
+	{
+		static float startRadian = Angle::ConvertToRadian(-90);
+		DrawFunc2D::DrawRadialWipeGraph2D(
+			m_terrianValuationTimerGaugePos,
+			m_terrianValuationTimerGaugeExt,
+			startRadian,
+			startRadian + Angle::ConvertToRadian(-360.0f * m_terrianValuationTimer.GetInverseTimeRate()),
+			{ 0.5f,0.5f },
+			m_terrianValuationTimerGaugeTex
+		);
 
-	//ínå`ï]âøUI
-	m_terrianEvaluationUI.Draw(m_terrianValuationTimerGaugePos, m_terrianValuationPlusTex);
+		//ínå`ï]âøUI
+		m_terrianEvaluationUI.Draw(m_terrianValuationTimerGaugePos, m_terrianValuationPlusTex);
+	}
 }
 
 #include"imguiApp.h"

@@ -48,6 +48,9 @@ class InGameScene : public BaseScene
 	//オブジェクトマネージャ
 	std::shared_ptr<ObjectManager>m_objMgr;
 
+	//コライダーのデバッグ描画フラグ
+	bool m_isDrawCollider = true;
+
 public:
 	InGameScene();
 	void OnInitialize()override;
