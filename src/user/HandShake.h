@@ -20,6 +20,6 @@ public:
 	void Update(float arg_timeScale,const Matrix& arg_rotate);
 
 	const Vec3<float>& GetOffset()const { return m_offset; }
-	const float& GetTimeRate()const { return m_t - static_cast<float>(static_cast<int>(m_t)); }
+	float GetTimeRate()const { return m_t - static_cast<float>(static_cast<int>(m_t)); }
 };
 

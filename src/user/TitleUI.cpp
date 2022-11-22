@@ -6,7 +6,7 @@ void TitleUI::UpdateItemPosOffset()
 	int itemNum = static_cast<int>(m_items.size());
 
 	//ˆê”Ôã‚Ì€–Ú‚ÌYÀ•W
-	float offsetYMin = -itemNum / 2;
+	float offsetYMin = static_cast<float>(-itemNum / 2);
 	if (itemNum % 2 == 0)offsetYMin += 0.5f;
 	offsetYMin *= m_itemOffsetY;
 
