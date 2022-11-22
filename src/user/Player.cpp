@@ -96,7 +96,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 
 	/*--- ƒˆ[ƒˆ[¶¬ ---*/
 	m_yoYo = std::make_shared<YoYo>(arg_collisionMgr, &m_modelObj->m_transform, enemyHitSE);
-	m_yoYo->Awake(2.5f, 1.2f);
+	m_yoYo->Awake(3.0f, 2.5f);
 }
 
 void Player::Init(int arg_initHp, int arg_initCoinNum)
