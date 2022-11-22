@@ -159,7 +159,7 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 	std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
 	colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(1.0f, Vec3<float>(0, 0, 0)));
 	auto originCol = std::make_shared<Collider>();
-	originCol->Generate("BlockCollider", "Block", colPrimitiveArray);
+	originCol->Generate("BlockCollider", { "Block" }, colPrimitiveArray);
 
 	//ブロックのインスタンス生成
 	for (int i = 0; i < MAX_BLOCK_NUM; ++i)

@@ -56,7 +56,8 @@ public:
 	/// <param name="arg_sinMeandeling">蛇行するか（sinカーブ）</param>
 	/// <param name="arg_meandelingInterval">蛇行のインターバル</param>
 	/// <param name="arg_meandelingAngle">蛇行の角度</param>
-	void AppearEnemyBullet(std::weak_ptr<CollisionManager>arg_collisionMgr,
+	/// <returns>生成したオブジェクトのポインタ</returns>
+	std::weak_ptr<GameObject> AppearEnemyBullet(std::weak_ptr<CollisionManager>arg_collisionMgr,
 		Vec3<float>arg_startPos,
 		Vec2<float>arg_moveDirXY,
 		float arg_speed,
@@ -70,7 +71,8 @@ public:
 	/// <param name="arg_collisionMgr">コリジョンマネージャ</param>
 	/// <param name="arg_moveX">X軸方向等速移動量</param>
 	/// <param name="arg_posY">座標Y</param>
-	void AppearSlideMoveEnemy(std::weak_ptr<CollisionManager>arg_collisionMgr, float arg_moveX, float arg_posY);
+	/// <returns>生成したオブジェクトのポインタ</returns>
+	std::weak_ptr<GameObject>AppearSlideMoveEnemy(std::weak_ptr<CollisionManager>arg_collisionMgr, float arg_moveX, float arg_posY);
 
 	/// <summary>
 	/// スライム砲台
@@ -79,5 +81,14 @@ public:
 	/// <param name="arg_appearY">登場時のY座標</param>
 	/// <param name="arg_destinationXArray">目標地点X座標配列</param>
 	/// <param name="arg_arraySize">配列の要素数</param>
-	void AppearSlimeBattery(std::weak_ptr<CollisionManager>arg_collisionMgr, float arg_appearY, float arg_destinationXArray[], size_t arg_arraySize);
+	/// <returns>生成したオブジェクトのポインタ</returns>
+	std::weak_ptr<GameObject> AppearSlimeBattery(std::weak_ptr<CollisionManager>arg_collisionMgr, float arg_appearY, float arg_destinationXArray[], size_t arg_arraySize);
+
+	/// <summary>
+	/// パリーで返す弾
+	/// </summary>
+	/// <param name="arg_startPos">初期位置</param>
+	/// <param name="arg_destinationPos">目的地</param>
+	/// <returns>生成したオブジェクトのポインタ</returns>
+	std::weak_ptr<GameObject>AppearParryBullet(std::weak_ptr<CollisionManager>arg_collisionMgr, Vec3<float>arg_startPos, Vec3<float>arg_destinationPos);
 };

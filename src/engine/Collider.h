@@ -39,7 +39,7 @@ private:
 	bool m_isHit = false;
 
 	//タグ
-	std::string m_tag;
+	std::vector<std::string> m_tags;
 	//コールバックリスト、キーは相手のタグ名
 	std::map<std::string, std::vector<CollisionCallBack*>>m_callBackList;
 
@@ -58,10 +58,10 @@ public:
 	/// コライダー初期化
 	/// </summary>
 	/// <param name="arg_name">コライダー名</param>
-	/// <param name="arg_tag">コライダータグ名</param>
+	/// <param name="arg_tags">コライダータグ名配列</param>
 	/// <param name="arg_primitiveArray">コライダーにアタッチされるプリミティブ配列</param>
 	void Generate(const std::string& arg_name,
-		const std::string& arg_tag,
+		const std::vector<std::string>& arg_tags,
 		const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray);
 
 	//当たり判定（衝突点を返す）
@@ -84,6 +84,28 @@ public:
 	//アクティブフラグのセット
 	void SetActive(const bool& arg_active) { m_isActive = arg_active; }
 
+	/// <summary>
+	/// 引数に渡したタグ名が付与されているか
+	/// </summary>
+	/// <param name="arg_tag">付与を確認するタグ名</param>
+	/// <returns>結果</returns>
+	bool HaveTag(std::string arg_tag)
+	{
+		//タグ配列を走査
+		for (auto& tag : m_tags)
+		{
+			if (tag.compare(arg_tag) == 0)return true;
+		}
+		return false;
+	}
+
+	/// <summary>
+	/// 引数に渡したコライダーも対象のコールバックを持っているか
+	/// </summary>
+	/// <param name="arg_other">タグの確認をとる対象となるコライダー</param>
+	/// <returns>引数に渡したコライダーも対象のコールバックを持っているか</returns>
+	bool HaveCallBack(std::weak_ptr<Collider>arg_other);
+
 	//当たり判定結果の取得
 	const bool& GetIsHit()const { return m_isHit; }
 	//親トランスフォームより行列取得（アタッチされていなければ単位行列）
@@ -96,8 +118,6 @@ public:
 	{
 		return m_parentTransform ? m_parentTransform->GetPos().z : 0.0f;
 	}
-	//タグ取得
-	const std::string& GetTag()const { return m_tag; }
 
 	//コライダーがアタッチされてる親オブジェクト取得
 	template<typename T>

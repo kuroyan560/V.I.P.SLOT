@@ -10,14 +10,21 @@ void CollisionManager::OnHit(const std::shared_ptr<Collider>& arg_myCollider, co
 
 	//コールバック関数呼び出し
 	std::map<std::string,std::vector<CollisionCallBack*>>::iterator callBackList;
-	if ((callBackList = arg_myCollider->m_callBackList.find(arg_otherCollider->m_tag)) != arg_myCollider->m_callBackList.end())
-	{
-		for (auto& callBack : callBackList->second)
-		{
-			if (!callBack)continue;
 
-			callBack->OnCollisionEnter(arg_inter, arg_otherCollider);
-			if (!arg_myCollider->m_oldIsHit)callBack->OnCollisionTrigger(arg_inter, arg_otherCollider);
+	//タグを走査
+	for (auto& tag : arg_otherCollider->m_tags)
+	{
+		//そのタグが対象のコールバックリストを探す
+		if ((callBackList = arg_myCollider->m_callBackList.find(tag)) != arg_myCollider->m_callBackList.end())
+		{
+			//コールバックを実行
+			for (auto& callBack : callBackList->second)
+			{
+				if (!callBack)continue;
+
+				callBack->OnCollisionEnter(arg_inter, arg_otherCollider);
+				if (!arg_myCollider->m_oldIsHit)callBack->OnCollisionTrigger(arg_inter, arg_otherCollider);
+			}
 		}
 	}
 }
@@ -50,8 +57,7 @@ void CollisionManager::Update()
 			auto colB = (*itrB);
 
 			//お互いにコールバック関数が用意されていないなら、当たっても何も起こらないので判定を行う必要は無い
-			if (colA->m_callBackList.find(colB->m_tag) == colA->m_callBackList.end()
-				&& colB->m_callBackList.find(colA->m_tag) == colB->m_callBackList.end())continue;
+			if (!colA->HaveCallBack(colB) && !colB->HaveCallBack(colA))continue;
 
 			Vec3<float>inter;
 			if (colA->CheckHitCollision(colB, &inter))
@@ -88,7 +94,14 @@ void CollisionManager::ImguiDebug()
 		{
 			textCol = RED;
 		}
-		ImGui::TextColored(textCol, "%d - %s : { %s }", num++, c->m_name.c_str(), c->m_tag.c_str());
+		ImGui::TextColored(textCol, "%d - %s : { ", num++, c->m_name.c_str());
+		for (auto& tag : c->m_tags)
+		{
+			ImGui::SameLine();
+			ImGui::TextColored(textCol, "%s", tag.c_str());
+		}
+		ImGui::SameLine();
+		ImGui::TextColored(textCol, " }");
 	}
 	ImGui::End();
 }
@@ -118,7 +131,7 @@ bool CollisionManager::RaycastHit(Vec3<float> arg_start, Vec3<float> arg_dir, Ra
 		if (!col->m_isActive)continue;
 
 		//当たり判定の対象となるタグが指定されていて、それと同一でないならスルー
-		if (!arg_targetTag.empty() && col->m_tag.compare(arg_targetTag) != 0)continue;
+		if (!arg_targetTag.empty() && col->HaveTag(arg_targetTag) != 0)continue;
 
 		//全てのプリミティブと判定
 		for (auto& primitive : col->m_primitiveArray)

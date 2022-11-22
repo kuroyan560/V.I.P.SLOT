@@ -114,13 +114,13 @@ namespace ConstParameter
         //種別ごとのコライダー振る舞い名称
         std::array<std::string, static_cast<int>(TYPE::NUM)>COLLIDER_ATTRIBUTE =
         {
-            "Enemy","Enemy","Enemy_Attack",
+            "Enemy","Enemy","Enemy_Attack","Player_Attack"
         };
 
         //種別ごとの最大数
         std::array<int, static_cast<int>(TYPE::NUM)>INSTANCE_NUM_MAX =
         {
-            30,30,100
+            30,30,100,100
         };
 
         //敵がいる空間のX軸座標絶対値

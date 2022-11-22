@@ -14,7 +14,7 @@ Collider Collider::Clone(Transform* arg_parent, ColliderParentObject* arg_parent
 
 	//クローン生成
 	Collider clone;
-	clone.Generate(m_name + " - Clone", m_tag, clonePrimitiveArray);
+	clone.Generate(m_name + " - Clone", m_tags, clonePrimitiveArray);
 	clone.SetParentTransform(arg_parent);
 	clone.SetParentObject(arg_parentObj);
 
@@ -24,11 +24,11 @@ Collider Collider::Clone(Transform* arg_parent, ColliderParentObject* arg_parent
 }
 
 void Collider::Generate(const std::string& arg_name,
-	const std::string& arg_tag, 
+	const std::vector<std::string>& arg_tags, 
 	const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray)
 {
 	m_name = arg_name;
-	m_tag = arg_tag;
+	m_tags = arg_tags;
 	m_primitiveArray = arg_primitiveArray;
 }
 
@@ -85,4 +85,15 @@ void Collider::SetParentTransform(Transform* arg_parent)
 void Collider::SetParentObject(ColliderParentObject* arg_parent)
 {
 	m_parentObj = arg_parent;
+}
+
+bool Collider::HaveCallBack(std::weak_ptr<Collider> arg_other)
+{
+	//相手コライダーに付与されているタグを走査
+	for (auto& tag : arg_other.lock()->m_tags)
+	{
+		//引数に渡したコライダーも対象のコールバックを見つけたらtrueを返す
+		if (m_callBackList.find(tag) != m_callBackList.end())return true;
+	}
+	return false;
 }

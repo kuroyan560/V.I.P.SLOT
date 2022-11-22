@@ -13,7 +13,7 @@
 #include"CollisionManager.h"
 #include"StageMgr.h"
 #include"GameManager.h"
-#include"Muzzle.h"
+#include"ObjectController.h"
 
 InGameScene::InGameScene()
 {
@@ -46,9 +46,9 @@ InGameScene::InGameScene()
 	//オブジェクトマネージャ生成
 	m_objMgr = std::make_shared<ObjectManager>();
 
-	//弾発射インターフェースにオブジェクトマネージャアタッチ
-	Muzzle::AttachObjectManager(m_objMgr);
-
+	//オブジェクト挙動操作クラスにオブジェクトマネージャを渡す
+	ObjectController::AttachObjectManager(m_objMgr);
+	
 	//ブロックヒットSE
 	int blockBrokenSE = AudioApp::Instance()->LoadAudio("resource/user/sound/block_broken.wav", 0.5f);
 
@@ -61,6 +61,7 @@ void InGameScene::OnInitialize()
 	auto gameMgr = GameManager::Instance();
 
 	//プレイヤー初期化
+	//m_player->Init(gameMgr->GetPlayerHp(), gameMgr->GetCoinNum());
 	m_player->Init(gameMgr->GetPlayerHp(), gameMgr->GetCoinNum());
 
 	//スロットマシン初期化

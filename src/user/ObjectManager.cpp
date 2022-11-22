@@ -49,7 +49,10 @@ ObjectManager::ObjectManager()
 
 		std::vector<std::unique_ptr<Collider>>colliderArray;
 		colliderArray.emplace_back(std::make_unique<Collider>());
-		colliderArray.back()->Generate("Slide_Move_Enemy_0 - Body_Sphere", COLLIDER_ATTRIBUTE[objIdx], colPrimitiveArray);
+		colliderArray.back()->Generate(
+			"Slide_Move_Enemy_0 - Body_Sphere", 
+			{ COLLIDER_ATTRIBUTE[objIdx] }, 
+			colPrimitiveArray);
 
 		m_breeds[objIdx] = std::make_shared<ObjectBreed>(
 			objIdx,
@@ -70,7 +73,10 @@ ObjectManager::ObjectManager()
 
 		std::vector<std::unique_ptr<Collider>>colliderArray;
 		colliderArray.emplace_back(std::make_unique<Collider>());
-		colliderArray.back()->Generate("Slime_Battery_Enemy_0 - Body_Sphere", COLLIDER_ATTRIBUTE[objIdx], colPrimitiveArray);
+		colliderArray.back()->Generate(
+			"Slime_Battery_Enemy_0 - Body_Sphere",
+			{ COLLIDER_ATTRIBUTE[objIdx] },
+			colPrimitiveArray);
 
 		std::array<float, OC_SlimeBattery::STATUS::NUM>intervalTimes = { 60,60,60,60 };
 
@@ -92,7 +98,10 @@ ObjectManager::ObjectManager()
 
 		std::vector<std::unique_ptr<Collider>>colliderArray;
 		colliderArray.emplace_back(std::make_unique<Collider>());
-		colliderArray.back()->Generate("Enemy_Bullet - Sphere", COLLIDER_ATTRIBUTE[objIdx], colPrimitiveArray);
+		colliderArray.back()->Generate(
+			"Enemy_Bullet - Sphere", 
+			{ COLLIDER_ATTRIBUTE[objIdx] },
+			colPrimitiveArray);
 
 		m_breeds[objIdx] = std::make_shared<ObjectBreed>(
 			objIdx,
@@ -100,6 +109,29 @@ ObjectManager::ObjectManager()
 			1,
 			1,
 			std::make_unique<OC_DirectionMove>(),
+			colliderArray
+			);
+	}
+
+	//ÉpÉäÅ[Ç≈íµÇÀï‘Ç∑íe
+	{
+		int objIdx = static_cast<int>(OBJECT_TYPE::PARRY_BULLET);
+		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
+		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(1.0f, Vec3<float>(0.0f, 0.0f, 0.0f)));
+
+		std::vector<std::unique_ptr<Collider>>colliderArray;
+		colliderArray.emplace_back(std::make_unique<Collider>());
+		colliderArray.back()->Generate(
+			"Parry_Bullet - Sphere", 
+			{ COLLIDER_ATTRIBUTE[objIdx] },
+			colPrimitiveArray);
+
+		m_breeds[objIdx] = std::make_shared<ObjectBreed>(
+			objIdx,
+			Importer::Instance()->LoadModel("resource/user/model/", "parry_bullet.glb"),
+			1,
+			1,
+			std::make_unique<OC_DestinationEaseMove>(In,Back,90.0f),
 			colliderArray
 			);
 	}
@@ -184,7 +216,7 @@ void ObjectManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr
 	m_dropCoinEffect.Draw(arg_lightMgr, arg_cam);
 }
 
-void ObjectManager::AppearEnemyBullet(std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float> arg_startPos, Vec2<float> arg_moveDirXY, float arg_speed, bool arg_sinMeandeling, float arg_meandelingInterval, Angle arg_meandelingAngle)
+std::weak_ptr<GameObject> ObjectManager::AppearEnemyBullet(std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float> arg_startPos, Vec2<float> arg_moveDirXY, float arg_speed, bool arg_sinMeandeling, float arg_meandelingInterval, Angle arg_meandelingAngle)
 {
 	//ìGéÌï î‘çÜéÊìæ
 	int typeIdx = static_cast<int>(OBJECT_TYPE::ENEMY_BULLET);
@@ -203,9 +235,11 @@ void ObjectManager::AppearEnemyBullet(std::weak_ptr<CollisionManager> arg_collis
 
 	//èâä˙âª
 	newBullet->Init();
+
+	return newBullet;
 }
 
-void ObjectManager::AppearSlideMoveEnemy(std::weak_ptr<CollisionManager> arg_collisionMgr, float arg_moveX, float arg_posY)
+std::weak_ptr<GameObject> ObjectManager::AppearSlideMoveEnemy(std::weak_ptr<CollisionManager> arg_collisionMgr, float arg_moveX, float arg_posY)
 {
 	//ìGéÌï î‘çÜéÊìæ
 	int typeIdx = static_cast<int>(OBJECT_TYPE::SLIDE_ENEMY);
@@ -245,9 +279,11 @@ void ObjectManager::AppearSlideMoveEnemy(std::weak_ptr<CollisionManager> arg_col
 
 	//èâä˙âª
 	newEnemy->Init();
+
+	return newEnemy;
 }
 
-void ObjectManager::AppearSlimeBattery(std::weak_ptr<CollisionManager> arg_collisionMgr, float arg_appearY, float arg_destinationXArray[], size_t arg_arraySize)
+std::weak_ptr<GameObject> ObjectManager::AppearSlimeBattery(std::weak_ptr<CollisionManager> arg_collisionMgr, float arg_appearY, float arg_destinationXArray[], size_t arg_arraySize)
 {
 	//ìGéÌï î‘çÜéÊìæ
 	int typeIdx = static_cast<int>(OBJECT_TYPE::SLIME_BATTERY_ENEMY);
@@ -260,4 +296,23 @@ void ObjectManager::AppearSlimeBattery(std::weak_ptr<CollisionManager> arg_colli
 
 	//èâä˙âª
 	newEnemy->Init();
+
+	return newEnemy;
+}
+
+std::weak_ptr<GameObject> ObjectManager::AppearParryBullet(std::weak_ptr<CollisionManager>arg_collisionMgr, Vec3<float> arg_startPos, Vec3<float> arg_destinationPos)
+{
+	//ìGéÌï î‘çÜéÊìæ
+	int typeIdx = static_cast<int>(OBJECT_TYPE::PARRY_BULLET);
+
+	//êVãKìGÉ|ÉbÉv
+	auto newBullet = OnObjectAppear(typeIdx, arg_collisionMgr);
+
+	//ÉpÉâÉÅÅ[É^ê›íË
+	((OC_DestinationEaseMove*)newBullet->m_controller.get())->SetParameters(arg_startPos, arg_destinationPos);
+
+	//èâä˙âª
+	newBullet->Init();
+
+	return newBullet;
 }

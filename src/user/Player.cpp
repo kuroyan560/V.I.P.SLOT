@@ -82,7 +82,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 			m_bodySphereCol
 		};
 		m_bodyCollider = std::make_shared<Collider>();
-		m_bodyCollider->Generate("Player_Body", "Player", coverModelPrimitiveArray);
+		m_bodyCollider->Generate("Player_Body", { "Player" }, coverModelPrimitiveArray);
 		m_bodyCollider->SetParentObject(this);
 		m_bodyCollider->SetParentTransform(&m_modelObj->m_transform);
 

@@ -4,6 +4,9 @@
 #include"ObjectBreed.h"
 #include"ConstParameters.h"
 #include"TimeScale.h"
+#include"ObjectManager.h"
+
+std::weak_ptr<ObjectManager>ObjectController::s_objMgr;
 
 void ObjectController::OnDraw(GameObject& arg_obj, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam)
 {
@@ -67,6 +70,24 @@ std::unique_ptr<ObjectController> OC_DirectionMove::Clone()
 	auto clone = std::make_unique<OC_DirectionMove>();
 	clone->SetParameters(m_startPos, m_moveDirXY, m_speed, m_sinMeandeling);
 	return clone;
+}
+
+void OC_DestinationEaseMove::OnInit(GameObject& arg_obj)
+{
+	arg_obj.m_transform.SetPos(m_startPos);
+	m_timer.Reset(m_interval);
+}
+
+void OC_DestinationEaseMove::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager> arg_collisionMgr)
+{
+	m_timer.UpdateTimer(arg_timeScale.GetTimeScale());
+	auto pos = KuroMath::Ease(m_easeChangeType, m_easeType, m_timer.GetTimeRate(), m_startPos, m_destinationPos);
+	arg_obj.m_transform.SetPos(pos);
+}
+
+std::unique_ptr<ObjectController> OC_DestinationEaseMove::Clone()
+{
+	return std::make_unique<OC_DestinationEaseMove>(m_easeChangeType, m_easeType, m_interval);
 }
 
 float OC_SlimeBattery::GetNearEdgePosX(float arg_posX)const
@@ -182,7 +203,8 @@ void OC_SlimeBattery::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeSca
 			//出発地点の記録
 			m_departureX = pos.x;
 			//ショット
-			Shot(arg_collisionMgr,
+			s_objMgr.lock()->AppearEnemyBullet(
+				arg_collisionMgr,
 				pos,
 				Vec2<float>(0.0f, 1.0f),
 				0.2f,

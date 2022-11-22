@@ -4,8 +4,10 @@
 #include<vector>
 #include<array>
 #include"Angle.h"
-#include"Muzzle.h"
+#include"KuroMath.h"
 class GameObject;
+class ObjectManager;
+class CollisionManager;
 class TimeScale;
 class LightManager;
 class Camera;
@@ -13,6 +15,16 @@ class Camera;
 class ObjectController
 {
 	friend class GameObject;
+
+protected:
+	//オブジェクトマネージャ
+	static std::weak_ptr<ObjectManager>s_objMgr;
+
+public:
+	static void AttachObjectManager(std::weak_ptr<ObjectManager>arg_objMgr)
+	{
+		s_objMgr = arg_objMgr;
+	}
 
 protected:
 	//純粋仮想関数（アレンジ必須）
@@ -99,8 +111,44 @@ public:
 	}
 };
 
+//指定した位置にイージング関数を用いて移動
+class OC_DestinationEaseMove : public ObjectController
+{
+	//イージング種別
+	EASE_CHANGE_TYPE m_easeChangeType;
+	EASING_TYPE m_easeType;
+	//スタート地点
+	Vec3<float>m_startPos;
+	//目的地
+	Vec3<float>m_destinationPos;
+	//時間
+	float m_interval;
+	//タイマー
+	Timer m_timer;
+
+	void OnInit(GameObject& arg_obj)override;
+	void OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)override;
+	std::unique_ptr<ObjectController>Clone()override;
+	bool IsLeave(GameObject& arg_obj)const override { return m_timer.IsTimeUp(); }
+
+public:
+	OC_DestinationEaseMove(EASE_CHANGE_TYPE arg_easeChangeType,EASING_TYPE arg_easeType, float arg_interval)
+		:m_easeChangeType(arg_easeChangeType),m_easeType(arg_easeType), m_interval(arg_interval) {}
+
+	/// <summary>
+	/// パラメータ設定
+	/// </summary>
+	/// <param name="arg_startPos">スタート地点</param>
+	/// <param name="arg_destinationPos">目的地</param>
+	void SetParameters(Vec3<float>arg_startPos, Vec3<float>arg_destinationPos)
+	{
+		m_startPos = arg_startPos;
+		m_destinationPos = arg_destinationPos;
+	}
+};
+
 //飛び跳ね＆弾を発射（スライム砲台、画面外から登場後飛び跳ね＆ショットで移動）
-class OC_SlimeBattery : public ObjectController, public Muzzle
+class OC_SlimeBattery : public ObjectController
 {
 public:
 	//ステータス管理

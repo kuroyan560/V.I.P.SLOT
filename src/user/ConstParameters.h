@@ -126,6 +126,7 @@ namespace ConstParameter
 			SLIDE_ENEMY,
 			SLIME_BATTERY_ENEMY, 
 			ENEMY_BULLET,
+			PARRY_BULLET,
 			NUM 
 		};
 
