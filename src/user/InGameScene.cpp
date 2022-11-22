@@ -70,7 +70,12 @@ void InGameScene::OnInitialize()
 
 	//オブジェクトマネージャ
 	m_objMgr->Init(m_collisionMgr);
-	m_objMgr->Appear(ConstParameter::GameObject::TYPE::ENEMY, m_collisionMgr);
+
+	std::array destX = { 0.0f,1.0f,-2.0f,3.0f,-4.0f,5.0f };
+	m_objMgr->AppearSlimeBattery(m_collisionMgr,
+		5.0f,
+		destX.data(),
+		destX.size());
 }
 
 void InGameScene::OnUpdate()

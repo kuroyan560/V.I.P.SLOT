@@ -76,8 +76,8 @@ void TitleScene::OnUpdate()
 	else if (0 < m_item && up)m_item = (ITEM)(m_item - 1);
 
 	//Œˆ’è
-	if (enter)
-	//if (true)
+	//if (enter)
+	if (true)
 	{
 		switch (m_item)
 		{

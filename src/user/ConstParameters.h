@@ -121,7 +121,7 @@ namespace ConstParameter
 	namespace GameObject
 	{
 		//種別
-		enum struct TYPE { ENEMY, NUM };
+		enum struct TYPE { SLIDE_ENEMY, SLIME_BATTERY_ENEMY, NUM };
 
 		//種別ごとのコライダー振る舞い名称
 		extern std::array<std::string, static_cast<int>(TYPE::NUM)>COLLIDER_ATTRIBUTE;

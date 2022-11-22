@@ -37,7 +37,7 @@ class ObjectManager
 	EnemyKillCoinEffect m_dropCoinEffect;
 
 	//“G‚Ì“oê‚ÉŒÄ‚Ño‚·
-	void OnEnemyAppear(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr);
+	std::shared_ptr<GameObject> OnEnemyAppear(int arg_objTypeIdx, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	//“G‚Ì€–S‚ÉŒÄ‚Ño‚·
 	void OnEnemyDead(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr, const std::weak_ptr<Player>&arg_player);
 public:
@@ -46,6 +46,6 @@ public:
 	void Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player);
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 
-	void Appear(OBJECT_TYPE arg_type, std::weak_ptr<CollisionManager>arg_collisionMgr);
+	void AppearSlideMoveEnemy(std::weak_ptr<CollisionManager>arg_collisionMgr, float arg_posY);
+	void AppearSlimeBattery(std::weak_ptr<CollisionManager>arg_collisionMgr, float arg_appearY, float arg_destinationXArray[], size_t arg_arraySize);
 };
-
