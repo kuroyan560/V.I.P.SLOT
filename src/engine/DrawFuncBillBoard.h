@@ -23,9 +23,13 @@ class DrawFuncBillBoard
 
 	//パイプライン
 	static std::array<std::shared_ptr<GraphicsPipeline>, AlphaBlendModeNum>s_pipeline;
-	static void GeneratePipeline(const AlphaBlendMode& BlendMode);
+	static std::vector<std::shared_ptr<VertexBuffer>>s_graphVertBuff;
 
 public:
+	static void GeneratePipeline(const AlphaBlendMode& BlendMode);
+	//事前に頂点バッファを生成しておく
+	static void PrepareGraphVertBuff(int arg_num);
+
 	//呼び出しカウントリセット
 	static void CountReset()
 	{

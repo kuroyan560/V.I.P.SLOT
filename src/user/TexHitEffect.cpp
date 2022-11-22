@@ -2,9 +2,30 @@
 #include"DrawFuncBillBoard.h"
 #include"D3D12App.h"
 
+TexHitEffect::Info::Info(Vec3<float>arg_emitPos, float arg_texChangeSpan)
+	:m_pos(arg_emitPos)
+{
+	m_texChangeTimer.Reset(arg_texChangeSpan);
+}
+
+void TexHitEffect::Info::Update(float arg_timeScale)
+{
+	if (m_texChangeTimer.UpdateTimer(arg_timeScale))
+	{
+		++m_texIdx;
+		m_texChangeTimer.Reset();
+	}
+}
+
 void TexHitEffect::Info::Draw(const TexHitEffect& arg_parent, std::weak_ptr<Camera>& arg_cam)
 {
 	DrawFuncBillBoard::Graph(*arg_cam.lock(), m_pos, arg_parent.m_effectSize, arg_parent.m_texArray[m_texIdx]);
+}
+
+TexHitEffect::TexHitEffect()
+{
+	DrawFuncBillBoard::GeneratePipeline(AlphaBlendMode_Trans);
+	DrawFuncBillBoard::PrepareGraphVertBuff(5);
 }
 
 void TexHitEffect::Set(std::string arg_texPath,

@@ -19,19 +19,9 @@ class TexHitEffect
 		//テクスチャ切り替え時間計測
 		Timer m_texChangeTimer;
 
-		Info(Vec3<float>arg_emitPos, float arg_texChangeSpan) :m_pos(arg_emitPos)
-		{
-			m_texChangeTimer.Reset(arg_texChangeSpan);
-		}
+		Info(Vec3<float>arg_emitPos, float arg_texChangeSpan);
 
-		void Update(float arg_timeScale)
-		{
-			if (m_texChangeTimer.UpdateTimer(arg_timeScale))
-			{
-				++m_texIdx;
-				m_texChangeTimer.Reset();
-			}
-		}
+		void Update(float arg_timeScale);
 		void Draw(const TexHitEffect& arg_parent, std::weak_ptr<Camera>& arg_cam);
 
 		bool IsEnd(const int& arg_texNum) { return arg_texNum <= m_texIdx; }
@@ -48,7 +38,7 @@ class TexHitEffect
 	float m_texChangeSpan;
 
 public:
-	TexHitEffect() {}
+	TexHitEffect();
 
 	/// <summary>
 	/// パラメータ設定、テクスチャ読み込み
