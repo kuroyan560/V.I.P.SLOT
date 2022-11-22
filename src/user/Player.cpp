@@ -86,6 +86,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 
 		//被ダメージコールバックアタッチ
 		m_bodyCollider->SetCallBack("Enemy", m_damegedCallBack.get());
+		m_bodyCollider->SetCallBack("Enemy_Attack", m_damegedCallBack.get());
 		//ブロックに触れた際のコールバック
 		m_bodyCollider->SetCallBack("Block", m_callBackWithBlock.get());
 		colliders.emplace_back(m_bodyCollider);
