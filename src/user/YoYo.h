@@ -37,7 +37,8 @@ class YoYo : public CollisionCallBack
 	std::shared_ptr<TexHitEffect>m_hitEffect;
 	//ヒット時SE
 	int m_hitSE;
-
+	//パリー時SE
+	int m_parrySE;
 
 	//状態遷移
 	enum STATUS
@@ -106,7 +107,7 @@ class YoYo : public CollisionCallBack
 		std::weak_ptr<Collider>arg_otherCollider)override;
 
 public:
-	YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform, int arg_hitSE);
+	YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform, int arg_hitSE, int arg_parrySE);
 
 	/// <summary>
 	/// ヨーヨーの固定パラメータ設定（≠初期化）

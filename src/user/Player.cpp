@@ -36,20 +36,22 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 	//モデル読み込み
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "player.glb");
 
+	std::string soundDir = "resource/user/sound/";
+
 	//ジャンプSE読み込み
-	m_jumpSE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_jump.wav",0.6f);
+	m_jumpSE = AudioApp::Instance()->LoadAudio(soundDir + "player_jump.wav",0.6f);
 
 	//被ダメージヒットストップSE
-	int onDamagedHitStopSE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_damage_hitStop.wav",0.5f);
+	int onDamagedHitStopSE = AudioApp::Instance()->LoadAudio(soundDir + "player_damage_hitStop.wav",0.5f);
 
 	//被ダメージSE
-	int onDamagedSE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_damage_onTrigger.wav",0.4f);
-
-	//敵の踏みつけSE
-	int onStepEnemySE = AudioApp::Instance()->LoadAudio("resource/user/sound/player_step.wav",0.8f);
+	int onDamagedSE = AudioApp::Instance()->LoadAudio(soundDir + "player_damage_onTrigger.wav",0.4f);
 
 	//敵への攻撃SE
-	int enemyHitSE = AudioApp::Instance()->LoadAudio("resource/user/sound/block_broken.wav", 0.5f);
+	int enemyHitSE = AudioApp::Instance()->LoadAudio(soundDir + "block_broken.wav", 0.5f);
+
+	//パリーSE
+	int parrySE = AudioApp::Instance()->LoadAudio(soundDir + "parry.wav", 0.8f);
 
 	/*--- コライダー用プリミティブ生成 ---*/
 
@@ -96,7 +98,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ga
 	arg_collisionMgr.lock()->Register(colliders);
 
 	/*--- ヨーヨー生成 ---*/
-	m_yoYo = std::make_shared<YoYo>(arg_collisionMgr, &m_modelObj->m_transform, enemyHitSE);
+	m_yoYo = std::make_shared<YoYo>(arg_collisionMgr, &m_modelObj->m_transform, enemyHitSE, parrySE);
 	m_yoYo->Awake(3.0f, 2.5f);
 }
 

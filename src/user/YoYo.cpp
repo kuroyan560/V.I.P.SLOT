@@ -49,15 +49,25 @@ void YoYo::StatusInit(Vec3<float>arg_accelVec)
 
 void YoYo::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
 {
-	//オブジェクトにダメージを与える
-	arg_otherCollider.lock()->GetParentObject<GameObject>()->Damage(m_offensive);
-	//ヒットエフェクト
-	m_hitEffect->Emit(arg_inter);
-	//SE
-	AudioApp::Instance()->PlayWave(m_hitSE);
+	//敵
+	if (arg_otherCollider.lock()->GetTag().compare("Enemy") == 0)
+	{
+		//オブジェクトにダメージを与える
+		arg_otherCollider.lock()->GetParentObject<GameObject>()->Damage(m_offensive);
+		//ヒットエフェクト
+		m_hitEffect->Emit(arg_inter);
+		//SE
+		AudioApp::Instance()->PlayWave(m_hitSE);
+	}
+	//攻撃に対してはパリィ判定
+	else if (arg_otherCollider.lock()->GetTag().compare("Enemy_Attack") == 0)
+	{
+		//SE
+		AudioApp::Instance()->PlayWave(m_parrySE);
+	}
 }
 
-YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform, int arg_hitSE)
+YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playerTransform, int arg_hitSE, int arg_parrySE)
 {
 	//モデルオブジェクト生成
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "yoyo.glb");
@@ -83,6 +93,7 @@ YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playe
 
 	//攻撃コールバック
 	m_neutralCol->SetCallBack("Enemy", this);
+	m_neutralCol->SetCallBack("Enemy_Attack", this);
 	m_throwCol->SetCallBack("Enemy", this);
 
 	//コライダー登録
@@ -94,6 +105,8 @@ YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, Transform* arg_playe
 	m_hitEffect->Set("resource/user/img/hitEffect.png", 5, { 5,1 }, { 6.0f,6.0f }, 3);
 	//ヒット時SE
 	m_hitSE = arg_hitSE;
+	//パリー時SE
+	m_parrySE = arg_parrySE;
 
 //ステータスごとのパラメータ設定
 	//N攻撃
