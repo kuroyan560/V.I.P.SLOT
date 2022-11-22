@@ -10,7 +10,7 @@
 #include"AudioApp.h"
 #include"Player.h"
 
-std::shared_ptr<GameObject> ObjectManager::OnEnemyAppear(int arg_objTypeIdx, std::weak_ptr<CollisionManager> arg_collisionMgr)
+std::shared_ptr<GameObject> ObjectManager::OnObjectAppear(int arg_objTypeIdx, std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
 	//新規追加する敵取得
 	auto newEnemy = m_deadObjectArray[arg_objTypeIdx].front();
@@ -27,7 +27,7 @@ std::shared_ptr<GameObject> ObjectManager::OnEnemyAppear(int arg_objTypeIdx, std
 	return newEnemy;
 }
 
-void ObjectManager::OnEnemyDead(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr, const std::weak_ptr<Player>& arg_player)
+void ObjectManager::OnObjectDead(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr, const std::weak_ptr<Player>& arg_player)
 {
 	//コライダー登録解除
 	for (auto& col : arg_obj->m_colliders)
@@ -38,38 +38,40 @@ void ObjectManager::OnEnemyDead(std::shared_ptr<GameObject>& arg_obj, std::weak_
 
 ObjectManager::ObjectManager()
 {
+	using namespace ConstParameter::GameObject;
 	/*--- 敵の定義 ---*/
 
 	//横移動する雑魚敵
 	{
+		int objIdx = static_cast<int>(OBJECT_TYPE::SLIDE_ENEMY);
 		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
 		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(2.0f, Vec3<float>(0.0f, 0.0f, 0.0f)));
 
 		std::vector<std::unique_ptr<Collider>>colliderArray;
 		colliderArray.emplace_back(std::make_unique<Collider>());
-		colliderArray.back()->Generate("Slide_Move_Enemy_0 - Body_Sphere", "Enemy", colPrimitiveArray);
+		colliderArray.back()->Generate("Slide_Move_Enemy_0 - Body_Sphere", COLLIDER_ATTRIBUTE[objIdx], colPrimitiveArray);
 
-		int objIdx = static_cast<int>(OBJECT_TYPE::SLIDE_ENEMY);
 		m_breeds[objIdx] = std::make_shared<ObjectBreed>(
 			objIdx,
 			Importer::Instance()->LoadModel("resource/user/model/", "enemy_test.glb"),
 			5,
 			10,
-			std::make_unique<OC_SlideMove>(0.1f),
+			std::make_unique<OC_DirectionMove>(),
 			colliderArray
 			);
 	}
 
 	//飛び跳ね＆弾を発射（スライム砲台、画面外から登場後飛び跳ね＆ショットで移動）
 	{
+		int objIdx = static_cast<int>(OBJECT_TYPE::SLIME_BATTERY_ENEMY);
+
 		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
 		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(2.0f, Vec3<float>(0.0f, 0.0f, 0.0f)));
 
 		std::vector<std::unique_ptr<Collider>>colliderArray;
 		colliderArray.emplace_back(std::make_unique<Collider>());
-		colliderArray.back()->Generate("Slime_Battery_Enemy_0 - Body_Sphere", "Enemy", colPrimitiveArray);
+		colliderArray.back()->Generate("Slime_Battery_Enemy_0 - Body_Sphere", COLLIDER_ATTRIBUTE[objIdx], colPrimitiveArray);
 
-		int objIdx = static_cast<int>(OBJECT_TYPE::SLIME_BATTERY_ENEMY);
 		std::array<float, OC_SlimeBattery::STATUS::NUM>intervalTimes = { 60,60,60,60 };
 
 		m_breeds[objIdx] = std::make_shared<ObjectBreed>(
@@ -78,6 +80,26 @@ ObjectManager::ObjectManager()
 			5,
 			10,
 			std::make_unique<OC_SlimeBattery>(intervalTimes.data(), 0.5f),
+			colliderArray
+			);
+	}
+
+	//弾
+	{
+		int objIdx = static_cast<int>(OBJECT_TYPE::ENEMY_BULLET);
+		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
+		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(1.0f, Vec3<float>(0.0f, 0.0f, 0.0f)));
+
+		std::vector<std::unique_ptr<Collider>>colliderArray;
+		colliderArray.emplace_back(std::make_unique<Collider>());
+		colliderArray.back()->Generate("Enemy_Bullet - Sphere", COLLIDER_ATTRIBUTE[objIdx], colPrimitiveArray);
+
+		m_breeds[objIdx] = std::make_shared<ObjectBreed>(
+			objIdx,
+			Importer::Instance()->LoadModel("resource/user/model/", "bullet.glb"),
+			1,
+			1,
+			std::make_unique<OC_DirectionMove>(),
 			colliderArray
 			);
 	}
@@ -103,7 +125,7 @@ void ObjectManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	{
 		for (auto& enemy : m_aliveObjectArray[typeIdx])
 		{
-			OnEnemyDead(enemy, arg_collisionMgr, std::weak_ptr<Player>());
+			OnObjectDead(enemy, arg_collisionMgr, std::weak_ptr<Player>());
 		}
 
 		//生存エネミー配列を空に
@@ -123,12 +145,12 @@ void ObjectManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<Collisi
 	{
 		for (auto& enemy : m_aliveObjectArray[enemyTypeIdx])
 		{
-			enemy->Update(arg_timeScale);
+			enemy->Update(arg_timeScale, arg_collisionMgr);
 
 			//死んでいたら
 			if (enemy->IsDead())
 			{
-				OnEnemyDead(enemy, arg_collisionMgr, arg_player);
+				OnObjectDead(enemy, arg_collisionMgr, arg_player);
 				//死亡敵配列に追加
 				m_deadObjectArray[enemyTypeIdx].push_front(enemy);
 			}
@@ -162,20 +184,67 @@ void ObjectManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr
 	m_dropCoinEffect.Draw(arg_lightMgr, arg_cam);
 }
 
-void ObjectManager::AppearSlideMoveEnemy(std::weak_ptr<CollisionManager> arg_collisionMgr, float arg_posY)
+void ObjectManager::AppearEnemyBullet(std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float> arg_startPos, Vec2<float> arg_moveDirXY, float arg_speed, bool arg_sinMeandeling, float arg_meandelingInterval, Angle arg_meandelingAngle)
+{
+	//敵種別番号取得
+	int typeIdx = static_cast<int>(OBJECT_TYPE::ENEMY_BULLET);
+
+	//新規敵ポップ
+	auto newBullet = OnObjectAppear(typeIdx, arg_collisionMgr);
+
+	//パラメータ設定
+	((OC_DirectionMove*)newBullet->m_controller.get())->SetParameters(
+		arg_startPos,
+		arg_moveDirXY,
+		arg_speed,
+		arg_sinMeandeling,
+		arg_meandelingInterval,
+		arg_meandelingAngle);
+
+	//初期化
+	newBullet->Init();
+}
+
+void ObjectManager::AppearSlideMoveEnemy(std::weak_ptr<CollisionManager> arg_collisionMgr, float arg_moveX, float arg_posY)
 {
 	//敵種別番号取得
 	int typeIdx = static_cast<int>(OBJECT_TYPE::SLIDE_ENEMY);
 
 	//新規敵ポップ
-	auto newEnemy = OnEnemyAppear(typeIdx, arg_collisionMgr);
+	auto newEnemy = OnObjectAppear(typeIdx, arg_collisionMgr);
+
+	using namespace ConstParameter::GameObject;
+	using namespace ConstParameter::Environment;
+
+	//初期化位置
+	Vec3<float>initPos;
+
+	//移動スピードによってスタートXを変える
+	if (arg_moveX < 0.0f)
+	{
+		initPos.x = POS_X_ABS;
+	}
+	else if (0.0f < arg_moveX)
+	{
+		initPos.x = -POS_X_ABS;
+	}
+
+	//高さランダム
+	initPos.y = arg_posY;
+
+	//フィールドのZに合わせる
+	initPos.z = FIELD_FLOOR_POS.z;
+
+	float speed = abs(arg_moveX);
 
 	//パラメータ設定
-	((OC_SlideMove*)newEnemy->m_controller.get())->SetPosY(arg_posY);
+	((OC_DirectionMove*)newEnemy->m_controller.get())->SetParameters(
+		initPos,
+		Vec2<float>(arg_moveX / speed, 0.0f),
+		speed);
 
 	//初期化
 	newEnemy->Init();
-
 }
 
 void ObjectManager::AppearSlimeBattery(std::weak_ptr<CollisionManager> arg_collisionMgr, float arg_appearY, float arg_destinationXArray[], size_t arg_arraySize)
@@ -184,7 +253,7 @@ void ObjectManager::AppearSlimeBattery(std::weak_ptr<CollisionManager> arg_colli
 	int typeIdx = static_cast<int>(OBJECT_TYPE::SLIME_BATTERY_ENEMY);
 
 	//新規敵ポップ
-	auto newEnemy = OnEnemyAppear(typeIdx, arg_collisionMgr);
+	auto newEnemy = OnObjectAppear(typeIdx, arg_collisionMgr);
 
 	//パラメータ設定
 	((OC_SlimeBattery*)newEnemy->m_controller.get())->SetParameters(arg_appearY, arg_destinationXArray, arg_arraySize);

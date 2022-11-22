@@ -121,7 +121,13 @@ namespace ConstParameter
 	namespace GameObject
 	{
 		//種別
-		enum struct TYPE { SLIDE_ENEMY, SLIME_BATTERY_ENEMY, NUM };
+		enum struct TYPE
+		{
+			SLIDE_ENEMY,
+			SLIME_BATTERY_ENEMY, 
+			ENEMY_BULLET,
+			NUM 
+		};
 
 		//種別ごとのコライダー振る舞い名称
 		extern std::array<std::string, static_cast<int>(TYPE::NUM)>COLLIDER_ATTRIBUTE;
@@ -131,6 +137,9 @@ namespace ConstParameter
 
 		//敵がいる空間のX軸座標絶対値
 		extern float POS_X_ABS;
+		//敵がいる空間Y軸座標最小と最大
+		extern float POS_Y_MIN;
+		extern float POS_Y_MAX;
 
 		/*--- 衝突判定 ---*/
 		//ダメージを受けた後の無敵時間

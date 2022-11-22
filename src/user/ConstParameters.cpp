@@ -114,17 +114,20 @@ namespace ConstParameter
         //種別ごとのコライダー振る舞い名称
         std::array<std::string, static_cast<int>(TYPE::NUM)>COLLIDER_ATTRIBUTE =
         {
-            "Enemy","Enemy",
+            "Enemy","Enemy","Enemy_Attack",
         };
 
         //種別ごとの最大数
         std::array<int, static_cast<int>(TYPE::NUM)>INSTANCE_NUM_MAX =
         {
-            100,100
+            30,30,100
         };
 
         //敵がいる空間のX軸座標絶対値
         float POS_X_ABS = 43.0f;
+        //敵がいる空間Y軸座標最小と最大
+        float POS_Y_MIN = Environment::FIELD_HEIGHT_MIN;
+        float POS_Y_MAX = Environment::FIELD_HEIGHT_MAX;
 
         /*--- 衝突判定 ---*/
         //ダメージを受けた後の無敵時間

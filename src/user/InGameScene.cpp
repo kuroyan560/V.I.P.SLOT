@@ -13,6 +13,7 @@
 #include"CollisionManager.h"
 #include"StageMgr.h"
 #include"GameManager.h"
+#include"Muzzle.h"
 
 InGameScene::InGameScene()
 {
@@ -45,6 +46,9 @@ InGameScene::InGameScene()
 	//オブジェクトマネージャ生成
 	m_objMgr = std::make_shared<ObjectManager>();
 
+	//弾発射インターフェースにオブジェクトマネージャアタッチ
+	Muzzle::AttachObjectManager(m_objMgr);
+
 	//ブロックヒットSE
 	int blockBrokenSE = AudioApp::Instance()->LoadAudio("resource/user/sound/block_broken.wav", 0.5f);
 
@@ -71,11 +75,20 @@ void InGameScene::OnInitialize()
 	//オブジェクトマネージャ
 	m_objMgr->Init(m_collisionMgr);
 
-	std::array destX = { 0.0f,1.0f,-2.0f,3.0f,-4.0f,5.0f };
+	std::array destX = { 13.0f,13.0f,-20.0f,15.0f,30.0f };
 	m_objMgr->AppearSlimeBattery(m_collisionMgr,
 		5.0f,
 		destX.data(),
 		destX.size());
+
+	m_objMgr->AppearSlideMoveEnemy(
+		m_collisionMgr,
+		0.2f, 
+		10.0f);
+	m_objMgr->AppearSlideMoveEnemy(
+		m_collisionMgr,
+		-0.6f,
+		20.0f);
 }
 
 void InGameScene::OnUpdate()

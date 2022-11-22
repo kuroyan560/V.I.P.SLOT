@@ -187,6 +187,7 @@
     <ClCompile Include="src\user\PatternManager.cpp" />
     <ClCompile Include="src\user\Player.cpp" />
     <ClCompile Include="src\user\Scaffold.cpp" />
+    <ClCompile Include="src\user\Muzzle.cpp" />
     <ClCompile Include="src\user\TexHitEffect.cpp" />
     <ClCompile Include="src\user\Reel.cpp" />
     <ClCompile Include="src\user\RenderTargetManager.cpp" />
@@ -296,6 +297,7 @@
     <ClInclude Include="src\user\PatternManager.h" />
     <ClInclude Include="src\user\Player.h" />
     <ClInclude Include="src\user\Scaffold.h" />
+    <ClInclude Include="src\user\Muzzle.h" />
     <ClInclude Include="src\user\TexHitEffect.h" />
     <ClInclude Include="src\user\Reel.h" />
     <ClInclude Include="src\user\RenderTargetManager.h" />

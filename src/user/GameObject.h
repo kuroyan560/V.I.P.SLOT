@@ -11,6 +11,7 @@ class TimeScale;
 class LightManager;
 class Camera;
 class Collider;
+class CollisionManager;
 
 class GameObject : public ColliderParentObject
 {
@@ -39,7 +40,7 @@ public:
 	//‰Šú‰»
 	void Init();
 	//XV
-	void Update(const TimeScale& arg_timeScale);
+	void Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	//•`‰æ
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 

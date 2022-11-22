@@ -29,9 +29,9 @@ void GameObject::Init()
 	m_hp = m_breed.lock()->m_maxHp;
 }
 
-void GameObject::Update(const TimeScale& arg_timeScale)
+void GameObject::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
-	m_controller->OnUpdate(*this, arg_timeScale);
+	m_controller->OnUpdate(*this, arg_timeScale, arg_collisionMgr);
 }
 
 void GameObject::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)

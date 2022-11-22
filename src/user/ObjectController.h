@@ -3,6 +3,8 @@
 #include"Timer.h"
 #include<vector>
 #include<array>
+#include"Angle.h"
+#include"Muzzle.h"
 class GameObject;
 class TimeScale;
 class LightManager;
@@ -15,17 +17,17 @@ class ObjectController
 protected:
 	//純粋仮想関数（アレンジ必須）
 	//初期化
-	virtual void OnInit(GameObject& arg_enemy) = 0;
+	virtual void OnInit(GameObject& arg_obj) = 0;
 	//更新
-	virtual void OnUpdate(GameObject& arg_enemy, const TimeScale& arg_timeScale) = 0;
+	virtual void OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr) = 0;
 	//クローンの生成
 	virtual std::unique_ptr<ObjectController>Clone() = 0;
 
 	//仮想関数（アレンジ可能）
 	//デフォルトではただモデルを描画するだけ
-	virtual void OnDraw(GameObject& arg_enemy, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam);
+	virtual void OnDraw(GameObject& arg_obj, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam);
 	//ダメージを受けたときの演出など（返り値：コイン数）
-	virtual int OnDamage(GameObject& arg_enemy, int arg_damageAmount) { return 0; }
+	virtual int OnDamage(GameObject& arg_obj, int arg_damageAmount) { return 0; }
 	//退場したか
 	virtual bool IsLeave(GameObject& arg_obj)const { return false; }
 
@@ -33,38 +35,72 @@ protected:
 	//アタッチされているオブジェクトのHPが０以下か
 	bool IsObjsHpZero(GameObject& arg_obj)const;
 	//全ての動きを終えたときなど、EnemyController側から死亡フラグを立てられるように
-	bool IsDead(GameObject& arg_obj) { return IsLeave(arg_obj) || IsObjsHpZero(arg_obj); }
-
-
+	bool IsDead(GameObject& arg_obj)const { return IsLeave(arg_obj) || IsObjsHpZero(arg_obj); }
+	//画面外に出たか
+	bool IsOutOfScreen(GameObject& arg_obj)const;
 };
 
-//横移動
-class OC_SlideMove : public ObjectController
+//指定した方向に移動
+class OC_DirectionMove : public ObjectController
 {
+	//スタート位置
+	Vec3<float>m_startPos;
+
+	//XY平面移動方向
+	Vec2<float>m_moveDirXY;
+
 	//スピード
-	float m_xSpeed;
+	float m_speed = 1.0f;
 
-	//X軸方向スピード
-	float m_xMove;
+	//蛇行する際のラジアン
+	Angle m_radian;
+	//蛇行するか
+	bool m_sinMeandeling = false;
+	//蛇行のインターバル
+	float m_meandelingInterval = 60.0f;
+	//蛇行の角度
+	Angle m_meandelingAngle = Angle(30);
 
-	//座標Y
-	float m_posY;
-
-	void OnInit(GameObject& arg_enemy)override;
-	void OnUpdate(GameObject& arg_enemy, const TimeScale& arg_timeScale)override;
+	void OnInit(GameObject& arg_obj)override;
+	void OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)override;
 	std::unique_ptr<ObjectController>Clone()override;
-	bool IsLeave(GameObject& arg_obj)const override;
+	bool IsLeave(GameObject& arg_obj)const override { return IsOutOfScreen(arg_obj); }
 
 public:
-	OC_SlideMove(float arg_xSpeed)
+	/// <summary>
+	/// パラメータ設定
+	/// </summary>
+	/// <param name="arg_startPos">初期位置</param>
+	void SetParameters(Vec3<float>arg_startPos) { m_startPos = arg_startPos; }
+
+	/// <summary>
+	/// パラメータ設定
+	/// </summary>
+	/// <param name="arg_startPos">初期位置</param>
+	/// <param name="arg_moveDirXY">XY平面移動方向</param>
+	/// <param name="arg_speed">移動スピード</param>
+	/// <param name="arg_sinMeandeling">蛇行するか（sinカーブ）</param>
+	/// <param name="arg_meandelingInterval">蛇行のインターバル</param>
+	/// <param name="arg_meandelingAngle">蛇行の角度</param>
+	void SetParameters(
+		Vec3<float>arg_startPos,
+		Vec2<float>arg_moveDirXY,
+		float arg_speed,
+		bool arg_sinMeandeling = false,
+		float arg_meandelingInterval = 60.0f,
+		Angle arg_meandelingAngle = Angle(30))
 	{
-		m_xSpeed = arg_xSpeed;
+		m_startPos = arg_startPos;
+		m_moveDirXY = arg_moveDirXY;
+		m_speed = arg_speed;
+		m_sinMeandeling = arg_sinMeandeling;
+		m_meandelingInterval = arg_meandelingInterval;
+		m_meandelingAngle = arg_meandelingAngle;
 	}
-	void SetPosY(float arg_posY) { m_posY = arg_posY; }
 };
 
 //飛び跳ね＆弾を発射（スライム砲台、画面外から登場後飛び跳ね＆ショットで移動）
-class OC_SlimeBattery : public ObjectController
+class OC_SlimeBattery : public ObjectController, public Muzzle
 {
 public:
 	//ステータス管理
@@ -98,8 +134,8 @@ private:
 	//現在の座標基準Xインデックス
 	int m_spotXIdx = 0;
 
-	void OnInit(GameObject& arg_enemy)override;
-	void OnUpdate(GameObject& arg_enemy, const TimeScale& arg_timeScale)override;
+	void OnInit(GameObject& arg_obj)override;
+	void OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)override;
 	std::unique_ptr<ObjectController>Clone()override;
 	bool IsLeave(GameObject& arg_obj)const override;
 
@@ -112,6 +148,12 @@ public:
 		for (int i = 0; i < STATUS::NUM; ++i)m_intervalTimes[i] = arg_intervalTimes[i];
 	}
 
+	/// <summary>
+	/// パラメータ設定
+	/// </summary>
+	/// <param name="arg_appearY">登場時のY座標</param>
+	/// <param name="arg_destinationXArray">目標地点X座標配列</param>
+	/// <param name="arg_arraySize">配列の要素数</param>
 	void SetParameters(float arg_appearY, float arg_destinationXArray[], size_t arg_arraySize)
 	{
 		m_spotXList.clear();

@@ -5,11 +5,11 @@
 #include"ConstParameters.h"
 #include"TimeScale.h"
 
-void ObjectController::OnDraw(GameObject& arg_enemy, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam)
+void ObjectController::OnDraw(GameObject& arg_obj, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam)
 {
 	DrawFunc3D::DrawNonShadingModel(
-		arg_enemy.m_breed.lock()->m_model,
-		arg_enemy.m_transform,
+		arg_obj.m_breed.lock()->m_model,
+		arg_obj.m_transform,
 		*arg_cam.lock(),
 		1.0f,
 		nullptr,
@@ -21,58 +21,52 @@ bool ObjectController::IsObjsHpZero(GameObject& arg_obj) const
 	return arg_obj.m_hp <= 0;
 }
 
-void OC_SlideMove::OnInit(GameObject& arg_enemy)
-{
-	using namespace ConstParameter::GameObject;
-	using namespace ConstParameter::Environment;
-
-	//初期化位置
-	Vec3<float>initPos;
-
-	//移動方向乱数で決定
-	m_xMove = KuroFunc::GetRandPlusMinus() * m_xSpeed;
-
-	//移動スピードによってスタートXを変える
-	if (m_xMove < 0.0f)
-	{
-		initPos.x = POS_X_ABS;
-	}
-	else if (0.0f < m_xMove)
-	{
-		initPos.x = -POS_X_ABS;
-	}
-
-	//高さランダム
-	initPos.y = KuroFunc::GetRand(FIELD_HEIGHT_MIN + 3.0f, FIELD_HEIGHT_MAX);
-
-	//フィールドのZに合わせる
-	initPos.z = FIELD_FLOOR_POS.z;
-
-	//初期位置設定
-	arg_enemy.m_transform.SetPos(initPos);
-
-	printf("Appear：EnemySlideMove：xMove %.f\n", m_xMove);
-}
-
-void OC_SlideMove::OnUpdate(GameObject& arg_enemy, const TimeScale& arg_timeScale)
-{
-	auto pos = arg_enemy.m_transform.GetPos();
-	pos.x += m_xMove * arg_timeScale.GetTimeScale();
-	arg_enemy.m_transform.SetPos(pos);
-}
-
-std::unique_ptr<ObjectController> OC_SlideMove::Clone()
-{
-	return std::make_unique<OC_SlideMove>(m_xSpeed);
-}
-
-bool OC_SlideMove::IsLeave(GameObject& arg_obj) const
+bool ObjectController::IsOutOfScreen(GameObject& arg_obj)const
 {
 	using namespace ConstParameter::GameObject;
 
 	auto pos = arg_obj.m_transform.GetPos();
 	//フィールド外
-	return pos.x < -POS_X_ABS || POS_X_ABS < pos.x;
+	if (pos.x < -POS_X_ABS)return true;
+	if (POS_X_ABS < pos.x)return true;
+	if (pos.y < POS_Y_MIN)return true;
+	if (POS_Y_MAX < pos.y)return true;
+	return false;
+}
+
+void OC_DirectionMove::OnInit(GameObject& arg_obj)
+{
+	arg_obj.m_transform.SetPos(m_startPos);
+	m_radian = Angle::PI() / 2.0f;
+}
+
+void OC_DirectionMove::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
+{
+	//タイムスケール取得
+	float timeScale = arg_timeScale.GetTimeScale();
+
+	//移動方向XY平面
+	Vec2<float>moveDirXY = m_moveDirXY;
+
+	//蛇行
+	if (m_sinMeandeling)
+	{
+		m_radian += Angle::ROUND() / m_meandelingInterval * timeScale;
+		moveDirXY = KuroMath::RotateVec2(moveDirXY, sin(m_radian) * m_meandelingAngle);
+	}
+
+	//座標
+	auto pos = arg_obj.m_transform.GetPos();
+	pos.x += moveDirXY.x * m_speed * timeScale;
+	pos.y += moveDirXY.y * m_speed * timeScale;
+	arg_obj.m_transform.SetPos(pos);
+}
+
+std::unique_ptr<ObjectController> OC_DirectionMove::Clone()
+{
+	auto clone = std::make_unique<OC_DirectionMove>();
+	clone->SetParameters(m_startPos, m_moveDirXY, m_speed, m_sinMeandeling);
+	return clone;
 }
 
 float OC_SlimeBattery::GetNearEdgePosX(float arg_posX)const
@@ -91,7 +85,7 @@ float OC_SlimeBattery::GetNearEdgePosX(float arg_posX)const
 	return POS_X_ABS;
 }
 
-void OC_SlimeBattery::OnInit(GameObject& arg_enemy)
+void OC_SlimeBattery::OnInit(GameObject& arg_obj)
 {
 	using namespace ConstParameter::Environment;
 
@@ -107,7 +101,7 @@ void OC_SlimeBattery::OnInit(GameObject& arg_enemy)
 	initPos.x = GetNearEdgePosX(m_spotXList[m_spotXIdx]);
 
 	//初期位置設定
-	arg_enemy.m_transform.SetPos(initPos);
+	arg_obj.m_transform.SetPos(initPos);
 
 	//登場タイマー設定
 	m_timer.Reset(m_intervalTimes[STATUS::APPEAR]);
@@ -122,12 +116,12 @@ void OC_SlimeBattery::OnInit(GameObject& arg_enemy)
 	m_destinationX = m_spotXList[m_spotXIdx];
 }
 
-void OC_SlimeBattery::OnUpdate(GameObject& arg_enemy, const TimeScale& arg_timeScale)
+void OC_SlimeBattery::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	using namespace ConstParameter::Environment;
 
 	//座標取得
-	auto pos = arg_enemy.m_transform.GetPos();
+	auto pos = arg_obj.m_transform.GetPos();
 
 	//タイムスケール取得
 	float timeScale = arg_timeScale.GetTimeScale();
@@ -154,7 +148,7 @@ void OC_SlimeBattery::OnUpdate(GameObject& arg_enemy, const TimeScale& arg_timeS
 		pos.x = KuroMath::Ease(In, Liner,
 			m_timer.GetTimeRate(), m_departureX, m_destinationX);
 		pos.y += m_moveY * timeScale;
-		arg_enemy.m_transform.SetPos(pos);
+		arg_obj.m_transform.SetPos(pos);
 	}
 
 	//時間経過
@@ -187,6 +181,14 @@ void OC_SlimeBattery::OnUpdate(GameObject& arg_enemy, const TimeScale& arg_timeS
 			m_moveY = m_jumpPower;
 			//出発地点の記録
 			m_departureX = pos.x;
+			//ショット
+			Shot(arg_collisionMgr,
+				pos,
+				Vec2<float>(0.0f, 1.0f),
+				0.2f,
+				true,
+				60.0f,
+				Angle(30));
 		}
 
 		//時間のセット
@@ -206,4 +208,3 @@ bool OC_SlimeBattery::IsLeave(GameObject& arg_obj) const
 	//退場済か
 	return m_timer.IsTimeUp();
 }
-
