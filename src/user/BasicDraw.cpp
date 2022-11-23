@@ -6,16 +6,19 @@
 #include"CubeMap.h"
 #include"Camera.h"
 #include"LightManager.h"
+#include"SpriteMesh.h"
 
+std::shared_ptr<GraphicsPipeline>BasicDraw::s_drawPipeline;
+std::vector<std::shared_ptr<ConstantBuffer>>BasicDraw::s_drawTransformBuff;
+std::unique_ptr<SpriteMesh>BasicDraw::s_spriteMesh;
 int BasicDraw::s_drawCount = 0;
 
-void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transform& Transform, Camera& Cam, std::shared_ptr<CubeMap>AttachCubeMap, std::shared_ptr<ConstantBuffer>BoneBuff)
+void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 {
-	static std::shared_ptr<GraphicsPipeline>PIPELINE;
-	static std::vector<std::shared_ptr<ConstantBuffer>>TRANSFORM_BUFF;
+	s_spriteMesh = std::make_unique<SpriteMesh>("BasicDraw");
+	s_spriteMesh->SetSize(arg_screenSize);
 
-	//パイプライン未生成
-	if (!PIPELINE)
+	//パイプライン生成
 	{
 		//パイプライン設定
 		static PipelineInitializeOption PIPELINE_OPTION(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -46,25 +49,30 @@ void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transf
 		};
 
 		//レンダーターゲット描画先情報
-		std::vector<RenderTargetInfo>RENDER_TARGET_INFO = 
+		std::vector<RenderTargetInfo>RENDER_TARGET_INFO =
 		{
 			RenderTargetInfo(D3D12App::Instance()->GetBackBuffFormat(), AlphaBlendMode_Trans),	//通常描画
 			RenderTargetInfo(DXGI_FORMAT_R32G32B32A32_FLOAT, AlphaBlendMode_Trans),	//エミッシブマップ
 			RenderTargetInfo(DXGI_FORMAT_R32_FLOAT, AlphaBlendMode_None),	//深度マップ
 		};
 		//パイプライン生成
-		PIPELINE = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, ModelMesh::Vertex::GetInputLayout(), ROOT_PARAMETER, RENDER_TARGET_INFO, { WrappedSampler(true, true) });
+		s_drawPipeline = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, ModelMesh::Vertex::GetInputLayout(), ROOT_PARAMETER, RENDER_TARGET_INFO, { WrappedSampler(true, true) });
 	}
 
-	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(PIPELINE);
+	for (int i = 0; i < arg_prepareBuffNum; ++i)
+		s_drawTransformBuff.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("BasicDraw - Transform -" + std::to_string(i)).c_str()));
+}
 
-	if (TRANSFORM_BUFF.size() < (s_drawCount + 1))
+void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transform& Transform, Camera& Cam, std::shared_ptr<CubeMap>AttachCubeMap, std::shared_ptr<ConstantBuffer>BoneBuff)
+{
+	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(s_drawPipeline);
+
+	if (s_drawTransformBuff.size() < (s_drawCount + 1))
 	{
-		TRANSFORM_BUFF.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("BasicDraw - Transform -" + std::to_string(s_drawCount)).c_str()));
+		s_drawTransformBuff.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("BasicDraw - Transform -" + std::to_string(s_drawCount)).c_str()));
 	}
 
-	TRANSFORM_BUFF[s_drawCount]->Mapping(&Transform.GetWorldMat());
-
+	s_drawTransformBuff[s_drawCount]->Mapping(&Transform.GetWorldMat());
 
 	auto model = Model.lock();
 
@@ -86,7 +94,7 @@ void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transf
 				{LigManager.GetLigInfo(Light::SPOT),SRV},
 				{LigManager.GetLigInfo(Light::HEMISPHERE),SRV},
 				{cubeMap->GetCubeMapTex(),SRV},
-				{TRANSFORM_BUFF[s_drawCount],CBV},
+				{s_drawTransformBuff[s_drawCount],CBV},
 				{BoneBuff,CBV},
 				{mesh.material->texBuff[COLOR_TEX],SRV},
 				{mesh.material->texBuff[METALNESS_TEX],SRV},
@@ -110,4 +118,13 @@ void BasicDraw::Draw(LightManager& LigManager, const std::weak_ptr<ModelObject> 
 	if (obj->m_animator)boneBuff = obj->m_animator->GetBoneMatBuff();
 
 	Draw(LigManager, model, obj->m_transform, Cam, AttachCubeMap, boneBuff);
+}
+
+void BasicDraw::DrawEdge(std::shared_ptr<TextureBuffer> arg_depthMap)
+{
+	std::vector<RegisterDescriptorData>descDatas =
+	{
+		{arg_depthMap,SRV}
+	};
+	s_spriteMesh->Render(descDatas);
 }

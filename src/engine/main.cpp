@@ -58,6 +58,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	//エンジンにシーンリストを渡す
 	engine.SetSceneList(sceneList, awakeScene);
 
+	//静的描画クラス初期化
+	BasicDraw::Awake(engineOption.m_windowSize.Float());
+
 	bool winEnd = false;
 
 	//ループ
