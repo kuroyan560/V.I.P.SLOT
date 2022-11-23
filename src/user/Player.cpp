@@ -153,6 +153,10 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	using namespace ConstParameter::Player;
 	using namespace ConstParameter::Environment;
 
+	//タイムスケール取得
+	const float& timeScale = arg_timeScale.GetTimeScale();
+
+	//座標取得
 	Vec3<float>pos = m_modelObj->m_transform.GetPos();
 	m_oldPos = pos;
 
@@ -238,7 +242,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	}
 
 	//足場との当たり判定を切る時間更新
-	m_stepDownTimer.UpdateTimer(arg_timeScale.GetTimeScale());
+	m_stepDownTimer.UpdateTimer(timeScale);
 	//足場から降りる
 	bool stepDownInput = (-moveInput.y < 0.0f);
 	if (stepDownInput)
@@ -258,25 +262,25 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	}
 	
 	//攻撃勢い
-	m_move.x += m_yoYo->GetAccelX();
-	m_fallSpeed += m_yoYo->GetAccelY();
+	m_move.x += m_yoYo->GetAccelX() * timeScale;
+	m_fallSpeed += m_yoYo->GetAccelY() * timeScale;
 
 	//落下（ジャンプ中と落下中で重力変化、素早くジャンプ → ゆっくり降下）
-	m_move.y += m_fallSpeed * arg_timeScale.GetTimeScale();
+	m_move.y += m_fallSpeed * timeScale;
 
 	if (0.0f < m_fallSpeed)
 	{
-		m_fallSpeed -= GRAVITY_WHILE_JUMP * arg_timeScale.GetTimeScale();
+		m_fallSpeed -= GRAVITY_WHILE_JUMP * timeScale;
 	}
 	else
 	{
 		if (m_yoYo->IsAir())
 		{
-			m_fallSpeed -= GRAVITY_WHILE_ATTACK * arg_timeScale.GetTimeScale();
+			m_fallSpeed -= GRAVITY_WHILE_ATTACK * timeScale;
 		}
 		else
 		{
-			m_fallSpeed -= GRAVITY_WHILE_FALL * arg_timeScale.GetTimeScale();
+			m_fallSpeed -= GRAVITY_WHILE_FALL * timeScale;
 		}
 	}
 
@@ -284,7 +288,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	if (m_fallSpeed < FALL_SPEED_MIN)m_fallSpeed = FALL_SPEED_MIN;
 
 	//移動量加算
-	pos += m_move * arg_timeScale.GetTimeScale();
+	pos += m_move * timeScale;
 
 	//押し戻し（床）
 	if (pos.y < FIELD_FLOOR_TOP_SURFACE_HEIGHT + MODEL_SIZE.y / 2.0f)
