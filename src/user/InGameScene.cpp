@@ -14,6 +14,7 @@
 #include"StageMgr.h"
 #include"GameManager.h"
 #include"ObjectController.h"
+#include"EnemyEmitter.h"
 
 InGameScene::InGameScene()
 {
@@ -46,6 +47,10 @@ InGameScene::InGameScene()
 	//ステージマネージャ生成
 	m_stageMgr = std::make_shared<StageMgr>(m_slotMachine);
 
+	//エネミーエミッター生成
+	m_enemyEmitter = std::make_shared<EnemyEmitter>();
+
+
 	//オブジェクト挙動操作クラスにオブジェクトマネージャを渡す
 	ObjectController::AttachObjectManager(m_objMgr);
 	
@@ -76,6 +81,10 @@ void InGameScene::OnInitialize()
 	//オブジェクトマネージャ
 	m_objMgr->Init(m_collisionMgr);
 
+	//エネミーエミッター生成
+	m_enemyEmitter->Init(m_objMgr, m_collisionMgr);
+
+	/*
 	std::array destX = { 13.0f,13.0f,-20.0f,15.0f,30.0f };
 	m_objMgr->AppearSlimeBattery(m_collisionMgr,
 		5.0f,
@@ -90,6 +99,7 @@ void InGameScene::OnInitialize()
 		m_collisionMgr,
 		-0.6f,
 		20.0f);
+		*/
 }
 
 void InGameScene::OnUpdate()
@@ -120,6 +130,9 @@ void InGameScene::OnUpdate()
 
 	//ステージマネージャ
 	m_stageMgr->Update(m_timeScale, m_collisionMgr, m_player);
+
+	//エネミーエミッター生成
+	m_enemyEmitter->TestRandEmit(m_timeScale, m_objMgr, m_collisionMgr);
 
 	//オブジェクトマネージャ
 	m_objMgr->Update(m_timeScale, m_collisionMgr, m_player);
@@ -185,15 +198,15 @@ void InGameScene::OnDraw()
 
 void InGameScene::OnImguiDebug()
 {
-	ImGui::Begin("InGame");
-	ImGui::Checkbox("IsDrawCollider", &m_isDrawCollider);
-	ImGui::End();
-
-	ConstParameter::ImguiDebug();
-	m_stageMgr->ImguiDebug(m_collisionMgr);
-	m_slotMachine->ImguiDebug();
-	m_player->ImguiDebug();
-	m_collisionMgr->ImguiDebug();
+	//ImGui::Begin("InGame");
+	//ImGui::Checkbox("IsDrawCollider", &m_isDrawCollider);
+	//ImGui::End();
+	//ConstParameter::ImguiDebug();
+	//m_stageMgr->ImguiDebug(m_collisionMgr);
+	//m_slotMachine->ImguiDebug();
+	//m_player->ImguiDebug();
+	//m_collisionMgr->ImguiDebug();
+	m_enemyEmitter->ImguiDebug();
 }
 
 void InGameScene::OnFinalize()

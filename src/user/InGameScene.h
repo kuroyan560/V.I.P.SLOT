@@ -11,6 +11,7 @@ class GameCamera;
 class ObjectManager;
 class CollisionManager;
 class StageMgr;
+class EnemyEmitter;
 
 class InGameScene : public BaseScene
 {
@@ -48,8 +49,11 @@ class InGameScene : public BaseScene
 	//オブジェクトマネージャ
 	std::shared_ptr<ObjectManager>m_objMgr;
 
+	//エネミーエミッター
+	std::shared_ptr<EnemyEmitter>m_enemyEmitter;
+
 	//コライダーのデバッグ描画フラグ
-	bool m_isDrawCollider = true;
+	bool m_isDrawCollider = false;
 
 public:
 	InGameScene();

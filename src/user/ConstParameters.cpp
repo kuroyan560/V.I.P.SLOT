@@ -124,7 +124,7 @@ namespace ConstParameter
         };
 
         //“G‚ª‚¢‚é‹óŠÔ‚ÌX²À•Wâ‘Î’l
-        float POS_X_ABS = 43.0f;
+        float POS_X_ABS = 60;
         //“G‚ª‚¢‚é‹óŠÔY²À•WÅ¬‚ÆÅ‘å
         float POS_Y_MIN = Environment::FIELD_HEIGHT_MIN;
         float POS_Y_MAX = Environment::FIELD_HEIGHT_MAX;

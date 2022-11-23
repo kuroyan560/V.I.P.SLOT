@@ -34,7 +34,7 @@ void GameCamera::Init()
 		m_cam[i]->SetAngleOfView(Angle(m_defaultCapeView[i]));
 	}
 
-	m_defaultPos[MAIN] = Vec3<float>(0.0f, 3.4f, -59.0f);
+	m_defaultPos[MAIN] = Vec3<float>(0.0f, 3.4f, -65.0f);
 	m_targetPos[MAIN] = Vec3<float>(0.0f, m_defaultPos[MAIN].y + 2.0f, 0.0f);
 	m_posLerpOffset = { 0,0,0 };
 	m_targetLerpOffset = { 0,0,0 };

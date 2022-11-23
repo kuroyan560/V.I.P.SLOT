@@ -173,6 +173,7 @@
     <ClCompile Include="src\user\CoinObjectManager.cpp" />
     <ClCompile Include="src\user\Coins.cpp" />
     <ClCompile Include="src\user\ConstParameters.cpp" />
+    <ClCompile Include="src\user\EnemyEmitter.cpp" />
     <ClCompile Include="src\user\RandBox2D.cpp" />
     <ClCompile Include="src\user\GameManager.cpp" />
     <ClCompile Include="src\user\GameObject.cpp" />
@@ -281,6 +282,7 @@
     <ClInclude Include="src\user\Coins.h" />
     <ClInclude Include="src\user\CoinVault.h" />
     <ClInclude Include="src\user\ConstParameters.h" />
+    <ClInclude Include="src\user\EnemyEmitter.h" />
     <ClInclude Include="src\user\RandBox2D.h" />
     <ClInclude Include="src\user\GameManager.h" />
     <ClInclude Include="src\user\GameObject.h" />

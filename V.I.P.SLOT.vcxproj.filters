@@ -92,6 +92,9 @@
     <Filter Include="src\user\Title">
       <UniqueIdentifier>{e520173b-3797-42b5-a990-955302011a5b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\user\Enemy">
+      <UniqueIdentifier>{d785b970-812f-48c2-9c83-ed8247c39f48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\D3D12App.cpp">
@@ -360,6 +363,9 @@
     </ClCompile>
     <ClCompile Include="src\user\Scaffold.cpp">
       <Filter>src\user\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\EnemyEmitter.cpp">
+      <Filter>src\user\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -683,6 +689,9 @@
     </ClInclude>
     <ClInclude Include="src\user\Scaffold.h">
       <Filter>src\user\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\EnemyEmitter.h">
+      <Filter>src\user\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
