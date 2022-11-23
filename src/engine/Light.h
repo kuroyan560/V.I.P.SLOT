@@ -34,6 +34,7 @@ namespace Light
 		}constData;
 
 	public:
+		//セッタ
 		void SetColor(const Color& Color)
 		{
 			if (constData.color == Color)return;
@@ -57,6 +58,10 @@ namespace Light
 		{
 			SetActive(1 - constData.active);
 		}
+		//ゲッタ
+		const Color& GetColor()const { return constData.color; }
+		const Vec3<float>& GetDir()const { return constData.dir; }
+		const bool GetActive()const { return constData.active == 1; }
 	};
 
 	class Point
@@ -116,6 +121,11 @@ namespace Light
 		{
 			SetActive(1 - constData.active);
 		}
+		//ゲッタ
+		const Color& GetColor()const { return constData.color; }
+		const Vec3<float>& GetPos()const { return constData.pos; }
+		const float& GetInfluenceRange()const { return constData.influenceRange; }
+		const bool GetActive()const { return constData.active == 1; }
 	};
 
 	class Spot
@@ -147,6 +157,7 @@ namespace Light
 		}constData;
 
 	public:
+		//セッタ
 		void SetColor(const Color& Color)
 		{
 			if (constData.color == Color)return;
@@ -188,6 +199,14 @@ namespace Light
 		{
 			SetActive(1 - constData.active);
 		}
+
+		//ゲッタ
+		const Color& GetColor()const { return constData.color; }
+		const Vec3<float>& GetPos()const { return constData.pos; }
+		const float& GetInfluenceRange()const { return constData.influenceRange; }
+		const Vec3<float>& GetTarget()const { return constData.target; }
+		const Angle& GetAngle()const { return constData.angle; }
+		const bool GetActive()const { return constData.active == 1; }
 	};
 
 	class HemiSphere
@@ -215,6 +234,7 @@ namespace Light
 		}constData;
 
 	public:
+		//セッタ
 		void SetSkyColor(const Color& SkyColor)
 		{
 			if (constData.skyColor == SkyColor)return;
@@ -244,6 +264,12 @@ namespace Light
 		{
 			SetActive(1 - constData.active);
 		}
+
+		//ゲッタ
+		const Color& GetSkyColor()const { return constData.skyColor; }
+		const Color& GetGroundColor()const { return constData.groundColor; }
+		const Vec3<float>& GetGroundNormal()const { return constData.groundNormal; }
+		const bool GetActive()const { return constData.active == 1; }
 	};
 
 	enum TYPE
