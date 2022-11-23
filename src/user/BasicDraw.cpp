@@ -49,7 +49,7 @@ void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transf
 		std::vector<RenderTargetInfo>RENDER_TARGET_INFO = 
 		{
 			RenderTargetInfo(D3D12App::Instance()->GetBackBuffFormat(), AlphaBlendMode_Trans),	//通常描画
-			RenderTargetInfo(D3D12App::Instance()->GetBackBuffFormat(), AlphaBlendMode_Trans),	//エミッシブマップ
+			RenderTargetInfo(DXGI_FORMAT_R32G32B32A32_FLOAT, AlphaBlendMode_Trans),	//エミッシブマップ
 			RenderTargetInfo(DXGI_FORMAT_R32_FLOAT, AlphaBlendMode_None),	//深度マップ
 		};
 		//パイプライン生成

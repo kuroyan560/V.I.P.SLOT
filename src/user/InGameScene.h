@@ -2,6 +2,7 @@
 #include"KuroEngine.h"
 #include"TimeScale.h"
 #include"Timer.h"
+#include"Light.h"
 class Player;
 class SlotMachine;
 class LightManager;
@@ -25,6 +26,7 @@ class InGameScene : public BaseScene
 
 	//ライトマネージャ
 	std::shared_ptr<LightManager>m_ligMgr;
+	Light::Direction m_dirLig;
 
 	//床
 	std::shared_ptr<ModelObject>m_squareFloorObj;

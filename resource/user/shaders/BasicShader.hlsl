@@ -54,6 +54,7 @@ struct VSOutput
     float3 biNormal : BINORMAL;
     float2 uv : TEXCOORD;
     float3 reflect : REFLECT;
+    float depthInView : CAM_Z;
 };
 
 VSOutput VSmain(Vertex input)
@@ -99,6 +100,7 @@ VSOutput VSmain(Vertex input)
     VSOutput output;
     float4 wpos = mul(world, resultPos); //ワールド変換
     output.svpos = mul(cam.view, wpos); //ビュー変換
+    output.depthInView = output.svpos.z;    //カメラから見たZ
     output.svpos = mul(cam.proj, output.svpos); //プロジェクション変換
     output.worldpos = wpos;
     output.normal = normalize(mul(world, input.normal));
@@ -114,7 +116,8 @@ VSOutput VSmain(Vertex input)
 struct PSOutput
 {
     float4 color : SV_Target0;
-    //float4 emissive : SV_Target1;
+    float4 emissive : SV_Target1;
+    float depth : SV_Target2;
 };
 
 //Schlickによる近似式
@@ -297,15 +300,15 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
     
     PSOutput output;
     output.color = result;
-    //output.color.xyz = cubeMapLig.xyz;
-    //output.emissive = emissiveMap.Sample(smp, input.uv);
+    output.emissive = float4(0,0,0,0);
     
-    ////明るさ計算
-    //float bright = dot(result.xyz, float3(0.2125f, 0.7154f, 0.0721f));
-    //if (1.0f < bright)
+    //明るさ計算
+    // float bright = dot(result.xyz, float3(0.2125f, 0.7154f, 0.0721f));
+    // if (1.0f < bright)
     //    output.emissive += result;
-    //output.emissive.w = result.w;
-    
+    // output.emissive.w = result.w;
+    output.depth = input.depthInView;
+
     return output;
 }
 

@@ -38,6 +38,7 @@ InGameScene::InGameScene()
 
 	//ライトマネージャ生成
 	m_ligMgr = std::make_shared<LightManager>();
+	m_ligMgr->RegisterDirLight(&m_dirLig);
 
 	//床生成
 	m_squareFloorObj = std::make_shared<ModelObject>("resource/user/model/", "floor_square.glb");
@@ -52,7 +53,6 @@ InGameScene::InGameScene()
 
 	//エネミーエミッター生成
 	m_enemyEmitter = std::make_shared<EnemyEmitter>();
-
 
 	//オブジェクト挙動操作クラスにオブジェクトマネージャを渡す
 	ObjectController::AttachObjectManager(m_objMgr);
@@ -86,6 +86,9 @@ void InGameScene::OnInitialize()
 
 	//エネミーエミッター生成
 	m_enemyEmitter->Init(m_objMgr, m_collisionMgr);
+
+	//照明設定
+	m_dirLig.SetDir({ 0,-1,0 });
 }
 
 void InGameScene::OnUpdate()
@@ -140,7 +143,7 @@ void InGameScene::OnDraw()
 	rtMgr.Clear();
 
 	//レンダーターゲットセット
-	rtMgr.Set(true, { DRAW_TARGET_TAG::BACK_BUFF });
+	rtMgr.Set(true, { DRAW_TARGET_TAG::BACK_BUFF,DRAW_TARGET_TAG::EMISSIVE_MAP,DRAW_TARGET_TAG::DEPTH_MAP });
 
 	//2D背景
 	DrawFunc2D::DrawGraph({ 0,0 }, m_backGround, 1.0f, AlphaBlendMode_None);
@@ -188,12 +191,14 @@ void InGameScene::OnImguiDebug()
 	ImGui::Begin("InGame");
 	ImGui::Checkbox("IsDrawCollider", &m_isDrawCollider);
 	ImGui::End();
+
 	//ConstParameter::ImguiDebug();
 	//m_stageMgr->ImguiDebug(m_collisionMgr);
 	//m_slotMachine->ImguiDebug();
 	//m_player->ImguiDebug();
 	//m_collisionMgr->ImguiDebug();
 	m_enemyEmitter->ImguiDebug();
+	m_ligMgr->ImguiDebug();
 }
 
 void InGameScene::OnFinalize()
