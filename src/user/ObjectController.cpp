@@ -1,6 +1,5 @@
 #include"ObjectController.h"
 #include"GameObject.h"
-#include"DrawFunc3D.h"
 #include"ObjectBreed.h"
 #include"ConstParameters.h"
 #include"TimeScale.h"
@@ -8,15 +7,10 @@
 
 std::weak_ptr<ObjectManager>ObjectController::s_objMgr;
 
+#include"BasicDraw.h"
 void ObjectController::OnDraw(GameObject& arg_obj, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam)
 {
-	DrawFunc3D::DrawNonShadingModel(
-		arg_obj.m_breed.lock()->m_model,
-		arg_obj.m_transform,
-		*arg_cam.lock(),
-		1.0f,
-		nullptr,
-		AlphaBlendMode_None);
+	BasicDraw::Draw(*arg_lightMgr.lock(), arg_obj.m_breed.lock()->m_model, arg_obj.m_transform, *arg_cam.lock());
 }
 
 bool ObjectController::IsObjsHpZero(GameObject& arg_obj) const

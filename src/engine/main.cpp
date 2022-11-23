@@ -17,6 +17,8 @@
 
 #include"DrawFuncBillBoard.h"
 
+#include"BasicDraw.h"
+
 
 #ifdef _DEBUG
 int main()
@@ -97,6 +99,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		DrawFunc3D::CountReset();
 
 		DrawFuncBillBoard::CountReset();
+
+		BasicDraw::CountReset();
 	}
 
 	return 0;

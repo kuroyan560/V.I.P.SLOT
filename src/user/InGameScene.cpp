@@ -5,7 +5,7 @@
 #include"LightManager.h"
 #include"Object.h"
 #include"DrawFunc2D.h"
-#include"DrawFunc3D.h"
+#include"BasicDraw.h"
 #include"GameCamera.h"
 #include"ConstParameters.h"
 #include"SlotMachine.h"
@@ -153,7 +153,8 @@ void InGameScene::OnDraw()
 	m_stageMgr->BlockDraw(m_ligMgr, m_gameCam->GetMainCam());
 
 	//床
-	DrawFunc3D::DrawNonShadingModel(m_squareFloorObj, *m_gameCam->GetMainCam(), 1.0f, AlphaBlendMode_None);
+	BasicDraw::Draw(*m_ligMgr, m_squareFloorObj, *m_gameCam->GetMainCam());
+	//DrawFunc3D::DrawNonShadingModel(m_squareFloorObj, *m_gameCam->GetMainCam(), 1.0f, AlphaBlendMode_None);
 
 	//デプスステンシルクリア
 	rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_STENCIL);

@@ -3,7 +3,6 @@
 #include"Block.h"
 #include"Transform.h"
 #include"Importer.h"
-#include"DrawFunc3D.h"
 #include"Collider.h"
 #include"CollisionManager.h"
 #include"TexHitEffect.h"
@@ -273,11 +272,11 @@ void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>a
 	}
 }
 
+#include"BasicDraw.h"
 void StageMgr::BlockDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
 	//ブロック描画
 	std::vector<Matrix>coinBlockTransformArray;
-	std::vector<Matrix>emptyCoinBlockTransformArray;
 
 	for (auto& blockArray : m_terrianBlockArray)
 	{
@@ -289,7 +288,7 @@ void StageMgr::BlockDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr
 			//スロットブロック
 			if (block->GetType() == Block::SLOT)
 			{
-				DrawFunc3D::DrawNonShadingModel(m_slotBlockModel, block->m_transform, *arg_cam.lock(), 1.0f, nullptr, AlphaBlendMode_None);
+				BasicDraw::Draw(*arg_lightMgr.lock(), m_slotBlockModel, block->m_transform, *arg_cam.lock());
 			}
 			//コインブロック
 			if (block->GetType() == Block::COIN)
@@ -297,16 +296,16 @@ void StageMgr::BlockDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr
 				//コイン既に排出済か
 				auto coinBlock = std::dynamic_pointer_cast<CoinBlock>(block);
 				coinBlockTransformArray.emplace_back(block->m_transform.GetWorldMat());
+
+				BasicDraw::Draw(*arg_lightMgr.lock(), m_coinBlockModel, block->m_transform, *arg_cam.lock());
 			}
 			block->Draw(block->m_transform, arg_lightMgr, arg_cam);
 		}
 	}
 
 	//コインブロックをインスタンシング描画
-	if (!coinBlockTransformArray.empty())
-		DrawFunc3D::DrawNonShadingModel(m_coinBlockModel, coinBlockTransformArray, *arg_cam.lock(), AlphaBlendMode_None);
-	if (!emptyCoinBlockTransformArray.empty())
-		DrawFunc3D::DrawNonShadingModel(m_emptyCoinBlockModel, emptyCoinBlockTransformArray, *arg_cam.lock(), AlphaBlendMode_None);
+	//if (!coinBlockTransformArray.empty())
+		//DrawFunc3D::DrawNonShadingModel(m_coinBlockModel, coinBlockTransformArray, *arg_cam.lock(), AlphaBlendMode_None);
 }
 
 void StageMgr::ScaffoldDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)

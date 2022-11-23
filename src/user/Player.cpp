@@ -351,13 +351,12 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	m_hitEffect->Update(timeScale);
 }
 
-#include"DrawFunc3D.h"
+#include"BasicDraw.h"
 void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
 {
 	if (m_damegedCallBack->GetIsDraw())
 	{
-		//DrawFunc3D::DrawADSShadingModel(*LigMgr.lock(), m_modelObj, *Cam.lock(), AlphaBlendMode_None);
-		DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
+		BasicDraw::Draw(*arg_lightMgr.lock(), m_modelObj, *arg_cam.lock());
 	}
 
 	//ÉàÅ[ÉàÅ[

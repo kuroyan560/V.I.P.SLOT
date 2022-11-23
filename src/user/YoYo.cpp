@@ -194,10 +194,10 @@ void YoYo::Update(const TimeScale& arg_timeScale, float arg_playersVecX)
 	m_accel = KuroMath::Ease(Out, Exp, m_timer.GetTimeRate(), m_iniAccel, { 0,0,0 });
 }
 
-#include"DrawFunc3D.h"
+#include"BasicDraw.h"
 void YoYo::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
-	DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock());
+	BasicDraw::Draw(*arg_lightMgr.lock(), m_modelObj, *arg_cam.lock());
 }
 
 #include"imguiApp.h"

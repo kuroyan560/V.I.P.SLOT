@@ -20,8 +20,9 @@ void Scaffold::Init(float arg_posX, float arg_posY,float arg_width)
 	m_transform.SetScale({ arg_width,1,1 });
 }
 
-#include"DrawFunc3D.h"
+#include"BasicDraw.h"
 void Scaffold::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
-	DrawFunc3D::DrawNonShadingModel(s_model, m_transform, *arg_cam.lock(), 1.0f, nullptr, AlphaBlendMode_None);
+	BasicDraw::Draw(*arg_lightMgr.lock(), s_model, m_transform, *arg_cam.lock());
+	//DrawFunc3D::DrawNonShadingModel(s_model, m_transform, *arg_cam.lock(), 1.0f, nullptr, AlphaBlendMode_None);
 }
