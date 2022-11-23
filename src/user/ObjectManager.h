@@ -14,6 +14,7 @@ class LightManager;
 class Camera;
 class CollisionManager;
 class Player;
+class CollisionCallBack;
 
 //エネミーの定義、管理を行う
 class ObjectManager
@@ -41,7 +42,7 @@ class ObjectManager
 	//敵の死亡時に呼び出す
 	void OnObjectDead(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr, const std::weak_ptr<Player>&arg_player);
 public:
-	ObjectManager();
+	ObjectManager(CollisionCallBack* arg_playersNormalAttackCallBack);
 	void Init(std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player);
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);

@@ -126,11 +126,13 @@ protected:
 	float m_interval;
 	//タイマー
 	Timer m_timer;
+	//ゴールしているか
+	bool m_isGoal = false;
 
 	void OnInit(GameObject& arg_obj)override;
 	void OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)override;
 	std::unique_ptr<ObjectController>Clone()override;
-	bool IsLeave(GameObject& arg_obj)const override { return m_timer.IsTimeUp(); }
+	bool IsLeave(GameObject& arg_obj)const override { return m_isGoal; }
 
 public:
 	OC_DestinationEaseMove(EASE_CHANGE_TYPE arg_easeChangeType,EASING_TYPE arg_easeType, float arg_interval)
@@ -153,6 +155,7 @@ class OC_TargetObjectEaseMove : public OC_DestinationEaseMove
 {
 	//対象となるゲームオブジェクト
 	GameObject* m_target;
+
 	void OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)override;
 	std::unique_ptr<ObjectController>Clone()override;
 

@@ -76,10 +76,13 @@ void OC_DestinationEaseMove::OnInit(GameObject& arg_obj)
 {
 	arg_obj.m_transform.SetPos(m_startPos);
 	m_timer.Reset(m_interval);
+	m_isGoal = false;
 }
 
 void OC_DestinationEaseMove::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
+	if (m_timer.IsTimeUp())m_isGoal = true;
+
 	m_timer.UpdateTimer(arg_timeScale.GetTimeScale());
 	auto pos = KuroMath::Ease(m_easeChangeType, m_easeType, m_timer.GetTimeRate(), m_startPos, m_destinationPos);
 	arg_obj.m_transform.SetPos(pos);
@@ -92,6 +95,8 @@ std::unique_ptr<ObjectController> OC_DestinationEaseMove::Clone()
 
 void OC_TargetObjectEaseMove::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
+	if (m_timer.IsTimeUp())m_isGoal = true;
+
 	//ターゲットが生きている
 	if (m_target && !m_target->IsDead())
 	{
@@ -114,7 +119,6 @@ void OC_TargetObjectEaseMove::SetParameters(Vec3<float> arg_startPos, GameObject
 	m_target = arg_target;
 	if (m_target)m_destinationPos = m_target->m_transform.GetPos();
 }
-
 
 float OC_SlimeBattery::GetNearEdgePosX(float arg_posX)const
 {

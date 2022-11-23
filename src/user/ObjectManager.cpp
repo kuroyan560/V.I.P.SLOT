@@ -9,6 +9,7 @@
 #include"TimeScale.h"
 #include"AudioApp.h"
 #include"Player.h"
+#include"PlayersCallBack.h"
 
 std::shared_ptr<GameObject> ObjectManager::OnObjectAppear(int arg_objTypeIdx, std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
@@ -36,9 +37,10 @@ void ObjectManager::OnObjectDead(std::shared_ptr<GameObject>& arg_obj, std::weak
 	}
 }
 
-ObjectManager::ObjectManager()
+ObjectManager::ObjectManager(CollisionCallBack* arg_playersNormalAttackCallBack)
 {
 	using namespace ConstParameter::GameObject;
+
 	/*--- ìGÇÃíËã` ---*/
 
 	//â°à⁄ìÆÇ∑ÇÈéGãõìG
@@ -117,7 +119,7 @@ ObjectManager::ObjectManager()
 	{
 		int objIdx = static_cast<int>(OBJECT_TYPE::PARRY_BULLET);
 		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
-		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(1.0f, Vec3<float>(0.0f, 0.0f, 0.0f)));
+		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(2.0f, Vec3<float>(0.0f, 0.0f, 0.0f)));
 
 		std::vector<std::unique_ptr<Collider>>colliderArray;
 		colliderArray.emplace_back(std::make_unique<Collider>());
@@ -125,13 +127,15 @@ ObjectManager::ObjectManager()
 			"Parry_Bullet - Sphere", 
 			{ COLLIDER_ATTRIBUTE[objIdx] },
 			colPrimitiveArray);
+		
+		for (auto& col : colliderArray)col->SetCallBack("Enemy", arg_playersNormalAttackCallBack);
 
 		m_breeds[objIdx] = std::make_shared<ObjectBreed>(
 			objIdx,
 			Importer::Instance()->LoadModel("resource/user/model/", "parry_bullet.glb"),
 			1,
 			1,
-			std::make_unique<OC_TargetObjectEaseMove>(In,Back,30.0f),
+			std::make_unique<OC_TargetObjectEaseMove>(In,Quint,20.0f),
 			colliderArray
 			);
 	}
@@ -173,26 +177,27 @@ void ObjectManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 
 void ObjectManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player)
 {
-	for (int enemyTypeIdx = 0; enemyTypeIdx < static_cast<int>(OBJECT_TYPE::NUM); ++enemyTypeIdx)
+	//çXêV
+	for (int objTypeIdx = 0; objTypeIdx < static_cast<int>(OBJECT_TYPE::NUM); ++objTypeIdx)
 	{
-		for (auto& enemy : m_aliveObjectArray[enemyTypeIdx])
+		for (auto& obj : m_aliveObjectArray[objTypeIdx])
 		{
-			enemy->Update(arg_timeScale, arg_collisionMgr);
+			obj->Update(arg_timeScale, arg_collisionMgr);
 
 			//éÄÇÒÇ≈Ç¢ÇΩÇÁ
-			if (enemy->IsDead())
+			if (obj->IsDead())
 			{
-				OnObjectDead(enemy, arg_collisionMgr, arg_player);
+				OnObjectDead(obj, arg_collisionMgr, arg_player);
 				//éÄñSìGîzóÒÇ…í«â¡
-				m_deadObjectArray[enemyTypeIdx].push_front(enemy);
+				m_deadObjectArray[objTypeIdx].push_front(obj);
 			}
 		}
 	}
 
 	//éÄñSÇµÇƒÇ¢ÇΩÇÁê∂ë∂ÉGÉlÉ~Å[îzóÒÇ©ÇÁçÌèú
-	for (auto& aliveEnemys : m_aliveObjectArray)
+	for (auto& aliveObjects : m_aliveObjectArray)
 	{
-		aliveEnemys.remove_if([](std::shared_ptr<GameObject>& obj)
+		aliveObjects.remove_if([](std::shared_ptr<GameObject>& obj)
 			{
 				return obj->IsDead();
 			});
@@ -204,11 +209,11 @@ void ObjectManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<Collisi
 
 void ObjectManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
-	for (auto& aliveEnemys : m_aliveObjectArray)
+	for (auto& aliveObjects : m_aliveObjectArray)
 	{
-		for (auto& enemy : aliveEnemys)
+		for (auto& obj : aliveObjects)
 		{
-			enemy->Draw(arg_lightMgr, arg_cam);
+			obj->Draw(arg_lightMgr, arg_cam);
 		}
 	}
 

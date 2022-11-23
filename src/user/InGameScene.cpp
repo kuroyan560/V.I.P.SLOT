@@ -21,14 +21,17 @@ InGameScene::InGameScene()
 	//コリジョンマネージャ生成
 	m_collisionMgr = std::make_shared<CollisionManager>();
 
-	//オブジェクトマネージャ生成
-	m_objMgr = std::make_shared<ObjectManager>();
-
 	//ゲームカメラ生成
 	m_gameCam = std::make_shared<GameCamera>();
 
 	//プレイヤー生成
-	m_player = std::make_shared<Player>(m_collisionMgr, m_objMgr, m_gameCam);
+	m_player = std::make_shared<Player>();
+
+	//オブジェクトマネージャ生成
+	m_objMgr = std::make_shared<ObjectManager>(m_player->GetNormalAttackCollBack().lock().get());
+
+	//生成時に引数が必要なものの初期化
+	m_player->Awake(m_collisionMgr, m_objMgr, m_gameCam);
 
 	//スロットマシン生成
 	m_slotMachine = std::make_shared<SlotMachine>();
@@ -83,23 +86,6 @@ void InGameScene::OnInitialize()
 
 	//エネミーエミッター生成
 	m_enemyEmitter->Init(m_objMgr, m_collisionMgr);
-
-	/*
-	std::array destX = { 13.0f,13.0f,-20.0f,15.0f,30.0f };
-	m_objMgr->AppearSlimeBattery(m_collisionMgr,
-		5.0f,
-		destX.data(),
-		destX.size());
-
-	m_objMgr->AppearSlideMoveEnemy(
-		m_collisionMgr,
-		0.2f, 
-		10.0f);
-	m_objMgr->AppearSlideMoveEnemy(
-		m_collisionMgr,
-		-0.6f,
-		20.0f);
-		*/
 }
 
 void InGameScene::OnUpdate()
@@ -198,9 +184,9 @@ void InGameScene::OnDraw()
 
 void InGameScene::OnImguiDebug()
 {
-	//ImGui::Begin("InGame");
-	//ImGui::Checkbox("IsDrawCollider", &m_isDrawCollider);
-	//ImGui::End();
+	ImGui::Begin("InGame");
+	ImGui::Checkbox("IsDrawCollider", &m_isDrawCollider);
+	ImGui::End();
 	//ConstParameter::ImguiDebug();
 	//m_stageMgr->ImguiDebug(m_collisionMgr);
 	//m_slotMachine->ImguiDebug();

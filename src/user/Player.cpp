@@ -30,23 +30,15 @@ void Player::OnLanding(bool arg_isGround)
 	else m_isOnScaffold = true;
 }
 
-Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<ObjectManager>arg_objMgr, std::weak_ptr<GameCamera>arg_cam)
+Player::Player()
 {
-	using namespace ConstParameter::Player;
-
 	//モデル読み込み
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "player.glb");
 
 	std::string soundDir = "resource/user/sound/";
 
 	//ジャンプSE読み込み
-	m_jumpSE = AudioApp::Instance()->LoadAudio(soundDir + "player_jump.wav",0.5f);
-
-	//被ダメージヒットストップSE
-	int onDamagedHitStopSE = AudioApp::Instance()->LoadAudio(soundDir + "player_damage_hitStop.wav",0.5f);
-
-	//被ダメージSE
-	int onDamagedSE = AudioApp::Instance()->LoadAudio(soundDir + "player_damage_onTrigger.wav",0.4f);
+	m_jumpSE = AudioApp::Instance()->LoadAudio(soundDir + "player_jump.wav", 0.5f);
 
 	//敵への攻撃SE
 	int enemyHitSE = AudioApp::Instance()->LoadAudio(soundDir + "enemy_damage.wav", 0.5f);
@@ -54,15 +46,30 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ob
 	//敵を倒したときのSE
 	int enemyKillSE = AudioApp::Instance()->LoadAudio(soundDir + "enemy_dead.wav", 0.5f);
 
-	//パリーSE
-	int parrySE = AudioApp::Instance()->LoadAudio(soundDir + "parry.wav", 0.8f);
-
 	//ヒットエフェクト生成
 	m_hitEffect = std::make_shared<TexHitEffect>();
 	m_hitEffect->Set("resource/user/img/hitEffect.png", 5, { 5,1 }, { 6.0f,6.0f }, 3);
 
-	/*--- コライダー用プリミティブ生成 ---*/
+	//攻撃コールバック
+	m_normalAttackCallBack = std::make_shared<PlayersNormalAttack>(&m_offensive, m_hitEffect, enemyHitSE, enemyKillSE);
+}
 
+void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_ptr<ObjectManager> arg_objMgr, std::weak_ptr<GameCamera> arg_cam)
+{
+	using namespace ConstParameter::Player;
+
+	std::string soundDir = "resource/user/sound/";
+
+	//被ダメージヒットストップSE
+	int onDamagedHitStopSE = AudioApp::Instance()->LoadAudio(soundDir + "player_damage_hitStop.wav", 0.5f);
+
+	//被ダメージSE
+	int onDamagedSE = AudioApp::Instance()->LoadAudio(soundDir + "player_damage_onTrigger.wav", 0.4f);
+
+	//パリーSE
+	int parrySE = AudioApp::Instance()->LoadAudio(soundDir + "parry.wav", 0.8f);
+
+	/*--- コライダー用プリミティブ生成 ---*/
 	//モデル全体を覆う球
 	m_bodySphereCol = std::make_shared<CollisionSphere>(
 		1.4f,
@@ -71,11 +78,9 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ob
 	//足元の当たり判定球
 	std::shared_ptr<CollisionPrimitive>footSphereCol = std::make_shared<CollisionSphere>(
 		1.0f,
-		 Vec3<float>(0.0f, -1.5f, 0.0f));
+		Vec3<float>(0.0f, -1.5f, 0.0f));
 
 	/*--- コールバック生成 ---*/
-	//攻撃コールバック
-	m_normalAttackCallBack = std::make_shared<PlayersNormalAttack>(&m_offensive, m_hitEffect, enemyHitSE, enemyKillSE);
 	//パリィ攻撃コールバック
 	m_parryAttackCallBack = std::make_shared<PlayersParryAttack>(&m_offensive, arg_objMgr, arg_collisionMgr, parrySE);
 	//被ダメージコールバック
@@ -84,7 +89,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ob
 	/*--- コライダー生成（判定順） ---*/
 
 	std::vector<std::shared_ptr<Collider>>colliders;
-	
+
 	//モデル全体を覆うコライダー
 	{
 		std::vector<std::shared_ptr<CollisionPrimitive>>coverModelPrimitiveArray =
@@ -107,9 +112,9 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ob
 
 	/*--- ヨーヨー生成 ---*/
 	m_yoYo = std::make_shared<YoYo>(
-		arg_collisionMgr, 
-		&m_modelObj->m_transform, 
-		m_normalAttackCallBack, 
+		arg_collisionMgr,
+		&m_modelObj->m_transform,
+		m_normalAttackCallBack,
 		m_parryAttackCallBack);
 	m_yoYo->Awake(3.0f, 2.5f);
 }
