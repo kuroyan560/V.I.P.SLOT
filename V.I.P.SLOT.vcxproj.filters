@@ -367,6 +367,9 @@
     <ClCompile Include="src\user\EnemyEmitter.cpp">
       <Filter>src\user\Enemy</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\PlayersCallBack.cpp">
+      <Filter>src\user\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -692,6 +695,9 @@
     </ClInclude>
     <ClInclude Include="src\user\EnemyEmitter.h">
       <Filter>src\user\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\PlayersCallBack.h">
+      <Filter>src\user\Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

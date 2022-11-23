@@ -29,7 +29,7 @@ private:
 	int m_hp;
 
 	//親（※トランスフォームの親ではない）
-	GameObject* m_parentObj;
+	GameObject* m_parentObj = nullptr;
 
 public:
 	//トランスフォーム

@@ -48,48 +48,11 @@ void YoYo::StatusInit(Vec3<float>arg_accelVec)
 	m_accel = m_iniAccel;
 }
 
-void YoYo::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
+YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr,
+	Transform* arg_playerTransform,
+	std::weak_ptr< CollisionCallBack>arg_attackCallBack,
+	std::weak_ptr< CollisionCallBack>arg_parryCallBack)
 {
-	auto obj = arg_otherCollider.lock()->GetParentObject<GameObject>();
-
-	//オブジェクトにダメージを与える
-	obj->Damage(m_offensive);
-
-	if (arg_otherCollider.lock()->HaveTag("Enemy"))
-	{	
-		//ヒットエフェクト
-		m_hitEffect->Emit(arg_inter);
-		//SE
-		AudioApp::Instance()->PlayWave(m_hitSE);
-	}
-	//パリィ
-	else if (arg_otherCollider.lock()->HaveTag("Enemy_Attack"))
-	{
-		//敵の攻撃の親オブジェクト取得
-		auto parentObj = obj->GetParentObj();
-
-		//親オブジェクトに向かって弾発射
-		if (parentObj)
-		{
-			//パリィ弾の発射
-			m_objMgr.lock()->AppearParryBullet(
-				m_collisionMgr,
-				obj->m_transform.GetPos(),
-				parentObj);
-		}
-
-		//SE
-		AudioApp::Instance()->PlayWave(m_parrySE);
-	}
-}
-
-YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<ObjectManager>arg_objMgr, Transform* arg_playerTransform, int arg_hitSE, int arg_parrySE)
-{
-	//コリジョンマネージャポインタ記録
-	m_collisionMgr = arg_collisionMgr;
-	//オブジェクトマネージャポインタ記録
-	m_objMgr = arg_objMgr;
-
 	//モデルオブジェクト生成
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "yoyo.glb");
 
@@ -113,21 +76,13 @@ YoYo::YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Object
 	m_throwCol->SetParentTransform(&m_modelObj->m_animator->GetBoneTransform("Bone"));
 
 	//攻撃コールバック
-	m_neutralCol->SetCallBack("Enemy", this);
-	m_neutralCol->SetCallBack("Enemy_Attack", this);
-	m_throwCol->SetCallBack("Enemy", this);
+	m_neutralCol->SetCallBack("Enemy", arg_attackCallBack.lock().get());
+	m_neutralCol->SetCallBack("Enemy_Attack", arg_parryCallBack.lock().get());
+	m_throwCol->SetCallBack("Enemy", arg_attackCallBack.lock().get());
 
 	//コライダー登録
 	arg_collisionMgr.lock()->Register(m_neutralCol);
 	arg_collisionMgr.lock()->Register(m_throwCol);
-
-	//ヒットエフェクト生成
-	m_hitEffect = std::make_shared<TexHitEffect>();
-	m_hitEffect->Set("resource/user/img/hitEffect.png", 5, { 5,1 }, { 6.0f,6.0f }, 3);
-	//ヒット時SE
-	m_hitSE = arg_hitSE;
-	//パリー時SE
-	m_parrySE = arg_parrySE;
 
 //ステータスごとのパラメータ設定
 	//N攻撃
@@ -196,9 +151,6 @@ void YoYo::Init()
 	m_attackGapInterval.Reset(0);
 	//インターバル用の予約入力リセット
 	m_attackGapPreviousInput = NONE_INPUT;
-
-	//ヒットエフェクト
-	m_hitEffect->Init();
 }
 
 void YoYo::Update(const TimeScale& arg_timeScale, float arg_playersVecX)
@@ -208,9 +160,6 @@ void YoYo::Update(const TimeScale& arg_timeScale, float arg_playersVecX)
 
 	//アニメーション更新
 	m_modelObj->m_animator->Update(timeScale);
-
-	//ヒットエフェクト更新
-	m_hitEffect->Update(timeScale);
 
 	//攻撃の隙インターバル更新
 	if (m_attackGapInterval.UpdateTimer(timeScale))
@@ -249,12 +198,6 @@ void YoYo::Update(const TimeScale& arg_timeScale, float arg_playersVecX)
 void YoYo::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
 	DrawFunc3D::DrawNonShadingModel(m_modelObj, *arg_cam.lock());
-}
-
-void YoYo::Draw2D(std::weak_ptr<Camera> arg_cam)
-{
-	//ヒットエフェクト
-	m_hitEffect->Draw(arg_cam);
 }
 
 #include"imguiApp.h"

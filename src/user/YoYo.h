@@ -4,7 +4,6 @@
 #include<memory>
 #include"Transform.h"
 #include"Timer.h"
-#include"CollisionCallBack.h"
 class ModelObject;
 class CollisionManager;
 class CollisionSphere;
@@ -12,19 +11,10 @@ class Collider;
 class TimeScale;
 class LightManager;
 class Camera;
-class TexHitEffect;
-class ObjectManager;
+class CollisionCallBack;
 
-class YoYo : public CollisionCallBack
+class YoYo
 {
-	//オブジェクトマネージャポインタ（パリィ弾発射用）
-	std::weak_ptr<ObjectManager>m_objMgr;
-	//コリジョンマネージャポインタ（パリィ弾発射用）
-	std::weak_ptr<CollisionManager>m_collisionMgr;
-
-	//攻撃力
-	int m_offensive = 1;
-
 	//ヨーヨーモデル
 	std::shared_ptr<ModelObject>m_modelObj;
 
@@ -38,13 +28,6 @@ class YoYo : public CollisionCallBack
 	//投擲
 	std::shared_ptr<CollisionSphere>m_throwColSphere;
 	std::shared_ptr<Collider>m_throwCol;
-
-	//ヒットエフェクト
-	std::shared_ptr<TexHitEffect>m_hitEffect;
-	//ヒット時SE
-	int m_hitSE;
-	//パリー時SE
-	int m_parrySE;
 
 	//状態遷移
 	enum STATUS
@@ -104,16 +87,12 @@ class YoYo : public CollisionCallBack
 	//ステータスの動的更新時に呼び出す
 	void StatusInit(Vec3<float>arg_accelVec);
 
-	void OnCollisionEnter(
-		const Vec3<float>& arg_inter,
-		std::weak_ptr<Collider>arg_otherCollider)override {};
-
-	void OnCollisionTrigger(
-		const Vec3<float>& arg_inter,
-		std::weak_ptr<Collider>arg_otherCollider)override;
-
 public:
-	YoYo(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<ObjectManager>arg_objMgr, Transform* arg_playerTransform, int arg_hitSE, int arg_parrySE);
+	YoYo(
+		std::weak_ptr<CollisionManager>arg_collisionMgr,
+		Transform* arg_playerTransform,
+		std::weak_ptr<CollisionCallBack>arg_attackCallBack,
+		std::weak_ptr<CollisionCallBack>arg_parryCallBack);
 
 	/// <summary>
 	/// ヨーヨーの固定パラメータ設定（≠初期化）
@@ -128,8 +107,6 @@ public:
 	void Update(const TimeScale& arg_timeScale, float arg_playersVecX);
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
-	//エフェクト描画
-	void Draw2D(std::weak_ptr<Camera>arg_cam);
 
 	//imguiデバッグ
 	void AddImguiDebugItem();

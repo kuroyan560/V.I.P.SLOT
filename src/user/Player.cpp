@@ -12,6 +12,7 @@
 #include"Block.h"
 #include"YoYo.h"
 #include"Scaffold.h"
+#include"TexHitEffect.h"
 
 void Player::Jump(Vec3<float>* arg_rockOnPos)
 {
@@ -39,7 +40,7 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ob
 	std::string soundDir = "resource/user/sound/";
 
 	//ジャンプSE読み込み
-	m_jumpSE = AudioApp::Instance()->LoadAudio(soundDir + "player_jump.wav",0.6f);
+	m_jumpSE = AudioApp::Instance()->LoadAudio(soundDir + "player_jump.wav",0.5f);
 
 	//被ダメージヒットストップSE
 	int onDamagedHitStopSE = AudioApp::Instance()->LoadAudio(soundDir + "player_damage_hitStop.wav",0.5f);
@@ -48,10 +49,17 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ob
 	int onDamagedSE = AudioApp::Instance()->LoadAudio(soundDir + "player_damage_onTrigger.wav",0.4f);
 
 	//敵への攻撃SE
-	int enemyHitSE = AudioApp::Instance()->LoadAudio(soundDir + "block_broken.wav", 0.5f);
+	int enemyHitSE = AudioApp::Instance()->LoadAudio(soundDir + "enemy_damage.wav", 0.5f);
+
+	//敵を倒したときのSE
+	int enemyKillSE = AudioApp::Instance()->LoadAudio(soundDir + "enemy_dead.wav", 0.5f);
 
 	//パリーSE
 	int parrySE = AudioApp::Instance()->LoadAudio(soundDir + "parry.wav", 0.8f);
+
+	//ヒットエフェクト生成
+	m_hitEffect = std::make_shared<TexHitEffect>();
+	m_hitEffect->Set("resource/user/img/hitEffect.png", 5, { 5,1 }, { 6.0f,6.0f }, 3);
 
 	/*--- コライダー用プリミティブ生成 ---*/
 
@@ -66,10 +74,12 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ob
 		 Vec3<float>(0.0f, -1.5f, 0.0f));
 
 	/*--- コールバック生成 ---*/
+	//攻撃コールバック
+	m_normalAttackCallBack = std::make_shared<PlayersNormalAttack>(&m_offensive, m_hitEffect, enemyHitSE, enemyKillSE);
+	//パリィ攻撃コールバック
+	m_parryAttackCallBack = std::make_shared<PlayersParryAttack>(&m_offensive, arg_objMgr, arg_collisionMgr, parrySE);
 	//被ダメージコールバック
 	m_damegedCallBack = std::make_shared<DamagedCallBack>(this, arg_cam, onDamagedHitStopSE, onDamagedSE);
-	//ジャンプ権回復コールバック
-	m_callBackWithBlock = std::make_shared<CallBackWithBlock>(this, arg_collisionMgr);
 
 	/*--- コライダー生成（判定順） ---*/
 
@@ -89,8 +99,6 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ob
 		//被ダメージコールバックアタッチ
 		m_bodyCollider->SetCallBack("Enemy", m_damegedCallBack.get());
 		m_bodyCollider->SetCallBack("Enemy_Attack", m_damegedCallBack.get());
-		//ブロックに触れた際のコールバック
-		m_bodyCollider->SetCallBack("Block", m_callBackWithBlock.get());
 		colliders.emplace_back(m_bodyCollider);
 	}
 
@@ -100,10 +108,9 @@ Player::Player(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Ob
 	/*--- ヨーヨー生成 ---*/
 	m_yoYo = std::make_shared<YoYo>(
 		arg_collisionMgr, 
-		arg_objMgr,
 		&m_modelObj->m_transform, 
-		enemyHitSE, 
-		parrySE);
+		m_normalAttackCallBack, 
+		m_parryAttackCallBack);
 	m_yoYo->Awake(3.0f, 2.5f);
 }
 
@@ -146,6 +153,9 @@ void Player::Init(int arg_initHp, int arg_initCoinNum)
 	//足場から降りる処理初期化
 	m_stepDownTimer.Reset(3);
 	m_stepDown = false;
+
+	//ヒットエフェクト
+	m_hitEffect->Init();
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
@@ -331,6 +341,9 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 
 	//ヨーヨー
 	m_yoYo->Update(arg_timeScale, m_vecX);
+
+	//ヒットエフェクト
+	m_hitEffect->Update(timeScale);
 }
 
 #include"DrawFunc3D.h"
@@ -348,7 +361,8 @@ void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>
 
 void Player::Draw2D(std::weak_ptr<Camera> arg_cam)
 {
-	m_yoYo->Draw2D(arg_cam);
+	//ヒットエフェクト
+	m_hitEffect->Draw(arg_cam);
 }
 
 #include"imguiApp.h"
@@ -424,73 +438,7 @@ Vec3<float> Player::GetCenterPos() const
 	return m_modelObj->m_transform.GetPos();
 }
 
-void Player::DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter, 
-	std::weak_ptr<Collider>arg_otherCollider)
+bool Player::IsAttack() const
 {
-	using namespace ConstParameter::Player;
-
-	//無敵時間中か
-	if (!m_invincibleTimer.IsTimeUp())return;
-
-	//攻撃中か
-	if (m_parent->m_yoYo->IsInvincible())return;
-
-	//HP減少
-	m_parent->m_hp--;
-
-	//無敵時間設定
-	m_invincibleTimer.Reset(INVINCIBLE_TIME_ON_DAMAGED);
-
-	//ヒットストップ
-	m_hitStopTimer.Reset(HIT_STOP_TIME_ON_DAMAGED);
-
-	//ヒットストップSE再生
-	AudioApp::Instance()->PlayWave(m_hitStopSE);
-
-	//点滅
-	m_flashTimer.Reset(FLASH_SPAN_ON_DAMAGED_INVINCIBLE);
-
-	printf("Player : Damaged : remain hp %d\n", m_parent->m_hp);
-}
-
-void Player::DamagedCallBack::Update(TimeScale& arg_timeScale)
-{
-	using namespace ConstParameter::Player;
-	const float& timeScale = arg_timeScale.GetTimeScale();
-
-	//ヒットストップ始め
-	if (m_hitStopTimer.IsTimeStartOnTrigger())
-	{
-		arg_timeScale.Set(0.0f);
-	}
-	//ヒットストップ終わり
-	else if (m_hitStopTimer.IsTimeUpOnTrigger())
-	{
-		arg_timeScale.Set(1.0f);
-		AudioApp::Instance()->PlayWave(m_damageSE);
-		//カメラ振動
-		m_cam.lock()->Shake(60, 2, 2.0f, 1.0f);
-	}
-
-	m_hitStopTimer.UpdateTimer();
-
-	//無敵時間
-	if (m_invincibleTimer.UpdateTimer(timeScale))
-	{
-		//点滅終了
-		m_isDraw = true;
-	}
-	else
-	{
-		//点滅
-		if (m_flashTimer.UpdateTimer(timeScale))
-		{
-			m_flashTimer.Reset(FLASH_SPAN_ON_DAMAGED_INVINCIBLE);
-			m_isDraw = !m_isDraw;
-		}
-	}
-}
-
-void Player::CallBackWithBlock::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
-{
+	return m_yoYo->IsInvincible();
 }

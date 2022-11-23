@@ -8,6 +8,7 @@
 #include"CollisionCallBack.h"
 #include"Transform.h"
 #include"ColliderParentObject.h"
+#include"PlayersCallBack.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -53,69 +54,19 @@ class Player : public ColliderParentObject
 	//HP
 	int m_hp;
 
+	//攻撃力
+	int m_offensive = 1;
+
+	//ヒットエフェクト
+	std::shared_ptr<TexHitEffect>m_hitEffect;
+
 	/*--- コールバック関数 ---*/
+	//攻撃
+	std::shared_ptr<PlayersNormalAttack>m_normalAttackCallBack;
+	//パリィ攻撃
+	std::shared_ptr<PlayersParryAttack>m_parryAttackCallBack;
 	//被ダメージ
-	class DamagedCallBack : public CollisionCallBack
-	{
-		Player* m_parent;
-		std::weak_ptr<GameCamera>m_cam;
-
-		//ヒットストップタイマー
-		Timer m_hitStopTimer;
-
-		//無敵時間
-		Timer m_invincibleTimer;
-
-		//無敵時間中点滅
-		Timer m_flashTimer;
-		bool m_isDraw;
-
-		//ヒットストップSE
-		int m_hitStopSE;
-		//ダメージSE
-		int m_damageSE;
-
-		void OnCollisionEnter(
-			const Vec3<float>& arg_inter,
-			std::weak_ptr<Collider>arg_otherCollider)override {};
-
-		void OnCollisionTrigger(
-			const Vec3<float>& arg_inter,
-			std::weak_ptr<Collider>arg_otherCollider)override;
-
-	public:
-		DamagedCallBack(Player* arg_player, std::weak_ptr<GameCamera>arg_cam, int arg_hitStopSE, int arg_damageSE)
-			:m_parent(arg_player), m_cam(arg_cam), m_hitStopSE(arg_hitStopSE), m_damageSE(arg_damageSE) {}
-		void Init()
-		{
-			m_invincibleTimer.Reset(0);
-			m_hitStopTimer.Reset(0);
-			m_isDraw = true;
-		}
-		void Update(TimeScale& arg_timeScale);
-
-		const bool& GetIsDraw()const { return m_isDraw; }
-	};
 	std::shared_ptr<DamagedCallBack>m_damegedCallBack;
-
-	//ブロックに触れた際のジャンプ権回復コールバック
-	class CallBackWithBlock : public CollisionCallBack
-	{
-		Player* m_parent;
-		std::weak_ptr<CollisionManager>m_collisionMgr;
-
-		void OnCollisionEnter(
-			const Vec3<float>& arg_inter,
-			std::weak_ptr<Collider>arg_otherCollider)override {};
-
-		void OnCollisionTrigger(
-			const Vec3<float>& arg_inter,
-			std::weak_ptr<Collider>arg_otherCollider)override;
-	public:
-		CallBackWithBlock(Player* arg_player, const std::weak_ptr<CollisionManager>& arg_collisionMgr)
-			:m_parent(arg_player), m_collisionMgr(arg_collisionMgr) {}
-	};
-	std::shared_ptr<CallBackWithBlock>m_callBackWithBlock;
 
 	//操作がキーボードかコントローラーか
 	enum struct INPUT_CONFIG { KEY_BOARD, CONTROLLER };
@@ -159,6 +110,9 @@ public:
 		m_coinVault.Add(arg_coinNum);
 	}
 
+	//ダメージ
+	void Damage() { m_hp = std::min(0, m_hp - 1); }
+
 	//imguiデバッグ
 	void ImguiDebug();
 
@@ -171,4 +125,5 @@ public:
 	//ゲッタ
 	const int GetCoinNum()const { return m_coinVault.GetNum(); }
 	const int GetHp()const { return m_hp; }
+	bool IsAttack()const;
 };

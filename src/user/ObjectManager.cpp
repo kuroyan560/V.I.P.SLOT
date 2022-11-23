@@ -233,10 +233,10 @@ std::weak_ptr<GameObject> ObjectManager::AppearEnemyBullet(std::weak_ptr<Collisi
 		arg_meandelingInterval,
 		arg_meandelingAngle);
 
-	newBullet->SetParentObj(arg_parentObj);
 
 	//‰Šú‰»
 	newBullet->Init();
+	newBullet->SetParentObj(arg_parentObj);
 
 	return newBullet;
 }

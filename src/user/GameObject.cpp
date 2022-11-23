@@ -27,11 +27,17 @@ void GameObject::Init()
 
 	//HPリセット
 	m_hp = m_breed.lock()->m_maxHp;
+
+	//親リセット
+	SetParentObj(nullptr);
 }
 
 void GameObject::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
+	//挙動更新
 	m_controller->OnUpdate(*this, arg_timeScale, arg_collisionMgr);
+	//親が死んたら親設定をはずす
+	if (m_parentObj && m_parentObj->IsDead())m_parentObj = nullptr;
 }
 
 void GameObject::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
