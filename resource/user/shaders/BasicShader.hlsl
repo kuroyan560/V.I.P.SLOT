@@ -7,7 +7,8 @@ struct ToonParameter
 {
     float4 m_brightMulColor;
     float4 m_darkMulColor;
-    float m_brightThreshold;
+    float m_brightThresholdLow;
+    float m_brightThresholdRange;
 };
 
 cbuffer cbuff0 : register(b0)
@@ -225,15 +226,16 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
     result.w *= (1.0f - material.transparent);
     
     //アニメ風トゥーン加工========================================================
-    /*
+    
     //明るさ算出
     float bright = dot(result.xyz, float3(0.2125f, 0.7154f, 0.0721f));
 
     //明るさのしきい値に応じて色を決める
-    float4 brightCol = texCol * toonParam.m_brightMulColor * step(toonParam.m_brightThreshold, bright);
-    float4 darkCol = texCol * toonParam.m_darkMulColor * step(1.0f - toonParam.m_brightThreshold, bright);
+    float thresholdResult = smoothstep(toonParam.m_brightThresholdLow, toonParam.m_brightThresholdLow + toonParam.m_brightThresholdRange, bright);
+    float4 brightCol = texCol * toonParam.m_brightMulColor * thresholdResult;
+    float4 darkCol = texCol * toonParam.m_darkMulColor * (1.0f - thresholdResult);
     result.xyz = brightCol + darkCol;
-    */
+    
 
     //=========================================================================
 

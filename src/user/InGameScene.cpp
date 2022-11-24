@@ -18,9 +18,6 @@
 
 InGameScene::InGameScene()
 {
-	//照明設定
-	m_dirLig.SetDir(Vec3<float>(0.0f, -0.09f, 0.03f));
-
 	//コリジョンマネージャ生成
 	m_collisionMgr = std::make_shared<CollisionManager>();
 
@@ -91,7 +88,7 @@ void InGameScene::OnInitialize()
 	m_enemyEmitter->Init(m_objMgr, m_collisionMgr);
 
 	//照明設定
-	m_dirLig.SetDir({ 0,-1,0 });
+	m_dirLig.SetDir(Vec3<float>(0.0f, -0.09f, 0.03f));
 }
 
 void InGameScene::OnUpdate()

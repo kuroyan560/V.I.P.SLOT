@@ -200,8 +200,13 @@ void BasicDraw::ImguiDebug()
 	//•`‰æ
 	if (ImGui::TreeNode("Toon"))
 	{
+		//‚µ‚«‚¢’l‰ºŒÀ
 		bool toonParamChanged = false;
-		if (ImGui::DragFloat("BrightThreshold", &s_toonShaderParam.m_brightThreshold,0.01f,0.0f,1.0f,"%f"))toonParamChanged = true;
+		if (ImGui::DragFloat("BrightThresholdLow", &s_toonShaderParam.m_brightThresholdLow, 0.01f, 0.0f, 1.0f, "%f"))toonParamChanged = true;
+
+		//‚µ‚«‚¢’l”ÍˆÍ
+		if (ImGui::DragFloat("ThresHoldRange", &s_toonShaderParam.m_brightThresholdRange, 0.01f, 0.0f, 1.0f - s_toonShaderParam.m_brightThresholdLow, "%f"))toonParamChanged = true;
+
 		if (ImGui::ColorPicker4("BrightMulColor", (float*)&s_toonShaderParam.m_brightMulColor))toonParamChanged = true;
 		if (ImGui::ColorPicker4("DarkMulColor", (float*)&s_toonShaderParam.m_darkMulColor))toonParamChanged = true;
 		if (toonParamChanged)s_toonShaderParamBuff->Mapping(&s_toonShaderParam);
