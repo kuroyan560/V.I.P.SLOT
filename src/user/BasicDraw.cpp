@@ -48,6 +48,7 @@ void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"ボーン行列バッファ"),
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,"ベースカラーテクスチャ"),
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"マテリアル基本情報バッファ"),
+			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"専用のパラメータ"),
 
 		};
 
@@ -157,7 +158,8 @@ void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transf
 				{s_drawTransformBuff[s_drawCount],CBV},
 				{BoneBuff,CBV},
 				{mesh.material->texBuff[COLOR_TEX],SRV},
-				{mesh.material->buff,CBV}
+				{mesh.material->buff,CBV},
+				{s_toonShaderParamBuff,CBV}
 			},
 			Transform.GetPos().z,
 			true);
@@ -196,15 +198,25 @@ void BasicDraw::ImguiDebug()
 	ImGui::Begin("BasicDraw");
 
 	//描画
+	if (ImGui::TreeNode("Toon"))
+	{
+		bool toonParamChanged = false;
+		if (ImGui::DragFloat("BrightThreshold", &s_toonShaderParam.m_brightThreshold,0.01f,0.0f,1.0f,"%f"))toonParamChanged = true;
+		if (ImGui::ColorPicker4("BrightMulColor", (float*)&s_toonShaderParam.m_brightMulColor))toonParamChanged = true;
+		if (ImGui::ColorPicker4("DarkMulColor", (float*)&s_toonShaderParam.m_darkMulColor))toonParamChanged = true;
+		if (toonParamChanged)s_toonShaderParamBuff->Mapping(&s_toonShaderParam);
+		ImGui::TreePop();
+	}
 
 	//エッジライン
-	ImGui::Text("Edge");
-
-	bool edgeParamChanged = false;
-	if (ImGui::ColorPicker4("EdgeColor", (float*)&s_edgeShaderParam.m_color))edgeParamChanged = true;
-	if (ImGui::DragFloat("DepthDifferenceThreshold", &s_edgeShaderParam.m_depthThreshold))edgeParamChanged = true;
-	if (edgeParamChanged)s_edgeShaderParamBuff->Mapping(&s_edgeShaderParam);
-
+	if (ImGui::TreeNode("Edge"))
+	{
+		bool edgeParamChanged = false;
+		if (ImGui::ColorPicker4("EdgeColor", (float*)&s_edgeShaderParam.m_color))edgeParamChanged = true;
+		if (ImGui::DragFloat("DepthDifferenceThreshold", &s_edgeShaderParam.m_depthThreshold))edgeParamChanged = true;
+		if (edgeParamChanged)s_edgeShaderParamBuff->Mapping(&s_edgeShaderParam);
+		ImGui::TreePop();
+	}
 
 	ImGui::End();
 }

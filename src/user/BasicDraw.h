@@ -16,12 +16,12 @@ class BasicDraw
 {
 	struct ToonShaderParameter
 	{
-		//明るさのしきい値
-		float m_brightThreshold;
 		//明るい部分に乗算する色
 		Color m_brightMulColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 		//暗い部分に乗算する色
 		Color m_darkMulColor = Color(0.3f, 0.3f, 0.3f, 1.0f);
+		//明るさのしきい値
+		float m_brightThreshold;
 	};
 	static ToonShaderParameter s_toonShaderParam;
 
@@ -30,7 +30,7 @@ class BasicDraw
 		//エッジカラー
 		Color m_color = Color(0.0f, 0.0, 0.0f, 1.0f);
 		//エッジ描画の判断をする深度差のしきい値
-		float m_depthThreshold = 0.1f;
+		float m_depthThreshold = 0.12f;
 		float m_pad[3];
 		//深度値を比べるテクセルへのUVオフセット（近傍8）
 		std::array<Vec2<float>, 8>m_uvOffset;

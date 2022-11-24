@@ -18,6 +18,9 @@
 
 InGameScene::InGameScene()
 {
+	//照明設定
+	m_dirLig.SetDir(Vec3<float>(0.0f, -0.09f, 0.03f));
+
 	//コリジョンマネージャ生成
 	m_collisionMgr = std::make_shared<CollisionManager>();
 
