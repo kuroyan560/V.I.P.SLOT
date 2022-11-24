@@ -12,6 +12,7 @@ int BasicDraw::s_drawCount = 0;
 
 std::shared_ptr<GraphicsPipeline>BasicDraw::s_drawPipeline;
 std::vector<std::shared_ptr<ConstantBuffer>>BasicDraw::s_drawTransformBuff;
+std::shared_ptr<ConstantBuffer>BasicDraw::s_parametersBuff;
 
 std::shared_ptr<GraphicsPipeline>BasicDraw::s_edgePipeline;
 std::unique_ptr<SpriteMesh>BasicDraw::s_spriteMesh;
@@ -40,13 +41,9 @@ void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, "ポイントライト情報 (構造化バッファ)"),
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, "スポットライト情報 (構造化バッファ)"),
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, "天球ライト情報 (構造化バッファ)"),
-			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, "キューブマップ"),
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"トランスフォームバッファ"),
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"ボーン行列バッファ"),
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,"ベースカラーテクスチャ"),
-			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,"メタルネステクスチャ"),
-			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,"ノーマルマップ"),
-			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,"粗さ"),
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"マテリアル基本情報バッファ"),
 
 		};
@@ -99,7 +96,7 @@ void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 	}
 }
 
-void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transform& Transform, Camera& Cam, std::shared_ptr<CubeMap>AttachCubeMap, std::shared_ptr<ConstantBuffer>BoneBuff)
+void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transform& Transform, Camera& Cam, std::shared_ptr<ConstantBuffer>BoneBuff)
 {
 	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(s_drawPipeline);
 
@@ -111,10 +108,6 @@ void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transf
 	s_drawTransformBuff[s_drawCount]->Mapping(&Transform.GetWorldMat());
 
 	auto model = Model.lock();
-
-	//キューブマップ（nullptrならデフォルトの静的キューブマップ）
-	std::shared_ptr<CubeMap>cubeMap = StaticallyCubeMap::GetDefaultCubeMap();
-	if (AttachCubeMap)cubeMap = AttachCubeMap;
 
 	for (int meshIdx = 0; meshIdx < model->m_meshes.size(); ++meshIdx)
 	{
@@ -129,13 +122,9 @@ void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transf
 				{LigManager.GetLigInfo(Light::POINT),SRV},
 				{LigManager.GetLigInfo(Light::SPOT),SRV},
 				{LigManager.GetLigInfo(Light::HEMISPHERE),SRV},
-				{cubeMap->GetCubeMapTex(),SRV},
 				{s_drawTransformBuff[s_drawCount],CBV},
 				{BoneBuff,CBV},
 				{mesh.material->texBuff[COLOR_TEX],SRV},
-				{mesh.material->texBuff[METALNESS_TEX],SRV},
-				{mesh.material->texBuff[NORMAL_TEX],SRV},
-				{mesh.material->texBuff[ROUGHNESS_TEX],SRV},
 				{mesh.material->buff,CBV}
 			},
 			Transform.GetPos().z,
@@ -145,7 +134,7 @@ void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transf
 	s_drawCount++;
 }
 
-void BasicDraw::Draw(LightManager& LigManager, const std::weak_ptr<ModelObject> ModelObject, Camera& Cam, std::shared_ptr<CubeMap> AttachCubeMap)
+void BasicDraw::Draw(LightManager& LigManager, const std::weak_ptr<ModelObject> ModelObject, Camera& Cam)
 {
 	auto obj = ModelObject.lock();
 	//ボーン行列バッファ取得（アニメーターがnullptrなら空）
@@ -153,7 +142,7 @@ void BasicDraw::Draw(LightManager& LigManager, const std::weak_ptr<ModelObject> 
 	std::shared_ptr<ConstantBuffer>boneBuff;
 	if (obj->m_animator)boneBuff = obj->m_animator->GetBoneMatBuff();
 
-	Draw(LigManager, model, obj->m_transform, Cam, AttachCubeMap, boneBuff);
+	Draw(LigManager, model, obj->m_transform, Cam, boneBuff);
 }
 
 void BasicDraw::DrawEdge(std::shared_ptr<TextureBuffer> arg_depthMap)

@@ -197,10 +197,7 @@ void LightManager::ImguiDebug()
 				dirLig->SetActive(active);
 
 				auto col = dirLig->constData.color;
-				ImGui::DragFloat("Red", &col.m_r, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Green", &col.m_g, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Blue", &col.m_b, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Alpha", &col.m_a, 0.01f, 0.0f, 1.0f);
+				ImGui::ColorPicker4("Color", (float*)&col);
 				dirLig->SetColor(col);
 
 				auto dir = dirLig->constData.dir;
