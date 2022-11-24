@@ -122,7 +122,9 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
     float3 vnormal = normalize(mul(cam.view, normal));
     
     //ライトの影響
-    float3 ligEffect = { 0.0f, 0.0f, 0.0f };
+    float3 diffuseEf = { 0, 0, 0 };
+    float3 specularEf = { 0, 0, 0 };
+    float3 limEf = { 0, 0, 0 };
     
     //ディレクションライト
     for (int i = 0; i < ligNum.dirLigNum; ++i)
@@ -131,9 +133,9 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
         
         float3 dir = dirLight[i].direction;
         float3 ligCol = dirLight[i].color.xyz * dirLight[i].color.w;
-        ligEffect += CalcLambertDiffuse(dir, ligCol, normal) * (material.diffuse * material.diffuseFactor);
-        ligEffect += CalcPhongSpecular(dir, ligCol, normal, input.worldpos, cam.eyePos) * (material.specular * material.specularFactor);
-        ligEffect += CalcLimLight(dir, ligCol, normal, vnormal);
+        diffuseEf += CalcLambertDiffuse(dir, ligCol, normal) * (material.diffuse * material.diffuseFactor);
+        specularEf += CalcPhongSpecular(dir, ligCol, normal, input.worldpos, cam.eyePos) * (material.specular * material.specularFactor);
+        limEf += CalcLimLight(dir, ligCol, normal, vnormal);
     }
     //ポイントライト
     for (int i = 0; i < ligNum.ptLigNum; ++i)
@@ -160,9 +162,9 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
         diffPoint *= affect;
         specPoint *= affect;
         
-        ligEffect += diffPoint * (material.diffuse * material.diffuseFactor);
-        ligEffect += specPoint * (material.specular * material.specularFactor);
-        ligEffect += CalcLimLight(dir, ligCol, normal, vnormal);
+        diffuseEf += diffPoint * (material.diffuse * material.diffuseFactor);
+        specularEf += specPoint * (material.specular * material.specularFactor);
+        limEf += CalcLimLight(dir, ligCol, normal, vnormal);
     }
     //スポットライト
     for (int i = 0; i < ligNum.spotLigNum; ++i)
@@ -199,9 +201,9 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
             affect = 0.0f;
         affect = pow(affect, 0.5f);
         
-        ligEffect += diffSpotLight * affect * (material.diffuse * material.diffuseFactor);
-        ligEffect += specSpotLight * affect * (material.specular * material.specularFactor);
-        ligEffect += spotlim * affect;
+        diffuseEf += diffSpotLight * affect * (material.diffuse * material.diffuseFactor);
+        specularEf += specSpotLight * affect * (material.specular * material.specularFactor);
+        limEf += spotlim * affect;
     }
     //天球
     for (int i = 0; i < ligNum.hemiSphereNum; ++i)
@@ -211,8 +213,10 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
         float t = dot(normal.xyz, hemiSphereLight[i].groundNormal);
         t = (t + 1.0f) / 2.0f;
         float3 hemiLight = lerp(hemiSphereLight[i].groundColor, hemiSphereLight[i].skyColor, t);
-        ligEffect += hemiLight;
+        diffuseEf += hemiLight;
     }
+    
+    float3 ligEffect = diffuseEf + specularEf + limEf;
     
     float4 texCol = baseTex.Sample(smp, input.uv);
     texCol.xyz += material.baseColor.xyz;
@@ -221,7 +225,7 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
     result.w *= (1.0f - material.transparent);
     
     //アニメ風トゥーン加工========================================================
-    
+    /*
     //明るさ算出
     float bright = dot(result.xyz, float3(0.2125f, 0.7154f, 0.0721f));
 
@@ -229,6 +233,7 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
     float4 brightCol = texCol * toonParam.m_brightMulColor * step(toonParam.m_brightThreshold, bright);
     float4 darkCol = texCol * toonParam.m_darkMulColor * step(1.0f - toonParam.m_brightThreshold, bright);
     result.xyz = brightCol + darkCol;
+    */
 
     //=========================================================================
 
