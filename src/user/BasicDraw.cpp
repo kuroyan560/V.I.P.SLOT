@@ -12,10 +12,13 @@ int BasicDraw::s_drawCount = 0;
 
 std::shared_ptr<GraphicsPipeline>BasicDraw::s_drawPipeline;
 std::vector<std::shared_ptr<ConstantBuffer>>BasicDraw::s_drawTransformBuff;
-std::shared_ptr<ConstantBuffer>BasicDraw::s_parametersBuff;
+std::shared_ptr<ConstantBuffer>BasicDraw::s_toonShaderParamBuff;
+BasicDraw::ToonShaderParameter BasicDraw::s_toonShaderParam;
 
 std::shared_ptr<GraphicsPipeline>BasicDraw::s_edgePipeline;
 std::unique_ptr<SpriteMesh>BasicDraw::s_spriteMesh;
+std::shared_ptr<ConstantBuffer>BasicDraw::s_edgeShaderParamBuff;
+BasicDraw::EdgeShaderParameter BasicDraw::s_edgeShaderParam;
 
 void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 {
@@ -59,8 +62,16 @@ void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 		s_drawPipeline = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, ModelMesh::Vertex::GetInputLayout(), ROOT_PARAMETER, RENDER_TARGET_INFO, { WrappedSampler(true, true) });
 	}
 
+	//事前にトランスフォームバッファを用意
 	for (int i = 0; i < arg_prepareBuffNum; ++i)
 		s_drawTransformBuff.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("BasicDraw - Transform -" + std::to_string(i)).c_str()));
+
+	//トゥーンシェーダー用のバッファを用意
+	s_toonShaderParamBuff = D3D12App::Instance()->GenerateConstantBuffer(
+		sizeof(s_toonShaderParam),
+		1, 
+		&s_toonShaderParam, 
+		"BasicDraw - ToonShaderParameter");
 
 	//エッジラインパイプライン
 	{
@@ -77,7 +88,7 @@ void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 		{
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"平行投影行列"),
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,"デプスマップ"),
-
+			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"専用のパラメータ"),
 		};
 
 		//レンダーターゲット描画先情報
@@ -94,6 +105,27 @@ void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 			RENDER_TARGET_INFO,
 			{ WrappedSampler(false, true) });
 	}
+
+	//ウィンドウサイズからUVオフセットを求める
+	const auto winSize = WinApp::Instance()->GetWinSize().Float();
+	s_edgeShaderParam.m_uvOffset = 
+	{
+		Vec2<float>(0.0f,  1.0f / winSize.y), //上
+		Vec2<float>(0.0f, -1.0f / winSize.y), //下
+		Vec2<float>(1.0f / winSize.x,           0.0f), //右
+		Vec2<float>(-1.0f / winSize.x,           0.0f), //左
+		Vec2<float>(1.0f / winSize.x,  1.0f / winSize.y), //右上
+		Vec2<float>(-1.0f / winSize.x,  1.0f / winSize.y), //左上
+		Vec2<float>(1.0f / winSize.x, -1.0f / winSize.y), //右下
+		Vec2<float>(-1.0f / winSize.x, -1.0f / winSize.y)  //左下
+	};
+
+	//エッジ出力用のバッファを用意
+	s_edgeShaderParamBuff = D3D12App::Instance()->GenerateConstantBuffer(
+		sizeof(s_edgeShaderParam),
+		1, 
+		&s_edgeShaderParam, 
+		"BasicDraw - EdgeShaderParameter");
 }
 
 void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transform& Transform, Camera& Cam, std::shared_ptr<ConstantBuffer>BoneBuff)
@@ -153,6 +185,26 @@ void BasicDraw::DrawEdge(std::shared_ptr<TextureBuffer> arg_depthMap)
 	{
 		{KuroEngine::Instance()->GetParallelMatProjBuff(),CBV},
 		{arg_depthMap,SRV},
+		{s_edgeShaderParamBuff,CBV},
 	};
 	s_spriteMesh->Render(descDatas);
+}
+
+#include"ImguiApp.h"
+void BasicDraw::ImguiDebug()
+{
+	ImGui::Begin("BasicDraw");
+
+	//描画
+
+	//エッジライン
+	ImGui::Text("Edge");
+
+	bool edgeParamChanged = false;
+	if (ImGui::ColorPicker4("EdgeColor", (float*)&s_edgeShaderParam.m_color))edgeParamChanged = true;
+	if (ImGui::DragFloat("DepthDifferenceThreshold", &s_edgeShaderParam.m_depthThreshold))edgeParamChanged = true;
+	if (edgeParamChanged)s_edgeShaderParamBuff->Mapping(&s_edgeShaderParam);
+
+
+	ImGui::End();
 }

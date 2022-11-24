@@ -207,8 +207,9 @@ void InGameScene::OnImguiDebug()
 	//m_slotMachine->ImguiDebug();
 	//m_player->ImguiDebug();
 	//m_collisionMgr->ImguiDebug();
-	m_enemyEmitter->ImguiDebug();
+	//m_enemyEmitter->ImguiDebug();
 	m_ligMgr->ImguiDebug();
+	BasicDraw::ImguiDebug();
 }
 
 void InGameScene::OnFinalize()
