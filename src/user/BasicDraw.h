@@ -21,8 +21,8 @@ class BasicDraw
 		//暗い部分に乗算する色
 		Color m_darkMulColor = Color(0.3f, 0.3f, 0.3f, 1.0f);
 		//明るさのしきい値（範囲を持たせている）
-		float m_brightThresholdLow = 0.14f;
-		float m_brightThresholdRange = 0.035f;
+		float m_brightThresholdLow = 0.31f;
+		float m_brightThresholdRange = 0.0f;
 	};
 	static ToonShaderParameter s_toonShaderParam;
 
