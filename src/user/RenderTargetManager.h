@@ -4,6 +4,7 @@
 #include<vector>
 class RenderTarget;
 class DepthStencil;
+class TextureBuffer;
 
 enum struct DRAW_TARGET_TAG { BACK_BUFF, DEPTH_STENCIL, EMISSIVE_MAP, DEPTH_MAP };
 
@@ -30,4 +31,6 @@ public:
 			DRAW_TARGET_TAG::EMISSIVE_MAP,
 			DRAW_TARGET_TAG::DEPTH_MAP,
 		});
+
+	std::shared_ptr<TextureBuffer>GetDepthMap();
 };

@@ -8,17 +8,20 @@
 #include"LightManager.h"
 #include"SpriteMesh.h"
 
+int BasicDraw::s_drawCount = 0;
+
 std::shared_ptr<GraphicsPipeline>BasicDraw::s_drawPipeline;
 std::vector<std::shared_ptr<ConstantBuffer>>BasicDraw::s_drawTransformBuff;
+
+std::shared_ptr<GraphicsPipeline>BasicDraw::s_edgePipeline;
 std::unique_ptr<SpriteMesh>BasicDraw::s_spriteMesh;
-int BasicDraw::s_drawCount = 0;
 
 void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 {
 	s_spriteMesh = std::make_unique<SpriteMesh>("BasicDraw");
 	s_spriteMesh->SetSize(arg_screenSize);
 
-	//パイプライン生成
+	//通常描画パイプライン生成
 	{
 		//パイプライン設定
 		static PipelineInitializeOption PIPELINE_OPTION(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -61,6 +64,39 @@ void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 
 	for (int i = 0; i < arg_prepareBuffNum; ++i)
 		s_drawTransformBuff.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("BasicDraw - Transform -" + std::to_string(i)).c_str()));
+
+	//エッジラインパイプライン
+	{
+		//パイプライン設定
+		static PipelineInitializeOption PIPELINE_OPTION(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE, D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+		//シェーダー情報
+		static Shaders SHADERS;
+		SHADERS.m_vs = D3D12App::Instance()->CompileShader("resource/user/shaders/EdgeShader.hlsl", "VSmain", "vs_6_4");
+		SHADERS.m_ps = D3D12App::Instance()->CompileShader("resource/user/shaders/EdgeShader.hlsl", "PSmain", "ps_6_4");
+
+		//ルートパラメータ
+		static std::vector<RootParam>ROOT_PARAMETER =
+		{
+			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"平行投影行列"),
+			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,"デプスマップ"),
+
+		};
+
+		//レンダーターゲット描画先情報
+		std::vector<RenderTargetInfo>RENDER_TARGET_INFO =
+		{
+			RenderTargetInfo(D3D12App::Instance()->GetBackBuffFormat(), AlphaBlendMode_None),	//通常描画
+		};
+		//パイプライン生成
+		s_edgePipeline = D3D12App::Instance()->GenerateGraphicsPipeline(
+			PIPELINE_OPTION, 
+			SHADERS, 
+			SpriteMesh::Vertex::GetInputLayout(),
+			ROOT_PARAMETER,
+			RENDER_TARGET_INFO,
+			{ WrappedSampler(false, true) });
+	}
 }
 
 void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transform& Transform, Camera& Cam, std::shared_ptr<CubeMap>AttachCubeMap, std::shared_ptr<ConstantBuffer>BoneBuff)
@@ -122,9 +158,12 @@ void BasicDraw::Draw(LightManager& LigManager, const std::weak_ptr<ModelObject> 
 
 void BasicDraw::DrawEdge(std::shared_ptr<TextureBuffer> arg_depthMap)
 {
+	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(s_edgePipeline);
+
 	std::vector<RegisterDescriptorData>descDatas =
 	{
-		{arg_depthMap,SRV}
+		{KuroEngine::Instance()->GetParallelMatProjBuff(),CBV},
+		{arg_depthMap,SRV},
 	};
 	s_spriteMesh->Render(descDatas);
 }

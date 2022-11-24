@@ -13,10 +13,15 @@ class ConstantBuffer;
 
 class BasicDraw
 {
+	static int s_drawCount;
+
 	static std::shared_ptr<GraphicsPipeline>s_drawPipeline;
 	static std::vector<std::shared_ptr<ConstantBuffer>>s_drawTransformBuff;
+
+	//エッジ出力＆描画
+	static std::shared_ptr<GraphicsPipeline>s_edgePipeline;
 	static std::unique_ptr<SpriteMesh>s_spriteMesh;
-	static int s_drawCount;
+
 public:
 	static void Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum = 100);
 	static void CountReset() { s_drawCount = 0; }

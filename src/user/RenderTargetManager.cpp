@@ -86,3 +86,8 @@ void RenderTargetManager::Set(bool arg_depthStencil, std::vector<DRAW_TARGET_TAG
 	//レンダーターゲットとデプスステンシルのセット
 	graphics.SetRenderTargets(rts, arg_depthStencil ? m_depthStencil : std::weak_ptr<DepthStencil>());
 }
+
+std::shared_ptr<TextureBuffer> RenderTargetManager::GetDepthMap()
+{
+	return m_depthMap;
+}

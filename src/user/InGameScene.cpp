@@ -171,6 +171,15 @@ void InGameScene::OnDraw()
 	//プレイヤー
 	m_player->Draw(m_ligMgr, m_gameCam->GetMainCam());
 
+	//↓↓↓以降、エミッシブマップとデプスマップへの描画をしない↓↓↓
+	rtMgr.Set(true, { DRAW_TARGET_TAG::BACK_BUFF });
+
+	//エッジの描画
+	if (m_isDrawEdge)
+	{
+		BasicDraw::DrawEdge(rtMgr.GetDepthMap());
+	}
+
 	//デバッグ描画
 #ifdef _DEBUG
 	if (m_isDrawCollider)
@@ -190,6 +199,7 @@ void InGameScene::OnImguiDebug()
 {
 	ImGui::Begin("InGame");
 	ImGui::Checkbox("IsDrawCollider", &m_isDrawCollider);
+	ImGui::Checkbox("IsDrawEdge", &m_isDrawEdge);
 	ImGui::End();
 
 	//ConstParameter::ImguiDebug();

@@ -56,6 +56,8 @@ class InGameScene : public BaseScene
 
 	//コライダーのデバッグ描画フラグ
 	bool m_isDrawCollider = false;
+	//エッジの描画フラグ
+	bool m_isDrawEdge = true;
 
 public:
 	InGameScene();
