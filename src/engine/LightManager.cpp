@@ -201,9 +201,9 @@ void LightManager::ImguiDebug()
 				dirLig->SetColor(col);
 
 				auto dir = dirLig->constData.dir;
-				ImGui::DragFloat("DirX", &dir.x, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("DirY", &dir.y, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("DirZ", &dir.z, 0.01f, 0.0f, 1.0f);
+				ImGui::DragFloat("DirX", &dir.x, 0.01f, -1.0f, 1.0f);
+				ImGui::DragFloat("DirY", &dir.y, 0.01f, -1.0f, 1.0f);
+				ImGui::DragFloat("DirZ", &dir.z, 0.01f, -1.0f, 1.0f);
 				dirLig->SetDir(dir);
 			}
 			ImGui::EndChild();
@@ -223,10 +223,7 @@ void LightManager::ImguiDebug()
 				ptLig->SetActive(active);
 
 				auto col = ptLig->constData.color;
-				ImGui::DragFloat("Red", &col.m_r, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Green", &col.m_g, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Blue", &col.m_b, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Alpha", &col.m_a, 0.01f, 0.0f, 1.0f);
+				ImGui::ColorPicker4("Color", (float*)&col);
 				ptLig->SetColor(col);
 
 				auto pos = ptLig->constData.pos;
@@ -256,10 +253,7 @@ void LightManager::ImguiDebug()
 				spotLig->SetActive(active);
 
 				auto col = spotLig->constData.color;
-				ImGui::DragFloat("Red", &col.m_r, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Green", &col.m_g, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Blue", &col.m_b, 0.01f, 0.0f, 1.0f);
-				ImGui::DragFloat("Alpha", &col.m_a, 0.01f, 0.0f, 1.0f);
+				ImGui::ColorPicker4("Color", (float*)&col);
 				spotLig->SetColor(col);
 
 				auto pos = spotLig->constData.pos;
