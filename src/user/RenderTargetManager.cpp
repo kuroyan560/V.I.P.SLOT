@@ -17,7 +17,7 @@ RenderTargetManager::RenderTargetManager()
 	m_emissiveMap = app.GenerateRenderTarget(DXGI_FORMAT_R32G32B32A32_FLOAT, Color(0.0f, 0.0f, 0.0f, 1.0f), backBuffSize, L"EmissiveMap");
 
 	//デプスマップ生成
-	m_depthMap = app.GenerateRenderTarget(DXGI_FORMAT_R32_FLOAT, Color(0, 0, 0, 0), backBuffSize, L"DepthMap");
+	m_depthMap = app.GenerateRenderTarget(DXGI_FORMAT_R32_FLOAT, Color(FLT_MAX, 0.0f, 0.0f, 0.0f), backBuffSize, L"DepthMap");
 	//エッジカラーマップ用意
 	m_edgeColorMap = app.GenerateRenderTarget(backBuff->GetDesc().Format, Color(0.0f, 0.0f, 0.0f, 1.0f), backBuffSize, L"EdgeColorMap");
 

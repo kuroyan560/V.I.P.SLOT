@@ -40,33 +40,33 @@ float4 PSmain(VSOutput input) : SV_TARGET
     // このピクセルの深度値を取得
     float depth = g_depthMap.Sample(g_sampler, input.m_uv).x;
 
+    //一番近い（深度値が低い）ピクセルを記録
     float nearest = depth;
-    if (nearest <= 0.0f)
-        nearest = 300000.0f;
-    float4 nearestEdgeColor = g_edgeColorMap.Sample(g_sampler, input.m_uv);
+    float2 nearestUv = input.m_uv;
     
-    // 近傍8テクセルの深度値の平均値を計算する
-    float depth2 = 0.0f;
+    // 近傍8テクセルの深度値の差の平均値を計算する
+    float depthDiffer = 0.0f;
     for( int i = 0; i < 8; i++)
     {
         float2 pickUv = input.m_uv + m_edgeParam.m_uvOffset[i];
         float pickDepth = g_depthMap.Sample(g_sampler, pickUv).x;
-        depth2 += pickDepth;
-        if(0 < pickDepth && pickDepth < nearest)
+        depthDiffer += abs(depth - pickDepth);
+        
+        //深度値最小を更新
+        if(pickDepth < nearest)
         {
-            nearestEdgeColor = g_edgeColorMap.Sample(g_sampler, pickUv);
+            nearestUv = pickUv;
             nearest = pickDepth;
         }
     }
-    depth2 /= 8.0f;
+    depthDiffer /= 8.0f;
 
     // 自身の深度値と近傍8テクセルの深度値の差を調べる
-    // 深度値が結構違う場合はピクセルカラーを黒にする
-    if (m_edgeParam.m_depthThreshold <= abs(depth - depth2))
+    // 深度値が結構違う場合はエッジ出力
+    if (m_edgeParam.m_depthThreshold <= depthDiffer)
     {
-        //エッジ出力
         //一番手前側のエッジカラーを採用する
-        return nearestEdgeColor;
+        return g_edgeColorMap.Sample(g_sampler, nearestUv);
     }
     
     discard;
