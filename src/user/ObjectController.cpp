@@ -10,7 +10,7 @@ std::weak_ptr<ObjectManager>ObjectController::s_objMgr;
 #include"BasicDraw.h"
 void ObjectController::OnDraw(GameObject& arg_obj, std::weak_ptr<LightManager>& arg_lightMgr, std::weak_ptr<Camera>& arg_cam)
 {
-	BasicDraw::Draw(*arg_lightMgr.lock(), arg_obj.m_breed.lock()->m_model, arg_obj.m_transform, *arg_cam.lock());
+	BasicDraw::Draw(*arg_lightMgr.lock(), arg_obj.m_breed.lock()->m_model, arg_obj.m_transform, *arg_cam.lock(), arg_obj.m_drawParam);
 }
 
 bool ObjectController::IsObjsHpZero(GameObject& arg_obj) const
@@ -31,6 +31,11 @@ bool ObjectController::IsOutOfScreen(GameObject& arg_obj)const
 	return false;
 }
 
+float ObjectController::GetLocalTimeScale(GameObject& arg_obj)const
+{
+	return KuroMath::Ease(In, Sine, arg_obj.m_damageTimer.GetTimeRate(), 0.0f, 1.0f);
+}
+
 void OC_DirectionMove::OnInit(GameObject& arg_obj)
 {
 	arg_obj.m_transform.SetPos(m_startPos);
@@ -40,7 +45,7 @@ void OC_DirectionMove::OnInit(GameObject& arg_obj)
 void OC_DirectionMove::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	//タイムスケール取得
-	float timeScale = arg_timeScale.GetTimeScale();
+	float timeScale = arg_timeScale.GetTimeScale() * GetLocalTimeScale(arg_obj);
 
 	//移動方向XY平面
 	Vec2<float>moveDirXY = m_moveDirXY;
@@ -89,6 +94,8 @@ std::unique_ptr<ObjectController> OC_DestinationEaseMove::Clone()
 
 void OC_TargetObjectEaseMove::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
+	float timeScale = arg_timeScale.GetTimeScale() * GetLocalTimeScale(arg_obj);
+
 	if (m_timer.IsTimeUp())m_isGoal = true;
 
 	//ターゲットが生きている
@@ -97,7 +104,7 @@ void OC_TargetObjectEaseMove::OnUpdate(GameObject& arg_obj, const TimeScale& arg
 		//目的地を更新
 		m_destinationPos = m_target->m_transform.GetPos();
 	}
-	m_timer.UpdateTimer(arg_timeScale.GetTimeScale());
+	m_timer.UpdateTimer(timeScale);
 	auto pos = KuroMath::Ease(m_easeChangeType, m_easeType, m_timer.GetTimeRate(), m_startPos, m_target->m_transform.GetPos());
 	arg_obj.m_transform.SetPos(pos);
 }
@@ -169,7 +176,7 @@ void OC_SlimeBattery::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeSca
 	auto pos = arg_obj.m_transform.GetPos();
 
 	//タイムスケール取得
-	float timeScale = arg_timeScale.GetTimeScale();
+	float timeScale = arg_timeScale.GetTimeScale() * GetLocalTimeScale(arg_obj);
 
 	//時間経過
 	m_timer.UpdateTimer(timeScale);

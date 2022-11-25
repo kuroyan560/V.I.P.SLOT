@@ -2,6 +2,7 @@
 #include<memory>
 #include<vector>
 #include"Collider.h"
+#include"BasicDrawParameters.h"
 class Model;
 class ObjectController;
 
@@ -20,6 +21,8 @@ public:
 	const std::unique_ptr<ObjectController>m_controller;
 	//コライダー（クローン元）
 	const std::vector<std::unique_ptr<Collider>>m_originCollider;
+	//描画パラメータ
+	const IndividualDrawParameter m_drawParam;
 
 	/// <summary>
 	/// 敵の血統コンストラクタ
@@ -36,11 +39,13 @@ public:
 		int arg_maxHp,
 		int arg_killCoinNum,
 		std::unique_ptr<ObjectController>arg_controller, 
-		std::vector<std::unique_ptr<Collider>>& arg_originCollider)
+		std::vector<std::unique_ptr<Collider>>& arg_originCollider,
+		IndividualDrawParameter arg_drawParam = IndividualDrawParameter::GetDefault())
 		:m_typeID(arg_typeID),
 		m_model(arg_model),
 		m_maxHp(arg_maxHp),
 		m_killCoinNum(arg_killCoinNum),
 		m_controller(std::move(arg_controller)),
-		m_originCollider(std::move(arg_originCollider)) {}
+		m_originCollider(std::move(arg_originCollider)),
+		m_drawParam(arg_drawParam) {}
 };

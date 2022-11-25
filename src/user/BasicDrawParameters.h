@@ -1,12 +1,12 @@
 #pragma once
 #include"Color.h"
 //トゥーンシェーダーの個別のパラメータ
-class ToonIndividualParameter
+class IndividualDrawParameter
 {
 public:
-	static ToonIndividualParameter& GetDefault()
+	static IndividualDrawParameter& GetDefault()
 	{
-		static ToonIndividualParameter defaultParams =
+		static IndividualDrawParameter defaultParams =
 		{
 			Color(1.0f,1.0f,1.0f,1.0f),
 			Color(200,142,237,255),
@@ -27,8 +27,8 @@ public:
 	//エッジ色
 	Color m_edgeColor = Color(0.0f, 0.0f, 0.0f, 1.0f);
 	
-	ToonIndividualParameter() { *this = GetDefault(); }
-	ToonIndividualParameter(
+	IndividualDrawParameter() { *this = GetDefault(); }
+	IndividualDrawParameter(
 		Color arg_brightMulColor,
 		Color arg_darkMulColor,
 		Color arg_edgeMulColor)

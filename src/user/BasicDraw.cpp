@@ -84,10 +84,10 @@ void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 
 		s_toonIndividualParamBuff.emplace_back(
 			D3D12App::Instance()->GenerateConstantBuffer(
-				sizeof(ToonIndividualParameter), 
+				sizeof(IndividualDrawParameter), 
 				1, 
 				nullptr, 
-				("BasicDraw - ToonIndividualParameter -" + std::to_string(i)).c_str()));
+				("BasicDraw - IndividualDrawParameter -" + std::to_string(i)).c_str()));
 	}
 
 	//トゥーンシェーダー用のバッファを用意
@@ -153,7 +153,7 @@ void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 		"BasicDraw - EdgeCommonParameter");
 }
 
-void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transform& Transform, Camera& Cam, const ToonIndividualParameter& arg_toonParam, std::shared_ptr<ConstantBuffer>BoneBuff)
+void BasicDraw::Draw(LightManager& arg_ligMgr, std::weak_ptr<Model>arg_model, Transform& arg_transform, Camera& arg_cam, const IndividualDrawParameter& arg_toonParam, std::shared_ptr<ConstantBuffer>arg_boneBuff)
 {
 	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(s_drawPipeline);
 
@@ -162,16 +162,16 @@ void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transf
 	{
 		s_drawTransformBuff.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("BasicDraw - Transform -" + std::to_string(s_drawCount)).c_str()));
 	}
-	s_drawTransformBuff[s_drawCount]->Mapping(&Transform.GetWorldMat());
+	s_drawTransformBuff[s_drawCount]->Mapping(&arg_transform.GetWorldMat());
 
 	//トゥーンの個別パラメータバッファ送信
 	if (s_toonIndividualParamBuff.size() < (s_drawCount + 1))
 	{
-		s_toonIndividualParamBuff.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(ToonIndividualParameter), 1, nullptr, ("BasicDraw - ToonIndividualParameter -" + std::to_string(s_drawCount)).c_str()));
+		s_toonIndividualParamBuff.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(IndividualDrawParameter), 1, nullptr, ("BasicDraw - IndividualDrawParameter -" + std::to_string(s_drawCount)).c_str()));
 	}
 	s_toonIndividualParamBuff[s_drawCount]->Mapping(&arg_toonParam);
 
-	auto model = Model.lock();
+	auto model = arg_model.lock();
 
 	for (int meshIdx = 0; meshIdx < model->m_meshes.size(); ++meshIdx)
 	{
@@ -180,44 +180,44 @@ void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transf
 			mesh.mesh->vertBuff,
 			mesh.mesh->idxBuff,
 			{
-				{Cam.GetBuff(),CBV},
-				{LigManager.GetLigNumInfo(),CBV},
-				{LigManager.GetLigInfo(Light::DIRECTION),SRV},
-				{LigManager.GetLigInfo(Light::POINT),SRV},
-				{LigManager.GetLigInfo(Light::SPOT),SRV},
-				{LigManager.GetLigInfo(Light::HEMISPHERE),SRV},
+				{arg_cam.GetBuff(),CBV},
+				{arg_ligMgr.GetLigNumInfo(),CBV},
+				{arg_ligMgr.GetLigInfo(Light::DIRECTION),SRV},
+				{arg_ligMgr.GetLigInfo(Light::POINT),SRV},
+				{arg_ligMgr.GetLigInfo(Light::SPOT),SRV},
+				{arg_ligMgr.GetLigInfo(Light::HEMISPHERE),SRV},
 				{s_drawTransformBuff[s_drawCount],CBV},
-				{BoneBuff,CBV},
+				{arg_boneBuff,CBV},
 				{mesh.material->texBuff[COLOR_TEX],SRV},
 				{mesh.material->buff,CBV},
 				{s_toonCommonParamBuff,CBV},
 				{s_toonIndividualParamBuff[s_drawCount],CBV},
 			},
-			Transform.GetPos().z,
+			arg_transform.GetPos().z,
 			true);
 	}
 
 	s_drawCount++;
 }
 
-void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model> Model, Transform& Transform, Camera& Cam, std::shared_ptr<ConstantBuffer> BoneBuff)
+void BasicDraw::Draw(LightManager& arg_ligMgr, std::weak_ptr<Model> arg_model, Transform& arg_transform, Camera& arg_cam, std::shared_ptr<ConstantBuffer> arg_boneBuff)
 {
-	BasicDraw::Draw(LigManager, Model, Transform, Cam, ToonIndividualParameter::GetDefault(), BoneBuff);
+	BasicDraw::Draw(arg_ligMgr, arg_model, arg_transform, arg_cam, IndividualDrawParameter::GetDefault(), arg_boneBuff);
 }
 
-void BasicDraw::Draw(LightManager& LigManager, const std::weak_ptr<ModelObject> ModelObject, Camera& Cam, const ToonIndividualParameter& arg_toonParam)
+void BasicDraw::Draw(LightManager& arg_ligMgr, const std::weak_ptr<ModelObject> arg_modelObj, Camera& arg_cam, const IndividualDrawParameter& arg_toonParam)
 {
-	auto obj = ModelObject.lock();
+	auto obj = arg_modelObj.lock();
 	//ボーン行列バッファ取得（アニメーターがnullptrなら空）
 	auto model = obj->m_model;
 	std::shared_ptr<ConstantBuffer>boneBuff;
 	if (obj->m_animator)boneBuff = obj->m_animator->GetBoneMatBuff();
-	Draw(LigManager, model, obj->m_transform, Cam, arg_toonParam, boneBuff);
+	Draw(arg_ligMgr, model, obj->m_transform, arg_cam, arg_toonParam, boneBuff);
 }
 
-void BasicDraw::Draw(LightManager& LigManager, const std::weak_ptr<ModelObject> ModelObject, Camera& Cam)
+void BasicDraw::Draw(LightManager& arg_ligMgr, const std::weak_ptr<ModelObject> arg_modelObj, Camera& arg_cam)
 {
-	Draw(LigManager, ModelObject, Cam, ToonIndividualParameter::GetDefault());
+	Draw(arg_ligMgr, arg_modelObj, arg_cam, IndividualDrawParameter::GetDefault());
 }
 
 void BasicDraw::DrawEdge(std::shared_ptr<TextureBuffer> arg_depthMap, std::shared_ptr<TextureBuffer>arg_edgeColorMap)
@@ -254,7 +254,7 @@ void BasicDraw::ImguiDebug()
 
 		if (ImGui::TreeNode("DefaultIndividualParameter"))
 		{
-			ToonIndividualParameter::GetDefault().ImguiDebugItem();
+			IndividualDrawParameter::GetDefault().ImguiDebugItem();
 			ImGui::TreePop();
 		}
 

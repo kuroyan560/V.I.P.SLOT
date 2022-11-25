@@ -195,7 +195,7 @@ void YoYo::Update(const TimeScale& arg_timeScale, float arg_playersVecX)
 }
 
 #include"BasicDraw.h"
-void YoYo::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam, const ToonIndividualParameter& arg_toonParam)
+void YoYo::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam, const IndividualDrawParameter& arg_toonParam)
 {
 	BasicDraw::Draw(*arg_lightMgr.lock(), m_modelObj, *arg_cam.lock(), arg_toonParam);
 }

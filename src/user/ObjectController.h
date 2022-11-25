@@ -50,6 +50,8 @@ protected:
 	bool IsDead(GameObject& arg_obj)const { return IsLeave(arg_obj) || IsObjsHpZero(arg_obj); }
 	//画面外に出たか
 	bool IsOutOfScreen(GameObject& arg_obj)const;
+	//対象オブジェクトのローカルタイムスケール
+	float GetLocalTimeScale(GameObject& arg_obj)const;
 };
 
 //指定した方向に移動

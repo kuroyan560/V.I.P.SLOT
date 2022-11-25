@@ -28,6 +28,12 @@ void GameObject::Init()
 	//HPリセット
 	m_hp = m_breed.lock()->m_maxHp;
 
+	//描画パラメータ初期化
+	m_drawParam = m_breed.lock()->m_drawParam;
+
+	//ダメージタイマーリセット
+	m_damageTimer.Reset(0.0f);
+
 	//親リセット
 	SetParentObj(nullptr);
 }
@@ -38,6 +44,15 @@ void GameObject::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionM
 	m_controller->OnUpdate(*this, arg_timeScale, arg_collisionMgr);
 	//親が死んたら親設定をはずす
 	if (m_parentObj && m_parentObj->IsDead())m_parentObj = nullptr;
+
+	//ダメージ演出
+	if (m_damageTimer.UpdateTimer(arg_timeScale.GetTimeScale()))
+	{
+		//コライダーをアクティブに
+		for (auto& col : m_colliders)col->SetActive(true);
+	}
+	//ダメージ点滅
+	m_drawParam.m_fillColor.m_a = KuroMath::Ease(Out, Circ, m_damageTimer.GetTimeRate(), 1.0f, 0.0f);
 }
 
 void GameObject::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
@@ -50,7 +65,16 @@ int GameObject::Damage(int arg_amount)
 	m_hp = std::max(0, m_hp - arg_amount);
 	m_controller->OnDamage(*this, arg_amount);
 
+	//死亡
 	if (m_hp <= 0)return m_breed.lock()->m_killCoinNum;
+
+	//まだ生きている
+	m_damageTimer.Reset(30.0f);
+	m_drawParam.m_fillColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+	//コライダーを非アクティブに
+	for (auto& col : m_colliders)col->SetActive(false);
+
 	return 0;
 }
 

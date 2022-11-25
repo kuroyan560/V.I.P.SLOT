@@ -58,20 +58,20 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	/// <param name="LigManager">ライトマネージャ</param>
-	/// <param name="Model">モデル</param>
-	/// <param name="Transform">トランスフォーム</param>
-	/// <param name="Cam">カメラ</param>
+	/// <param name="arg_ligMgr">ライトマネージャ</param>
+	/// <param name="arg_model">モデル</param>
+	/// <param name="arg_transform">トランスフォーム</param>
+	/// <param name="arg_cam">カメラ</param>
 	/// <param name="arg_toonParam">トゥーンのパラメータ</param>
-	/// <param name="BoneBuff">ボーンバッファ</param>
-	static void Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transform& Transform, Camera& Cam, const ToonIndividualParameter& arg_toonParam, std::shared_ptr<ConstantBuffer>BoneBuff = nullptr);
+	/// <param name="arg_boneBuff">ボーンバッファ</param>
+	static void Draw(LightManager& arg_ligMgr, std::weak_ptr<Model>arg_model, Transform& arg_transform, Camera& arg_cam, const IndividualDrawParameter& arg_toonParam, std::shared_ptr<ConstantBuffer>arg_boneBuff = nullptr);
 
 	//描画（デフォルトのトゥーンパラメータを使用）
-	static void Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transform& Transform, Camera& Cam, std::shared_ptr<ConstantBuffer>BoneBuff = nullptr);
+	static void Draw(LightManager& arg_ligMgr, std::weak_ptr<Model>arg_model, Transform& arg_transform, Camera& arg_cam, std::shared_ptr<ConstantBuffer>arg_boneBuff = nullptr);
 	//描画（モデルオブジェクト、トゥーンパラメータ指定）
-	static void Draw(LightManager& LigManager, const std::weak_ptr<ModelObject>ModelObject, Camera& Cam, const ToonIndividualParameter& arg_toonParam);
+	static void Draw(LightManager& arg_ligMgr, const std::weak_ptr<ModelObject>arg_modelObj, Camera& arg_cam, const IndividualDrawParameter& arg_toonParam);
 	//描画（モデルオブジェクト、デフォルトのトゥーンパラメータを使用）
-	static void Draw(LightManager& LigManager, const std::weak_ptr<ModelObject>ModelObject, Camera& Cam);
+	static void Draw(LightManager& arg_ligMgr, const std::weak_ptr<ModelObject>arg_modelObj, Camera& arg_cam);
 
 	/// <summary>
 	/// エッジ描画

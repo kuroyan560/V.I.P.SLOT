@@ -1,7 +1,7 @@
 #include "BasicDrawParameters.h"
 #include"ImguiApp.h"
 
-void ToonIndividualParameter::ImguiDebugItem()
+void IndividualDrawParameter::ImguiDebugItem()
 {
 	if (ImGui::TreeNode("Toon"))
 	{

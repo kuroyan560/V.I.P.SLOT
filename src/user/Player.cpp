@@ -356,11 +356,11 @@ void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>
 {
 	if (m_damegedCallBack->GetIsDraw())
 	{
-		BasicDraw::Draw(*arg_lightMgr.lock(), m_modelObj, *arg_cam.lock(), m_toonParams);
+		BasicDraw::Draw(*arg_lightMgr.lock(), m_modelObj, *arg_cam.lock(), m_drawParam);
 	}
 
 	//ƒˆ[ƒˆ[
-	m_yoYo->Draw(arg_lightMgr, arg_cam, m_toonParams);
+	m_yoYo->Draw(arg_lightMgr, arg_cam, m_drawParam);
 }
 
 void Player::Draw2D(std::weak_ptr<Camera> arg_cam)
@@ -373,7 +373,7 @@ void Player::Draw2D(std::weak_ptr<Camera> arg_cam)
 void Player::ImguiDebug()
 {
 	ImGui::Begin("Player");
-	m_toonParams.ImguiDebugItem();
+	m_drawParam.ImguiDebugItem();
 	ImGui::Text("Coin : { %d }", m_coinVault.GetNum());
 	ImGui::Text("Hp : { %d }", m_hp);
 	m_yoYo->AddImguiDebugItem();

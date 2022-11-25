@@ -5,6 +5,7 @@
 #include"ColliderParentObject.h"
 #include"Timer.h"
 #include"CoinVault.h"
+#include"BasicDrawParameters.h"
 class ObjectBreed;
 class ObjectController;
 class TimeScale;
@@ -30,6 +31,12 @@ private:
 
 	//親（※トランスフォームの親ではない）
 	GameObject* m_parentObj = nullptr;
+
+	//描画パラメータ
+	IndividualDrawParameter m_drawParam;
+
+	//ダメージ演出
+	Timer m_damageTimer;
 
 public:
 	//トランスフォーム

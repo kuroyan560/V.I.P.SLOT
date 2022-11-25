@@ -29,7 +29,7 @@ class Player : public ColliderParentObject
 	std::shared_ptr<ModelObject>m_modelObj;
 
 	//トゥーンのパラメータ
-	ToonIndividualParameter m_toonParams;
+	IndividualDrawParameter m_drawParam;
 
 	Vec3<float>m_oldPos;
 	//移動
