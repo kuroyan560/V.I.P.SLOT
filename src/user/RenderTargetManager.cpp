@@ -14,10 +14,12 @@ RenderTargetManager::RenderTargetManager()
 	m_depthStencil = app.GenerateDepthStencil(backBuffSize);
 
 	//エミッシブマップ生成
-	m_emissiveMap = app.GenerateRenderTarget(DXGI_FORMAT_R32G32B32A32_FLOAT, Color(0, 0, 0, 1), backBuffSize, L"EmissiveMap");
+	m_emissiveMap = app.GenerateRenderTarget(DXGI_FORMAT_R32G32B32A32_FLOAT, Color(0.0f, 0.0f, 0.0f, 1.0f), backBuffSize, L"EmissiveMap");
 
 	//デプスマップ生成
 	m_depthMap = app.GenerateRenderTarget(DXGI_FORMAT_R32_FLOAT, Color(0, 0, 0, 0), backBuffSize, L"DepthMap");
+	//エッジカラーマップ用意
+	m_edgeColorMap = app.GenerateRenderTarget(backBuff->GetDesc().Format, Color(0.0f, 0.0f, 0.0f, 1.0f), backBuffSize, L"EdgeColorMap");
 
 }
 
@@ -31,6 +33,7 @@ void RenderTargetManager::Clear()
 	graphics.ClearDepthStencil(m_depthStencil);
 	graphics.ClearRenderTarget(m_emissiveMap);
 	graphics.ClearRenderTarget(m_depthMap);
+	graphics.ClearRenderTarget(m_edgeColorMap);
 }
 
 void RenderTargetManager::Clear(DRAW_TARGET_TAG arg_tag)
@@ -52,6 +55,9 @@ void RenderTargetManager::Clear(DRAW_TARGET_TAG arg_tag)
 		break;
 	case DRAW_TARGET_TAG::DEPTH_MAP:
 		graphics.ClearRenderTarget(m_depthMap);
+		break;
+	case DRAW_TARGET_TAG::EDGE_COLOR_MAP:
+		graphics.ClearRenderTarget(m_edgeColorMap);
 		break;
 	}
 }
@@ -80,6 +86,9 @@ void RenderTargetManager::Set(bool arg_depthStencil, std::vector<DRAW_TARGET_TAG
 		case DRAW_TARGET_TAG::DEPTH_MAP:
 			rts.push_back(m_depthMap);
 			break;
+		case DRAW_TARGET_TAG::EDGE_COLOR_MAP:
+			rts.push_back(m_edgeColorMap);
+			break;
 		}
 	}
 
@@ -90,4 +99,9 @@ void RenderTargetManager::Set(bool arg_depthStencil, std::vector<DRAW_TARGET_TAG
 std::shared_ptr<TextureBuffer> RenderTargetManager::GetDepthMap()
 {
 	return m_depthMap;
+}
+
+std::shared_ptr<TextureBuffer> RenderTargetManager::GetEdgeColorMap()
+{
+	return m_edgeColorMap;
 }

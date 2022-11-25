@@ -1,7 +1,5 @@
 struct EdgeParameter
 {
-	//エッジカラー
-    float4 m_color;
     //エッジ描画の判断をする深度差のしきい値
     float m_depthThreshold;
     //深度値を比べるテクセルへのUVオフセット
@@ -16,6 +14,7 @@ struct VSOutput
 };
 
 Texture2D<float4> g_depthMap : register(t0);
+Texture2D<float4> g_edgeColorMap : register(t1);
 SamplerState g_sampler : register(s0);
 cbuffer cbuff0 : register(b0)
 {
@@ -41,11 +40,23 @@ float4 PSmain(VSOutput input) : SV_TARGET
     // このピクセルの深度値を取得
     float depth = g_depthMap.Sample(g_sampler, input.m_uv).x;
 
+    float nearest = depth;
+    if (nearest <= 0.0f)
+        nearest = 300000.0f;
+    float4 nearestEdgeColor = g_edgeColorMap.Sample(g_sampler, input.m_uv);
+    
     // 近傍8テクセルの深度値の平均値を計算する
     float depth2 = 0.0f;
     for( int i = 0; i < 8; i++)
     {
-        depth2 += g_depthMap.Sample(g_sampler, input.m_uv + m_edgeParam.m_uvOffset[i]).x;
+        float2 pickUv = input.m_uv + m_edgeParam.m_uvOffset[i];
+        float pickDepth = g_depthMap.Sample(g_sampler, pickUv).x;
+        depth2 += pickDepth;
+        if(0 < pickDepth && pickDepth < nearest)
+        {
+            nearestEdgeColor = g_edgeColorMap.Sample(g_sampler, pickUv);
+            nearest = pickDepth;
+        }
     }
     depth2 /= 8.0f;
 
@@ -54,7 +65,8 @@ float4 PSmain(VSOutput input) : SV_TARGET
     if (m_edgeParam.m_depthThreshold <= abs(depth - depth2))
     {
         //エッジ出力
-        return m_edgeParam.m_color;
+        //一番手前側のエッジカラーを採用する
+        return nearestEdgeColor;
     }
     
     discard;

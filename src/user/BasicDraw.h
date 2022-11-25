@@ -3,6 +3,8 @@
 #include"LightBloomDevice.h"
 #include"Transform.h"
 #include"Color.h"
+#include"BasicDrawParameters.h"
+
 class LightManager;
 class ModelObject;
 class Model;
@@ -18,29 +20,16 @@ class BasicDraw
 	struct ToonCommonParameter
 	{
 		//明るさのしきい値（範囲を持たせている）
-		float m_brightThresholdLow = 0.31f;
-		float m_brightThresholdRange = 0.0f;
+		float m_brightThresholdLow = 0.66f;
+		float m_brightThresholdRange = 0.03f;
 		//リムライトの影響部分をそのままの色で出力する際のしきい値
-		float m_limThreshold = 0.0f;
+		float m_limThreshold = 0.4f;
 	};
 	static ToonCommonParameter s_toonCommonParam;
-
-	//トゥーンシェーダーの個別のパラメータ
-	struct ToonIndividualParameter
-	{
-		//明るい部分に乗算する色
-		Color m_brightMulColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
-		//暗い部分に乗算する色
-		Color m_darkMulColor = Color(0.3f, 0.3f, 0.3f, 1.0f);
-	};
-	//描画関数呼び出し側から特に指定がなければ使用するパラメータ
-	static ToonIndividualParameter s_toonDefaultIndividualParam;
 
 	//エッジの共有パラメータ
 	struct EdgeCommonParameter
 	{
-		//エッジカラー
-		Color m_color = Color(0.0f, 0.0, 0.0f, 1.0f);
 		//エッジ描画の判断をする深度差のしきい値
 		float m_depthThreshold = 0.1f;
 		float m_pad[3];
@@ -51,6 +40,7 @@ class BasicDraw
 
 	static int s_drawCount;
 
+	//モデル描画
 	static std::shared_ptr<GraphicsPipeline>s_drawPipeline;
 	static std::vector<std::shared_ptr<ConstantBuffer>>s_drawTransformBuff;
 	static std::vector<std::shared_ptr<ConstantBuffer>>s_toonIndividualParamBuff;
@@ -87,7 +77,8 @@ public:
 	/// エッジ描画
 	/// </summary>
 	/// <param name="arg_depthMap">深度マップ</param>
-	static void DrawEdge(std::shared_ptr<TextureBuffer>arg_depthMap);
+	/// <param name="arg_edgeColorMap">エッジカラーマップ</param>
+	static void DrawEdge(std::shared_ptr<TextureBuffer>arg_depthMap, std::shared_ptr<TextureBuffer>arg_edgeColorMap);
 
 	static void ImguiDebug();
 };

@@ -15,7 +15,6 @@ std::vector<std::shared_ptr<ConstantBuffer>>BasicDraw::s_drawTransformBuff;
 std::vector<std::shared_ptr<ConstantBuffer>>BasicDraw::s_toonIndividualParamBuff;
 std::shared_ptr<ConstantBuffer>BasicDraw::s_toonCommonParamBuff;
 BasicDraw::ToonCommonParameter BasicDraw::s_toonCommonParam;
-BasicDraw::ToonIndividualParameter BasicDraw::s_toonDefaultIndividualParam;
 
 std::shared_ptr<GraphicsPipeline>BasicDraw::s_edgePipeline;
 std::unique_ptr<SpriteMesh>BasicDraw::s_spriteMesh;
@@ -61,16 +60,34 @@ void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 			RenderTargetInfo(D3D12App::Instance()->GetBackBuffFormat(), AlphaBlendMode_Trans),	//通常描画
 			RenderTargetInfo(DXGI_FORMAT_R32G32B32A32_FLOAT, AlphaBlendMode_Trans),	//エミッシブマップ
 			RenderTargetInfo(DXGI_FORMAT_R32_FLOAT, AlphaBlendMode_None),	//深度マップ
+			RenderTargetInfo(D3D12App::Instance()->GetBackBuffFormat(), AlphaBlendMode_None),	//エッジカラーマップ
 		};
 		//パイプライン生成
-		s_drawPipeline = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, ModelMesh::Vertex::GetInputLayout(), ROOT_PARAMETER, RENDER_TARGET_INFO, { WrappedSampler(true, true) });
+		s_drawPipeline = D3D12App::Instance()->GenerateGraphicsPipeline(
+			PIPELINE_OPTION, 
+			SHADERS,
+			ModelMesh::Vertex::GetInputLayout(), 
+			ROOT_PARAMETER, 
+			RENDER_TARGET_INFO,
+			{ WrappedSampler(true, true) });
 	}
 
 	//事前にバッファを用意
 	for (int i = 0; i < arg_prepareBuffNum; ++i)
 	{
-		s_drawTransformBuff.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("BasicDraw - Transform -" + std::to_string(i)).c_str()));
-		s_toonIndividualParamBuff.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(ToonIndividualParameter), 1, nullptr, ("BasicDraw - ToonIndividualParameter -" + std::to_string(i)).c_str()));
+		s_drawTransformBuff.emplace_back(
+			D3D12App::Instance()->GenerateConstantBuffer(
+				sizeof(Matrix), 
+				1, 
+				nullptr, 
+				("BasicDraw - Transform -" + std::to_string(i)).c_str()));
+
+		s_toonIndividualParamBuff.emplace_back(
+			D3D12App::Instance()->GenerateConstantBuffer(
+				sizeof(ToonIndividualParameter), 
+				1, 
+				nullptr, 
+				("BasicDraw - ToonIndividualParameter -" + std::to_string(i)).c_str()));
 	}
 
 	//トゥーンシェーダー用のバッファを用意
@@ -95,6 +112,7 @@ void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 		{
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"平行投影行列"),
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,"デプスマップ"),
+			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,"エッジカラーマップ"),
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"専用のパラメータ"),
 		};
 
@@ -184,7 +202,7 @@ void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transf
 
 void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model> Model, Transform& Transform, Camera& Cam, std::shared_ptr<ConstantBuffer> BoneBuff)
 {
-	BasicDraw::Draw(LigManager, Model, Transform, Cam, s_toonDefaultIndividualParam, BoneBuff);
+	BasicDraw::Draw(LigManager, Model, Transform, Cam, ToonIndividualParameter::GetDefault(), BoneBuff);
 }
 
 void BasicDraw::Draw(LightManager& LigManager, const std::weak_ptr<ModelObject> ModelObject, Camera& Cam, const ToonIndividualParameter& arg_toonParam)
@@ -199,10 +217,10 @@ void BasicDraw::Draw(LightManager& LigManager, const std::weak_ptr<ModelObject> 
 
 void BasicDraw::Draw(LightManager& LigManager, const std::weak_ptr<ModelObject> ModelObject, Camera& Cam)
 {
-	Draw(LigManager, ModelObject, Cam, s_toonDefaultIndividualParam);
+	Draw(LigManager, ModelObject, Cam, ToonIndividualParameter::GetDefault());
 }
 
-void BasicDraw::DrawEdge(std::shared_ptr<TextureBuffer> arg_depthMap)
+void BasicDraw::DrawEdge(std::shared_ptr<TextureBuffer> arg_depthMap, std::shared_ptr<TextureBuffer>arg_edgeColorMap)
 {
 	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(s_edgePipeline);
 
@@ -210,6 +228,7 @@ void BasicDraw::DrawEdge(std::shared_ptr<TextureBuffer> arg_depthMap)
 	{
 		{KuroEngine::Instance()->GetParallelMatProjBuff(),CBV},
 		{arg_depthMap,SRV},
+		{arg_edgeColorMap,SRV},
 		{s_edgeShaderParamBuff,CBV},
 	};
 	s_spriteMesh->Render(descDatas);
@@ -233,11 +252,11 @@ void BasicDraw::ImguiDebug()
 		if (ImGui::DragFloat("LimThreshold", &s_toonCommonParam.m_limThreshold, 0.01f, 0.0f, 1.0f, "%f"))toonCommonParamChanged = true;
 		if (toonCommonParamChanged)s_toonCommonParamBuff->Mapping(&s_toonCommonParam);
 
-		//トゥーンシェーダーのデフォルト個別パラメータ
-		//明るい部分に乗算する色
-		ImGui::ColorPicker4("DefaultBrightMulColor", (float*)&s_toonDefaultIndividualParam.m_brightMulColor);
-		//暗い部分に乗算する色
-		ImGui::ColorPicker4("DefaultDarkMulColor", (float*)&s_toonDefaultIndividualParam.m_darkMulColor);
+		if (ImGui::TreeNode("DefaultIndividualParameter"))
+		{
+			ToonIndividualParameter::GetDefault().ImguiDebugItem();
+			ImGui::TreePop();
+		}
 
 		ImGui::TreePop();
 	}
@@ -246,7 +265,6 @@ void BasicDraw::ImguiDebug()
 	if (ImGui::TreeNode("Edge"))
 	{
 		bool edgeParamChanged = false;
-		if (ImGui::ColorPicker4("EdgeColor", (float*)&s_edgeShaderParam.m_color))edgeParamChanged = true;
 		if (ImGui::DragFloat("DepthDifferenceThreshold", &s_edgeShaderParam.m_depthThreshold))edgeParamChanged = true;
 		if (edgeParamChanged)s_edgeShaderParamBuff->Mapping(&s_edgeShaderParam);
 		ImGui::TreePop();

@@ -14,6 +14,7 @@ struct ToonIndividualParameter
 {
     float4 m_brightMulColor;
     float4 m_darkMulColor;
+    float4 m_edgeColor;
 };
 
 cbuffer cbuff0 : register(b0)
@@ -125,6 +126,7 @@ struct PSOutput
     float4 color : SV_Target0;
     float4 emissive : SV_Target1;
     float depth : SV_Target2;
+    float4 edgeColor : SV_Target3;
 };
 
 float GetBright(float3 arg_rgb)
@@ -261,7 +263,6 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
     float limEfBright = GetBright(limEf.rgb);
     float limThresholdResult = step(toonCommonParam.m_limThreshold, limEfBright);
     result.xyz = limThresholdResult * ligEffCol.xyz + (1.0f - limThresholdResult) * result.xyz;
-    
 
     PSOutput output;
     output.color = result;
@@ -275,6 +276,8 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
     // output.emissive.w = result.w;
     output.depth = input.depthInView;
 
+    output.edgeColor = toonIndividualParam.m_edgeColor;
+    
     return output;
 }
 

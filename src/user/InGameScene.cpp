@@ -143,7 +143,7 @@ void InGameScene::OnDraw()
 	rtMgr.Clear();
 
 	//レンダーターゲットセット
-	rtMgr.Set(true, { DRAW_TARGET_TAG::BACK_BUFF,DRAW_TARGET_TAG::EMISSIVE_MAP,DRAW_TARGET_TAG::DEPTH_MAP });
+	rtMgr.Set(true);
 
 	//2D背景
 	DrawFunc2D::DrawGraph({ 0,0 }, m_backGround, 1.0f, AlphaBlendMode_None);
@@ -177,7 +177,7 @@ void InGameScene::OnDraw()
 	//エッジの描画
 	if (m_isDrawEdge)
 	{
-		BasicDraw::DrawEdge(rtMgr.GetDepthMap());
+		BasicDraw::DrawEdge(rtMgr.GetDepthMap(), rtMgr.GetEdgeColorMap());
 	}
 
 	//デバッグ描画
@@ -205,7 +205,7 @@ void InGameScene::OnImguiDebug()
 	//ConstParameter::ImguiDebug();
 	//m_stageMgr->ImguiDebug(m_collisionMgr);
 	//m_slotMachine->ImguiDebug();
-	//m_player->ImguiDebug();
+	m_player->ImguiDebug();
 	//m_collisionMgr->ImguiDebug();
 	//m_enemyEmitter->ImguiDebug();
 	m_ligMgr->ImguiDebug();

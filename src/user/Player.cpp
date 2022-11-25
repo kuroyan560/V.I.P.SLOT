@@ -13,6 +13,7 @@
 #include"YoYo.h"
 #include"Scaffold.h"
 #include"TexHitEffect.h"
+#include"BasicDraw.h"
 
 void Player::Jump(Vec3<float>* arg_rockOnPos)
 {
@@ -351,16 +352,15 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	m_hitEffect->Update(timeScale);
 }
 
-#include"BasicDraw.h"
 void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
 {
 	if (m_damegedCallBack->GetIsDraw())
 	{
-		BasicDraw::Draw(*arg_lightMgr.lock(), m_modelObj, *arg_cam.lock());
+		BasicDraw::Draw(*arg_lightMgr.lock(), m_modelObj, *arg_cam.lock(), m_toonParams);
 	}
 
 	//ƒˆ[ƒˆ[
-	m_yoYo->Draw(arg_lightMgr, arg_cam);
+	m_yoYo->Draw(arg_lightMgr, arg_cam, m_toonParams);
 }
 
 void Player::Draw2D(std::weak_ptr<Camera> arg_cam)
@@ -373,6 +373,7 @@ void Player::Draw2D(std::weak_ptr<Camera> arg_cam)
 void Player::ImguiDebug()
 {
 	ImGui::Begin("Player");
+	m_toonParams.ImguiDebugItem();
 	ImGui::Text("Coin : { %d }", m_coinVault.GetNum());
 	ImGui::Text("Hp : { %d }", m_hp);
 	m_yoYo->AddImguiDebugItem();

@@ -9,6 +9,7 @@
 #include"Transform.h"
 #include"ColliderParentObject.h"
 #include"PlayersCallBack.h"
+#include"BasicDrawParameters.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -26,6 +27,9 @@ class Player : public ColliderParentObject
 {
 	//モデルオブジェクト
 	std::shared_ptr<ModelObject>m_modelObj;
+
+	//トゥーンのパラメータ
+	ToonIndividualParameter m_toonParams;
 
 	Vec3<float>m_oldPos;
 	//移動

@@ -12,6 +12,7 @@ class TimeScale;
 class LightManager;
 class Camera;
 class CollisionCallBack;
+class ToonIndividualParameter;
 
 class YoYo
 {
@@ -106,7 +107,7 @@ public:
 	//更新
 	void Update(const TimeScale& arg_timeScale, float arg_playersVecX);
 	//描画
-	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
+	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam, const ToonIndividualParameter& arg_toonParam);
 
 	//imguiデバッグ
 	void AddImguiDebugItem();
