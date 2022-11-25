@@ -223,16 +223,22 @@ void BasicDraw::ImguiDebug()
 	//描画
 	if (ImGui::TreeNode("Toon"))
 	{
+		//トゥーンシェーダーの共通パラメータ
+		bool toonCommonParamChanged = false;
 		//しきい値下限
-		bool toonParamChanged = false;
-		if (ImGui::DragFloat("BrightThresholdLow", &s_toonCommonParam.m_brightThresholdLow, 0.01f, 0.0f, 1.0f, "%f"))toonParamChanged = true;
-
+		if (ImGui::DragFloat("BrightThresholdLow", &s_toonCommonParam.m_brightThresholdLow, 0.01f, 0.0f, 1.0f, "%f"))toonCommonParamChanged = true;
 		//しきい値範囲
-		if (ImGui::DragFloat("ThresHoldRange", &s_toonCommonParam.m_brightThresholdRange, 0.01f, 0.0f, 1.0f - s_toonCommonParam.m_brightThresholdLow, "%f"))toonParamChanged = true;
+		if (ImGui::DragFloat("BrightThresholdRange", &s_toonCommonParam.m_brightThresholdRange, 0.01f, 0.0f, 1.0f - s_toonCommonParam.m_brightThresholdLow, "%f"))toonCommonParamChanged = true;
+		//リムライト強調のしきい値
+		if (ImGui::DragFloat("LimThreshold", &s_toonCommonParam.m_limThreshold, 0.01f, 0.0f, 1.0f, "%f"))toonCommonParamChanged = true;
+		if (toonCommonParamChanged)s_toonCommonParamBuff->Mapping(&s_toonCommonParam);
 
-		if (ImGui::ColorPicker4("DefaultBrightMulColor", (float*)&s_toonDefaultIndividualParam.m_brightMulColor))toonParamChanged = true;
-		if (ImGui::ColorPicker4("DefaultDarkMulColor", (float*)&s_toonDefaultIndividualParam.m_darkMulColor))toonParamChanged = true;
-		if (toonParamChanged)s_toonCommonParamBuff->Mapping(&s_toonCommonParam);
+		//トゥーンシェーダーのデフォルト個別パラメータ
+		//明るい部分に乗算する色
+		ImGui::ColorPicker4("DefaultBrightMulColor", (float*)&s_toonDefaultIndividualParam.m_brightMulColor);
+		//暗い部分に乗算する色
+		ImGui::ColorPicker4("DefaultDarkMulColor", (float*)&s_toonDefaultIndividualParam.m_darkMulColor);
+
 		ImGui::TreePop();
 	}
 

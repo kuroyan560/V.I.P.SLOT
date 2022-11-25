@@ -20,6 +20,8 @@ class BasicDraw
 		//明るさのしきい値（範囲を持たせている）
 		float m_brightThresholdLow = 0.31f;
 		float m_brightThresholdRange = 0.0f;
+		//リムライトの影響部分をそのままの色で出力する際のしきい値
+		float m_limThreshold = 0.0f;
 	};
 	static ToonCommonParameter s_toonCommonParam;
 

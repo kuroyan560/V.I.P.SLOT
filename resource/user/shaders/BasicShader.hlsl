@@ -7,6 +7,7 @@ struct ToonCommonParameter
 {
     float m_brightThresholdLow;
     float m_brightThresholdRange;
+    float m_limThreshold;
 };
 
 struct ToonIndividualParameter
@@ -235,11 +236,14 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
     
     float4 texCol = baseTex.Sample(smp, input.uv);
     texCol.xyz += material.baseColor.xyz;
-    float4 result = texCol;
-    result.xyz = ((material.ambient * material.ambientFactor) + ligEffect) * result.xyz;
-    result.w *= (1.0f - material.transparent);
+    float4 ligEffCol = texCol;
+    ligEffCol.xyz = ((material.ambient * material.ambientFactor) + ligEffect) * ligEffCol.xyz;
+    ligEffCol.w *= (1.0f - material.transparent);
     
     //アニメ風トゥーン加工========================================================
+    
+    //トゥーンによる色
+    float4 toonCol = ligEffCol;
     
     //明るさ算出（照明影響より）
     float lightEffectBright = GetBright(ligEffect.xyz);
@@ -248,19 +252,19 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
     float thresholdResult = smoothstep(toonCommonParam.m_brightThresholdLow, toonCommonParam.m_brightThresholdLow + toonCommonParam.m_brightThresholdRange, lightEffectBright);
     float4 brightCol = texCol * toonIndividualParam.m_brightMulColor * thresholdResult;
     float4 darkCol = texCol * toonIndividualParam.m_darkMulColor * (1.0f - thresholdResult);
-    result.xyz = brightCol + darkCol;
+    toonCol.xyz = brightCol + darkCol;
+    float4 result = toonCol;
 
     //=========================================================================
 
     //リムライト強調
     float limEfBright = GetBright(limEf.rgb);
-    float limThresholdResult = step(0.7f, limEfBright);
-    result.xyz = limThresholdResult * limEf.xyz + (1.0f - limThresholdResult) * result.xyz;
+    float limThresholdResult = step(toonCommonParam.m_limThreshold, limEfBright);
+    result.xyz = limThresholdResult * ligEffCol.xyz + (1.0f - limThresholdResult) * result.xyz;
     
 
     PSOutput output;
     output.color = result;
-
 
     output.emissive = float4(0,0,0,0);
     
