@@ -11,7 +11,6 @@ class LightManager;
 class Collider;
 class TexHitEffect;
 class TimeScale;
-class Player;
 
 class Block : public CollisionCallBack, public ColliderParentObject
 {
@@ -47,7 +46,6 @@ private:
 		std::weak_ptr<Collider>arg_otherCollider)override;
 
 protected:
-	static std::weak_ptr<Player>s_player;
 	static int s_hitSE;
 
 	//コライダー
@@ -78,9 +76,8 @@ protected:
 	virtual void OnExplosionFinishTrigger() {};
 
 public:
-	static void StaticAwake(std::weak_ptr<Player>arg_player,int arg_hitSE)
+	static void StaticAwake(int arg_hitSE)
 	{
-		s_player = arg_player;
 		s_hitSE = arg_hitSE;
 	}
 

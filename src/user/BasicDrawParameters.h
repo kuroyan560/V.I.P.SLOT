@@ -19,9 +19,12 @@ public:
 	Color m_brightMulColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 	//暗い部分に乗算する色
 	Color m_darkMulColor = Color(0.3f, 0.3f, 0.3f, 1.0f);
+	//リムライト部分の補正色（アルファ：補正率）
+	//【補正率】 0 ：本来の色、1 : 補正色
+	Color m_limBrightColor = Color(1.0f, 1.0f, 1.0f, 0.0f);
 	//エッジ色
 	Color m_edgeColor = Color(0.0f, 0.0f, 0.0f, 1.0f);
-
+	
 	ToonIndividualParameter() { *this = GetDefault(); }
 	ToonIndividualParameter(
 		Color arg_brightMulColor,

@@ -61,7 +61,7 @@ InGameScene::InGameScene()
 	int blockBrokenSE = AudioApp::Instance()->LoadAudio("resource/user/sound/block_broken.wav", 0.5f);
 
 	//ブロックの静的パラメータ設定
-	Block::StaticAwake(m_player, blockBrokenSE);
+	Block::StaticAwake(blockBrokenSE);
 }
 
 void InGameScene::OnInitialize()

@@ -8,7 +8,6 @@
 #include"Player.h"
 #include"AudioApp.h"
 
-std::weak_ptr<Player>Block::s_player;
 int Block::s_hitSE = 0;
 
 void Block::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
@@ -80,7 +79,6 @@ void CoinBlock::OnDraw(Transform& arg_transform, std::weak_ptr<LightManager>& ar
 void CoinBlock::OnHitTrigger()
 {
 	this->Explosion();
-	s_player.lock()->GetCoin(1);
 }
 
 CoinBlock::CoinBlock(std::shared_ptr<Collider>arg_origin, int arg_hp)
