@@ -12,13 +12,15 @@ int BasicDraw::s_drawCount = 0;
 
 std::shared_ptr<GraphicsPipeline>BasicDraw::s_drawPipeline;
 std::vector<std::shared_ptr<ConstantBuffer>>BasicDraw::s_drawTransformBuff;
-std::shared_ptr<ConstantBuffer>BasicDraw::s_toonShaderParamBuff;
-BasicDraw::ToonShaderParameter BasicDraw::s_toonShaderParam;
+std::vector<std::shared_ptr<ConstantBuffer>>BasicDraw::s_toonIndividualParamBuff;
+std::shared_ptr<ConstantBuffer>BasicDraw::s_toonCommonParamBuff;
+BasicDraw::ToonCommonParameter BasicDraw::s_toonCommonParam;
+BasicDraw::ToonIndividualParameter BasicDraw::s_toonDefaultIndividualParam;
 
 std::shared_ptr<GraphicsPipeline>BasicDraw::s_edgePipeline;
 std::unique_ptr<SpriteMesh>BasicDraw::s_spriteMesh;
 std::shared_ptr<ConstantBuffer>BasicDraw::s_edgeShaderParamBuff;
-BasicDraw::EdgeShaderParameter BasicDraw::s_edgeShaderParam;
+BasicDraw::EdgeCommonParameter BasicDraw::s_edgeShaderParam;
 
 void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 {
@@ -48,7 +50,8 @@ void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"ボーン行列バッファ"),
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,"ベースカラーテクスチャ"),
 			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"マテリアル基本情報バッファ"),
-			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"専用のパラメータ"),
+			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"トゥーンの共通パラメータ"),
+			RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_CBV,"トゥーンの個別パラメータ"),
 
 		};
 
@@ -63,16 +66,19 @@ void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 		s_drawPipeline = D3D12App::Instance()->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, ModelMesh::Vertex::GetInputLayout(), ROOT_PARAMETER, RENDER_TARGET_INFO, { WrappedSampler(true, true) });
 	}
 
-	//事前にトランスフォームバッファを用意
+	//事前にバッファを用意
 	for (int i = 0; i < arg_prepareBuffNum; ++i)
+	{
 		s_drawTransformBuff.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("BasicDraw - Transform -" + std::to_string(i)).c_str()));
+		s_toonIndividualParamBuff.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(ToonIndividualParameter), 1, nullptr, ("BasicDraw - ToonIndividualParameter -" + std::to_string(i)).c_str()));
+	}
 
 	//トゥーンシェーダー用のバッファを用意
-	s_toonShaderParamBuff = D3D12App::Instance()->GenerateConstantBuffer(
-		sizeof(s_toonShaderParam),
+	s_toonCommonParamBuff = D3D12App::Instance()->GenerateConstantBuffer(
+		sizeof(s_toonCommonParam),
 		1, 
-		&s_toonShaderParam, 
-		"BasicDraw - ToonShaderParameter");
+		&s_toonCommonParam, 
+		"BasicDraw - ToonCommonParameter");
 
 	//エッジラインパイプライン
 	{
@@ -126,19 +132,26 @@ void BasicDraw::Awake(Vec2<float>arg_screenSize, int arg_prepareBuffNum)
 		sizeof(s_edgeShaderParam),
 		1, 
 		&s_edgeShaderParam, 
-		"BasicDraw - EdgeShaderParameter");
+		"BasicDraw - EdgeCommonParameter");
 }
 
-void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transform& Transform, Camera& Cam, std::shared_ptr<ConstantBuffer>BoneBuff)
+void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transform& Transform, Camera& Cam, const ToonIndividualParameter& arg_toonParam, std::shared_ptr<ConstantBuffer>BoneBuff)
 {
 	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(s_drawPipeline);
 
+	//トランスフォームバッファ送信
 	if (s_drawTransformBuff.size() < (s_drawCount + 1))
 	{
 		s_drawTransformBuff.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(Matrix), 1, nullptr, ("BasicDraw - Transform -" + std::to_string(s_drawCount)).c_str()));
 	}
-
 	s_drawTransformBuff[s_drawCount]->Mapping(&Transform.GetWorldMat());
+
+	//トゥーンの個別パラメータバッファ送信
+	if (s_toonIndividualParamBuff.size() < (s_drawCount + 1))
+	{
+		s_toonIndividualParamBuff.emplace_back(D3D12App::Instance()->GenerateConstantBuffer(sizeof(ToonIndividualParameter), 1, nullptr, ("BasicDraw - ToonIndividualParameter -" + std::to_string(s_drawCount)).c_str()));
+	}
+	s_toonIndividualParamBuff[s_drawCount]->Mapping(&arg_toonParam);
 
 	auto model = Model.lock();
 
@@ -159,7 +172,8 @@ void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transf
 				{BoneBuff,CBV},
 				{mesh.material->texBuff[COLOR_TEX],SRV},
 				{mesh.material->buff,CBV},
-				{s_toonShaderParamBuff,CBV}
+				{s_toonCommonParamBuff,CBV},
+				{s_toonIndividualParamBuff[s_drawCount],CBV},
 			},
 			Transform.GetPos().z,
 			true);
@@ -168,15 +182,24 @@ void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model>Model, Transf
 	s_drawCount++;
 }
 
-void BasicDraw::Draw(LightManager& LigManager, const std::weak_ptr<ModelObject> ModelObject, Camera& Cam)
+void BasicDraw::Draw(LightManager& LigManager, std::weak_ptr<Model> Model, Transform& Transform, Camera& Cam, std::shared_ptr<ConstantBuffer> BoneBuff)
+{
+	BasicDraw::Draw(LigManager, Model, Transform, Cam, s_toonDefaultIndividualParam, BoneBuff);
+}
+
+void BasicDraw::Draw(LightManager& LigManager, const std::weak_ptr<ModelObject> ModelObject, Camera& Cam, const ToonIndividualParameter& arg_toonParam)
 {
 	auto obj = ModelObject.lock();
 	//ボーン行列バッファ取得（アニメーターがnullptrなら空）
 	auto model = obj->m_model;
 	std::shared_ptr<ConstantBuffer>boneBuff;
 	if (obj->m_animator)boneBuff = obj->m_animator->GetBoneMatBuff();
+	Draw(LigManager, model, obj->m_transform, Cam, arg_toonParam, boneBuff);
+}
 
-	Draw(LigManager, model, obj->m_transform, Cam, boneBuff);
+void BasicDraw::Draw(LightManager& LigManager, const std::weak_ptr<ModelObject> ModelObject, Camera& Cam)
+{
+	Draw(LigManager, ModelObject, Cam, s_toonDefaultIndividualParam);
 }
 
 void BasicDraw::DrawEdge(std::shared_ptr<TextureBuffer> arg_depthMap)
@@ -202,14 +225,14 @@ void BasicDraw::ImguiDebug()
 	{
 		//しきい値下限
 		bool toonParamChanged = false;
-		if (ImGui::DragFloat("BrightThresholdLow", &s_toonShaderParam.m_brightThresholdLow, 0.01f, 0.0f, 1.0f, "%f"))toonParamChanged = true;
+		if (ImGui::DragFloat("BrightThresholdLow", &s_toonCommonParam.m_brightThresholdLow, 0.01f, 0.0f, 1.0f, "%f"))toonParamChanged = true;
 
 		//しきい値範囲
-		if (ImGui::DragFloat("ThresHoldRange", &s_toonShaderParam.m_brightThresholdRange, 0.01f, 0.0f, 1.0f - s_toonShaderParam.m_brightThresholdLow, "%f"))toonParamChanged = true;
+		if (ImGui::DragFloat("ThresHoldRange", &s_toonCommonParam.m_brightThresholdRange, 0.01f, 0.0f, 1.0f - s_toonCommonParam.m_brightThresholdLow, "%f"))toonParamChanged = true;
 
-		if (ImGui::ColorPicker4("BrightMulColor", (float*)&s_toonShaderParam.m_brightMulColor))toonParamChanged = true;
-		if (ImGui::ColorPicker4("DarkMulColor", (float*)&s_toonShaderParam.m_darkMulColor))toonParamChanged = true;
-		if (toonParamChanged)s_toonShaderParamBuff->Mapping(&s_toonShaderParam);
+		if (ImGui::ColorPicker4("DefaultBrightMulColor", (float*)&s_toonDefaultIndividualParam.m_brightMulColor))toonParamChanged = true;
+		if (ImGui::ColorPicker4("DefaultDarkMulColor", (float*)&s_toonDefaultIndividualParam.m_darkMulColor))toonParamChanged = true;
+		if (toonParamChanged)s_toonCommonParamBuff->Mapping(&s_toonCommonParam);
 		ImGui::TreePop();
 	}
 

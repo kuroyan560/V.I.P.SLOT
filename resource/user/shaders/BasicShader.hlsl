@@ -3,12 +3,16 @@
 #include"../../engine/LightInfo.hlsli"
 #include"../../engine/Math.hlsli"
 
-struct ToonParameter
+struct ToonCommonParameter
+{
+    float m_brightThresholdLow;
+    float m_brightThresholdRange;
+};
+
+struct ToonIndividualParameter
 {
     float4 m_brightMulColor;
     float4 m_darkMulColor;
-    float m_brightThresholdLow;
-    float m_brightThresholdRange;
 };
 
 cbuffer cbuff0 : register(b0)
@@ -47,7 +51,12 @@ cbuffer cbuff3 : register(b4)
 
 cbuffer cbuff4 : register(b5)
 {
-    ToonParameter toonParam;
+    ToonCommonParameter toonCommonParam;
+}
+
+cbuffer cbuff5 : register(b6)
+{
+    ToonIndividualParameter toonIndividualParam;
 }
 
 struct VSOutput
@@ -116,6 +125,11 @@ struct PSOutput
     float4 emissive : SV_Target1;
     float depth : SV_Target2;
 };
+
+float GetBright(float3 arg_rgb)
+{
+    return dot(arg_rgb, float3(0.2125f, 0.7154f, 0.0721f));
+}
 
 PSOutput PSmain(VSOutput input) : SV_TARGET
 {
@@ -228,16 +242,21 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
     //アニメ風トゥーン加工========================================================
     
     //明るさ算出（照明影響より）
-    float bright = dot(ligEffect.xyz, float3(0.2125f, 0.7154f, 0.0721f));
+    float lightEffectBright = GetBright(ligEffect.xyz);
 
     //明るさのしきい値に応じて色を決める
-    float thresholdResult = smoothstep(toonParam.m_brightThresholdLow, toonParam.m_brightThresholdLow + toonParam.m_brightThresholdRange, bright);
-    float4 brightCol = texCol * toonParam.m_brightMulColor * thresholdResult;
-    float4 darkCol = texCol * toonParam.m_darkMulColor * (1.0f - thresholdResult);
+    float thresholdResult = smoothstep(toonCommonParam.m_brightThresholdLow, toonCommonParam.m_brightThresholdLow + toonCommonParam.m_brightThresholdRange, lightEffectBright);
+    float4 brightCol = texCol * toonIndividualParam.m_brightMulColor * thresholdResult;
+    float4 darkCol = texCol * toonIndividualParam.m_darkMulColor * (1.0f - thresholdResult);
     result.xyz = brightCol + darkCol;
 
     //=========================================================================
 
+    //リムライト強調
+    float limEfBright = GetBright(limEf.rgb);
+    float limThresholdResult = step(0.7f, limEfBright);
+    result.xyz = limThresholdResult * limEf.xyz + (1.0f - limThresholdResult) * result.xyz;
+    
 
     PSOutput output;
     output.color = result;
