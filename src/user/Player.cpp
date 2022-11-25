@@ -250,7 +250,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	}
 
 	//ƒWƒƒƒ“ƒv
-	bool canJump = m_isOnGround || m_isOnScaffold;
+	bool canJump = (m_isOnGround || m_isOnScaffold) && !m_yoYo->IsThrow();
 	if (jumpTrigger && canJump)
 	{
 		Jump();
