@@ -115,7 +115,8 @@ SlotMachine::SlotMachine()
 	//スロットゲージを映す画面レンダーターゲット生成
 	m_slotGaugeScreen = D3D12App::Instance()->GenerateRenderTarget(
 		D3D12App::Instance()->GetBackBuffFormat(),
-		Color(70, 60, 94, 255), 
+		//Color(70, 60, 94, 255), 
+		Color(0.0f,0.0f,0.0f,1.0f), 
 		Vec2<int>(1000,200),
 		L"SlotGauge - Screen");
 	//スロットゲージテクスチャ生成
