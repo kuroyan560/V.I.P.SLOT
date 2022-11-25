@@ -12,6 +12,7 @@ struct ToonCommonParameter
 
 struct ToonIndividualParameter
 {
+    float4 m_fillColor;
     float4 m_brightMulColor;
     float4 m_darkMulColor;
     float4 m_limBrightColor;
@@ -264,12 +265,14 @@ PSOutput PSmain(VSOutput input) : SV_TARGET
     float limEfBright = GetBright(limEf.rgb);
     float limThresholdResult = step(toonCommonParam.m_limThreshold, limEfBright);
     
-    //リムライト部分の補正
+    //リムライト部分の補正色適用
     float3 limBrightCol = toonIndividualParam.m_limBrightColor.xyz * toonIndividualParam.m_limBrightColor.w
     + ligEffCol.xyz * (1.0f - toonIndividualParam.m_limBrightColor.w);
-    
     result.xyz = limThresholdResult * limBrightCol.xyz + (1.0f - limThresholdResult) * result.xyz;
 
+    //塗りつぶし
+    result.xyz = toonIndividualParam.m_fillColor.xyz * toonIndividualParam.m_fillColor.w + result.xyz * (1.0f - toonIndividualParam.m_fillColor.w);
+    
     PSOutput output;
     output.color = result;
 

@@ -15,6 +15,8 @@ public:
 		return defaultParams;
 	}
 
+	//“h‚è‚Â‚Ô‚µF
+	Color m_fillColor = Color(1.0f, 1.0f, 1.0f, 0.0f);
 	//–¾‚é‚¢•”•ª‚ÉæZ‚·‚éF
 	Color m_brightMulColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 	//ˆÃ‚¢•”•ª‚ÉæZ‚·‚éF
