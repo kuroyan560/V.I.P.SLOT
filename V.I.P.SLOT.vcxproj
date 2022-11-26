@@ -45,12 +45,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\user;$(SolutionDir)src\engine;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\imgui;$(IncludePath);$(SolutionDir)packages\rapidjson.temprelease.0.0.2.20\build\native\include</IncludePath>
+    <IncludePath>$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\engine;$(SolutionDir)src\user\Coin;$(SolutionDir)src\user\Enemy;$(SolutionDir)src\user\Game;$(SolutionDir)src\user\GameObject;$(SolutionDir)src\user\Others;$(SolutionDir)src\user\Player;$(SolutionDir)src\user\Scene;$(SolutionDir)src\user\Slot;$(SolutionDir)src\user\Slot\Pattern;$(SolutionDir)src\user\Stage;$(SolutionDir)src\user\Title;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\imgui;$(IncludePath);$(SolutionDir)packages\rapidjson.temprelease.0.0.2.20\build\native\include</IncludePath>
     <LibraryPath>$(SolutionDir)lib\dxcompiler\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\user;$(SolutionDir)src\engine;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\imgui</IncludePath>
+    <IncludePath>$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\engine;$(SolutionDir)src\user\Coin;$(SolutionDir)src\user\Enemy;$(SolutionDir)src\user\Game;$(SolutionDir)src\user\GameObject;$(SolutionDir)src\user\Others;$(SolutionDir)src\user\Player;$(SolutionDir)src\user\Scene;$(SolutionDir)src\user\Slot;$(SolutionDir)src\user\Slot\Pattern;$(SolutionDir)src\user\Stage;$(SolutionDir)src\user\Title;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\imgui</IncludePath>
     <LibraryPath>$(SolutionDir)lib\dxcompiler\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -168,41 +168,41 @@
     <ClCompile Include="src\engine\Swapchain.cpp" />
     <ClCompile Include="src\engine\UsersInput.cpp" />
     <ClCompile Include="src\engine\WinApp.cpp" />
-    <ClCompile Include="src\user\BasicDraw.cpp" />
-    <ClCompile Include="src\user\BasicDrawParameters.cpp" />
-    <ClCompile Include="src\user\Block.cpp" />
-    <ClCompile Include="src\user\CoinObjectManager.cpp" />
-    <ClCompile Include="src\user\Coins.cpp" />
-    <ClCompile Include="src\user\ConstParameters.cpp" />
-    <ClCompile Include="src\user\EnemyEmitter.cpp" />
-    <ClCompile Include="src\user\PlayerHp.cpp" />
-    <ClCompile Include="src\user\PlayersAbility.cpp" />
-    <ClCompile Include="src\user\PlayersCallBack.cpp" />
-    <ClCompile Include="src\user\RandBox2D.cpp" />
-    <ClCompile Include="src\user\GameManager.cpp" />
-    <ClCompile Include="src\user\GameObject.cpp" />
-    <ClCompile Include="src\user\HandShake.cpp" />
-    <ClCompile Include="src\user\ObjectController.cpp" />
-    <ClCompile Include="src\user\EnemyKillCoinEffect.cpp" />
-    <ClCompile Include="src\user\ObjectManager.cpp" />
-    <ClCompile Include="src\user\GameCamera.cpp" />
-    <ClCompile Include="src\user\InGameScene.cpp" />
-    <ClCompile Include="src\user\GameOverScene.cpp" />
-    <ClCompile Include="src\user\Pattern.cpp" />
-    <ClCompile Include="src\user\PatternManager.cpp" />
-    <ClCompile Include="src\user\Player.cpp" />
-    <ClCompile Include="src\user\Scaffold.cpp" />
-    <ClCompile Include="src\user\TexHitEffect.cpp" />
-    <ClCompile Include="src\user\Reel.cpp" />
-    <ClCompile Include="src\user\RenderTargetManager.cpp" />
-    <ClCompile Include="src\user\ReturnCoinEmitter.cpp" />
-    <ClCompile Include="src\user\SlotMachine.cpp" />
-    <ClCompile Include="src\user\StageMgr.cpp" />
-    <ClCompile Include="src\user\TimeScale.cpp" />
-    <ClCompile Include="src\user\TitleCamera.cpp" />
-    <ClCompile Include="src\user\TitleScene.cpp" />
-    <ClCompile Include="src\user\TitleUI.cpp" />
-    <ClCompile Include="src\user\YoYo.cpp" />
+    <ClCompile Include="src\user\Coin\CoinObjectManager.cpp" />
+    <ClCompile Include="src\user\Coin\Coins.cpp" />
+    <ClCompile Include="src\user\Coin\ReturnCoinEmitter.cpp" />
+    <ClCompile Include="src\user\Enemy\EnemyEmitter.cpp" />
+    <ClCompile Include="src\user\Enemy\EnemyKillCoinEffect.cpp" />
+    <ClCompile Include="src\user\GameObject\GameObject.cpp" />
+    <ClCompile Include="src\user\GameObject\ObjectController.cpp" />
+    <ClCompile Include="src\user\GameObject\ObjectManager.cpp" />
+    <ClCompile Include="src\user\Game\ConstParameters.cpp" />
+    <ClCompile Include="src\user\Game\GameCamera.cpp" />
+    <ClCompile Include="src\user\Game\GameManager.cpp" />
+    <ClCompile Include="src\user\Game\HandShake.cpp" />
+    <ClCompile Include="src\user\Others\BasicDraw.cpp" />
+    <ClCompile Include="src\user\Others\BasicDrawParameters.cpp" />
+    <ClCompile Include="src\user\Others\RandBox2D.cpp" />
+    <ClCompile Include="src\user\Others\RenderTargetManager.cpp" />
+    <ClCompile Include="src\user\Others\TexHitEffect.cpp" />
+    <ClCompile Include="src\user\Others\TimeScale.cpp" />
+    <ClCompile Include="src\user\Player\Player.cpp" />
+    <ClCompile Include="src\user\Player\PlayerHp.cpp" />
+    <ClCompile Include="src\user\Player\PlayersAbility.cpp" />
+    <ClCompile Include="src\user\Player\PlayersCallBack.cpp" />
+    <ClCompile Include="src\user\Player\YoYo.cpp" />
+    <ClCompile Include="src\user\Scene\GameOverScene.cpp" />
+    <ClCompile Include="src\user\Scene\InGameScene.cpp" />
+    <ClCompile Include="src\user\Scene\TitleScene.cpp" />
+    <ClCompile Include="src\user\Slot\Pattern\Pattern.cpp" />
+    <ClCompile Include="src\user\Slot\Pattern\PatternManager.cpp" />
+    <ClCompile Include="src\user\Slot\Reel.cpp" />
+    <ClCompile Include="src\user\Slot\SlotMachine.cpp" />
+    <ClCompile Include="src\user\Stage\Block.cpp" />
+    <ClCompile Include="src\user\Stage\Scaffold.cpp" />
+    <ClCompile Include="src\user\Stage\StageMgr.cpp" />
+    <ClCompile Include="src\user\Title\TitleCamera.cpp" />
+    <ClCompile Include="src\user\Title\TitleUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\dxcompiler\inc\d3d12shader.h" />
@@ -279,44 +279,44 @@
     <ClInclude Include="src\engine\Timer.h" />
     <ClInclude Include="src\engine\UsersInput.h" />
     <ClInclude Include="src\engine\WinApp.h" />
-    <ClInclude Include="src\user\BasicDraw.h" />
-    <ClInclude Include="src\user\BasicDrawParameters.h" />
-    <ClInclude Include="src\user\Block.h" />
-    <ClInclude Include="src\user\CoinObjectManager.h" />
-    <ClInclude Include="src\user\CoinPerform.h" />
-    <ClInclude Include="src\user\Coins.h" />
-    <ClInclude Include="src\user\CoinVault.h" />
-    <ClInclude Include="src\user\ConstParameters.h" />
-    <ClInclude Include="src\user\EnemyEmitter.h" />
-    <ClInclude Include="src\user\PlayerHp.h" />
-    <ClInclude Include="src\user\PlayersAbility.h" />
-    <ClInclude Include="src\user\PlayersCallBack.h" />
-    <ClInclude Include="src\user\RandBox2D.h" />
-    <ClInclude Include="src\user\GameManager.h" />
-    <ClInclude Include="src\user\GameObject.h" />
-    <ClInclude Include="src\user\HandShake.h" />
-    <ClInclude Include="src\user\ObjectBreed.h" />
-    <ClInclude Include="src\user\ObjectController.h" />
-    <ClInclude Include="src\user\EnemyKillCoinEffect.h" />
-    <ClInclude Include="src\user\ObjectManager.h" />
-    <ClInclude Include="src\user\GameCamera.h" />
-    <ClInclude Include="src\user\InGameScene.h" />
-    <ClInclude Include="src\user\GameOverScene.h" />
-    <ClInclude Include="src\user\Pattern.h" />
-    <ClInclude Include="src\user\PatternManager.h" />
-    <ClInclude Include="src\user\Player.h" />
-    <ClInclude Include="src\user\Scaffold.h" />
-    <ClInclude Include="src\user\TexHitEffect.h" />
-    <ClInclude Include="src\user\Reel.h" />
-    <ClInclude Include="src\user\RenderTargetManager.h" />
-    <ClInclude Include="src\user\ReturnCoinEmitter.h" />
-    <ClInclude Include="src\user\SlotMachine.h" />
-    <ClInclude Include="src\user\StageMgr.h" />
-    <ClInclude Include="src\user\TimeScale.h" />
-    <ClInclude Include="src\user\TitleCamera.h" />
-    <ClInclude Include="src\user\TitleScene.h" />
-    <ClInclude Include="src\user\TitleUI.h" />
-    <ClInclude Include="src\user\YoYo.h" />
+    <ClInclude Include="src\user\Coin\CoinObjectManager.h" />
+    <ClInclude Include="src\user\Coin\CoinPerform.h" />
+    <ClInclude Include="src\user\Coin\Coins.h" />
+    <ClInclude Include="src\user\Coin\CoinVault.h" />
+    <ClInclude Include="src\user\Coin\ReturnCoinEmitter.h" />
+    <ClInclude Include="src\user\Enemy\EnemyEmitter.h" />
+    <ClInclude Include="src\user\Enemy\EnemyKillCoinEffect.h" />
+    <ClInclude Include="src\user\GameObject\GameObject.h" />
+    <ClInclude Include="src\user\GameObject\ObjectBreed.h" />
+    <ClInclude Include="src\user\GameObject\ObjectController.h" />
+    <ClInclude Include="src\user\GameObject\ObjectManager.h" />
+    <ClInclude Include="src\user\Game\ConstParameters.h" />
+    <ClInclude Include="src\user\Game\GameCamera.h" />
+    <ClInclude Include="src\user\Game\GameManager.h" />
+    <ClInclude Include="src\user\Game\HandShake.h" />
+    <ClInclude Include="src\user\Others\BasicDraw.h" />
+    <ClInclude Include="src\user\Others\BasicDrawParameters.h" />
+    <ClInclude Include="src\user\Others\RandBox2D.h" />
+    <ClInclude Include="src\user\Others\RenderTargetManager.h" />
+    <ClInclude Include="src\user\Others\TexHitEffect.h" />
+    <ClInclude Include="src\user\Others\TimeScale.h" />
+    <ClInclude Include="src\user\Player\Player.h" />
+    <ClInclude Include="src\user\Player\PlayerHp.h" />
+    <ClInclude Include="src\user\Player\PlayersAbility.h" />
+    <ClInclude Include="src\user\Player\PlayersCallBack.h" />
+    <ClInclude Include="src\user\Player\YoYo.h" />
+    <ClInclude Include="src\user\Scene\GameOverScene.h" />
+    <ClInclude Include="src\user\Scene\InGameScene.h" />
+    <ClInclude Include="src\user\Scene\TitleScene.h" />
+    <ClInclude Include="src\user\Slot\Pattern\Pattern.h" />
+    <ClInclude Include="src\user\Slot\Pattern\PatternManager.h" />
+    <ClInclude Include="src\user\Slot\Reel.h" />
+    <ClInclude Include="src\user\Slot\SlotMachine.h" />
+    <ClInclude Include="src\user\Stage\Block.h" />
+    <ClInclude Include="src\user\Stage\Scaffold.h" />
+    <ClInclude Include="src\user\Stage\StageMgr.h" />
+    <ClInclude Include="src\user\Title\TitleCamera.h" />
+    <ClInclude Include="src\user\Title\TitleUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="lib\DirectXTex\DirectXTex_Desktop_2019_Win10.vcxproj">
