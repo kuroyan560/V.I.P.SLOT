@@ -382,6 +382,9 @@
     <ClCompile Include="src\user\Others\TimeScale.cpp">
       <Filter>src\user\Others</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\Scene\OutGameScene.cpp">
+      <Filter>src\user\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -719,6 +722,9 @@
     </ClInclude>
     <ClInclude Include="src\user\Others\TimeScale.h">
       <Filter>src\user\Others</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Scene\OutGameScene.h">
+      <Filter>src\user\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

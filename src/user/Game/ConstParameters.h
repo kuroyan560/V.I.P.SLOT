@@ -36,6 +36,8 @@ namespace ConstParameter
 		extern int MAX_LIFE;
 		//ゲームフロー開始時の能力値上の最大ライフ
 		extern int START_ABILITY_MAX_LIFE;
+		//ゲームフロー開始時の能力値上の攻撃力
+		extern int START_ABILITY_OFFSENSIVE;
 
 		//最大HP
 		extern int MAX_HP;

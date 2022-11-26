@@ -3,6 +3,7 @@
 #include"InGameScene.h"
 #include"TitleScene.h"
 #include"GameOverScene.h"
+#include"OutGameScene.h"
 #include"Transform.h"
 #include"Transform2D.h"
 #include"Color.h"
@@ -50,6 +51,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		{"Title",new TitleScene()},
 		{"InGame",new InGameScene()},
 		{"GameOver",new GameOverScene()},
+		{"OutGame",new OutGameScene()},
 	};
 	std::string awakeScene = "Title";	//開始時のシーンキー
 

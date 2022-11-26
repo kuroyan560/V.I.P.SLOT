@@ -120,9 +120,12 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 	m_yoYo->Awake(3.0f, 2.5f);
 }
 
-void Player::Init(int arg_initRemainLife, int arg_initCoinNum)
+void Player::Init(PlayersAbility arg_ability, int arg_initRemainLife, int arg_initCoinNum)
 {
 	using namespace ConstParameter::Player;
+
+	//現在の能力値を更新
+	m_ability = arg_ability;
 
 	//HP初期化
 	m_playerHp.Init(m_ability.m_maxLife, arg_initRemainLife);
@@ -376,8 +379,10 @@ void Player::Draw2D(std::weak_ptr<Camera> arg_cam)
 void Player::ImguiDebug()
 {
 	ImGui::Begin("Player");
-	m_drawParam.ImguiDebugItem();
 	ImGui::Text("Coin : { %d }", m_coinVault.GetNum());
+	ImGui::Text("Offensive : { %d }", m_ability.m_offensive);
+
+	m_drawParam.ImguiDebugItem();
 	m_yoYo->AddImguiDebugItem();
 	ImGui::End();
 

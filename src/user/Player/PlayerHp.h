@@ -71,4 +71,6 @@ public:
 
 	//ライフゲッタ
 	const int& GetLife()const { return m_life; }
+	//死亡したか
+	bool IsDead()const { return m_hp <= 0 && m_life <= 0; }
 };

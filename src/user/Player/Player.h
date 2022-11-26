@@ -105,7 +105,7 @@ public:
 	void Awake(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<ObjectManager>arg_objMgr, std::weak_ptr<GameCamera>arg_cam);
 
 	//初期化
-	void Init(int arg_initRemainLife, int arg_initCoinNum);
+	void Init(PlayersAbility arg_ability, int arg_initRemainLife, int arg_initCoinNum);
 	//更新
 	void Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale);
 	//描画
@@ -134,4 +134,6 @@ public:
 	std::weak_ptr<CollisionCallBack>GetNormalAttackCallBack() { return m_normalAttackCallBack; }
 	//残りライフ
 	const int& GetLife()const { return m_playerHp.GetLife(); }
+	//死亡したか
+	bool IsDead()const { return m_playerHp.IsDead(); }
 };

@@ -76,9 +76,6 @@ void StageMgr::GenerateTerrian(std::string arg_stageDataPath, std::weak_ptr<Coll
 		//m_slotMachine.lock()->ReelSet(SlotMachine::CENTER, );
 		//m_slotMachine.lock()->ReelSet(SlotMachine::RIGHT, );
 
-		//コインノルマ
-	m_norma = 10;
-
 	//スロットブロック位置
 	std::vector<Vec2<int>>slotBlockRandIdx(arg_slotBlockNum);
 	for (auto& idx : slotBlockRandIdx)
@@ -212,6 +209,9 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	GenerateTerrian(arg_stageDataPath, arg_collisionMgr, 4);
+
+	//コインノルマ
+	m_norma = 10;
 
 	//地形評価UI
 	m_terrianEvaluationUI.Init();

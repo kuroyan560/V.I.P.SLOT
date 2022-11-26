@@ -69,8 +69,7 @@ void InGameScene::OnInitialize()
 	auto gameMgr = GameManager::Instance();
 
 	//プレイヤー初期化
-	//m_player->Init(gameMgr->GetPlayerHp(), gameMgr->GetCoinNum());
-	m_player->Init(gameMgr->GetPlayersRemainLife(), gameMgr->GetCoinNum());
+	m_player->Init(gameMgr->GetPlayersAbility(), gameMgr->GetPlayersRemainLife(), gameMgr->GetCoinNum());
 
 	//スロットマシン初期化
 	m_slotMachine->Init();
@@ -89,6 +88,9 @@ void InGameScene::OnInitialize()
 
 	//照明設定
 	m_dirLig.SetDir(Vec3<float>(0.0f, -0.09f, 0.03f));
+
+	//タイムスケールリセット
+	m_timeScale.Set(1.0f);
 }
 
 void InGameScene::OnUpdate()
@@ -130,6 +132,12 @@ void InGameScene::OnUpdate()
 	if (m_stageMgr->IsClear(m_player->GetCoinNum()))
 	{
 		//アウトゲームへ
+		KuroEngine::Instance()->ChangeScene("OutGame", m_sceneTrans);
+	}
+	//死亡したか
+	if (m_player->IsDead())
+	{
+		//ゲームオーバー
 		KuroEngine::Instance()->ChangeScene("GameOver", m_sceneTrans);
 	}
 }
@@ -204,13 +212,13 @@ void InGameScene::OnImguiDebug()
 	ImGui::End();
 
 	//ConstParameter::ImguiDebug();
-	//m_stageMgr->ImguiDebug(m_collisionMgr);
+	m_stageMgr->ImguiDebug(m_collisionMgr);
 	//m_slotMachine->ImguiDebug();
 	m_player->ImguiDebug();
 	//m_collisionMgr->ImguiDebug();
-	m_enemyEmitter->ImguiDebug();
-	m_ligMgr->ImguiDebug();
-	BasicDraw::ImguiDebug();
+	//m_enemyEmitter->ImguiDebug();
+	//m_ligMgr->ImguiDebug();
+	//BasicDraw::ImguiDebug();
 }
 
 void InGameScene::OnFinalize()

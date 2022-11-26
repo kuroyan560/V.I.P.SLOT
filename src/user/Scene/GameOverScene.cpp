@@ -47,8 +47,8 @@ void GameOverScene::OnDraw()
 
 void GameOverScene::OnImguiDebug()
 {
-	ImGui::Begin("Items");
-	ImGui::Text("Now : %s", std::string(magic_enum::enum_name(m_item)).c_str());
+	ImGui::Begin("GameOverScene");
+	ImGui::Text("Item : %s", std::string(magic_enum::enum_name(m_item)).c_str());
 	ImGui::End();
 }
 

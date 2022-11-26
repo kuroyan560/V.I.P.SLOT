@@ -193,6 +193,7 @@
     <ClCompile Include="src\user\Player\YoYo.cpp" />
     <ClCompile Include="src\user\Scene\GameOverScene.cpp" />
     <ClCompile Include="src\user\Scene\InGameScene.cpp" />
+    <ClCompile Include="src\user\Scene\OutGameScene.cpp" />
     <ClCompile Include="src\user\Scene\TitleScene.cpp" />
     <ClCompile Include="src\user\Slot\Pattern\Pattern.cpp" />
     <ClCompile Include="src\user\Slot\Pattern\PatternManager.cpp" />
@@ -307,6 +308,7 @@
     <ClInclude Include="src\user\Player\YoYo.h" />
     <ClInclude Include="src\user\Scene\GameOverScene.h" />
     <ClInclude Include="src\user\Scene\InGameScene.h" />
+    <ClInclude Include="src\user\Scene\OutGameScene.h" />
     <ClInclude Include="src\user\Scene\TitleScene.h" />
     <ClInclude Include="src\user\Slot\Pattern\Pattern.h" />
     <ClInclude Include="src\user\Slot\Pattern\PatternManager.h" />
