@@ -4,6 +4,13 @@
 #include"DrawFunc2D.h"
 #include"Sprite.h"
 
+void PlayerHp::UpdateHpBarSize()
+{
+	auto hpBarSize = m_hpBar.m_sprite->GetTex()->GetGraphSize().Float();
+	hpBarSize.x = static_cast<float>(m_hp) / static_cast<float>(ConstParameter::Player::MAX_HP) * hpBarSize.x;
+	m_hpBar.m_sprite->m_mesh.SetSize(hpBarSize);
+}
+
 PlayerHp::PlayerHp()
 {
 	//初期化位置設定
@@ -79,18 +86,18 @@ PlayerHp::PlayerHp()
 	}
 }
 
-void PlayerHp::Init(int arg_initLife)
+void PlayerHp::Init(int arg_initMaxLife, int arg_initRemainLife)
 {
 	using namespace ConstParameter::Player;
 
-	//※デバッグ用
-	arg_initLife = MAX_LIFE;
-
 	//ライフ初期化
-	m_life = arg_initLife;
+	m_life = arg_initRemainLife;
 
 	//HP初期化
 	m_hp = MAX_HP;
+
+	//HPバーサイズ更新
+	UpdateHpBarSize();
 
 	//UI位置初期化
 	m_transform.SetPos(m_uiInitPos);
@@ -104,10 +111,10 @@ void PlayerHp::Init(int arg_initLife)
 	//ライフ関連↓
 	
 	//最大ライフを超えている
-	if (static_cast<int>(m_heartArray.size()) < arg_initLife)assert(0);
+	if (static_cast<int>(m_heartArray.size()) < arg_initMaxLife)assert(0);
 
 	//必要な数だけスプライト追加
-	for (int i = arg_initLife - 1; 0 <= i; --i)	//メインライフを手前側にするため降順
+	for (int i = arg_initMaxLife - 1; 0 <= i; --i)	//メインライフを手前側にするため降順
 	{
 		//ハート枠スプライト
 		m_contents.emplace_back(&m_heartArray[i].m_frame);
@@ -117,6 +124,9 @@ void PlayerHp::Init(int arg_initLife)
 		m_heartArray[i].m_offsetTransform.SetPos(m_heartArray[i].m_initPos);
 		//スケール初期化
 		m_heartArray[i].m_offsetTransform.SetScale({ m_heartArray[i].m_initScale,m_heartArray[i].m_initScale });
+
+		//残ライフならハート描画をアクティブ状態に
+		m_heartArray[i].m_heart.m_active = (i < arg_initRemainLife);
 	}
 
 	//スプライトの位置初期化
@@ -126,10 +136,17 @@ void PlayerHp::Init(int arg_initLife)
 	}
 }
 
+void PlayerHp::Update(const float& arg_timeScale)
+{
+
+}
+
+
 void PlayerHp::Draw2D()
 {
 	for (auto& content : m_contents)
 	{
+		if (!content->m_active)continue;
 		content->m_sprite->Draw();
 	}
 }
@@ -179,6 +196,18 @@ void PlayerHp::ImguiDebug()
 
 void PlayerHp::Damage()
 {
-	m_hp = std::min(0, m_hp - 1);
+	m_hp = std::max(0, m_hp - 1);
+
+	//HPがなくなったらライフ消費してHP回復
+	if (m_hp <= 0 && m_life)
+	{
+		//ハート描画を非アクティブに
+		m_heartArray[m_life - 1].m_heart.m_active = false;
+		m_life = std::max(0, m_life - 1);
+		m_hp = ConstParameter::Player::MAX_HP;
+	}
+
+	//HPバーサイズ変更
+	UpdateHpBarSize();
 }
 

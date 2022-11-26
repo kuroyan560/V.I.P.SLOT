@@ -176,6 +176,7 @@
     <ClCompile Include="src\user\ConstParameters.cpp" />
     <ClCompile Include="src\user\EnemyEmitter.cpp" />
     <ClCompile Include="src\user\PlayerHp.cpp" />
+    <ClCompile Include="src\user\PlayersAbility.cpp" />
     <ClCompile Include="src\user\PlayersCallBack.cpp" />
     <ClCompile Include="src\user\RandBox2D.cpp" />
     <ClCompile Include="src\user\GameManager.cpp" />
@@ -288,6 +289,7 @@
     <ClInclude Include="src\user\ConstParameters.h" />
     <ClInclude Include="src\user\EnemyEmitter.h" />
     <ClInclude Include="src\user\PlayerHp.h" />
+    <ClInclude Include="src\user\PlayersAbility.h" />
     <ClInclude Include="src\user\PlayersCallBack.h" />
     <ClInclude Include="src\user\RandBox2D.h" />
     <ClInclude Include="src\user\GameManager.h" />

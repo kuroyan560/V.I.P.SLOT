@@ -10,6 +10,7 @@
 #include"ColliderParentObject.h"
 #include"PlayersCallBack.h"
 #include"BasicDrawParameters.h"
+#include"PlayersAbility.h"
 #include"PlayerHp.h"
 class ModelObject;
 class LightManager;
@@ -28,6 +29,9 @@ class Player : public ColliderParentObject
 {
 	//HP管理
 	PlayerHp m_playerHp;
+
+	//能力値
+	PlayersAbility m_ability;
 
 	//モデルオブジェクト
 	std::shared_ptr<ModelObject>m_modelObj;
@@ -59,9 +63,6 @@ class Player : public ColliderParentObject
 
 	//コライダー
 	std::shared_ptr<Collider>m_bodyCollider;
-
-	//攻撃力
-	int m_offensive = 1;
 
 	//ヒットエフェクト
 	std::shared_ptr<TexHitEffect>m_hitEffect;
@@ -104,7 +105,7 @@ public:
 	void Awake(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<ObjectManager>arg_objMgr, std::weak_ptr<GameCamera>arg_cam);
 
 	//初期化
-	void Init(int arg_initLife, int arg_initCoinNum);
+	void Init(int arg_initRemainLife, int arg_initCoinNum);
 	//更新
 	void Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale);
 	//描画

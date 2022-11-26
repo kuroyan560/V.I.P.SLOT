@@ -27,7 +27,7 @@ public:
 
 	const std::string& GetStageFilePath()const { return m_stageFilePathArray[m_nowFloor]; }
 	const int& GetCoinNum()const { return m_coinNum; }
-	const int& GetPlayerLife()const { return m_playerLife; }
+	const int& GetPlayersRemainLife()const { return m_playerLife; }
 
 	//Š‹àEHP‚Ìó‘Ô‚ğXV
 	void UpdatePlayersInfo(int arg_coinNum, int arg_playerLife)

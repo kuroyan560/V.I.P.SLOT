@@ -52,7 +52,7 @@ Player::Player()
 	m_hitEffect->Set("resource/user/img/hitEffect.png", 5, { 5,1 }, { 6.0f,6.0f }, 3);
 
 	//攻撃コールバック
-	m_normalAttackCallBack = std::make_shared<PlayersNormalAttack>(&m_offensive,&m_coinVault, m_hitEffect, enemyHitSE, enemyKillSE);
+	m_normalAttackCallBack = std::make_shared<PlayersNormalAttack>(&m_ability.m_offensive,&m_coinVault, m_hitEffect, enemyHitSE, enemyKillSE);
 }
 
 void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_ptr<ObjectManager> arg_objMgr, std::weak_ptr<GameCamera> arg_cam)
@@ -83,7 +83,7 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 
 	/*--- コールバック生成 ---*/
 	//パリィ攻撃コールバック
-	m_parryAttackCallBack = std::make_shared<PlayersParryAttack>(&m_offensive, arg_objMgr, arg_collisionMgr, parrySE);
+	m_parryAttackCallBack = std::make_shared<PlayersParryAttack>(&m_ability.m_offensive, arg_objMgr, arg_collisionMgr, parrySE);
 	//被ダメージコールバック
 	m_damegedCallBack = std::make_shared<DamagedCallBack>(this, arg_cam, onDamagedHitStopSE, onDamagedSE);
 
@@ -120,12 +120,12 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 	m_yoYo->Awake(3.0f, 2.5f);
 }
 
-void Player::Init(int arg_initLife, int arg_initCoinNum)
+void Player::Init(int arg_initRemainLife, int arg_initCoinNum)
 {
 	using namespace ConstParameter::Player;
 
 	//HP初期化
-	m_playerHp.Init(arg_initLife);
+	m_playerHp.Init(m_ability.m_maxLife, arg_initRemainLife);
 
 	//所持金リセット
 	m_coinVault.Set(arg_initCoinNum);

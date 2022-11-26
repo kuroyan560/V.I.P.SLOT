@@ -376,6 +376,9 @@
     <ClCompile Include="src\user\PlayerHp.cpp">
       <Filter>src\user\Player</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\PlayersAbility.cpp">
+      <Filter>src\user\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -709,6 +712,9 @@
       <Filter>src\user</Filter>
     </ClInclude>
     <ClInclude Include="src\user\PlayerHp.h">
+      <Filter>src\user\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\PlayersAbility.h">
       <Filter>src\user\Player</Filter>
     </ClInclude>
   </ItemGroup>

@@ -12,26 +12,27 @@ class PlayerHp
 	//初期化位置
 	Vec2<float>m_uiInitPos;
 
-	struct Contents
+	struct DrawContents
 	{
 		Vec2<float>m_initPos;
 		std::shared_ptr<Sprite>m_sprite;
+		bool m_active = true;
 	};
 
 	//「HP」文字
-	Contents m_hpStr;
+	DrawContents m_hpStr;
 	//HPバー
-	Contents m_hpBar;
+	DrawContents m_hpBar;
 	//HPバーフレーム
-	Contents m_hpBarFrame;
+	DrawContents m_hpBarFrame;
 
 	struct Heart
 	{
 		Vec2<float>m_initPos;
 		float m_initScale;
 		Transform2D m_offsetTransform;
-		Contents m_heart;
-		Contents m_frame;
+		DrawContents m_heart;
+		DrawContents m_frame;
 	};
 	std::vector<Heart>m_heartArray;
 
@@ -41,13 +42,23 @@ class PlayerHp
 	int m_hp;
 
 	//描画するスプライト情報の配列
-	std::vector<Contents*>m_contents;
+	std::vector<DrawContents*>m_contents;
+
+	//HPバーサイズ更新
+	void UpdateHpBarSize();
 
 public:
 	PlayerHp();
 
-	//初期化
-	void Init(int arg_initLife);
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="arg_initAbilityMaxLife">現在解放されている最大ライフ（能力値上のの最大）</param>
+	/// <param name="arg_initRemainLife">残ライフ</param>
+	void Init(int arg_initAbilityMaxLife, int arg_initRemainLife);
+
+	//更新
+	void Update(const float& arg_timeScale);
 
 	//描画
 	void Draw2D();

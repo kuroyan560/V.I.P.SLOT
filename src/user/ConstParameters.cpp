@@ -34,8 +34,12 @@ namespace ConstParameter
         //　※UI表示的には６が限界。ゲーム的にもそれくらいかな？
         int MAX_LIFE = 6;
 
+        //ゲームフロー開始時の能力値上の最大ライフ
+        int START_ABILITY_MAX_LIFE = 1;
+
         //最大HP
-        int MAX_HP = 5;
+        //int MAX_HP = 5;
+        int MAX_HP = 1;
 
         /*--- 移動 ---*/
         //移動速度

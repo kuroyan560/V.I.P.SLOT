@@ -70,7 +70,7 @@ void InGameScene::OnInitialize()
 
 	//プレイヤー初期化
 	//m_player->Init(gameMgr->GetPlayerHp(), gameMgr->GetCoinNum());
-	m_player->Init(gameMgr->GetPlayerLife(), gameMgr->GetCoinNum());
+	m_player->Init(gameMgr->GetPlayersRemainLife(), gameMgr->GetCoinNum());
 
 	//スロットマシン初期化
 	m_slotMachine->Init();
