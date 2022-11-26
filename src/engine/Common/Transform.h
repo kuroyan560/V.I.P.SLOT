@@ -154,9 +154,9 @@ public:
 		MatReset();
 	}
 
-	//ローカル行列
+	//ローカル行列ゲッタ
 	const Matrix& GetLocalMat();
-	//ワールド行列
+	//ワールド行列ゲッタ
 	const Matrix& GetWorldMat();
 	//ワールド行列（ビルボード適用）
 	Matrix GetWorldMat(const Matrix& arg_billBoardMat);

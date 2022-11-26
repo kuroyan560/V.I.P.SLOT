@@ -10,7 +10,7 @@ void Transform::CalculateMat()
 
 	if (m_parent != nullptr)
 	{
-		m_worldMat *= (m_parent->GetWorldMat());
+		m_worldMat *= m_parent->GetWorldMat();
 	}
 }
 

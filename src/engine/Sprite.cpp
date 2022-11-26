@@ -44,7 +44,7 @@ Sprite::Sprite(const std::shared_ptr<TextureBuffer>& Texture, const char* Name) 
 	SetTexture(Texture);
 
 	//行列初期化
-	m_constData.m_mat = m_transform.GetMat();
+	m_constData.m_mat = m_transform.GetWorldMat();
 
 	//定数バッファ生成
 	m_constBuff = D3D12App::Instance()->GenerateConstantBuffer(sizeof(m_constData), 1, &m_constData, Name);
@@ -69,7 +69,7 @@ void Sprite::Draw(const AlphaBlendMode& BlendMode)
 
 	if (m_transform.GetDirty())
 	{
-		m_constData.m_mat = m_transform.GetMat();
+		m_constData.m_mat = m_transform.GetWorldMat();
 		m_constBuff->Mapping(&m_constData);
 	}
 

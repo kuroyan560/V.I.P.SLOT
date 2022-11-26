@@ -18,7 +18,8 @@ public:
 private:
 	Transform2D* m_parent = nullptr;
 
-	Matrix m_mat = XMMatrixIdentity();
+	Matrix m_worldMat = XMMatrixIdentity();
+	Matrix m_localMat = XMMatrixIdentity();
 	Vec2<float>m_pos = { 0,0 };
 	Vec2<float>m_scale = { 1,1 };
 	Matrix m_rotate = XMMatrixIdentity();
@@ -29,6 +30,13 @@ private:
 	{
 		m_dirty = true;
 	}
+
+	bool IsDirty()
+	{
+		return m_dirty || (m_parent != nullptr && m_parent->IsDirty());
+	}
+
+	void CalculateMat();
 
 public:
 	Transform2D(Transform2D* Parent = nullptr) {
@@ -90,6 +98,11 @@ public:
 		m_rotate = XMMatrixRotationQuaternion(XMQuaternionRotationAxis(vec, Angle));
 		MatReset();
 	}
-	const Matrix& GetMat();
+
+	//ローカル行列ゲッタ
+	const Matrix& GetLocalMat();
+	//ワールド行列ゲッタ
+	const Matrix& GetWorldMat();
+	//Dirtyフラグゲッタ
 	const bool& GetDirty() { return m_dirty; }
 };
