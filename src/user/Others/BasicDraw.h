@@ -31,7 +31,7 @@ class BasicDraw
 	struct EdgeCommonParameter
 	{
 		//エッジ描画の判断をする深度差のしきい値
-		float m_depthThreshold = 0.1f;
+		float m_depthThreshold = 0.19f;
 		float m_pad[3];
 		//深度値を比べるテクセルへのUVオフセット（近傍8）
 		std::array<Vec2<float>, 8>m_uvOffset;
