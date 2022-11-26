@@ -51,4 +51,7 @@ public:
 
 	//•`‰æ
 	void Draw(const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans);
+
+	//ƒQƒbƒ^
+	const std::shared_ptr<TextureBuffer>& GetTex()const { return m_texBuff; }
 };
