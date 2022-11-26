@@ -8,6 +8,7 @@
 #include"Yoyo.h"
 #include"TimeScale.h"
 #include"GameCamera.h"
+#include"CoinVault.h"
 
 void PlayersNormalAttack::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
 {
@@ -18,6 +19,8 @@ void PlayersNormalAttack::OnCollisionTrigger(const Vec3<float>& arg_inter, std::
 	{
 		//Ž€–SSE
 		AudioApp::Instance()->PlayWave(m_killSE);
+		//ƒvƒŒƒCƒ„[‚É‚¨‹à‚ð“n‚·
+		m_playersVault->Add(coinNum);
 	}
 	else
 	{

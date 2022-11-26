@@ -19,20 +19,20 @@ class GameManager : public Singleton<GameManager>
 	//現在の所持金
 	int m_coinNum;
 
-	//現在のHP
-	int m_playerHp;
+	//現在のライフ
+	int m_playerLife;
 
 public:
 	void FlowStart();
 
 	const std::string& GetStageFilePath()const { return m_stageFilePathArray[m_nowFloor]; }
 	const int& GetCoinNum()const { return m_coinNum; }
-	const int& GetPlayerHp()const { return m_playerHp; }
+	const int& GetPlayerLife()const { return m_playerLife; }
 
 	//所持金・HPの状態を更新
-	void UpdatePlayersInfo(int arg_coinNum, int arg_playerHp)
+	void UpdatePlayersInfo(int arg_coinNum, int arg_playerLife)
 	{
 		m_coinNum = arg_coinNum;
-		m_playerHp = arg_playerHp;
+		m_playerLife = arg_playerLife;
 	}
 };

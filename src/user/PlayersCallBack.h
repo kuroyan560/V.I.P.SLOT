@@ -2,6 +2,7 @@
 #include"CollisionCallBack.h"
 #include<memory>
 #include"Timer.h"
+class CoinVault;
 class TexHitEffect;
 class ObjectManager;
 class GameCamera;
@@ -13,6 +14,8 @@ class PlayersNormalAttack : public CollisionCallBack
 {
 	//攻撃力のポインタ
 	int* m_offensive = nullptr;
+	//プレイヤーの所持金のポインタ
+	CoinVault* m_playersVault = nullptr;
 	//ヒットエフェクト
 	std::weak_ptr<TexHitEffect>m_hitEffect;
 	//SE
@@ -29,10 +32,11 @@ class PlayersNormalAttack : public CollisionCallBack
 public:
 	PlayersNormalAttack(
 		int* arg_offensive,
+		CoinVault* arg_playersVault,
 		std::weak_ptr<TexHitEffect>arg_hitEffect,
 		int arg_hitSE,
 		int arg_killSE)
-		:m_offensive(arg_offensive), m_hitEffect(arg_hitEffect), m_hitSE(arg_hitSE),m_killSE(arg_killSE) {}
+		:m_offensive(arg_offensive), m_playersVault(arg_playersVault), m_hitEffect(arg_hitEffect), m_hitSE(arg_hitSE), m_killSE(arg_killSE) {}
 };
 
 //パリィ攻撃

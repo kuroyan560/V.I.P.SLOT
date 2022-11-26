@@ -30,8 +30,12 @@ namespace ConstParameter
         //モデルサイズ
         Vec3<float>MODEL_SIZE = { 1.0f,2.0f,1.0f };
 
+        //最大ライフ
+        //　※UI表示的には６が限界。ゲーム的にもそれくらいかな？
+        int MAX_LIFE = 6;
+
         //最大HP
-        int MAX_HP = 10;
+        int MAX_HP = 5;
 
         /*--- 移動 ---*/
         //移動速度

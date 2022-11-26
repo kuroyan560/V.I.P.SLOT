@@ -373,6 +373,9 @@
     <ClCompile Include="src\user\BasicDrawParameters.cpp">
       <Filter>src\user</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\PlayerHp.cpp">
+      <Filter>src\user\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -704,6 +707,9 @@
     </ClInclude>
     <ClInclude Include="src\user\BasicDrawParameters.h">
       <Filter>src\user</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\PlayerHp.h">
+      <Filter>src\user\Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

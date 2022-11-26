@@ -17,6 +17,8 @@ private:
 	static std::shared_ptr<TextureBuffer>s_defaultTex;
 
 private:
+
+
 	//定数バッファ送信用データ
 	struct ConstantData
 	{
@@ -31,6 +33,8 @@ private:
 	std::shared_ptr<TextureBuffer>m_texBuff;
 
 public:
+	//名前
+	const std::string m_name;
 	//トランスフォーム
 	Transform2D m_transform;
 	//メッシュ（頂点情報）
@@ -44,7 +48,7 @@ public:
 
 	//色セット（描画の際にこの値が乗算される）
 	void SetColor(const Color& Color);
-	
+
 	//描画
 	void Draw(const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans);
 };

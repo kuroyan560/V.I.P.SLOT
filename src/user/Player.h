@@ -10,6 +10,7 @@
 #include"ColliderParentObject.h"
 #include"PlayersCallBack.h"
 #include"BasicDrawParameters.h"
+#include"PlayerHp.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -25,12 +26,16 @@ class ObjectManager;
 
 class Player : public ColliderParentObject
 {
+	//HP管理
+	PlayerHp m_playerHp;
+
 	//モデルオブジェクト
 	std::shared_ptr<ModelObject>m_modelObj;
 
 	//トゥーンのパラメータ
 	IndividualDrawParameter m_drawParam;
 
+	//1フレーム前の座標
 	Vec3<float>m_oldPos;
 	//移動
 	Vec3<float>m_move = { 0,0,0 };
@@ -54,9 +59,6 @@ class Player : public ColliderParentObject
 
 	//コライダー
 	std::shared_ptr<Collider>m_bodyCollider;
-
-	//HP
-	int m_hp;
 
 	//攻撃力
 	int m_offensive = 1;
@@ -102,22 +104,13 @@ public:
 	void Awake(std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<ObjectManager>arg_objMgr, std::weak_ptr<GameCamera>arg_cam);
 
 	//初期化
-	void Init(int arg_initHp,int arg_initCoinNum);
+	void Init(int arg_initLife, int arg_initCoinNum);
 	//更新
 	void Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale);
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 	//エフェクト描画
 	void Draw2D(std::weak_ptr<Camera>arg_cam);
-
-	//コインゲット関数
-	void GetCoin(int arg_coinNum)
-	{
-		m_coinVault.Add(arg_coinNum);
-	}
-
-	//ダメージ
-	void Damage() { m_hp = std::min(0, m_hp - 1); }
 
 	//imguiデバッグ
 	void ImguiDebug();
@@ -128,9 +121,16 @@ public:
 	//プレイヤーのモデル中央に合わせた座標ゲッタ
 	Vec3<float>GetCenterPos()const;
 
+	//ダメージを受ける
+	void Damage() { m_playerHp.Damage(); }
+
 	//ゲッタ
+	//攻撃中か
+	bool IsAttack()const;	
+	//所持金
 	const int GetCoinNum()const { return m_coinVault.GetNum(); }
-	const int GetHp()const { return m_hp; }
-	bool IsAttack()const;
-	std::weak_ptr<CollisionCallBack>GetNormalAttackCollBack() { return m_normalAttackCallBack; }
+	//通常攻撃のコールバック（パリィ弾のコールバックとして流用するためゲッタを用意）
+	std::weak_ptr<CollisionCallBack>GetNormalAttackCallBack() { return m_normalAttackCallBack; }
+	//残りライフ
+	const int& GetLife()const { return m_playerHp.GetLife(); }
 };

@@ -52,7 +52,7 @@ Player::Player()
 	m_hitEffect->Set("resource/user/img/hitEffect.png", 5, { 5,1 }, { 6.0f,6.0f }, 3);
 
 	//攻撃コールバック
-	m_normalAttackCallBack = std::make_shared<PlayersNormalAttack>(&m_offensive, m_hitEffect, enemyHitSE, enemyKillSE);
+	m_normalAttackCallBack = std::make_shared<PlayersNormalAttack>(&m_offensive,&m_coinVault, m_hitEffect, enemyHitSE, enemyKillSE);
 }
 
 void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_ptr<ObjectManager> arg_objMgr, std::weak_ptr<GameCamera> arg_cam)
@@ -120,12 +120,12 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 	m_yoYo->Awake(3.0f, 2.5f);
 }
 
-void Player::Init(int arg_initHp, int arg_initCoinNum)
+void Player::Init(int arg_initLife, int arg_initCoinNum)
 {
 	using namespace ConstParameter::Player;
 
 	//HP初期化
-	m_hp = arg_initHp;
+	m_playerHp.Init(arg_initLife);
 
 	//所持金リセット
 	m_coinVault.Set(arg_initCoinNum);
@@ -367,6 +367,9 @@ void Player::Draw2D(std::weak_ptr<Camera> arg_cam)
 {
 	//ヒットエフェクト
 	m_hitEffect->Draw(arg_cam);
+
+	//HP描画
+	m_playerHp.Draw2D();
 }
 
 #include"imguiApp.h"
@@ -375,9 +378,10 @@ void Player::ImguiDebug()
 	ImGui::Begin("Player");
 	m_drawParam.ImguiDebugItem();
 	ImGui::Text("Coin : { %d }", m_coinVault.GetNum());
-	ImGui::Text("Hp : { %d }", m_hp);
 	m_yoYo->AddImguiDebugItem();
 	ImGui::End();
+
+	m_playerHp.ImguiDebug();
 }
 
 void Player::HitCheckWithScaffold(const std::weak_ptr<Scaffold> arg_scaffold)

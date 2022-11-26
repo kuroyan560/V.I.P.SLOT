@@ -4,7 +4,7 @@
 std::shared_ptr<GraphicsPipeline>Sprite::s_pipeline[AlphaBlendModeNum];
 std::shared_ptr<TextureBuffer>Sprite::s_defaultTex;
 
-Sprite::Sprite(const std::shared_ptr<TextureBuffer>& Texture, const char* Name) : m_mesh(Name)
+Sprite::Sprite(const std::shared_ptr<TextureBuffer>& Texture, const char* Name) : m_mesh(Name), m_name(Name)
 {
 	if (!s_pipeline[0])
 	{
@@ -54,6 +54,7 @@ void Sprite::SetTexture(const std::shared_ptr<TextureBuffer>& Texture)
 {
 	if (Texture == nullptr)return;
 	m_texBuff = Texture;
+	m_mesh.SetSize(m_texBuff->GetGraphSize().Float());
 }
 
 void Sprite::SetColor(const Color& Color)

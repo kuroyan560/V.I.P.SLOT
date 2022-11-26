@@ -28,7 +28,7 @@ InGameScene::InGameScene()
 	m_player = std::make_shared<Player>();
 
 	//オブジェクトマネージャ生成
-	m_objMgr = std::make_shared<ObjectManager>(m_player->GetNormalAttackCollBack().lock().get());
+	m_objMgr = std::make_shared<ObjectManager>(m_player->GetNormalAttackCallBack().lock().get());
 
 	//生成時に引数が必要なものの初期化
 	m_player->Awake(m_collisionMgr, m_objMgr, m_gameCam);
@@ -70,7 +70,7 @@ void InGameScene::OnInitialize()
 
 	//プレイヤー初期化
 	//m_player->Init(gameMgr->GetPlayerHp(), gameMgr->GetCoinNum());
-	m_player->Init(gameMgr->GetPlayerHp(), gameMgr->GetCoinNum());
+	m_player->Init(gameMgr->GetPlayerLife(), gameMgr->GetCoinNum());
 
 	//スロットマシン初期化
 	m_slotMachine->Init();
@@ -207,7 +207,7 @@ void InGameScene::OnImguiDebug()
 	//m_slotMachine->ImguiDebug();
 	m_player->ImguiDebug();
 	//m_collisionMgr->ImguiDebug();
-	//m_enemyEmitter->ImguiDebug();
+	m_enemyEmitter->ImguiDebug();
 	m_ligMgr->ImguiDebug();
 	BasicDraw::ImguiDebug();
 }
@@ -217,7 +217,7 @@ void InGameScene::OnFinalize()
 	auto gameMgr = GameManager::Instance();
 
 	//ゲーム終了時のプレイヤーの状態を記録
-	gameMgr->UpdatePlayersInfo(m_player->GetCoinNum(), m_player->GetHp());
+	gameMgr->UpdatePlayersInfo(m_player->GetCoinNum(), m_player->GetLife());
 
 	m_stageMgr->Finalize(m_collisionMgr);
 }

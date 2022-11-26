@@ -32,6 +32,9 @@ namespace ConstParameter
 		//モデルサイズ
 		extern Vec3<float>MODEL_SIZE;
 
+		//最大ライフ
+		extern int MAX_LIFE;
+
 		//最大HP
 		extern int MAX_HP;
 

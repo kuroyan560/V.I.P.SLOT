@@ -4,5 +4,5 @@
 void GameManager::FlowStart()
 {
 	m_coinNum = 0;
-	m_playerHp = ConstParameter::Player::MAX_HP;
+	m_playerLife = ConstParameter::Player::MAX_LIFE;
 }
