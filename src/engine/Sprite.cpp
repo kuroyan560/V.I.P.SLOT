@@ -68,7 +68,7 @@ void Sprite::Draw(const AlphaBlendMode& BlendMode)
 {
 	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(s_pipeline[(int)BlendMode]);
 
-	if (m_transform.GetDirty())
+	if (m_transform.IsDirty())
 	{
 		m_constData.m_mat = m_transform.GetWorldMat();
 		m_constBuff->Mapping(&m_constData);

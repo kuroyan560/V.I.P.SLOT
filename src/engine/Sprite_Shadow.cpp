@@ -146,7 +146,7 @@ void Sprite_Shadow::Draw(LightManager& LigManager)
 {
 	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(s_transPipeline);
 
-	if (m_transform.GetDirty())
+	if (m_transform.IsDirty())
 	{
 		m_constData.m_mat = m_transform.GetWorldMat();
 		m_constBuff->Mapping(&m_constData);

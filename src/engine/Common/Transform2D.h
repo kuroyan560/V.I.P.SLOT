@@ -31,11 +31,6 @@ private:
 		m_dirty = true;
 	}
 
-	bool IsDirty()
-	{
-		return m_dirty || (m_parent != nullptr && m_parent->IsDirty());
-	}
-
 	void CalculateMat();
 
 public:
@@ -104,5 +99,8 @@ public:
 	//ワールド行列ゲッタ
 	const Matrix& GetWorldMat();
 	//Dirtyフラグゲッタ
-	const bool& GetDirty() { return m_dirty; }
+	bool IsDirty()const
+	{
+		return m_dirty || (m_parent != nullptr && m_parent->IsDirty());
+	}
 };

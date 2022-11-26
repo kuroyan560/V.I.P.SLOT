@@ -33,11 +33,6 @@ private:
 		m_dirty = true;
 	}
 
-	bool IsDirty()
-	{
-		return m_dirty || (m_parent != nullptr && m_parent->IsDirty());
-	}
-
 	void CalculateMat();
 
 public:
@@ -161,5 +156,8 @@ public:
 	//ワールド行列（ビルボード適用）
 	Matrix GetWorldMat(const Matrix& arg_billBoardMat);
 	//Dirtyフラグゲッタ
-	const bool& GetDirty() { return m_dirty; }
+	bool IsDirty()const
+	{
+		return m_dirty || (m_parent != nullptr && m_parent->IsDirty());
+	}
 };
