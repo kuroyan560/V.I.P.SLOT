@@ -189,7 +189,7 @@ void OC_SlimeBattery::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeSca
 		float t = m_timer.GetLeftTime();
 
 		// d = (ñ⁄ïWà íu) - (åªç›ÇÃà íu)
-		const float MY_RADIUS = 1.0f;
+		const float MY_RADIUS = 1.55f;
 		d = (FIELD_FLOOR_TOP_SURFACE_HEIGHT + MY_RADIUS) - pos.y;
 		if (t != 0.0f)accelY = 2 * (d - m_moveY * t) / (t * t);
 

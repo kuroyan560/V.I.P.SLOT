@@ -155,12 +155,13 @@ void InGameScene::OnDraw()
 	//ステージマネージャ（ブロック）
 	m_stageMgr->BlockDraw(m_ligMgr, m_gameCam->GetMainCam());
 
-	//床
-	BasicDraw::Draw(*m_ligMgr, m_squareFloorObj, *m_gameCam->GetMainCam());
 	//DrawFunc3D::DrawNonShadingModel(m_squareFloorObj, *m_gameCam->GetMainCam(), 1.0f, AlphaBlendMode_None);
 
 	//デプスステンシルクリア
 	rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_STENCIL);
+
+	//床
+	BasicDraw::Draw(*m_ligMgr, m_squareFloorObj, *m_gameCam->GetMainCam());
 
 	//ステージマネージャ（足場）
 	m_stageMgr->ScaffoldDraw(m_ligMgr, m_gameCam->GetMainCam());
