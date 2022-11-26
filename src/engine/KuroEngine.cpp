@@ -61,10 +61,11 @@ KuroEngine::~KuroEngine()
 	FreeLibrary(m_xaudioLib);
 
 	//シーンの削除
-	for (int i = 0; i < m_scenes.size(); ++i)
+	for (auto& scene : m_scenes)
 	{
-		delete m_scenes[i];
+		delete scene.second;
 	}
+	m_scenes.clear();
 
 	printf("KuroEngineシャットダウン\n");
 
@@ -115,11 +116,11 @@ void KuroEngine::Initialize(const EngineOption& Option)
 
 }
 
-void KuroEngine::SetSceneList(const std::vector<BaseScene*>& SceneList, const int& AwakeSceneNum)
+void KuroEngine::SetSceneList(const std::map<std::string, BaseScene*>& SceneList, const std::string& AwakeSceneKey)
 {
 	//シーンリスト移動
 	m_scenes = SceneList;
-	m_nowScene = AwakeSceneNum;
+	m_nowScene = AwakeSceneKey;
 	m_scenes[m_nowScene]->Initialize();
 }
 
@@ -137,7 +138,7 @@ void KuroEngine::Update()
 	if (m_nowSceneTransition != nullptr) //シーン遷移中
 	{
 		//シーン遷移クラスの更新関数は、シーン切り替えのタイミングで true を還す
-		sceneChangeFlg = m_nowSceneTransition->Update() && (m_nextScene != -1);
+		sceneChangeFlg = m_nowSceneTransition->Update() && (!m_nextScene.empty());
 
 		//シーン遷移終了
 		if (m_nowSceneTransition->Finish())
@@ -152,7 +153,7 @@ void KuroEngine::Update()
 		m_scenes[m_nowScene]->Finalize();	//切り替え前のシーン終了処理
 		m_nowScene = m_nextScene;		//シーン切り替え
 		m_scenes[m_nowScene]->Initialize();	//切り替え後のシーン初期化処理
-		m_nextScene = -1;
+		m_nextScene.clear();
 	}
 
 	//入力更新

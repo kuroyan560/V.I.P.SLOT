@@ -4,6 +4,7 @@
 #include"Vec.h"
 #include<memory>
 #include"Color.h"
+#include<map>
 
 #include"D3D12App.h"
 #include"WinApp.h"
@@ -101,9 +102,9 @@ private:
 	std::shared_ptr<ConstantBuffer>m_parallelMatProjBuff;
 
 	//シーンリスト
-	std::vector<BaseScene *>m_scenes;
-	int m_nowScene;	//現在のシーン番号
-	int m_nextScene = -1;	//次のシーン番号
+	std::map<std::string, BaseScene*>m_scenes;
+	std::string m_nowScene;	//現在のシーンキー
+	std::string m_nextScene = "";	//次のシーンキー
 	SceneTransition *m_nowSceneTransition;	//現在セットされているシーン遷移
 
 	//FPS固定
@@ -121,7 +122,7 @@ public:
 	}
 	~KuroEngine();
 	void Initialize(const EngineOption &Option);
-	void SetSceneList(const std::vector<BaseScene *> &SceneList, const int &AwakeSceneNum);
+	void SetSceneList(const std::map<std::string, BaseScene*>& SceneList, const std::string& AwakeSceneKey);
 	void Update();
 	void Draw();
 	bool End() { return m_end; }
@@ -129,9 +130,15 @@ public:
 	//ゲーム終了
 	void GameEnd() { m_end = true; }
 	//シーンチェンジ
-	void ChangeScene(const int &SceneNum, SceneTransition& SceneTransition)
+	void ChangeScene(const std::string& SceneKey, SceneTransition& SceneTransition)
 	{
-		m_nextScene = SceneNum;
+		if (m_scenes.find(SceneKey) == m_scenes.end())
+		{
+			printf("The scene key wasn't be found.\n");
+			assert(0);
+			return;
+		}
+		m_nextScene = SceneKey;
 		m_nowSceneTransition = &SceneTransition;
 		m_nowSceneTransition->Start();
 	}

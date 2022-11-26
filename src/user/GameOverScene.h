@@ -1,6 +1,6 @@
 #pragma once
 #include"KuroEngine.h"
-class OutGameScene : public BaseScene
+class GameOverScene : public BaseScene
 {
 	SceneTransition m_sceneTrans;
 
@@ -8,7 +8,7 @@ class OutGameScene : public BaseScene
 	ITEM m_item = RETRY;
 
 public:
-	OutGameScene() {}
+	GameOverScene() {}
 	void OnInitialize()override;
 	void OnUpdate()override;
 	void OnDraw()override;

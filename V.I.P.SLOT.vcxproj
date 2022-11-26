@@ -187,7 +187,7 @@
     <ClCompile Include="src\user\ObjectManager.cpp" />
     <ClCompile Include="src\user\GameCamera.cpp" />
     <ClCompile Include="src\user\InGameScene.cpp" />
-    <ClCompile Include="src\user\OutGameScene.cpp" />
+    <ClCompile Include="src\user\GameOverScene.cpp" />
     <ClCompile Include="src\user\Pattern.cpp" />
     <ClCompile Include="src\user\PatternManager.cpp" />
     <ClCompile Include="src\user\Player.cpp" />
@@ -301,7 +301,7 @@
     <ClInclude Include="src\user\ObjectManager.h" />
     <ClInclude Include="src\user\GameCamera.h" />
     <ClInclude Include="src\user\InGameScene.h" />
-    <ClInclude Include="src\user\OutGameScene.h" />
+    <ClInclude Include="src\user\GameOverScene.h" />
     <ClInclude Include="src\user\Pattern.h" />
     <ClInclude Include="src\user\PatternManager.h" />
     <ClInclude Include="src\user\Player.h" />

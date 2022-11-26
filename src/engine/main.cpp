@@ -2,7 +2,7 @@
 #include"KuroEngine.h"
 #include"InGameScene.h"
 #include"TitleScene.h"
-#include"OutGameScene.h"
+#include"GameOverScene.h"
 #include"Transform.h"
 #include"Transform2D.h"
 #include"Color.h"
@@ -45,13 +45,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	//シーンリスト=====================
 
-	std::vector<BaseScene*>sceneList =
+	std::map<std::string, BaseScene*>sceneList =
 	{
-		new TitleScene(),
-		new InGameScene(),
-		new OutGameScene()
+		{"Title",new TitleScene()},
+		{"InGame",new InGameScene()},
+		{"GameOver",new GameOverScene()},
 	};
-	int awakeScene = 0;	//開始時のステージ番号
+	std::string awakeScene = "Title";	//開始時のシーンキー
 
 	//================================
 

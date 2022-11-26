@@ -340,7 +340,7 @@
     <ClCompile Include="src\user\GameManager.cpp">
       <Filter>src\user\Game</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\OutGameScene.cpp">
+    <ClCompile Include="src\user\GameOverScene.cpp">
       <Filter>src\user\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\Common\PerlinNoise.cpp">
@@ -678,7 +678,7 @@
     <ClInclude Include="src\user\GameManager.h">
       <Filter>src\user\Game</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\OutGameScene.h">
+    <ClInclude Include="src\user\GameOverScene.h">
       <Filter>src\user\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\Common\PerlinNoise.h">

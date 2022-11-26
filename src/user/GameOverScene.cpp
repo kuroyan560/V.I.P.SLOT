@@ -1,13 +1,13 @@
-#include "OutGameScene.h"
+#include "GameOverScene.h"
 #include"GameManager.h"
 #include<magic_enum.h>
 
-void OutGameScene::OnInitialize()
+void GameOverScene::OnInitialize()
 {
 	m_item = RETRY;
 }
 
-void OutGameScene::OnUpdate()
+void GameOverScene::OnUpdate()
 {
 	//“ü—ÍŽæ“¾
 	auto input = UsersInput::Instance();
@@ -31,27 +31,27 @@ void OutGameScene::OnUpdate()
 		switch (m_item)
 		{
 		case RETRY:
-			KuroEngine::Instance()->ChangeScene(1, m_sceneTrans);
+			KuroEngine::Instance()->ChangeScene("InGame", m_sceneTrans);
 			GameManager::Instance()->FlowStart();
 			break;
 		case TITLE:
-			KuroEngine::Instance()->ChangeScene(0, m_sceneTrans);
+			KuroEngine::Instance()->ChangeScene("Title", m_sceneTrans);
 			break;
 		}
 	}
 }
 
-void OutGameScene::OnDraw()
+void GameOverScene::OnDraw()
 {
 }
 
-void OutGameScene::OnImguiDebug()
+void GameOverScene::OnImguiDebug()
 {
 	ImGui::Begin("Items");
 	ImGui::Text("Now : %s", std::string(magic_enum::enum_name(m_item)).c_str());
 	ImGui::End();
 }
 
-void OutGameScene::OnFinalize()
+void GameOverScene::OnFinalize()
 {
 }

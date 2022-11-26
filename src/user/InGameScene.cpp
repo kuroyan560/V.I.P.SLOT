@@ -130,7 +130,7 @@ void InGameScene::OnUpdate()
 	if (m_stageMgr->IsClear(m_player->GetCoinNum()))
 	{
 		//アウトゲームへ
-		KuroEngine::Instance()->ChangeScene(2, m_sceneTrans);
+		KuroEngine::Instance()->ChangeScene("GameOver", m_sceneTrans);
 	}
 }
 

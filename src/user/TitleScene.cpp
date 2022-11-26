@@ -82,7 +82,7 @@ void TitleScene::OnUpdate()
 		switch (m_item)
 		{
 		case GAME_START:
-			KuroEngine::Instance()->ChangeScene(1, m_sceneTrans);
+			KuroEngine::Instance()->ChangeScene("InGame", m_sceneTrans);
 			GameManager::Instance()->FlowStart();
 			break;
 		case EXIT:
