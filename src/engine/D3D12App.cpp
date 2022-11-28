@@ -933,8 +933,8 @@ void D3D12App::GenerateTextureBuffer(std::shared_ptr<TextureBuffer>* Array, cons
 		static const int THREAD_BLOCK_SIZE = 8;
 		const Vec3<int>thread =
 		{
-			static_cast<int>(ceil(constData.m_splitSize.x / THREAD_BLOCK_SIZE)),
-			static_cast<int>(ceil(constData.m_splitSize.y / THREAD_BLOCK_SIZE)),
+			static_cast<int>(ceil(constData.m_splitSize.x / THREAD_BLOCK_SIZE + 1)),
+			static_cast<int>(ceil(constData.m_splitSize.y / THREAD_BLOCK_SIZE + 1)),
 			1
 		};
 
