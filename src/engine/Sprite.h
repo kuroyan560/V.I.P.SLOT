@@ -52,6 +52,10 @@ public:
 	//描画
 	void Draw(const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans);
 
+	//直ちにトランスフォームバッファを送信
+	//※ 現状、Dirtyフラグの性質上コンストラクタでのトランスフォーム変化に対応出来ない。
+	void SendTransformBuff();
+
 	//ゲッタ
 	const std::shared_ptr<TextureBuffer>& GetTex()const { return m_texBuff; }
 };

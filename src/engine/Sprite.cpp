@@ -70,8 +70,7 @@ void Sprite::Draw(const AlphaBlendMode& BlendMode)
 
 	if (m_transform.IsDirty())
 	{
-		m_constData.m_mat = m_transform.GetWorldMat();
-		m_constBuff->Mapping(&m_constData);
+		SendTransformBuff();
 	}
 
 	m_mesh.Render({
@@ -79,4 +78,10 @@ void Sprite::Draw(const AlphaBlendMode& BlendMode)
 		{m_texBuff,SRV},			//テクスチャリソース
 		{m_constBuff,CBV}		//カラー & ワールド行列
 		});
+}
+
+void Sprite::SendTransformBuff()
+{
+	m_constData.m_mat = m_transform.GetWorldMat();
+	m_constBuff->Mapping(&m_constData);
 }
