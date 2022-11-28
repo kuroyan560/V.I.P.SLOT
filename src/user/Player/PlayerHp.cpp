@@ -159,37 +159,35 @@ void PlayerHp::ImguiDebug()
 	auto parentPos = m_transform.GetPos();
 	if (ImGui::DragFloat2("PosUI", (float*)&parentPos))m_transform.SetPos(parentPos);
 
-	if (ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(250, 300), ImGuiWindowFlags_NoTitleBar))
+	ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(250, 300), ImGuiWindowFlags_NoTitleBar);
+	for (auto& content : m_contents)
 	{
-		for (auto& content : m_contents)
+		auto sp = content->m_sprite;
+		if (ImGui::TreeNode(sp->m_name.c_str()))
 		{
-			auto sp = content->m_sprite;
-			if (ImGui::TreeNode(sp->m_name.c_str()))
-			{
 
-				auto pos = sp->m_transform.GetPos();
-				if (ImGui::DragFloat2("Pos", (float*)&pos))sp->m_transform.SetPos(pos);
+			auto pos = sp->m_transform.GetPos();
+			if (ImGui::DragFloat2("Pos", (float*)&pos))sp->m_transform.SetPos(pos);
 
-				ImGui::TreePop();
-			}
+			ImGui::TreePop();
 		}
-
-		for (int i = 0; i < static_cast<int>(m_heartArray.size()); ++i)
-		{
-			if (ImGui::TreeNode(("Heart - " + std::to_string(i)).c_str()))
-			{
-				auto pos = m_heartArray[i].m_offsetTransform.GetPos();
-				if (ImGui::DragFloat2("Pos", (float*)&pos))m_heartArray[i].m_offsetTransform.SetPos(pos);
-
-				auto scale = m_heartArray[i].m_offsetTransform.GetScale().x;
-				if (ImGui::DragFloat("Scale", &scale, 0.05f))m_heartArray[i].m_offsetTransform.SetScale({ scale,scale });
-
-				ImGui::TreePop();
-			}
-		}
-
-		ImGui::EndChild();
 	}
+
+	for (int i = 0; i < static_cast<int>(m_heartArray.size()); ++i)
+	{
+		if (ImGui::TreeNode(("Heart - " + std::to_string(i)).c_str()))
+		{
+			auto pos = m_heartArray[i].m_offsetTransform.GetPos();
+			if (ImGui::DragFloat2("Pos", (float*)&pos))m_heartArray[i].m_offsetTransform.SetPos(pos);
+
+			auto scale = m_heartArray[i].m_offsetTransform.GetScale().x;
+			if (ImGui::DragFloat("Scale", &scale, 0.05f))m_heartArray[i].m_offsetTransform.SetScale({ scale,scale });
+
+			ImGui::TreePop();
+		}
+	}
+	ImGui::EndChild();
+
 
 	ImGui::End();
 }
