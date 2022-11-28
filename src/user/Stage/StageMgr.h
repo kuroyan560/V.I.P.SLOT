@@ -43,10 +43,6 @@ class StageMgr
 	//足場インスタンス
 	std::vector<std::shared_ptr<Scaffold>>m_scaffolds;
 
-	//コインノルマ
-	int m_norma;
-	//デバッグ用、ノルマ達成判定を切る
-	bool m_isInfinity = true;
 	//デバッグ用、地形生成するか
 	bool m_generateTerrian = false;
 
@@ -137,10 +133,4 @@ public:
 	void Draw2D(std::weak_ptr<Camera>arg_cam);
 
 	void ImguiDebug(std::weak_ptr<CollisionManager>arg_collisionMgr);
-
-	//クリアしたか
-	bool IsClear(const int& arg_playersCoinNum)
-	{
-		return !m_isInfinity && m_norma <= arg_playersCoinNum;
-	}
 };

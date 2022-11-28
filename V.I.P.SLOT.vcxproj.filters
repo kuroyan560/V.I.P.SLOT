@@ -98,6 +98,9 @@
     <Filter Include="src\user\Others">
       <UniqueIdentifier>{12c0d2ba-c37a-48cc-be3b-34a5d122fb29}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\user\Wave">
+      <UniqueIdentifier>{8490927f-d86c-4608-a796-000bfafb65b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\D3D12App.cpp">
@@ -384,6 +387,9 @@
     </ClCompile>
     <ClCompile Include="src\user\Scene\OutGameScene.cpp">
       <Filter>src\user\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\Wave\WaveMgr.cpp">
+      <Filter>src\user\Wave</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -725,6 +731,9 @@
     </ClInclude>
     <ClInclude Include="src\user\Scene\OutGameScene.h">
       <Filter>src\user\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Wave\WaveMgr.h">
+      <Filter>src\user\Wave</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -13,6 +13,7 @@ class ObjectManager;
 class CollisionManager;
 class StageMgr;
 class EnemyEmitter;
+class WaveMgr;
 
 class InGameScene : public BaseScene
 {
@@ -44,6 +45,9 @@ class InGameScene : public BaseScene
 
 	//コリジョンマネージャ
 	std::shared_ptr<CollisionManager>m_collisionMgr;
+
+	//ウェーブマネージャ
+	std::shared_ptr<WaveMgr>m_waveMgr;
 
 	//ステージマネージャ
 	std::shared_ptr<StageMgr>m_stageMgr;

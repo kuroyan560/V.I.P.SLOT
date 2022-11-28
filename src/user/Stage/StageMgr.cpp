@@ -12,6 +12,7 @@
 #include"SlotMachine.h"
 #include"KuroEngine.h"
 #include"Player.h"
+#include"Sprite.h"
 
 void StageMgr::DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
@@ -122,6 +123,8 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 {
 	using namespace ConstParameter::Stage;
 
+	auto app = D3D12App::Instance();
+
 	m_slotMachine = arg_slotMachine;
 	
 	//モデル読み込み
@@ -176,7 +179,7 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 	/*--- 地形評価 ---*/
 	const std::string terrianValuationTexDir = "resource/user/img/timeGauge/";
 	//地形クリア時間ゲージ画像
-	m_terrianValuationTimerGaugeTex = D3D12App::Instance()->GenerateTextureBuffer(terrianValuationTexDir + "terrianTimeGauge.png");
+	m_terrianValuationTimerGaugeTex = app->GenerateTextureBuffer(terrianValuationTexDir + "terrianTimeGauge.png");
 
 	//評価文字列画像名前
 	std::array<std::string, TERRIAN_EVALUATION::NUM>terrianEvaluationTexName =
@@ -194,24 +197,21 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 	};
 	//数字画像
 	std::array<std::shared_ptr<TextureBuffer>, TERRIAN_EVALUATION::NUM>terrianEvaluationNumTex;
-	D3D12App::Instance()->GenerateTextureBuffer(terrianEvaluationNumTex.data(), terrianValuationTexDir + "slotBlockNum.png", 5, { 5,1 });
+	app->GenerateTextureBuffer(terrianEvaluationNumTex.data(), terrianValuationTexDir + "slotBlockNum.png", 5, { 5,1 });
 	//各構造体にパラメータセット
 	for (int i = 0; i < TERRIAN_EVALUATION::NUM; ++i)
 	{
-		m_terrianEvaluationArray[i].m_strTex = D3D12App::Instance()->GenerateTextureBuffer(terrianValuationTexDir + terrianEvaluationTexName[i] + ".png");
+		m_terrianEvaluationArray[i].m_strTex = app->GenerateTextureBuffer(terrianValuationTexDir + terrianEvaluationTexName[i] + ".png");
 		m_terrianEvaluationArray[i].m_color = terrianEvaluationColor[i];
 		m_terrianEvaluationArray[i].m_numTex = terrianEvaluationNumTex[i];
 	}
 	//地形評価の「＋」画像
-	m_terrianValuationPlusTex = D3D12App::Instance()->GenerateTextureBuffer(terrianValuationTexDir + "plus.png");
+	m_terrianValuationPlusTex = app->GenerateTextureBuffer(terrianValuationTexDir + "plus.png");
 }
 
 void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	GenerateTerrian(arg_stageDataPath, arg_collisionMgr, 4);
-
-	//コインノルマ
-	m_norma = 10;
 
 	//地形評価UI
 	m_terrianEvaluationUI.Init();
@@ -358,12 +358,6 @@ void StageMgr::Draw2D(std::weak_ptr<Camera> arg_cam)
 void StageMgr::ImguiDebug(std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	ImGui::Begin("StageMgr");
-
-	ImGui::Text("Norma : { %d }", m_norma);
-
-	ImGui::Separator();
-
-	ImGui::Checkbox("InfinityMode", &m_isInfinity);
 
 	if (ImGui::Checkbox("GenerateTerrian", &m_generateTerrian))
 	{

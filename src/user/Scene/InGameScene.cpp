@@ -15,6 +15,7 @@
 #include"GameManager.h"
 #include"ObjectController.h"
 #include"EnemyEmitter.h"
+#include"WaveMgr.h"
 
 InGameScene::InGameScene()
 {
@@ -47,6 +48,11 @@ InGameScene::InGameScene()
 
 	//背景画像読み込み
 	m_backGround = D3D12App::Instance()->GenerateTextureBuffer("resource/user/img/backGround.png");
+
+	//ウェーブマネージャ生成
+	m_waveMgr = std::make_shared<WaveMgr>();
+	//ウェーブマネージャ
+	m_waveMgr->Init(10);
 
 	//ステージマネージャ生成
 	m_stageMgr = std::make_shared<StageMgr>(m_slotMachine);
@@ -129,7 +135,7 @@ void InGameScene::OnUpdate()
 	m_objMgr->Update(m_timeScale, m_collisionMgr, m_player);
 
 	//クリアしたか
-	if (m_stageMgr->IsClear(m_player->GetCoinNum()))
+	if (m_waveMgr->IsClear(m_player->GetCoinNum()))
 	{
 		//アウトゲームへ
 		KuroEngine::Instance()->ChangeScene("OutGame", m_sceneTrans);
@@ -213,6 +219,7 @@ void InGameScene::OnImguiDebug()
 
 	//ConstParameter::ImguiDebug();
 	m_stageMgr->ImguiDebug(m_collisionMgr);
+	m_waveMgr->ImguiDebug();
 	//m_slotMachine->ImguiDebug();
 	m_player->ImguiDebug();
 	//m_collisionMgr->ImguiDebug();

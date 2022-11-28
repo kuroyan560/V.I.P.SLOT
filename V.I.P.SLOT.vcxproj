@@ -45,12 +45,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\engine;$(SolutionDir)src\user\Coin;$(SolutionDir)src\user\Enemy;$(SolutionDir)src\user\Game;$(SolutionDir)src\user\GameObject;$(SolutionDir)src\user\Others;$(SolutionDir)src\user\Player;$(SolutionDir)src\user\Scene;$(SolutionDir)src\user\Slot;$(SolutionDir)src\user\Slot\Pattern;$(SolutionDir)src\user\Stage;$(SolutionDir)src\user\Title;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\imgui;$(IncludePath);$(SolutionDir)packages\rapidjson.temprelease.0.0.2.20\build\native\include</IncludePath>
+    <IncludePath>$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\engine;$(SolutionDir)src\user\Coin;$(SolutionDir)src\user\Enemy;$(SolutionDir)src\user\Game;$(SolutionDir)src\user\GameObject;$(SolutionDir)src\user\Others;$(SolutionDir)src\user\Player;$(SolutionDir)src\user\Scene;$(SolutionDir)src\user\Slot;$(SolutionDir)src\user\Slot\Pattern;$(SolutionDir)src\user\Stage;$(SolutionDir)src\user\Title;$(SolutionDir)src\user\Wave;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\imgui;$(IncludePath);$(SolutionDir)packages\rapidjson.temprelease.0.0.2.20\build\native\include</IncludePath>
     <LibraryPath>$(SolutionDir)lib\dxcompiler\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\engine;$(SolutionDir)src\user\Coin;$(SolutionDir)src\user\Enemy;$(SolutionDir)src\user\Game;$(SolutionDir)src\user\GameObject;$(SolutionDir)src\user\Others;$(SolutionDir)src\user\Player;$(SolutionDir)src\user\Scene;$(SolutionDir)src\user\Slot;$(SolutionDir)src\user\Slot\Pattern;$(SolutionDir)src\user\Stage;$(SolutionDir)src\user\Title;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\imgui</IncludePath>
+    <IncludePath>$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\engine;$(SolutionDir)src\user\Coin;$(SolutionDir)src\user\Enemy;$(SolutionDir)src\user\Game;$(SolutionDir)src\user\GameObject;$(SolutionDir)src\user\Others;$(SolutionDir)src\user\Player;$(SolutionDir)src\user\Scene;$(SolutionDir)src\user\Slot;$(SolutionDir)src\user\Slot\Pattern;$(SolutionDir)src\user\Stage;$(SolutionDir)src\user\Title;$(SolutionDir)src\user\Wave;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\imgui</IncludePath>
     <LibraryPath>$(SolutionDir)lib\dxcompiler\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -204,6 +204,7 @@
     <ClCompile Include="src\user\Stage\StageMgr.cpp" />
     <ClCompile Include="src\user\Title\TitleCamera.cpp" />
     <ClCompile Include="src\user\Title\TitleUI.cpp" />
+    <ClCompile Include="src\user\Wave\WaveMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\dxcompiler\inc\d3d12shader.h" />
@@ -319,6 +320,7 @@
     <ClInclude Include="src\user\Stage\StageMgr.h" />
     <ClInclude Include="src\user\Title\TitleCamera.h" />
     <ClInclude Include="src\user\Title\TitleUI.h" />
+    <ClInclude Include="src\user\Wave\WaveMgr.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="lib\DirectXTex\DirectXTex_Desktop_2019_Win10.vcxproj">
