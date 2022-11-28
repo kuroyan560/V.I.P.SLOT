@@ -4,11 +4,16 @@
 
 WaveMgr::WaveMgr()
 {
+	Vec2<float>NORMA_STR_POS = { 1092.0f,76.0f };
+
 	auto app = D3D12App::Instance();
 
 	/*--- ノルマ表示 ---*/
 	std::string normaTexDir = "resource/user/img/ui/norma/";
 	m_normaStrSprite = std::make_shared<Sprite>(app->GenerateTextureBuffer(normaTexDir + "norma_str.png"), "Sprite - NormaStr");
+	m_normaStrSprite->m_transform.SetPos(NORMA_STR_POS);
+	m_normaStrSprite->SendTransformBuff();
+
 	//数字スプライトを指定した桁数分事前に用意
 	static const int PREPARE_DIGIT_NUM = 5;
 	m_normaNumSpriteArray.resize(PREPARE_DIGIT_NUM);
@@ -26,6 +31,11 @@ WaveMgr::WaveMgr()
 void WaveMgr::Init(int arg_norma)
 {
 	m_norma = arg_norma;
+}
+
+void WaveMgr::Draw2D()
+{
+	m_normaStrSprite->Draw();
 }
 
 #include"ImguiApp.h"

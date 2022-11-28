@@ -1,6 +1,7 @@
 #pragma once
 #include<vector>
 #include<memory>
+#include"Vec.h"
 class Sprite;
 class TextureBuffer;
 
@@ -19,6 +20,7 @@ class WaveMgr
 public:
 	WaveMgr();
 	void Init(int arg_norma);
+	void Draw2D();
 
 	void ImguiDebug();
 

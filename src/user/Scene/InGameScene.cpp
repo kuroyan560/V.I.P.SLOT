@@ -205,9 +205,10 @@ void InGameScene::OnDraw()
 
 	//デプスステンシルクリア
 	rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_STENCIL);
-	//エフェクト描画
+
 	m_player->Draw2D(m_gameCam->GetMainCam());
 	m_stageMgr->Draw2D(m_gameCam->GetMainCam());
+	m_waveMgr->Draw2D();
 }
 
 void InGameScene::OnImguiDebug()
