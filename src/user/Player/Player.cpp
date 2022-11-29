@@ -103,8 +103,8 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 		m_bodyCollider->SetParentTransform(&m_modelObj->m_transform);
 
 		//被ダメージコールバックアタッチ
-		m_bodyCollider->SetCallBack("Enemy", m_damegedCallBack.get());
-		m_bodyCollider->SetCallBack("Enemy_Attack", m_damegedCallBack.get());
+		//m_bodyCollider->SetCallBack("Enemy", m_damegedCallBack.get());
+		//m_bodyCollider->SetCallBack("Enemy_Attack", m_damegedCallBack.get());
 		colliders.emplace_back(m_bodyCollider);
 	}
 

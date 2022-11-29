@@ -221,11 +221,11 @@ void InGameScene::OnImguiDebug()
 
 	//ConstParameter::ImguiDebug();
 	m_stageMgr->ImguiDebug(m_collisionMgr);
-	m_waveMgr->ImguiDebug();
+	//m_waveMgr->ImguiDebug();
 	//m_slotMachine->ImguiDebug();
-	m_player->ImguiDebug();
+	//m_player->ImguiDebug();
 	//m_collisionMgr->ImguiDebug();
-	//m_enemyEmitter->ImguiDebug();
+	m_enemyEmitter->ImguiDebug();
 	//m_ligMgr->ImguiDebug();
 	//BasicDraw::ImguiDebug();
 }

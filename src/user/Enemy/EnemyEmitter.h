@@ -11,11 +11,11 @@ class EnemyEmitter
 	enum TYPE { SLIDE_MOVE, SLIME_BATTERY, NUM };
 
 	//出現率（％）
-	std::array<int, TYPE::NUM>m_appearRate = { 50,50 };
+	std::array<int, TYPE::NUM>m_appearRate = { 70,30 };
 	//出現させる時間間隔
-	int m_appearSpan = 300;
+	int m_appearSpan = 180;
 	//一度に出現させる数
-	int m_appearNum = 1;
+	int m_appearNum = 3;
 
 	//時間計測
 	Timer m_timer;
