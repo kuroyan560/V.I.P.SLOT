@@ -391,6 +391,9 @@
     <ClCompile Include="src\user\Wave\WaveMgr.cpp">
       <Filter>src\user\Wave</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\Player\PlayersCoinUI.cpp">
+      <Filter>src\user\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -734,6 +737,9 @@
     </ClInclude>
     <ClInclude Include="src\user\Wave\WaveMgr.h">
       <Filter>src\user\Wave</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Player\PlayersCoinUI.h">
+      <Filter>src\user\Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -12,6 +12,7 @@
 #include"BasicDrawParameters.h"
 #include"PlayersAbility.h"
 #include"PlayerHp.h"
+#include"PlayersCoinUI.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -24,6 +25,7 @@ class CollisionSphere;
 class YoYo;
 class Scaffold;
 class ObjectManager;
+class TextureBuffer;
 
 class Player : public ColliderParentObject
 {
@@ -57,6 +59,8 @@ class Player : public ColliderParentObject
 
 	//Š‹à
 	CoinVault m_coinVault;
+	//Š‹àUI
+	PlayersCoinUI m_coinUI;
 
 	//ƒ‚ƒfƒ‹‘S‘Ì‚ğ•¢‚¤‹…
 	std::shared_ptr<CollisionSphere>m_bodySphereCol;

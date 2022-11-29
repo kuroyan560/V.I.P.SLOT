@@ -5,7 +5,8 @@
 
 WaveMgr::WaveMgr()
 {
-	Vec2<float>NORMA_STR_POS = { 1092.0f,76.0f };
+	Vec2<float>NORMA_STR_POS = { 1080.0f,74.0f };
+	float NORMA_STR_SCALE = 0.9f;
 
 	auto app = D3D12App::Instance();
 
@@ -13,6 +14,7 @@ WaveMgr::WaveMgr()
 	std::string normaTexDir = "resource/user/img/ui/norma/";
 	m_normaStrSprite = std::make_shared<Sprite>(app->GenerateTextureBuffer(normaTexDir + "norma_str.png"), "Sprite - NormaStr");
 	m_normaStrSprite->m_transform.SetPos(NORMA_STR_POS);
+	m_normaStrSprite->m_transform.SetScale(NORMA_STR_SCALE);
 	m_normaStrSprite->SendTransformBuff();
 
 	//数字スプライトを指定した桁数分事前に用意
@@ -63,8 +65,10 @@ void WaveMgr::Init(int arg_norma)
 		Vec2<float>pos = m_numPos;
 		pos.x -= m_useSpriteNum * m_numPosOffset.x;	//右揃え
 		pos.x += m_numPosOffset.x * static_cast<float>(i);
-		pos.y += offsetY * static_cast<float>(i);
+		pos.y -= offsetY * static_cast<float>(m_useSpriteNum - i - 1);
 		m_normaNumSpriteArray[i]->m_transform.SetPos(pos);
+		m_normaNumSpriteArray[i]->m_transform.SetScale(m_numScale);
+		m_normaNumSpriteArray[i]->SendTransformBuff();
 	}
 }
 
@@ -87,8 +91,22 @@ void WaveMgr::ImguiDebug()
 
 	bool change = false;
 
+	auto strPos = m_normaStrSprite->m_transform.GetPos();
+	if (ImGui::DragFloat2("StrPos", (float*)&strPos))
+	{
+		m_normaStrSprite->m_transform.SetPos(strPos);
+		m_normaStrSprite->SendTransformBuff();
+	}
+	auto strScale = m_normaStrSprite->m_transform.GetScale().x;
+	if (ImGui::DragFloat("StrScale", &strScale,0.05f))
+	{
+		m_normaStrSprite->m_transform.SetScale(strScale);
+		m_normaStrSprite->SendTransformBuff();
+	}
+
 	if (ImGui::DragFloat2("NumPos", (float*)&m_numPos))change = true;
 	if (ImGui::DragFloat2("NumOffset", (float*)&m_numPosOffset))change = true;
+	if (ImGui::DragFloat("NumScale", &m_numScale, 0.05f))change = true;
 
 	ImGui::Separator();
 

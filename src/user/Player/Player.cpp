@@ -165,6 +165,9 @@ void Player::Init(PlayersAbility arg_ability, int arg_initRemainLife, int arg_in
 
 	//ヒットエフェクト
 	m_hitEffect->Init();
+
+	//所持金コインUI
+	m_coinUI.Init(m_coinVault.GetNum());
 }
 
 void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_timeScale)
@@ -353,6 +356,9 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 
 	//ヒットエフェクト
 	m_hitEffect->Update(timeScale);
+
+	//所持金コインUI
+	m_coinUI.Update(m_coinVault.GetNum());
 }
 
 void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
@@ -373,6 +379,9 @@ void Player::Draw2D(std::weak_ptr<Camera> arg_cam)
 
 	//HP描画
 	m_playerHp.Draw2D();
+
+	//所持金コインUI
+	m_coinUI.Draw2D();
 }
 
 #include"imguiApp.h"
@@ -386,7 +395,9 @@ void Player::ImguiDebug()
 	m_yoYo->AddImguiDebugItem();
 	ImGui::End();
 
-	m_playerHp.ImguiDebug();
+	//m_playerHp.ImguiDebug();
+
+	m_coinUI.ImguiDebug();
 }
 
 void Player::HitCheckWithScaffold(const std::weak_ptr<Scaffold> arg_scaffold)
