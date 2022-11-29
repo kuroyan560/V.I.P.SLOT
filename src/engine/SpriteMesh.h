@@ -110,5 +110,8 @@ public:
 		dirty = true;
 	}
 
+	//バッファ送信即時実行
+	void SendBuff();
+
 	void Render(const std::vector<RegisterDescriptorData>& DescDatas, const int& InstanceNum = 1);
 };
