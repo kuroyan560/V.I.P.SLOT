@@ -5,14 +5,17 @@
 
 void GameCamera::SetPosAndTarget(Vec3<float>arg_absOffset, Vec3<float>arg_lerpOffset, float arg_timeScale)
 {
+	Vec3<float>offset = arg_lerpOffset;
+
 	//°‰º‚Í‚ ‚Ü‚èŒ©‚¦‚È‚¢‚æ‚¤‚É‚‚³•â³
-	Vec3<float>heightOffset = { 0.0f,(1.0f - std::min(arg_lerpOffset.y / 10.0f, 1.0f)) * 8.0f,0.0f };
+	const float CORRECT_HEIGHT = 4.5f;
+	offset.y += (1.0f - std::min(arg_lerpOffset.y / 10.0f, 1.0f)) * CORRECT_HEIGHT;
 
 	//‘OŒiƒJƒƒ‰
-	m_posLerpOffset = KuroMath::Lerp(m_posLerpOffset, heightOffset + arg_lerpOffset, 0.05f * arg_timeScale);
+	m_posLerpOffset = KuroMath::Lerp(m_posLerpOffset, offset, 0.05f * arg_timeScale);
 	m_cam[MAIN]->SetPos(m_defaultPos[MAIN] + m_posLerpOffset + arg_absOffset);
 
-	m_targetLerpOffset = KuroMath::Lerp(m_targetLerpOffset, heightOffset + arg_lerpOffset, 0.08f * arg_timeScale);
+	m_targetLerpOffset = KuroMath::Lerp(m_targetLerpOffset, offset, 0.08f * arg_timeScale);
 	m_cam[MAIN]->SetTarget(m_targetPos[MAIN] + m_targetLerpOffset + arg_absOffset);
 
 	//”wŒiƒJƒƒ‰
