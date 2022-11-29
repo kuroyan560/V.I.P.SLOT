@@ -69,7 +69,7 @@ void PlayersCoinUI::Init(int arg_initNum)
 	m_staging.m_timer.Reset(0);
 }
 
-void PlayersCoinUI::Update(int arg_monitorNum)
+void PlayersCoinUI::Update(int arg_monitorNum, const float& arg_timeScale)
 {
 	//”Žš‚ªˆÙ‚È‚ê‚Î•Ï‰»‰‰o
 	if (arg_monitorNum != m_pastCoinNum)Execute(arg_monitorNum);
@@ -79,7 +79,7 @@ void PlayersCoinUI::Update(int arg_monitorNum)
 		float scaleOffset = KuroMath::Ease(Out, Elastic, m_staging.m_timer.GetTimeRate(), m_staging.m_numScaleOffsetMax, 0.0f);
 		m_spriteArray[i]->m_transform.SetScale(m_numScale + scaleOffset);
 	}
-	m_staging.m_timer.UpdateTimer();
+	m_staging.m_timer.UpdateTimer(arg_timeScale);
 }
 
 void PlayersCoinUI::Draw2D()

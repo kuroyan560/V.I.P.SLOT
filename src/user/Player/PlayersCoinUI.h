@@ -49,7 +49,8 @@ public:
 	/// 更新
 	/// </summary>
 	/// <param name="arg_monitorNum">監視する数字</param>
-	void Update(int arg_monitorNum);
+	/// <param name="arg_timeScale">タイムスケール</param>
+	void Update(int arg_monitorNum, const float& arg_timeScale);
 	//描画
 	void Draw2D();
 

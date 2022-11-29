@@ -358,7 +358,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	m_hitEffect->Update(timeScale);
 
 	//Š‹àƒRƒCƒ“UI
-	m_coinUI.Update(m_coinVault.GetNum());
+	m_coinUI.Update(m_coinVault.GetNum(), timeScale);
 }
 
 void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
