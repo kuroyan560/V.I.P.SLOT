@@ -78,6 +78,11 @@ public:
 		m_scale = Scale;
 		MatReset();
 	}
+	void SetScale(float Scale) {
+		if (m_scale.x == Scale && m_scale.y == Scale)return;
+		m_scale = Vec2<float>(Scale, Scale);
+		MatReset();
+	}
 	void SetRotate(const Vec3<Angle>& Rotate) {
 		m_rotate = XMMatrixRotationRollPitchYaw(Rotate.x, Rotate.y, Rotate.z);
 		MatReset();
