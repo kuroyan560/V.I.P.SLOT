@@ -52,6 +52,33 @@ void PlayersParryAttack::OnCollisionTrigger(const Vec3<float>& arg_inter, std::w
 	AudioApp::Instance()->PlayWave(m_parrySE);
 }
 
+void PlayersCounterAttack::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
+{
+	//コライダーの親に設定されているオブジェクトのポインタ取得
+	auto obj = arg_otherCollider.lock()->GetParentObject<GameObject>();
+
+	//ヒットカウントインクリメント
+	m_hitCount++;
+
+	//オブジェクトにダメージを与える
+	if (int coinNum = obj->Damage(*m_offensive))
+	{
+		//死亡SE
+		AudioApp::Instance()->PlayWave(m_killSE);
+		//プレイヤーにお金を渡す（当てた数が増えるほど得られるコインが増える）
+		m_playersVault->Add(coinNum * m_hitCount);
+	}
+	else
+	{
+		//ダメージSE
+		AudioApp::Instance()->PlayWave(m_hitSE);
+	}
+
+	//ヒットエフェクト
+	m_hitEffect->Emit(arg_inter, m_hitCount);
+}
+
+
 void DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter,
 	std::weak_ptr<Collider>arg_otherCollider)
 {
@@ -116,3 +143,4 @@ void DamagedCallBack::Update(TimeScale& arg_timeScale)
 		}
 	}
 }
+

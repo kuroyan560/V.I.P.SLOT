@@ -190,6 +190,7 @@
     <ClCompile Include="src\user\Player\PlayerHp.cpp" />
     <ClCompile Include="src\user\Player\PlayersAbility.cpp" />
     <ClCompile Include="src\user\Player\PlayersCallBack.cpp" />
+    <ClCompile Include="src\user\Player\PlayersCounterAttackHitEffect.cpp" />
     <ClCompile Include="src\user\Player\PlayersCoinUI.cpp" />
     <ClCompile Include="src\user\Player\YoYo.cpp" />
     <ClCompile Include="src\user\Scene\GameOverScene.cpp" />
@@ -307,6 +308,7 @@
     <ClInclude Include="src\user\Player\PlayerHp.h" />
     <ClInclude Include="src\user\Player\PlayersAbility.h" />
     <ClInclude Include="src\user\Player\PlayersCallBack.h" />
+    <ClInclude Include="src\user\Player\PlayersCounterAttackHitEffect.h" />
     <ClInclude Include="src\user\Player\PlayersCoinUI.h" />
     <ClInclude Include="src\user\Player\YoYo.h" />
     <ClInclude Include="src\user\Scene\GameOverScene.h" />

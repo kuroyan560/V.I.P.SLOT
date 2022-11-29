@@ -40,8 +40,7 @@ namespace ConstParameter
         int START_ABILITY_OFFSENSIVE = 1;
 
         //Н≈СеHP
-        //int MAX_HP = 5;
-        int MAX_HP = 1;
+        int MAX_HP = 5;
 
         /*--- ИЏУЃ ---*/
         //ИЏУЃСђУx

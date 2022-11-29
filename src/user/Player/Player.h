@@ -71,11 +71,16 @@ class Player : public ColliderParentObject
 	//ヒットエフェクト
 	std::shared_ptr<TexHitEffect>m_hitEffect;
 
+	//反射攻撃によるヒットエフェクト
+	std::shared_ptr<PlayersCounterAttackHitEffect>m_counterHitEffect;
+
 	/*--- コールバック関数 ---*/
 	//攻撃
 	std::shared_ptr<PlayersNormalAttack>m_normalAttackCallBack;
 	//パリィ攻撃
 	std::shared_ptr<PlayersParryAttack>m_parryAttackCallBack;
+	//パリィによる反射攻撃
+	std::shared_ptr<PlayersCounterAttack>m_counterAttackCallBack;
 	//被ダメージ
 	std::shared_ptr<DamagedCallBack>m_damegedCallBack;
 
@@ -134,8 +139,8 @@ public:
 	bool IsAttack()const;	
 	//所持金
 	const int GetCoinNum()const { return m_coinVault.GetNum(); }
-	//通常攻撃のコールバック（パリィ弾のコールバックとして流用するためゲッタを用意）
-	std::weak_ptr<CollisionCallBack>GetNormalAttackCallBack() { return m_normalAttackCallBack; }
+	//反射攻撃のコールバック（パリィ弾のコールバックとして利用するためゲッタを用意）
+	std::weak_ptr<CollisionCallBack>GetCounterAttackCallBack() { return m_counterAttackCallBack; }
 	//残りライフ
 	const int& GetLife()const { return m_playerHp.GetLife(); }
 	//死亡したか

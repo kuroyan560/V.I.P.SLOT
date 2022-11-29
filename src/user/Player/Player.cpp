@@ -14,6 +14,7 @@
 #include"Scaffold.h"
 #include"TexHitEffect.h"
 #include"BasicDraw.h"
+#include"PlayersCounterAttackHitEffect.h"
 
 void Player::Jump(Vec3<float>* arg_rockOnPos)
 {
@@ -49,10 +50,13 @@ Player::Player()
 
 	//ヒットエフェクト生成
 	m_hitEffect = std::make_shared<TexHitEffect>();
-	m_hitEffect->Set("resource/user/img/hitEffect.png", 5, { 5,1 }, { 6.0f,6.0f }, 3);
+	m_hitEffect->Set("resource/user/img/hitEffect.png", 5, { 5,1 }, { 6.0f,6.0f }, 3, false);
+	m_counterHitEffect = std::make_shared<PlayersCounterAttackHitEffect>();
 
 	//攻撃コールバック
 	m_normalAttackCallBack = std::make_shared<PlayersNormalAttack>(&m_ability.m_offensive,&m_coinVault, m_hitEffect, enemyHitSE, enemyKillSE);
+	//反射攻撃コールバック
+	m_counterAttackCallBack = std::make_shared<PlayersCounterAttack>(&m_ability.m_offensive, &m_coinVault, m_counterHitEffect.get(), enemyHitSE, enemyKillSE);
 }
 
 void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_ptr<ObjectManager> arg_objMgr, std::weak_ptr<GameCamera> arg_cam)
@@ -165,6 +169,7 @@ void Player::Init(PlayersAbility arg_ability, int arg_initRemainLife, int arg_in
 
 	//ヒットエフェクト
 	m_hitEffect->Init();
+	m_counterHitEffect->Init();
 
 	//所持金コインUI
 	m_coinUI.Init(m_coinVault.GetNum());
@@ -356,6 +361,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 
 	//ヒットエフェクト
 	m_hitEffect->Update(timeScale);
+	m_counterHitEffect->Update(timeScale);
 
 	//所持金コインUI
 	m_coinUI.Update(m_coinVault.GetNum(), timeScale);
@@ -376,6 +382,7 @@ void Player::Draw2D(std::weak_ptr<Camera> arg_cam)
 {
 	//ヒットエフェクト
 	m_hitEffect->Draw(arg_cam);
+	m_counterHitEffect->Draw(arg_cam);
 
 	//HP描画
 	m_playerHp.Draw2D();

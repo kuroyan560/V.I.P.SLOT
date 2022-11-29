@@ -29,7 +29,7 @@ InGameScene::InGameScene()
 	m_player = std::make_shared<Player>();
 
 	//オブジェクトマネージャ生成
-	m_objMgr = std::make_shared<ObjectManager>(m_player->GetNormalAttackCallBack().lock().get());
+	m_objMgr = std::make_shared<ObjectManager>(m_player->GetCounterAttackCallBack().lock().get());
 
 	//生成時に引数が必要なものの初期化
 	m_player->Awake(m_collisionMgr, m_objMgr, m_gameCam);

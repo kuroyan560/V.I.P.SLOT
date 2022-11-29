@@ -394,6 +394,9 @@
     <ClCompile Include="src\user\Player\PlayersCoinUI.cpp">
       <Filter>src\user\Player</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\Player\PlayersCounterAttackHitEffect.cpp">
+      <Filter>src\user\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -739,6 +742,9 @@
       <Filter>src\user\Wave</Filter>
     </ClInclude>
     <ClInclude Include="src\user\Player\PlayersCoinUI.h">
+      <Filter>src\user\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Player\PlayersCounterAttackHitEffect.h">
       <Filter>src\user\Player</Filter>
     </ClInclude>
   </ItemGroup>

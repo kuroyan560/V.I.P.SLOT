@@ -2,6 +2,7 @@
 #include"CollisionCallBack.h"
 #include<memory>
 #include"Timer.h"
+#include"PlayersCounterAttackHitEffect.h"
 class CoinVault;
 class TexHitEffect;
 class ObjectManager;
@@ -66,6 +67,39 @@ public:
 		std::weak_ptr<CollisionManager>arg_colMgr,
 		int arg_parrySE)
 		:m_offensive(arg_offensive), m_objMgr(arg_objMgr), m_colMgr(arg_colMgr), m_parrySE(arg_parrySE) {}
+};
+
+//相手の攻撃をパリィによって自身のものに、それを利用した攻撃
+class PlayersCounterAttack : public CollisionCallBack
+{
+	//攻撃力のポインタ
+	int* m_offensive = nullptr;
+	//プレイヤーの所持金のポインタ
+	CoinVault* m_playersVault = nullptr;
+	//ヒットエフェクト
+	PlayersCounterAttackHitEffect* m_hitEffect = nullptr;
+	//SE
+	int m_hitSE;
+	int m_killSE;
+
+	//その攻撃が当たった敵の数
+	int m_hitCount = 0;
+
+	void OnCollisionEnter(
+		const Vec3<float>& arg_inter,
+		std::weak_ptr<Collider>arg_otherCollider)override {};
+
+	void OnCollisionTrigger(
+		const Vec3<float>& arg_inter,
+		std::weak_ptr<Collider>arg_otherCollider)override;
+public:
+	PlayersCounterAttack(
+		int* arg_offensive,
+		CoinVault* arg_playersVault,
+		PlayersCounterAttackHitEffect* arg_hitEffect,
+		int arg_hitSE,
+		int arg_killSE)
+		:m_offensive(arg_offensive), m_playersVault(arg_playersVault), m_hitEffect(arg_hitEffect), m_hitSE(arg_hitSE), m_killSE(arg_killSE) {}
 };
 
 //被ダメージ

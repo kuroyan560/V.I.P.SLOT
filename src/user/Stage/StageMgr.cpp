@@ -134,7 +134,7 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
 
 	//ヒットエフェクト生成
 	m_hitEffect = std::make_shared<TexHitEffect>();
-	m_hitEffect->Set("resource/user/img/hitEffect.png", 5, { 5,1 }, { 6.0f,6.0f }, 3);
+	m_hitEffect->Set("resource/user/img/hitEffect.png", 5, { 5,1 }, { 6.0f,6.0f }, 3, false);
 
 	//ブロックのコライダー用プリミティブ配列
 	Vec3<ValueMinMax>val;
