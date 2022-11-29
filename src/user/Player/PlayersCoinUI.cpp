@@ -32,7 +32,6 @@ void PlayersCoinUI::SpriteUpdate(int arg_num)
 		pos.x += m_numPosOffset.x * static_cast<float>(i);
 		pos.y -= offsetY * static_cast<float>(m_useSpriteNum - i - 1);
 		m_spriteArray[i]->m_transform.SetPos(pos);
-		m_spriteArray[i]->m_transform.SetScale(m_numScale);
 		m_spriteArray[i]->SendTransformBuff();
 	}
 
@@ -42,6 +41,7 @@ void PlayersCoinUI::SpriteUpdate(int arg_num)
 void PlayersCoinUI::Execute(int arg_num)
 {
 	SpriteUpdate(arg_num);
+	m_staging.m_timer.Reset(m_staging.m_interval);
 }
 
 PlayersCoinUI::PlayersCoinUI()
@@ -66,12 +66,20 @@ PlayersCoinUI::PlayersCoinUI()
 void PlayersCoinUI::Init(int arg_initNum)
 {
 	SpriteUpdate(arg_initNum);
+	m_staging.m_timer.Reset(0);
 }
 
 void PlayersCoinUI::Update(int arg_monitorNum)
 {
 	//êîéöÇ™àŸÇ»ÇÍÇŒïœâªââèo
 	if (arg_monitorNum != m_pastCoinNum)Execute(arg_monitorNum);
+
+	for (int i = 0; i < m_useSpriteNum; ++i)
+	{
+		float scaleOffset = KuroMath::Ease(Out, Elastic, m_staging.m_timer.GetTimeRate(), m_staging.m_numScaleOffsetMax, 0.0f);
+		m_spriteArray[i]->m_transform.SetScale(m_numScale + scaleOffset);
+	}
+	m_staging.m_timer.UpdateTimer();
 }
 
 void PlayersCoinUI::Draw2D()
@@ -87,12 +95,25 @@ void PlayersCoinUI::ImguiDebug()
 {
 	ImGui::Begin("PlayersCoinUI");
 	bool change = false;
-	int num = m_pastCoinNum;
-	if (ImGui::InputInt("Num", &num))Execute(num);
 
-	if (ImGui::DragFloat2("Pos", (float*)&m_numPos))change = true;
-	if (ImGui::DragFloat2("Offset", (float*)&m_numPosOffset))change = true;
-	if (ImGui::DragFloat("Scale", (float*)&m_numScale,0.05f))change = true;
+	if (ImGui::TreeNode("CoinNum"))
+	{
+		int num = m_pastCoinNum;
+		if (ImGui::InputInt("Num", &num))Execute(num);
+		if (ImGui::DragFloat2("Pos", (float*)&m_numPos))change = true;
+		if (ImGui::DragFloat2("Offset", (float*)&m_numPosOffset))change = true;
+		if (ImGui::DragFloat("Scale", (float*)&m_numScale, 0.05f))change = true;
+
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Staging"))
+	{
+		if (ImGui::Button("Preview"))Execute(m_pastCoinNum);
+		ImGui::DragFloat("Interval", &m_staging.m_interval, 0.5f);
+		ImGui::DragFloat("ScaleOffsetMax", &m_staging.m_numScaleOffsetMax, 0.05f);
+		ImGui::TreePop();
+	}
+
 	ImGui::End();
 
 	if (change)SpriteUpdate(m_pastCoinNum);

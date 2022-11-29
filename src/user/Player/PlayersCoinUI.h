@@ -2,6 +2,7 @@
 #include<vector>
 #include<memory>
 #include"Vec.h"
+#include"Timer.h"
 class TextureBuffer;
 class Sprite;
 
@@ -16,7 +17,7 @@ class PlayersCoinUI
 	int m_useSpriteNum;
 
 	//座標
-	Vec2<float>m_numPos = { 1163.0f,42.0f };
+	Vec2<float>m_numPos = { 1155.0f,42.0f };
 	//文字間のオフセット
 	Vec2<float>m_numPosOffset = { 63.0f, -8.0f };
 	//スケール
@@ -24,6 +25,14 @@ class PlayersCoinUI
 
 	//コイン数を監視、記録する
 	int m_pastCoinNum = 0;
+
+	//演出
+	struct
+	{
+		Timer m_timer;
+		float m_interval = 45.0f;
+		float m_numScaleOffsetMax = 0.5f;
+	}m_staging;
 
 	//スプライトに数字を反映
 	void SpriteUpdate(int arg_num);
