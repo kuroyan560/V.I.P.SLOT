@@ -51,8 +51,6 @@ InGameScene::InGameScene()
 
 	//ウェーブマネージャ生成
 	m_waveMgr = std::make_shared<WaveMgr>();
-	//ウェーブマネージャ
-	m_waveMgr->Init(10);
 
 	//ステージマネージャ生成
 	m_stageMgr = std::make_shared<StageMgr>(m_slotMachine);
@@ -97,6 +95,9 @@ void InGameScene::OnInitialize()
 
 	//タイムスケールリセット
 	m_timeScale.Set(1.0f);
+
+	//ウェーブマネージャ
+	m_waveMgr->Init(10);
 }
 
 void InGameScene::OnUpdate()

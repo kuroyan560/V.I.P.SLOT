@@ -56,11 +56,7 @@ void WaveMgr::Init(int arg_norma)
 		m_normaNumSpriteArray[i]->SetTexture(m_normaTexArray[num]);
 	}
 
-}
-
-void WaveMgr::Draw2D()
-{
-	//ƒmƒ‹ƒ}”
+	//À•WŒvZ
 	float offsetY = m_numPosOffset.y / static_cast<float>(m_useSpriteNum - 1);
 	for (int i = 0; i < m_useSpriteNum; ++i)
 	{
@@ -69,8 +65,17 @@ void WaveMgr::Draw2D()
 		pos.x += m_numPosOffset.x * static_cast<float>(i);
 		pos.y += offsetY * static_cast<float>(i);
 		m_normaNumSpriteArray[i]->m_transform.SetPos(pos);
+	}
+}
+
+void WaveMgr::Draw2D()
+{
+	//ƒmƒ‹ƒ}”š•`‰æ
+	for (int i = 0; i < m_useSpriteNum; ++i)
+	{
 		m_normaNumSpriteArray[i]->Draw();
 	}
+
 	//ƒmƒ‹ƒ}•¶š
 	m_normaStrSprite->Draw();
 }
@@ -80,8 +85,10 @@ void WaveMgr::ImguiDebug()
 {
 	ImGui::Begin("WaveMgr");
 
-	ImGui::DragFloat2("NumPos", (float*)&m_numPos);
-	ImGui::DragFloat2("NumOffset", (float*)&m_numPosOffset);
+	bool change = false;
+
+	if (ImGui::DragFloat2("NumPos", (float*)&m_numPos))change = true;
+	if (ImGui::DragFloat2("NumOffset", (float*)&m_numPosOffset))change = true;
 
 	ImGui::Separator();
 
@@ -92,7 +99,9 @@ void WaveMgr::ImguiDebug()
 	ImGui::Checkbox("InfinityMode", &m_isInfinity);
 
 	int norma = m_norma;
-	if (ImGui::InputInt("Norma", &norma))
+	if (ImGui::InputInt("Norma", &norma))change = true;
+
+	if(change)
 	{
 		Init(norma);
 	}
