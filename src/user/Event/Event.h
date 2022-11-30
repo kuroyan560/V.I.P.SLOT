@@ -12,17 +12,15 @@ class Event
 	//イベント進行中のパラメータ
 	//衝突判定フラグ
 	const bool m_collision;
-	//UI描画フラグ
-	const bool m_drawUI;
 
 protected:
 	//イベント中のパラメータを設定
-	Event(bool arg_collision, bool arg_drawUI) :m_collision(arg_collision),m_drawUI(arg_drawUI) {}
+	Event(bool arg_collision, bool arg_drawUI) :m_collision(arg_collision) {}
 
 	//イベント開始時の処理
 	virtual void OnStart() = 0;
 	//イベントの更新処理
-	virtual void OnUpdate(TimeScale& arg_timeScale) = 0;
+	virtual void OnUpdate() = 0;
 	//イベント終了時の処理
 	virtual void OnFinish() = 0;
 	//イベント終了条件
@@ -32,9 +30,9 @@ protected:
 	//専用のサブ（遠景）イベントカメラゲッタ（デフォルト：なし）
 	virtual std::shared_ptr<Camera> GetSubCam() { return nullptr; }
 
-	void Update(TimeScale& arg_timeScale)
+	void Update()
 	{
-		OnUpdate(arg_timeScale);
+		OnUpdate();
 	}
 
 public:
@@ -51,11 +49,11 @@ public:
 	static void StaticInit() { s_nowEvent = nullptr; }
 
 	//進行中のイベントの更新
-	static void StaticUpdate(TimeScale& arg_timeScale)
+	static void StaticUpdate()
 	{
 		if (s_nowEvent == nullptr)return;
 
-		s_nowEvent->Update(arg_timeScale);
+		s_nowEvent->Update();
 
 		if (s_nowEvent->End()) 
 		{
@@ -69,12 +67,6 @@ public:
 	{
 		if (s_nowEvent == nullptr)return true;
 		return s_nowEvent->m_collision;
-	}
-	//HUD描画するか
-	static bool DrawHUDFlg()
-	{
-		if (s_nowEvent == nullptr)return true;
-		return s_nowEvent->m_drawUI;
 	}
 
 	//メイン（近景）イベントカメラゲッタ

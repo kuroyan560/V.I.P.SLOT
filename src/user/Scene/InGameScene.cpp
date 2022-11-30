@@ -119,10 +119,14 @@ void InGameScene::OnInitialize()
 		m_collisionMgr.get(),
 		m_enemyEmitter.get(),
 		m_ligMgr.get(),
-		BasicDraw::Instance() });
+		BasicDraw::Instance(),
+		&m_clearWaveEvent });
 
 	//ウェーブクリア時イベント
-	m_clearWaveEvent.Init(m_gameCam, m_player);
+	m_clearWaveEvent.Init(m_gameCam, m_player, &m_timeScale);
+
+	//HUD描画フラグ
+	HUDInterface::s_draw = true;
 }
 
 void InGameScene::OnUpdate()
@@ -162,12 +166,12 @@ void InGameScene::OnUpdate()
 	m_objMgr->Update(m_timeScale, m_collisionMgr, m_player);
 
 	//イベント
-	Event::StaticUpdate(m_timeScale);
-
+	Event::StaticUpdate();
 
 	//クリアしたか
 	if (m_waveMgr->IsClear(m_player->GetCoinNum()))
 	{
+		HUDInterface::s_draw = false;
 		m_clearWaveEvent.Start();
 	}
 
@@ -182,9 +186,6 @@ void InGameScene::OnUpdate()
 
 void InGameScene::OnDraw()
 {
-	//イベントによってHUD表示フラグ変更
-	HUDInterface::s_draw = Event::DrawHUDFlg();
-
 	auto& rtMgr = *RenderTargetManager::Instance();
 
 	//レンダーターゲットクリア
