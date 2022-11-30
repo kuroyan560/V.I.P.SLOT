@@ -101,6 +101,9 @@
     <Filter Include="src\user\Wave">
       <UniqueIdentifier>{8490927f-d86c-4608-a796-000bfafb65b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\user\Event">
+      <UniqueIdentifier>{679f1c3e-4087-4c9a-a337-aa2ae0646657}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\D3D12App.cpp">
@@ -399,6 +402,12 @@
     </ClCompile>
     <ClCompile Include="src\user\Others\Debugger.cpp">
       <Filter>src\user\Others</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\Event\ClearWave.cpp">
+      <Filter>src\user\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\Event\Event.cpp">
+      <Filter>src\user\Event</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -752,6 +761,12 @@
     </ClInclude>
     <ClInclude Include="src\user\Others\Debugger.h">
       <Filter>src\user\Others</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Event\ClearWave.h">
+      <Filter>src\user\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Event\Event.h">
+      <Filter>src\user\Event</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

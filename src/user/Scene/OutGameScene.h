@@ -2,8 +2,6 @@
 #include"KuroEngine.h"
 class OutGameScene : public BaseScene
 {
-	SceneTransition m_sceneTrans;
-
 public:
 	OutGameScene() {}
 	void OnInitialize()override;

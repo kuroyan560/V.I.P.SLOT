@@ -31,11 +31,11 @@ void GameOverScene::OnUpdate()
 		switch (m_item)
 		{
 		case RETRY:
-			KuroEngine::Instance()->ChangeScene("InGame", m_sceneTrans);
+			KuroEngine::Instance()->ChangeScene("InGame");
 			GameManager::Instance()->FlowStart();
 			break;
 		case TITLE:
-			KuroEngine::Instance()->ChangeScene("Title", m_sceneTrans);
+			KuroEngine::Instance()->ChangeScene("Title");
 			break;
 		}
 	}

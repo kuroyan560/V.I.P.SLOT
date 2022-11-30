@@ -14,7 +14,7 @@ void OutGameScene::OnUpdate()
 	//Œˆ’è
 	if (enter)
 	{
-		KuroEngine::Instance()->ChangeScene("InGame", m_sceneTrans);
+		KuroEngine::Instance()->ChangeScene("InGame");
 	}
 }
 

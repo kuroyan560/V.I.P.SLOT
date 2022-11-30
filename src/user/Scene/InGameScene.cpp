@@ -17,6 +17,7 @@
 #include"EnemyEmitter.h"
 #include"WaveMgr.h"
 #include"Debugger.h"
+#include"Event.h"
 
 void InGameScene::OnImguiItems()
 {
@@ -106,6 +107,10 @@ void InGameScene::OnInitialize()
 	//ウェーブマネージャ
 	m_waveMgr->Init(10);
 
+	//イベント
+	Event::StaticInit();
+
+	//デバッガ登録
 	Debugger::Register({ m_stageMgr.get(),m_waveMgr.get(),m_slotMachine.get(),m_player.get(),m_collisionMgr.get(),m_enemyEmitter.get(),m_ligMgr.get() });
 }
 
@@ -124,7 +129,7 @@ void InGameScene::OnUpdate()
 	}
 
 	//コリジョンマネージャ
-	m_collisionMgr->Update();
+	if (Event::CollisionFlg())m_collisionMgr->Update();
 
 	//カメラ
 	m_gameCam->Update(m_timeScale.GetTimeScale(),
@@ -145,17 +150,21 @@ void InGameScene::OnUpdate()
 	//オブジェクトマネージャ
 	m_objMgr->Update(m_timeScale, m_collisionMgr, m_player);
 
+	//イベント
+	Event::StaticUpdate(m_timeScale);
+
+
 	//クリアしたか
 	if (m_waveMgr->IsClear(m_player->GetCoinNum()))
 	{
-		//アウトゲームへ
-		KuroEngine::Instance()->ChangeScene("OutGame", m_sceneTrans);
+		m_clearWaveEvent.Start();
 	}
+
 	//死亡したか
 	if (m_player->IsDead())
 	{
 		//ゲームオーバー
-		KuroEngine::Instance()->ChangeScene("GameOver", m_sceneTrans);
+		KuroEngine::Instance()->ChangeScene("GameOver");
 	}
 }
 

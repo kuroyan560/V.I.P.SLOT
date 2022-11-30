@@ -45,12 +45,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\engine;$(SolutionDir)src\user\Coin;$(SolutionDir)src\user\Enemy;$(SolutionDir)src\user\Game;$(SolutionDir)src\user\GameObject;$(SolutionDir)src\user\Others;$(SolutionDir)src\user\Player;$(SolutionDir)src\user\Scene;$(SolutionDir)src\user\Slot;$(SolutionDir)src\user\Slot\Pattern;$(SolutionDir)src\user\Stage;$(SolutionDir)src\user\Title;$(SolutionDir)src\user\Wave;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\imgui;$(IncludePath);$(SolutionDir)packages\rapidjson.temprelease.0.0.2.20\build\native\include</IncludePath>
+    <IncludePath>$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\engine;$(SolutionDir)src\user\Coin;$(SolutionDir)src\user\Enemy;$(SolutionDir)src\user\Game;$(SolutionDir)src\user\GameObject;$(SolutionDir)src\user\Others;$(SolutionDir)src\user\Player;$(SolutionDir)src\user\Scene;$(SolutionDir)src\user\Slot;$(SolutionDir)src\user\Slot\Pattern;$(SolutionDir)src\user\Stage;$(SolutionDir)src\user\Title;$(SolutionDir)src\user\Wave;$(SolutionDir)src\user\Event;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\imgui;$(IncludePath);$(SolutionDir)packages\rapidjson.temprelease.0.0.2.20\build\native\include</IncludePath>
     <LibraryPath>$(SolutionDir)lib\dxcompiler\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\engine;$(SolutionDir)src\user\Coin;$(SolutionDir)src\user\Enemy;$(SolutionDir)src\user\Game;$(SolutionDir)src\user\GameObject;$(SolutionDir)src\user\Others;$(SolutionDir)src\user\Player;$(SolutionDir)src\user\Scene;$(SolutionDir)src\user\Slot;$(SolutionDir)src\user\Slot\Pattern;$(SolutionDir)src\user\Stage;$(SolutionDir)src\user\Title;$(SolutionDir)src\user\Wave;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\imgui</IncludePath>
+    <IncludePath>$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\engine;$(SolutionDir)src\user\Coin;$(SolutionDir)src\user\Enemy;$(SolutionDir)src\user\Game;$(SolutionDir)src\user\GameObject;$(SolutionDir)src\user\Others;$(SolutionDir)src\user\Player;$(SolutionDir)src\user\Scene;$(SolutionDir)src\user\Slot;$(SolutionDir)src\user\Slot\Pattern;$(SolutionDir)src\user\Stage;$(SolutionDir)src\user\Title;$(SolutionDir)src\user\Wave;$(SolutionDir)src\user\Event;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\imgui</IncludePath>
     <LibraryPath>$(SolutionDir)lib\dxcompiler\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -173,6 +173,8 @@
     <ClCompile Include="src\user\Coin\ReturnCoinEmitter.cpp" />
     <ClCompile Include="src\user\Enemy\EnemyEmitter.cpp" />
     <ClCompile Include="src\user\Enemy\EnemyKillCoinEffect.cpp" />
+    <ClCompile Include="src\user\Event\ClearWave.cpp" />
+    <ClCompile Include="src\user\Event\Event.cpp" />
     <ClCompile Include="src\user\GameObject\GameObject.cpp" />
     <ClCompile Include="src\user\GameObject\ObjectController.cpp" />
     <ClCompile Include="src\user\GameObject\ObjectManager.cpp" />
@@ -291,6 +293,8 @@
     <ClInclude Include="src\user\Coin\ReturnCoinEmitter.h" />
     <ClInclude Include="src\user\Enemy\EnemyEmitter.h" />
     <ClInclude Include="src\user\Enemy\EnemyKillCoinEffect.h" />
+    <ClInclude Include="src\user\Event\ClearWave.h" />
+    <ClInclude Include="src\user\Event\Event.h" />
     <ClInclude Include="src\user\GameObject\GameObject.h" />
     <ClInclude Include="src\user\GameObject\ObjectBreed.h" />
     <ClInclude Include="src\user\GameObject\ObjectController.h" />

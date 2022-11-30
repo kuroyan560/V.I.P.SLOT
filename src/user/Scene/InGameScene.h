@@ -4,6 +4,7 @@
 #include"Timer.h"
 #include"Light.h"
 #include"Debugger.h"
+#include"ClearWave.h"
 class Player;
 class SlotMachine;
 class LightManager;
@@ -18,8 +19,6 @@ class WaveMgr;
 
 class InGameScene : public BaseScene, public Debugger
 {
-	SceneTransition m_sceneTrans;
-
 	//プレイヤー
 	std::shared_ptr<Player>m_player;
 
@@ -58,6 +57,9 @@ class InGameScene : public BaseScene, public Debugger
 
 	//エネミーエミッター
 	std::shared_ptr<EnemyEmitter>m_enemyEmitter;
+
+	//ウェーブクリア時のイベント
+	ClearWave m_clearWaveEvent;
 
 	//コライダーのデバッグ描画フラグ
 	bool m_isDrawCollider = false;

@@ -2,8 +2,6 @@
 #include"KuroEngine.h"
 class GameOverScene : public BaseScene
 {
-	SceneTransition m_sceneTrans;
-
 	enum ITEM { RETRY, TITLE, NUM };
 	ITEM m_item = RETRY;
 

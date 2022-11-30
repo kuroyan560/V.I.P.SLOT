@@ -130,7 +130,7 @@ public:
 	//ゲーム終了
 	void GameEnd() { m_end = true; }
 	//シーンチェンジ
-	void ChangeScene(const std::string& SceneKey, SceneTransition& SceneTransition)
+	void ChangeScene(const std::string& SceneKey, SceneTransition* SceneTransition = nullptr)
 	{
 		if (m_scenes.find(SceneKey) == m_scenes.end())
 		{
@@ -139,8 +139,8 @@ public:
 			return;
 		}
 		m_nextScene = SceneKey;
-		m_nowSceneTransition = &SceneTransition;
-		m_nowSceneTransition->Start();
+		m_nowSceneTransition = SceneTransition;
+		if(m_nowSceneTransition != nullptr)	m_nowSceneTransition->Start();
 	}
 
 	//グラフィックスマネージャゲッタ
