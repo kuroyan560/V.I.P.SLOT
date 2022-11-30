@@ -182,12 +182,17 @@ void InGameScene::OnDraw()
 	//2D背景
 	DrawFunc2D::DrawGraph({ 0,0 }, m_backGround, 1.0f, AlphaBlendMode_None);
 
+	auto mainCam = Event::GetMainEventCamera();
+	auto subCam = Event::GetSubEventCamera();
+	if (mainCam == nullptr)mainCam = m_gameCam->GetMainCam();
+	if (subCam == nullptr)subCam = Event::GetSubEventCamera();
+
 	//スロットマシン
 	//m_slotMachine->Draw(m_ligMgr, m_gameCam->GetSubCam());
-	m_slotMachine->Draw(m_ligMgr, m_gameCam->GetMainCam());
+	m_slotMachine->Draw(m_ligMgr, mainCam);
 
 	//ステージマネージャ（ブロック）
-	m_stageMgr->BlockDraw(m_ligMgr, m_gameCam->GetMainCam());
+	m_stageMgr->BlockDraw(m_ligMgr, mainCam);
 
 	//DrawFunc3D::DrawNonShadingModel(m_squareFloorObj, *m_gameCam->GetMainCam(), 1.0f, AlphaBlendMode_None);
 
@@ -195,16 +200,16 @@ void InGameScene::OnDraw()
 	rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_STENCIL);
 
 	//床
-	BasicDraw::Draw(*m_ligMgr, m_squareFloorObj, *m_gameCam->GetMainCam());
+	BasicDraw::Draw(*m_ligMgr, m_squareFloorObj, *mainCam);
 
 	//ステージマネージャ（足場）
-	m_stageMgr->ScaffoldDraw(m_ligMgr, m_gameCam->GetMainCam());
+	m_stageMgr->ScaffoldDraw(m_ligMgr, mainCam);
 
 	//オブジェクトマネージャ
-	m_objMgr->Draw(m_ligMgr, m_gameCam->GetMainCam());
+	m_objMgr->Draw(m_ligMgr, mainCam);
 
 	//プレイヤー
-	m_player->Draw(m_ligMgr, m_gameCam->GetMainCam());
+	m_player->Draw(m_ligMgr, mainCam);
 
 	//↓↓↓以降、エミッシブマップとデプスマップへの描画をしない↓↓↓
 	rtMgr.Set(true, { DRAW_TARGET_TAG::BACK_BUFF });

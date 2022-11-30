@@ -1,5 +1,7 @@
 #pragma once
+#include<memory>
 class TimeScale;
+class Camera;
 
 class Event
 {
@@ -15,6 +17,8 @@ protected:
 	virtual void OnUpdate(TimeScale& arg_timeScale) = 0;
 	virtual void OnFinish() = 0;
 	virtual bool End() = 0;
+	virtual std::shared_ptr<Camera> GetMainCam() { return nullptr; }
+	virtual std::shared_ptr<Camera> GetSubCam() { return nullptr; }
 
 	void Update(TimeScale& arg_timeScale)
 	{
@@ -47,5 +51,15 @@ public:
 	{
 		if (s_nowEvent == nullptr)return true;
 		return s_nowEvent->m_collision;
+	}
+	static std::shared_ptr<Camera>GetMainEventCamera()
+	{
+		if (s_nowEvent == nullptr)return nullptr;
+		return s_nowEvent->GetMainCam();
+	}
+	static std::shared_ptr<Camera>GetSubEventCamera()
+	{
+		if (s_nowEvent == nullptr)return nullptr;
+		return s_nowEvent->GetSubCam();
 	}
 };
