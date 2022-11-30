@@ -3,11 +3,12 @@
 #include<memory>
 #include"Vec.h"
 #include"Timer.h"
+#include"HUDInterface.h"
 class TextureBuffer;
 class Sprite;
 
 //プレイヤーの所持金UI
-class PlayersCoinUI
+class PlayersCoinUI : public HUDInterface
 {
 	//所持金表示に使う数字のテクスチャ配列
 	std::vector<std::shared_ptr<TextureBuffer>>m_numTexArray;
@@ -40,6 +41,9 @@ class PlayersCoinUI
 	//演出スタート
 	void Execute(int arg_num);
 
+	//描画
+	void OnDraw2D()override;
+
 public:
 	PlayersCoinUI();
 
@@ -51,8 +55,7 @@ public:
 	/// <param name="arg_monitorNum">監視する数字</param>
 	/// <param name="arg_timeScale">タイムスケール</param>
 	void Update(int arg_monitorNum, const float& arg_timeScale);
-	//描画
-	void Draw2D();
+
 
 	//imguiデバッグ
 	void ImguiDebug();

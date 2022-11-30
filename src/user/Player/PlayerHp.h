@@ -2,10 +2,11 @@
 #include<memory>
 #include"Transform2D.h"
 #include<vector>
+#include"HUDInterface.h"
 class TextureBuffer;
 class Sprite;
 
-class PlayerHp
+class PlayerHp : public HUDInterface
 {
 	//HPのUI全体のトランスフォーム
 	Transform2D m_transform;
@@ -47,6 +48,9 @@ class PlayerHp
 	//HPバーサイズ更新
 	void UpdateHpBarSize();
 
+	//描画
+	void OnDraw2D()override;
+
 public:
 	PlayerHp();
 
@@ -59,9 +63,6 @@ public:
 
 	//更新
 	void Update(const float& arg_timeScale);
-
-	//描画
-	void Draw2D();
 
 	//imguiデバッグ
 	void ImguiDebug();

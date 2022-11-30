@@ -82,7 +82,7 @@ void PlayersCoinUI::Update(int arg_monitorNum, const float& arg_timeScale)
 	m_staging.m_timer.UpdateTimer(arg_timeScale);
 }
 
-void PlayersCoinUI::Draw2D()
+void PlayersCoinUI::OnDraw2D()
 {
 	for (int i = 0; i < m_useSpriteNum; ++i)
 	{

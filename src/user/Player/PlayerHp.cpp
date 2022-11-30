@@ -142,7 +142,7 @@ void PlayerHp::Update(const float& arg_timeScale)
 }
 
 
-void PlayerHp::Draw2D()
+void PlayerHp::OnDraw2D()
 {
 	for (auto& content : m_contents)
 	{

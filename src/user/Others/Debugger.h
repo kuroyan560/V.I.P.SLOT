@@ -12,6 +12,7 @@ private:
 	static std::vector<Debugger*>s_debuggerArray;
 
 public:
+	virtual ~Debugger() {}
 	//デバッグ機構表示
 	static void Draw();
 	//デバッガ登録

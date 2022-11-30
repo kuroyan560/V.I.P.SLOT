@@ -50,6 +50,20 @@ public:
 	const std::string name;
 	Camera(const std::string& Name);
 
+	void operator=(const Camera& Other)
+	{
+		SetProjMatMode(Other.projMatMode);
+		SetNearZ(Other.nearZ);
+		SetFarZ(Other.farZ);
+		SetPos(Other.pos);
+		SetUp(Other.up);
+		SetTarget(Other.target);
+		SetAngleOfView(Other.angleOfView);
+		SetWidth(Other.width);
+		SetHeight(Other.height);
+		SetAspect(Other.aspect);
+	}
+
 	//ƒZƒbƒ^
 	void SetProjMatMode(const ProjMatMode& Mode)
 	{

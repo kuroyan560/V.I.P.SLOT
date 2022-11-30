@@ -409,6 +409,9 @@
     <ClCompile Include="src\user\Event\Event.cpp">
       <Filter>src\user\Event</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\Others\HUDInterface.cpp">
+      <Filter>src\user\Others</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -767,6 +770,9 @@
     </ClInclude>
     <ClInclude Include="src\user\Event\Event.h">
       <Filter>src\user\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Others\HUDInterface.h">
+      <Filter>src\user\Others</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

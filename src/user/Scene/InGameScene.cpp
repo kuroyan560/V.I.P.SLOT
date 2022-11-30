@@ -112,6 +112,10 @@ void InGameScene::OnInitialize()
 
 	//デバッガ登録
 	Debugger::Register({ m_stageMgr.get(),m_waveMgr.get(),m_slotMachine.get(),m_player.get(),m_collisionMgr.get(),m_enemyEmitter.get(),m_ligMgr.get() });
+
+	//ウェーブクリア時イベント
+	m_clearWaveEvent.Init(m_gameCam, m_player);
+
 }
 
 void InGameScene::OnUpdate()
@@ -171,6 +175,9 @@ void InGameScene::OnUpdate()
 
 void InGameScene::OnDraw()
 {
+	//イベントによってHUD表示フラグ変更
+	HUDInterface::s_draw = Event::DrawHUDFlg();
+
 	auto& rtMgr = *RenderTargetManager::Instance();
 
 	//レンダーターゲットクリア

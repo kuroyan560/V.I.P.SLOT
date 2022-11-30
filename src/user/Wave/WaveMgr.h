@@ -3,15 +3,16 @@
 #include<memory>
 #include"Vec.h"
 #include"Debugger.h"
+#include"HUDInterface.h"
 class Sprite;
 class TextureBuffer;
 
-class WaveMgr : public Debugger
+class WaveMgr : public Debugger, public HUDInterface
 {
 	//コインノルマ
 	int m_norma;
 	//デバッグ用、ノルマ達成判定を切る
-	bool m_isInfinity = true;
+	bool m_isInfinity = false;
 
 	/*--- ノルマ表示 ---*/
 	Vec2<float>m_numPos = { 1271.0f,10.0f };
@@ -23,11 +24,11 @@ class WaveMgr : public Debugger
 	int m_useSpriteNum = 0;
 
 	void OnImguiItems()override;
+	void OnDraw2D()override;
 
 public:
 	WaveMgr();
 	void Init(int arg_norma);
-	void Draw2D();
 
 	//クリアしたか
 	bool IsClear(const int& arg_playersCoinNum)

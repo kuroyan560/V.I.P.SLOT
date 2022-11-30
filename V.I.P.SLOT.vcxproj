@@ -185,6 +185,7 @@
     <ClCompile Include="src\user\Others\BasicDraw.cpp" />
     <ClCompile Include="src\user\Others\BasicDrawParameters.cpp" />
     <ClCompile Include="src\user\Others\Debugger.cpp" />
+    <ClCompile Include="src\user\Others\HUDInterface.cpp" />
     <ClCompile Include="src\user\Others\RandBox2D.cpp" />
     <ClCompile Include="src\user\Others\RenderTargetManager.cpp" />
     <ClCompile Include="src\user\Others\TexHitEffect.cpp" />
@@ -306,6 +307,7 @@
     <ClInclude Include="src\user\Others\BasicDraw.h" />
     <ClInclude Include="src\user\Others\BasicDrawParameters.h" />
     <ClInclude Include="src\user\Others\Debugger.h" />
+    <ClInclude Include="src\user\Others\HUDInterface.h" />
     <ClInclude Include="src\user\Others\RandBox2D.h" />
     <ClInclude Include="src\user\Others\RenderTargetManager.h" />
     <ClInclude Include="src\user\Others\TexHitEffect.h" />

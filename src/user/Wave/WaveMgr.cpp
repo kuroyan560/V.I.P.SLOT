@@ -110,7 +110,7 @@ void WaveMgr::Init(int arg_norma)
 	}
 }
 
-void WaveMgr::Draw2D()
+void WaveMgr::OnDraw2D()
 {
 	//ƒmƒ‹ƒ}”š•`‰æ
 	for (int i = 0; i < m_useSpriteNum; ++i)
