@@ -119,7 +119,30 @@ void StageMgr::GenerateTerrian(std::string arg_stageDataPath, std::weak_ptr<Coll
 	m_terrianValuationTimer.Reset(600.0f);
 }
 
-StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine)
+void StageMgr::OnImguiItems()
+{
+	if (ImGui::Checkbox("GenerateTerrian", &m_generateTerrian))
+	{
+		Finalize();
+		Init("", m_collisionMgr);
+	}
+
+	bool changeRate = ImGui::DragFloat("BlockGenerateRate", &m_generateBlockRate, 0.5f, 0.0f, 100.0f);
+
+	bool changeX = ImGui::DragInt("BlockNumX", &m_blockNum.x);
+	bool changeY = ImGui::DragInt("BlockNumY", &m_blockNum.y);
+
+	if (m_blockNum.x < 1)m_blockNum.x = 1;
+	if (m_blockNum.y < 1)m_blockNum.y = 1;
+
+	if (changeRate || changeX || changeY)
+	{
+		Finalize();
+		Init("", m_collisionMgr);
+	}
+}
+
+StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine) :Debugger("StageMgr")
 {
 	using namespace ConstParameter::Stage;
 
@@ -215,9 +238,12 @@ void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManage
 
 	//地形評価UI
 	m_terrianEvaluationUI.Init();
+
+	//コリジョンマネージャのポインタ保持
+	m_collisionMgr = arg_collisionMgr;
 }
 
-void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player)
+void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<Player>arg_player)
 {
 	//すべてのコイン排出済か
 	bool isAllCoinEmit = true;
@@ -238,7 +264,7 @@ void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>a
 
 			if (block->IsDisappear())
 			{
-				DisappearBlock(block, arg_collisionMgr);
+				DisappearBlock(block, m_collisionMgr);
 				block = nullptr;
 			}
 		}
@@ -262,7 +288,7 @@ void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>a
 			&m_terrianEvaluationArray[evaluation],
 			60.0f, 35.0f);
 
-		GenerateTerrian("", arg_collisionMgr,evaluation);
+		GenerateTerrian("", m_collisionMgr,evaluation);
 	}
 
 	//足場との判定
@@ -317,7 +343,7 @@ void StageMgr::ScaffoldDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_
 	}
 }
 
-void StageMgr::Finalize(std::weak_ptr<CollisionManager> arg_collisionMgr)
+void StageMgr::Finalize()
 {
 	for (auto& blockArray : m_terrianBlockArray)
 	{
@@ -325,7 +351,7 @@ void StageMgr::Finalize(std::weak_ptr<CollisionManager> arg_collisionMgr)
 		{
 			//何もないならスルー
 			if (block == nullptr)continue;
-			DisappearBlock(block, arg_collisionMgr);
+			DisappearBlock(block, m_collisionMgr);
 		}
 	}
 
@@ -352,34 +378,6 @@ void StageMgr::Draw2D(std::weak_ptr<Camera> arg_cam)
 		//地形評価UI
 		m_terrianEvaluationUI.Draw(m_terrianValuationTimerGaugePos, m_terrianValuationPlusTex);
 	}
-}
-
-#include"imguiApp.h"
-void StageMgr::ImguiDebug(std::weak_ptr<CollisionManager>arg_collisionMgr)
-{
-	ImGui::Begin("StageMgr");
-
-	if (ImGui::Checkbox("GenerateTerrian", &m_generateTerrian))
-	{
-		Finalize(arg_collisionMgr);
-		Init("", arg_collisionMgr);
-	}
-
-	bool changeRate = ImGui::DragFloat("BlockGenerateRate", &m_generateBlockRate, 0.5f, 0.0f, 100.0f);
-
-	bool changeX = ImGui::DragInt("BlockNumX", &m_blockNum.x);
-	bool changeY = ImGui::DragInt("BlockNumY", &m_blockNum.y);
-
-	if (m_blockNum.x < 1)m_blockNum.x = 1;
-	if (m_blockNum.y < 1)m_blockNum.y = 1;
-
-	if (changeRate || changeX || changeY)
-	{
-		Finalize(arg_collisionMgr);
-		Init("", arg_collisionMgr);
-	}
-
-	ImGui::End();
 }
 
 void StageMgr::TerrianEvaluationUI::Update(const float& arg_timeScale)

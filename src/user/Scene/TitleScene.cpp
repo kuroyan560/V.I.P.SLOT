@@ -7,6 +7,7 @@
 #include"DebugCamera.h"
 #include"LightManager.h"
 #include"Model.h"
+#include"Debugger.h"
 
 TitleScene::TitleScene()
 {
@@ -55,6 +56,8 @@ void TitleScene::OnInitialize()
 	m_titleCam->Init();
 
 	m_titleUI.Init();
+
+	Debugger::Register({ m_lightMgr.get(),m_titleCam.get(),&m_titleUI });
 }
 
 void TitleScene::OnUpdate()
@@ -76,8 +79,7 @@ void TitleScene::OnUpdate()
 	else if (0 < m_item && up)m_item = (ITEM)(m_item - 1);
 
 	//Œˆ’è
-	//if (enter)
-	if (true)
+	if (enter)
 	{
 		switch (m_item)
 		{
@@ -119,17 +121,10 @@ void TitleScene::OnDraw()
 
 void TitleScene::OnImguiDebug()
 {
-	ImGui::Begin("Items");
-	ImGui::Text("Now : %s", std::string(magic_enum::enum_name(m_item)).c_str());
-	ImGui::End();
-
-	m_lightMgr->ImguiDebug();
-
-	m_titleCam->ImguiDebug();
-
-	m_titleUI.ImguiDebug();
+	Debugger::Draw();
 }
 
 void TitleScene::OnFinalize()
 {
+	Debugger::ClearRegister();
 }

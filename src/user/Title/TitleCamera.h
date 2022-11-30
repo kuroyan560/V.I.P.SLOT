@@ -2,18 +2,19 @@
 #include<memory>
 class Camera;
 #include"HandShake.h"
+#include"Debugger.h"
 
-class TitleCamera
+class TitleCamera : public Debugger
 {
 	std::shared_ptr<Camera>m_cam;
 	HandShake m_handShake;
+
+	void OnImguiItems()override;
 
 public:
 	TitleCamera();
 	void Init();
 	void Update(float arg_timeScale);
-
-	void ImguiDebug();
 
 	operator std::shared_ptr<Camera>& ()
 	{

@@ -13,6 +13,7 @@
 #include"PlayersAbility.h"
 #include"PlayerHp.h"
 #include"PlayersCoinUI.h"
+#include"Debugger.h"
 class ModelObject;
 class LightManager;
 class Camera;
@@ -27,7 +28,7 @@ class Scaffold;
 class ObjectManager;
 class TextureBuffer;
 
-class Player : public ColliderParentObject
+class Player : public ColliderParentObject, public Debugger
 {
 	//HP管理
 	PlayerHp m_playerHp;
@@ -107,6 +108,8 @@ class Player : public ColliderParentObject
 
 	//地面着地時に呼び出す
 	void OnLanding(bool arg_isGround);
+
+	void OnImguiItems()override;
 	
 public:
 	Player();
@@ -121,9 +124,6 @@ public:
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 	//エフェクト描画
 	void Draw2D(std::weak_ptr<Camera>arg_cam);
-
-	//imguiデバッグ
-	void ImguiDebug();
 
 	//足場との当たり判定
 	void HitCheckWithScaffold(const std::weak_ptr<Scaffold>arg_scaffold);

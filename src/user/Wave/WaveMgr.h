@@ -2,10 +2,11 @@
 #include<vector>
 #include<memory>
 #include"Vec.h"
+#include"Debugger.h"
 class Sprite;
 class TextureBuffer;
 
-class WaveMgr
+class WaveMgr : public Debugger
 {
 	//コインノルマ
 	int m_norma;
@@ -21,12 +22,12 @@ class WaveMgr
 	std::vector<std::shared_ptr<TextureBuffer>>m_normaTexArray;
 	int m_useSpriteNum = 0;
 
+	void OnImguiItems()override;
+
 public:
 	WaveMgr();
 	void Init(int arg_norma);
 	void Draw2D();
-
-	void ImguiDebug();
 
 	//クリアしたか
 	bool IsClear(const int& arg_playersCoinNum)

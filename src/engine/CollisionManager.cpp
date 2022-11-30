@@ -29,6 +29,31 @@ void CollisionManager::OnHit(const std::shared_ptr<Collider>& arg_myCollider, co
 	}
 }
 
+void CollisionManager::OnImguiItems()
+{
+	static ImVec4 GRAY = ImVec4(0.0f, 0.0f, 0.0f, 0.2f);
+	static ImVec4 BLACK = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+	static ImVec4 RED = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+
+	int num = 0;
+	for (auto& c : m_colliderList)
+	{
+		ImVec4 textCol = c->m_isActive ? BLACK : GRAY;
+		if (c->m_isHit)
+		{
+			textCol = RED;
+		}
+		ImGui::TextColored(textCol, "%d - %s : { ", num++, c->m_name.c_str());
+		for (auto& tag : c->m_tags)
+		{
+			ImGui::SameLine();
+			ImGui::TextColored(textCol, "%s", tag.c_str());
+		}
+		ImGui::SameLine();
+		ImGui::TextColored(textCol, " }");
+	}
+}
+
 void CollisionManager::Update()
 {
 	//既に寿命切れのコライダーを削除
@@ -76,34 +101,6 @@ void CollisionManager::DebugDraw(Camera& Cam)
 		if (!c->m_isActive)continue;
 		c->DebugDraw(Cam);
 	}
-}
-
-#include"ImguiApp.h"
-void CollisionManager::ImguiDebug()
-{
-	ImGui::Begin("CollisionManager");
-	static ImVec4 GRAY = ImVec4(0.0f, 0.0f, 0.0f, 0.2f);
-	static ImVec4 BLACK = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
-	static ImVec4 RED = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-
-	int num = 0;
-	for (auto& c : m_colliderList)
-	{
-		ImVec4 textCol = c->m_isActive ? BLACK : GRAY;
-		if (c->m_isHit)
-		{
-			textCol = RED;
-		}
-		ImGui::TextColored(textCol, "%d - %s : { ", num++, c->m_name.c_str());
-		for (auto& tag : c->m_tags)
-		{
-			ImGui::SameLine();
-			ImGui::TextColored(textCol, "%s", tag.c_str());
-		}
-		ImGui::SameLine();
-		ImGui::TextColored(textCol, " }");
-	}
-	ImGui::End();
 }
 
 bool CollisionManager::RaycastHit(Vec3<float> arg_start, Vec3<float> arg_dir, RaycastHitInfo* arg_hitInfo, std::string arg_targetTag, float arg_maxDist)

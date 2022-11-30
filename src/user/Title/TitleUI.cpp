@@ -16,7 +16,18 @@ void TitleUI::UpdateItemPosOffset()
 	}
 }
 
-TitleUI::TitleUI()
+void TitleUI::OnImguiItems()
+{
+	ImGui::DragFloat("ItemBasePosX", &m_itemBasePos.x);
+	ImGui::DragFloat("ItemBasePosY", &m_itemBasePos.y);
+
+	if (ImGui::DragFloat("ItemOffsetY", &m_itemOffsetY))
+	{
+		UpdateItemPosOffset();
+	}
+}
+
+TitleUI::TitleUI() : Debugger("TitleUI")
 {
 	m_randBox.SetColor(Color(255, 93, 204, 255));
 	m_randBox.m_interval = 27;
@@ -78,22 +89,4 @@ void TitleUI::Draw(int arg_selectIdx)
 	//ÉtÉçÉìÉgâÊëú
 	DrawFunc2D::DrawGraph(m_itemBasePos + item.m_posOffset, item.m_tex.m_front);
 
-}
-
-#include"imguiApp.h"
-void TitleUI::ImguiDebug()
-{
-	ImGui::Begin("TitleUI");
-
-	ImGui::DragFloat("ItemBasePosX", &m_itemBasePos.x);
-	ImGui::DragFloat("ItemBasePosY", &m_itemBasePos.y);
-
-	if (ImGui::DragFloat("ItemOffsetY", &m_itemOffsetY))
-	{
-		UpdateItemPosOffset();
-	}
-
-	ImGui::End();
-
-	m_randBox.ImguiDebug();
 }

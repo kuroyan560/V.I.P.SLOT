@@ -3,7 +3,45 @@
 #include"D3D12App.h"
 #include"KuroFunc.h"
 
-WaveMgr::WaveMgr()
+void WaveMgr::OnImguiItems()
+{
+	bool change = false;
+
+	auto strPos = m_normaStrSprite->m_transform.GetPos();
+	if (ImGui::DragFloat2("StrPos", (float*)&strPos))
+	{
+		m_normaStrSprite->m_transform.SetPos(strPos);
+		m_normaStrSprite->SendTransformBuff();
+	}
+	auto strScale = m_normaStrSprite->m_transform.GetScale().x;
+	if (ImGui::DragFloat("StrScale", &strScale, 0.05f))
+	{
+		m_normaStrSprite->m_transform.SetScale(strScale);
+		m_normaStrSprite->SendTransformBuff();
+	}
+
+	if (ImGui::DragFloat2("NumPos", (float*)&m_numPos))change = true;
+	if (ImGui::DragFloat2("NumOffset", (float*)&m_numPosOffset))change = true;
+	if (ImGui::DragFloat("NumScale", &m_numScale, 0.05f))change = true;
+
+	ImGui::Separator();
+
+	ImGui::Text("Norma : { %d }", m_norma);
+
+	ImGui::Separator();
+
+	ImGui::Checkbox("InfinityMode", &m_isInfinity);
+
+	int norma = m_norma;
+	if (ImGui::InputInt("Norma", &norma))change = true;
+
+	if (change)
+	{
+		Init(norma);
+	}
+}
+
+WaveMgr::WaveMgr() : Debugger("WaveMgr")
 {
 	Vec2<float>NORMA_STR_POS = { 1080.0f,74.0f };
 	float NORMA_STR_SCALE = 0.9f;
@@ -82,47 +120,4 @@ void WaveMgr::Draw2D()
 
 	//ƒmƒ‹ƒ}•¶Žš
 	m_normaStrSprite->Draw();
-}
-
-#include"ImguiApp.h"
-void WaveMgr::ImguiDebug()
-{
-	ImGui::Begin("WaveMgr");
-
-	bool change = false;
-
-	auto strPos = m_normaStrSprite->m_transform.GetPos();
-	if (ImGui::DragFloat2("StrPos", (float*)&strPos))
-	{
-		m_normaStrSprite->m_transform.SetPos(strPos);
-		m_normaStrSprite->SendTransformBuff();
-	}
-	auto strScale = m_normaStrSprite->m_transform.GetScale().x;
-	if (ImGui::DragFloat("StrScale", &strScale,0.05f))
-	{
-		m_normaStrSprite->m_transform.SetScale(strScale);
-		m_normaStrSprite->SendTransformBuff();
-	}
-
-	if (ImGui::DragFloat2("NumPos", (float*)&m_numPos))change = true;
-	if (ImGui::DragFloat2("NumOffset", (float*)&m_numPosOffset))change = true;
-	if (ImGui::DragFloat("NumScale", &m_numScale, 0.05f))change = true;
-
-	ImGui::Separator();
-
-	ImGui::Text("Norma : { %d }", m_norma);
-
-	ImGui::Separator();
-
-	ImGui::Checkbox("InfinityMode", &m_isInfinity);
-
-	int norma = m_norma;
-	if (ImGui::InputInt("Norma", &norma))change = true;
-
-	if(change)
-	{
-		Init(norma);
-	}
-
-	ImGui::End();
 }

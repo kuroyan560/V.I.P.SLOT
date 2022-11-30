@@ -93,7 +93,107 @@ void LightManager::MappingLigInfo(const Light::TYPE& Type, const bool& CheckDirt
 	}
 }
 
-LightManager::LightManager()
+void LightManager::OnImguiItems()
+{
+	if (ImGui::TreeNode("Direcion"))
+	{
+		if (dirLights.empty())ImGui::Text("Empty");
+		else
+		{
+			ImGui::BeginChild(ImGui::GetID((void*)0));
+			for (auto& dirLig : dirLights)
+			{
+				bool active = dirLig->constData.active == 1;
+				ImGui::Checkbox("Active", &active);
+				dirLig->SetActive(active);
+
+				auto col = dirLig->constData.color;
+				ImGui::ColorPicker4("Color", (float*)&col);
+				dirLig->SetColor(col);
+
+				auto dir = dirLig->constData.dir;
+				ImGui::DragFloat("DirX", &dir.x, 0.01f, -1.0f, 1.0f);
+				ImGui::DragFloat("DirY", &dir.y, 0.01f, -1.0f, 1.0f);
+				ImGui::DragFloat("DirZ", &dir.z, 0.01f, -1.0f, 1.0f);
+				dirLig->SetDir(dir);
+			}
+			ImGui::EndChild();
+		}
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Point"))
+	{
+		if (ptLights.empty())ImGui::Text("Empty");
+		else
+		{
+			ImGui::BeginChild(ImGui::GetID((void*)0));
+			for (auto& ptLig : ptLights)
+			{
+				bool active = ptLig->constData.active == 1;
+				ImGui::Checkbox("Active", &active);
+				ptLig->SetActive(active);
+
+				auto col = ptLig->constData.color;
+				ImGui::ColorPicker4("Color", (float*)&col);
+				ptLig->SetColor(col);
+
+				auto pos = ptLig->constData.pos;
+				ImGui::DragFloat("PosX", &pos.x, 0.01f);
+				ImGui::DragFloat("PosY", &pos.y, 0.01f);
+				ImGui::DragFloat("PosZ", &pos.z, 0.01f);
+				ptLig->SetPos(pos);
+
+				auto range = ptLig->constData.influenceRange;
+				ImGui::DragFloat("InfluenceRange", &range);
+				ptLig->SetInfluenceRange(range);
+			}
+			ImGui::EndChild();
+		}
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Spot"))
+	{
+		if (spotLights.empty())ImGui::Text("Empty");
+		else
+		{
+			ImGui::BeginChild(ImGui::GetID((void*)0));
+			for (auto& spotLig : spotLights)
+			{
+				bool active = spotLig->constData.active == 1;
+				ImGui::Checkbox("Active", &active);
+				spotLig->SetActive(active);
+
+				auto col = spotLig->constData.color;
+				ImGui::ColorPicker4("Color", (float*)&col);
+				spotLig->SetColor(col);
+
+				auto pos = spotLig->constData.pos;
+				ImGui::DragFloat("PosX", &pos.x, 0.01f);
+				ImGui::DragFloat("PosY", &pos.y, 0.01f);
+				ImGui::DragFloat("PosZ", &pos.z, 0.01f);
+				spotLig->SetPos(pos);
+
+				auto target = spotLig->constData.target;
+				ImGui::DragFloat("TargetX", &target.x, 0.01f);
+				ImGui::DragFloat("TargetY", &target.y, 0.01f);
+				ImGui::DragFloat("TargetZ", &target.z, 0.01f);
+				spotLig->SetTarget(target);
+
+				auto range = spotLig->constData.influenceRange;
+				ImGui::DragFloat("InfluenceRange", &range);
+				spotLig->SetInfluenceRange(range);
+
+				auto angle = spotLig->constData.angle.GetDegree();
+				ImGui::DragFloat("Angle(Degree)", &angle);
+				spotLig->SetAngle(Angle(Angle::ConvertToRadian(angle)));
+			}
+			ImGui::EndChild();
+		}
+		ImGui::TreePop();
+	}
+}
+
+LightManager::LightManager() : Debugger("LightManager")
 {
 	//０個の状態の送信用データ
 	LightNum sendLigNum = { 0,0,0,0 };
@@ -177,109 +277,4 @@ std::shared_ptr<DescriptorData> LightManager::GetLigInfo(const Light::TYPE& Type
 {
 	MappingLigInfo(Type);
 	return ligStructuredBuff[Type];
-}
-
-#include"ImguiApp.h"
-void LightManager::ImguiDebug()
-{
-	ImGui::Begin("LightManager");
-
-	if (ImGui::TreeNode("Direcion"))
-	{
-		if (dirLights.empty())ImGui::Text("Empty");
-		else
-		{
-			ImGui::BeginChild(ImGui::GetID((void*)0));
-			for (auto& dirLig : dirLights)
-			{
-				bool active = dirLig->constData.active == 1;
-				ImGui::Checkbox("Active", &active);
-				dirLig->SetActive(active);
-
-				auto col = dirLig->constData.color;
-				ImGui::ColorPicker4("Color", (float*)&col);
-				dirLig->SetColor(col);
-
-				auto dir = dirLig->constData.dir;
-				ImGui::DragFloat("DirX", &dir.x, 0.01f, -1.0f, 1.0f);
-				ImGui::DragFloat("DirY", &dir.y, 0.01f, -1.0f, 1.0f);
-				ImGui::DragFloat("DirZ", &dir.z, 0.01f, -1.0f, 1.0f);
-				dirLig->SetDir(dir);
-			}
-			ImGui::EndChild();
-		}
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("Point"))
-	{
-		if (ptLights.empty())ImGui::Text("Empty");
-		else
-		{
-			ImGui::BeginChild(ImGui::GetID((void*)0));
-			for (auto& ptLig	 : ptLights)
-			{
-				bool active = ptLig->constData.active == 1;
-				ImGui::Checkbox("Active", &active);
-				ptLig->SetActive(active);
-
-				auto col = ptLig->constData.color;
-				ImGui::ColorPicker4("Color", (float*)&col);
-				ptLig->SetColor(col);
-
-				auto pos = ptLig->constData.pos;
-				ImGui::DragFloat("PosX", &pos.x, 0.01f);
-				ImGui::DragFloat("PosY", &pos.y, 0.01f);
-				ImGui::DragFloat("PosZ", &pos.z, 0.01f);
-				ptLig->SetPos(pos);
-
-				auto range = ptLig->constData.influenceRange;
-				ImGui::DragFloat("InfluenceRange", &range);
-				ptLig->SetInfluenceRange(range);
-			}
-			ImGui::EndChild();
-		}
-		ImGui::TreePop();
-	}
-	if (ImGui::TreeNode("Spot"))
-	{
-		if (spotLights.empty())ImGui::Text("Empty");
-		else
-		{
-			ImGui::BeginChild(ImGui::GetID((void*)0));
-			for (auto& spotLig : spotLights)
-			{
-				bool active = spotLig->constData.active == 1;
-				ImGui::Checkbox("Active", &active);
-				spotLig->SetActive(active);
-
-				auto col = spotLig->constData.color;
-				ImGui::ColorPicker4("Color", (float*)&col);
-				spotLig->SetColor(col);
-
-				auto pos = spotLig->constData.pos;
-				ImGui::DragFloat("PosX", &pos.x, 0.01f);
-				ImGui::DragFloat("PosY", &pos.y, 0.01f);
-				ImGui::DragFloat("PosZ", &pos.z, 0.01f);
-				spotLig->SetPos(pos);
-
-				auto target = spotLig->constData.target;
-				ImGui::DragFloat("TargetX", &target.x, 0.01f);
-				ImGui::DragFloat("TargetY", &target.y, 0.01f);
-				ImGui::DragFloat("TargetZ", &target.z, 0.01f);
-				spotLig->SetTarget(target);
-
-				auto range = spotLig->constData.influenceRange;
-				ImGui::DragFloat("InfluenceRange", &range);
-				spotLig->SetInfluenceRange(range);
-
-				auto angle = spotLig->constData.angle.GetDegree();
-				ImGui::DragFloat("Angle(Degree)", &angle);
-				spotLig->SetAngle(Angle(Angle::ConvertToRadian(angle)));
-			}
-			ImGui::EndChild();
-		}
-		ImGui::TreePop();
-	}
-
-	ImGui::End();
 }

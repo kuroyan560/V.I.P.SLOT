@@ -5,12 +5,13 @@
 #include<wrl.h>
 #include<d3d12.h>
 #include<array>
+#include"Debugger.h"
 
 class ConstantBuffer;
 class StructuredBuffer;
 class DescriptorData;
 
-class LightManager
+class LightManager : public Debugger
 {
 private:
 	template<class T>
@@ -41,6 +42,8 @@ private:
 	// (引数で指定したタイプの) ライト情報をマッピング、Dirtyフラグを確認するか
 	void MappingLigInfo(const Light::TYPE& Type, const bool& CheckDirty = true);
 
+	void OnImguiItems()override;
+
 public:
 	LightManager();
 
@@ -51,6 +54,4 @@ public:
 
 	std::shared_ptr<DescriptorData>GetLigNumInfo();
 	std::shared_ptr<DescriptorData>GetLigInfo(const Light::TYPE& Type);
-
-	void ImguiDebug();
 };

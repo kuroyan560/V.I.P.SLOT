@@ -67,6 +67,30 @@ void EnemyEmitter::UpdateAppearRate(int arg_fixRateTypeIdx)
 	}
 }
 
+#include<magic_enum.h>
+void EnemyEmitter::OnImguiItems()
+{
+	ImGui::Text("Timer : %.f", m_timer.GetLeftTime());
+
+	ImGui::Separator();
+
+	ImGui::DragInt("AppearNum", &m_appearNum, 1, 0);
+	ImGui::DragInt("AppearSpan", &m_appearSpan, 1, 0);
+
+	ImGui::Text("AppearRate");
+
+	ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(250, 100), ImGuiWindowFlags_NoTitleBar);
+	for (int typeIdx = 0; typeIdx < TYPE::NUM; ++typeIdx)
+	{
+		auto type = (TYPE)typeIdx;
+		if (ImGui::InputInt(std::string(magic_enum::enum_name(type)).c_str(), &m_appearRate[typeIdx]))
+		{
+			UpdateAppearRate(typeIdx);
+		}
+	}
+	ImGui::EndChild();
+}
+
 void EnemyEmitter::Init(std::weak_ptr<ObjectManager> arg_objMgr, std::weak_ptr<CollisionManager> arg_colMgr)
 {
 	EmitEnemys(arg_objMgr, arg_colMgr);
@@ -80,33 +104,4 @@ void EnemyEmitter::TestRandEmit(const TimeScale& arg_timeScale, std::weak_ptr<Ob
 		EmitEnemys(arg_objMgr, arg_colMgr);
 		m_timer.Reset(m_appearSpan);
 	}
-}
-
-#include"imguiApp.h"
-#include<magic_enum.h>
-void EnemyEmitter::ImguiDebug()
-{
-	ImGui::Begin("EnemyEmitter");
-
-	ImGui::Text("Timer : %.f", m_timer.GetLeftTime());
-
-	ImGui::Separator();
-
-	ImGui::DragInt("AppearNum", &m_appearNum, 1, 0);
-	ImGui::DragInt("AppearSpan", &m_appearSpan, 1, 0);
-
-	ImGui::Text("AppearRate");
-
-	ImGui::BeginChild(ImGui::GetID((void*)0),ImVec2(250,100),ImGuiWindowFlags_NoTitleBar);
-	for (int typeIdx = 0; typeIdx < TYPE::NUM; ++typeIdx)
-	{
-		auto type = (TYPE)typeIdx;
-		if (ImGui::InputInt(std::string(magic_enum::enum_name(type)).c_str(), &m_appearRate[typeIdx]))
-		{
-			UpdateAppearRate(typeIdx);
-		}
-	}
-	ImGui::EndChild();
-
-	ImGui::End();
 }

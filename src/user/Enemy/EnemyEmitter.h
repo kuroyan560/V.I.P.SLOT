@@ -3,10 +3,11 @@
 #include"Timer.h"
 #include<vector>
 #include<array>
+#include"Debugger.h"
 class ObjectManager;
 class CollisionManager;
 class TimeScale;
-class EnemyEmitter
+class EnemyEmitter : public Debugger
 {
 	enum TYPE { SLIDE_MOVE, SLIME_BATTERY, NUM };
 
@@ -23,13 +24,12 @@ class EnemyEmitter
 	void EmitEnemy(std::weak_ptr<ObjectManager>& arg_objMgr, std::weak_ptr<CollisionManager>& arg_colMgr, int arg_type);
 	void EmitEnemys(std::weak_ptr<ObjectManager>& arg_objMgr, std::weak_ptr<CollisionManager>& arg_colMgr);
 	void UpdateAppearRate(int arg_fixRateTypeIdx);
+	void OnImguiItems()override;
 
 public:
+	EnemyEmitter() : Debugger("EnemyEmitter") {}
 	void Init(std::weak_ptr<ObjectManager> arg_objMgr, std::weak_ptr<CollisionManager> arg_colMgr);
 
 	//テスト用に適当に敵を出現させる
 	void TestRandEmit(const TimeScale& arg_timeScale, std::weak_ptr<ObjectManager>arg_objMgr, std::weak_ptr<CollisionManager>arg_colMgr);
-
-	//テスト出現のパラメータ調整
-	void ImguiDebug();
 };

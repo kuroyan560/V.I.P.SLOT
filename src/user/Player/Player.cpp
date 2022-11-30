@@ -32,7 +32,16 @@ void Player::OnLanding(bool arg_isGround)
 	else m_isOnScaffold = true;
 }
 
-Player::Player()
+void Player::OnImguiItems()
+{
+	ImGui::Text("Coin : { %d }", m_coinVault.GetNum());
+	ImGui::Text("Offensive : { %d }", m_ability.m_offensive);
+
+	m_drawParam.ImguiDebugItem();
+	m_yoYo->AddImguiDebugItem();
+}
+
+Player::Player() : Debugger("Player")
 {
 	//モデル読み込み
 	m_modelObj = std::make_shared<ModelObject>("resource/user/model/", "player.glb");
@@ -107,8 +116,8 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 		m_bodyCollider->SetParentTransform(&m_modelObj->m_transform);
 
 		//被ダメージコールバックアタッチ
-		//m_bodyCollider->SetCallBack("Enemy", m_damegedCallBack.get());
-		//m_bodyCollider->SetCallBack("Enemy_Attack", m_damegedCallBack.get());
+		m_bodyCollider->SetCallBack("Enemy", m_damegedCallBack.get());
+		m_bodyCollider->SetCallBack("Enemy_Attack", m_damegedCallBack.get());
 		colliders.emplace_back(m_bodyCollider);
 	}
 
@@ -389,22 +398,6 @@ void Player::Draw2D(std::weak_ptr<Camera> arg_cam)
 
 	//所持金コインUI
 	m_coinUI.Draw2D();
-}
-
-#include"imguiApp.h"
-void Player::ImguiDebug()
-{
-	ImGui::Begin("Player");
-	ImGui::Text("Coin : { %d }", m_coinVault.GetNum());
-	ImGui::Text("Offensive : { %d }", m_ability.m_offensive);
-
-	m_drawParam.ImguiDebugItem();
-	m_yoYo->AddImguiDebugItem();
-	ImGui::End();
-
-	//m_playerHp.ImguiDebug();
-
-	m_coinUI.ImguiDebug();
 }
 
 void Player::HitCheckWithScaffold(const std::weak_ptr<Scaffold> arg_scaffold)

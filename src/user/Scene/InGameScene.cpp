@@ -16,8 +16,15 @@
 #include"ObjectController.h"
 #include"EnemyEmitter.h"
 #include"WaveMgr.h"
+#include"Debugger.h"
 
-InGameScene::InGameScene()
+void InGameScene::OnImguiItems()
+{
+	ImGui::Checkbox("IsDrawCollider", &m_isDrawCollider);
+	ImGui::Checkbox("IsDrawEdge", &m_isDrawEdge);
+}
+
+InGameScene::InGameScene() : Debugger("InGame")
 {
 	//コリジョンマネージャ生成
 	m_collisionMgr = std::make_shared<CollisionManager>();
@@ -98,6 +105,8 @@ void InGameScene::OnInitialize()
 
 	//ウェーブマネージャ
 	m_waveMgr->Init(10);
+
+	Debugger::Register({ m_stageMgr.get(),m_waveMgr.get(),m_slotMachine.get(),m_player.get(),m_collisionMgr.get(),m_enemyEmitter.get(),m_ligMgr.get() });
 }
 
 void InGameScene::OnUpdate()
@@ -106,6 +115,7 @@ void InGameScene::OnUpdate()
 	if (UsersInput::Instance()->KeyOnTrigger(DIK_I)
 		|| UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::BACK))
 	{
+		this->Finalize();
 		this->Initialize();
 	}
 	if (UsersInput::Instance()->KeyOnTrigger(DIK_S))
@@ -127,7 +137,7 @@ void InGameScene::OnUpdate()
 	m_slotMachine->Update(m_player, m_timeScale);
 
 	//ステージマネージャ
-	m_stageMgr->Update(m_timeScale, m_collisionMgr, m_player);
+	m_stageMgr->Update(m_timeScale, m_player);
 
 	//エネミーエミッター生成
 	m_enemyEmitter->TestRandEmit(m_timeScale, m_objMgr, m_collisionMgr);
@@ -214,20 +224,10 @@ void InGameScene::OnDraw()
 
 void InGameScene::OnImguiDebug()
 {
-	ImGui::Begin("InGame");
-	ImGui::Checkbox("IsDrawCollider", &m_isDrawCollider);
-	ImGui::Checkbox("IsDrawEdge", &m_isDrawEdge);
-	ImGui::End();
+	Debugger::Draw();
 
-	//ConstParameter::ImguiDebug();
-	m_stageMgr->ImguiDebug(m_collisionMgr);
-	//m_waveMgr->ImguiDebug();
-	//m_slotMachine->ImguiDebug();
-	//m_player->ImguiDebug();
-	//m_collisionMgr->ImguiDebug();
-	m_enemyEmitter->ImguiDebug();
-	//m_ligMgr->ImguiDebug();
-	//BasicDraw::ImguiDebug();
+	ConstParameter::ImguiDebug();
+	BasicDraw::ImguiDebug();
 }
 
 void InGameScene::OnFinalize()
@@ -237,5 +237,6 @@ void InGameScene::OnFinalize()
 	//ゲーム終了時のプレイヤーの状態を記録
 	gameMgr->UpdatePlayersInfo(m_player->GetCoinNum(), m_player->GetLife());
 
-	m_stageMgr->Finalize(m_collisionMgr);
+	m_stageMgr->Finalize();
+	Debugger::ClearRegister();
 }

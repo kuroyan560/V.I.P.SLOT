@@ -397,6 +397,9 @@
     <ClCompile Include="src\user\Player\PlayersCounterAttackHitEffect.cpp">
       <Filter>src\user\Player</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\Others\Debugger.cpp">
+      <Filter>src\user\Others</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -746,6 +749,9 @@
     </ClInclude>
     <ClInclude Include="src\user\Player\PlayersCounterAttackHitEffect.h">
       <Filter>src\user\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Others\Debugger.h">
+      <Filter>src\user\Others</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

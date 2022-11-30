@@ -4,6 +4,7 @@
 class TextureBuffer;
 #include"RandBox2D.h"
 #include"Vec.h"
+#include"Debugger.h"
 
 struct TitleItemTex
 {
@@ -11,7 +12,7 @@ struct TitleItemTex
 	std::shared_ptr<TextureBuffer>m_front;
 };
 
-class TitleUI
+class TitleUI : public Debugger
 {
 	Vec2<float>m_itemBasePos = { 90.0f,81.0f };
 	float m_itemOffsetY = 321.0f;
@@ -26,6 +27,8 @@ class TitleUI
 
 	void UpdateItemPosOffset();
 
+	void OnImguiItems()override;
+
 public:
 	TitleUI();
 	void Awake(const std::vector<TitleItemTex>& arg_tex);
@@ -33,7 +36,5 @@ public:
 	void Init();
 	void Update();
 	void Draw(int arg_selectIdx);
-
-	void ImguiDebug();
 };
 

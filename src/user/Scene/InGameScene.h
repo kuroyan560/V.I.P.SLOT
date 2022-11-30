@@ -3,6 +3,7 @@
 #include"TimeScale.h"
 #include"Timer.h"
 #include"Light.h"
+#include"Debugger.h"
 class Player;
 class SlotMachine;
 class LightManager;
@@ -15,7 +16,7 @@ class StageMgr;
 class EnemyEmitter;
 class WaveMgr;
 
-class InGameScene : public BaseScene
+class InGameScene : public BaseScene, public Debugger
 {
 	SceneTransition m_sceneTrans;
 
@@ -62,6 +63,8 @@ class InGameScene : public BaseScene
 	bool m_isDrawCollider = false;
 	//エッジの描画フラグ
 	bool m_isDrawEdge = true;
+
+	void OnImguiItems()override;
 
 public:
 	InGameScene();

@@ -10,6 +10,7 @@
 #include<forward_list>
 #include"Color.h"
 #include"Scaffold.h"
+#include"Debugger.h"
 class SlotBlock;
 class CoinBlock;
 class SlotMachine;
@@ -24,8 +25,12 @@ class TextureBuffer;
 class Scaffold;
 class Player;
 
-class StageMgr
+//地形関連の統括クラス
+class StageMgr : public Debugger
 {
+	//コリジョンマネージャポインタ
+	std::weak_ptr<CollisionManager>m_collisionMgr;
+
 	//スロットマシン参照
 	std::weak_ptr<SlotMachine>m_slotMachine;
 
@@ -122,15 +127,14 @@ class StageMgr
 
 	void DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void GenerateTerrian(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr, int arg_slotBlockNum);
+	void OnImguiItems()override;
 public:
 	StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine);
 	void Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr);
-	void Update(TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player);
+	void Update(TimeScale& arg_timeScale, std::weak_ptr<Player>arg_player);
 	void BlockDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);
 	void ScaffoldDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);
-	void Finalize(std::weak_ptr<CollisionManager>arg_collisionMgr);
+	void Finalize();
 
 	void Draw2D(std::weak_ptr<Camera>arg_cam);
-
-	void ImguiDebug(std::weak_ptr<CollisionManager>arg_collisionMgr);
 };

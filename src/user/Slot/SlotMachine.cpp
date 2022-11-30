@@ -73,7 +73,22 @@ void SlotMachine::UpdateSlotGaugeScreen()
 	}
 }
 
-SlotMachine::SlotMachine()
+void SlotMachine::OnImguiItems()
+{
+	ImGui::Text("StartSlotCount : { %d }", m_startSlotCount);
+
+	using namespace ConstParameter::Slot;
+	const float autoOperateTimeScale =
+		KuroMath::Lerp(1.0f,
+			AUTO_OPERATE_TIME_SCALE_MAX,
+			KuroMath::GetRateInRange(
+				DEFAULT_TIME_SCALE_SLOT_GAUGE_NUM,
+				MAX_TIME_SCALE_SLOT_GAUGE_NUM,
+				m_startSlotCount));
+	ImGui::Text("AutoOperateTimeScale : { %f }", autoOperateTimeScale);
+}
+
+SlotMachine::SlotMachine() : Debugger("SlotMachine")
 {
 	//スロットマシン生成
 	m_slotMachineObj = std::make_shared<ModelObject>("resource/user/model/", "slotMachine.glb");
@@ -243,25 +258,6 @@ void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<C
 
 	//DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
 	//DrawFunc3D::DrawNonShadingModel(m_megaPhoneObj, *arg_gameCam.lock()->GetBackCam(), 1.0f, AlphaBlendMode_None);
-}
-
-#include"imguiApp.h"
-void SlotMachine::ImguiDebug()
-{
-	ImGui::Begin("SlotMachine");
-	ImGui::Text("StartSlotCount : { %d }", m_startSlotCount);
-
-	using namespace ConstParameter::Slot;
-	const float autoOperateTimeScale =
-		KuroMath::Lerp(1.0f,
-			AUTO_OPERATE_TIME_SCALE_MAX,
-			KuroMath::GetRateInRange(
-				DEFAULT_TIME_SCALE_SLOT_GAUGE_NUM,
-				MAX_TIME_SCALE_SLOT_GAUGE_NUM,
-				m_startSlotCount));
-	ImGui::Text("AutoOperateTimeScale : { %f }", autoOperateTimeScale);
-
-	ImGui::End();
 }
 
 bool SlotMachine::Lever()

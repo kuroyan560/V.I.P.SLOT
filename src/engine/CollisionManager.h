@@ -6,6 +6,7 @@
 #include<limits>
 #include<vector>
 #include"Vec.h"
+#include"Debugger.h"
 class Collider;
 class Camera;
 
@@ -20,20 +21,20 @@ struct RaycastHitInfo
 	float m_distToInter;
 };
 
-class CollisionManager
+class CollisionManager : public Debugger
 {
 	//登録されたコライダーリスト
 	std::list<std::shared_ptr<Collider>>m_colliderList;
 
 	//衝突していた場合の処理
 	void OnHit(const std::shared_ptr<Collider>& arg_myCollider, const std::shared_ptr<Collider>& arg_otherCollider, const Vec3<float>& arg_inter);
+	void OnImguiItems()override;
 
 public:
-	CollisionManager() {}
+	CollisionManager() : Debugger("CollisionManager") {}
 
 	void Update();
 	void DebugDraw(Camera& Cam);
-	void ImguiDebug();
 
 	/// <summary>
 	/// レイを発射して登録されている全てのコライダーと当たり判定

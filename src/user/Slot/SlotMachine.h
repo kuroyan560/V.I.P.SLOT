@@ -11,6 +11,7 @@
 #include"CoinPerform.h"
 #include"ReturnCoinEmitter.h"
 #include"ConstParameters.h"
+#include"Debugger.h"
 class ModelObject;
 class LightManager;
 class GameCamera;
@@ -18,7 +19,7 @@ class TimeScale;
 class Player;
 class RenderTarget;
 
-class SlotMachine
+class SlotMachine : public Debugger
 {
 public:
 	enum REEL { LEFT, CENTER, RIGHT, NUM, NONE = -1 };
@@ -72,6 +73,8 @@ private:
 	//スロットゲージ画面更新
 	void UpdateSlotGaugeScreen();
 
+	void OnImguiItems()override;
+
 public:
 	SlotMachine();
 	//初期化
@@ -80,8 +83,6 @@ public:
 	void Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_timeScale);
 	//描画
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
-	//imguiデバッグ
-	void ImguiDebug();
 
 	//レバー操作（絵柄発動でtrueを返す）
 	bool Lever();
