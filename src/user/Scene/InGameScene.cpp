@@ -111,11 +111,18 @@ void InGameScene::OnInitialize()
 	Event::StaticInit();
 
 	//デバッガ登録
-	Debugger::Register({ m_stageMgr.get(),m_waveMgr.get(),m_slotMachine.get(),m_player.get(),m_collisionMgr.get(),m_enemyEmitter.get(),m_ligMgr.get() });
+	Debugger::Register(
+		{ m_stageMgr.get(),
+		m_waveMgr.get(),
+		m_slotMachine.get(),
+		m_player.get(),
+		m_collisionMgr.get(),
+		m_enemyEmitter.get(),
+		m_ligMgr.get(),
+		BasicDraw::Instance() });
 
 	//ウェーブクリア時イベント
 	m_clearWaveEvent.Init(m_gameCam, m_player);
-
 }
 
 void InGameScene::OnUpdate()
@@ -207,7 +214,7 @@ void InGameScene::OnDraw()
 	rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_STENCIL);
 
 	//床
-	BasicDraw::Draw(*m_ligMgr, m_squareFloorObj, *mainCam);
+	BasicDraw::Instance()->Draw(*m_ligMgr, m_squareFloorObj, *mainCam);
 
 	//ステージマネージャ（足場）
 	m_stageMgr->ScaffoldDraw(m_ligMgr, mainCam);
@@ -224,7 +231,7 @@ void InGameScene::OnDraw()
 	//エッジの描画
 	if (m_isDrawEdge)
 	{
-		BasicDraw::DrawEdge(rtMgr.GetDepthMap(), rtMgr.GetEdgeColorMap());
+		BasicDraw::Instance()->DrawEdge(rtMgr.GetDepthMap(), rtMgr.GetEdgeColorMap());
 	}
 
 	//デバッグ描画
@@ -248,7 +255,6 @@ void InGameScene::OnImguiDebug()
 	Debugger::Draw();
 
 	ConstParameter::ImguiDebug();
-	BasicDraw::ImguiDebug();
 }
 
 void InGameScene::OnFinalize()

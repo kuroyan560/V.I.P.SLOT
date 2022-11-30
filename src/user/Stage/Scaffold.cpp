@@ -23,6 +23,6 @@ void Scaffold::Init(float arg_posX, float arg_posY,float arg_width)
 #include"BasicDraw.h"
 void Scaffold::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
-	BasicDraw::Draw(*arg_lightMgr.lock(), s_model, m_transform, *arg_cam.lock());
+	BasicDraw::Instance()->Draw(*arg_lightMgr.lock(), s_model, m_transform, *arg_cam.lock());
 	//DrawFunc3D::DrawNonShadingModel(s_model, m_transform, *arg_cam.lock(), 1.0f, nullptr, AlphaBlendMode_None);
 }

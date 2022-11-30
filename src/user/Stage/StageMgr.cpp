@@ -314,7 +314,7 @@ void StageMgr::BlockDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr
 			//スロットブロック
 			if (block->GetType() == Block::SLOT)
 			{
-				BasicDraw::Draw(*arg_lightMgr.lock(), m_slotBlockModel, block->m_transform, *arg_cam.lock());
+				BasicDraw::Instance()->Draw(*arg_lightMgr.lock(), m_slotBlockModel, block->m_transform, *arg_cam.lock());
 			}
 			//コインブロック
 			if (block->GetType() == Block::COIN)
@@ -323,7 +323,7 @@ void StageMgr::BlockDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr
 				auto coinBlock = std::dynamic_pointer_cast<CoinBlock>(block);
 				coinBlockTransformArray.emplace_back(block->m_transform.GetWorldMat());
 
-				BasicDraw::Draw(*arg_lightMgr.lock(), m_coinBlockModel, block->m_transform, *arg_cam.lock());
+				BasicDraw::Instance()->Draw(*arg_lightMgr.lock(), m_coinBlockModel, block->m_transform, *arg_cam.lock());
 			}
 			block->Draw(block->m_transform, arg_lightMgr, arg_cam);
 		}

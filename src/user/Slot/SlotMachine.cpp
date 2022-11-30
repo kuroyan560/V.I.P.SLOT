@@ -254,7 +254,7 @@ void SlotMachine::Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_t
 #include"BasicDraw.h"
 void SlotMachine::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera>arg_cam)
 {
-	BasicDraw::Draw(*arg_lightMgr.lock(), m_slotMachineObj, *arg_cam.lock());
+	BasicDraw::Instance()->Draw(*arg_lightMgr.lock(), m_slotMachineObj, *arg_cam.lock());
 
 	//DrawFunc3D::DrawNonShadingModel(m_slotMachineObj, *arg_cam.lock(), 1.0f, AlphaBlendMode_None);
 	//DrawFunc3D::DrawNonShadingModel(m_megaPhoneObj, *arg_gameCam.lock()->GetBackCam(), 1.0f, AlphaBlendMode_None);

@@ -61,7 +61,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	engine.SetSceneList(sceneList, awakeScene);
 
 	//Ã“I•`‰æƒNƒ‰ƒX‰Šú‰»
-	BasicDraw::Awake(engineOption.m_windowSize.Float());
+	BasicDraw::Instance()->Awake(engineOption.m_windowSize.Float());
 
 	bool winEnd = false;
 
@@ -105,7 +105,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 		DrawFuncBillBoard::CountReset();
 
-		BasicDraw::CountReset();
+		BasicDraw::Instance()->CountReset();
 	}
 
 	return 0;

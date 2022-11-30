@@ -380,7 +380,7 @@ void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>
 {
 	if (m_damegedCallBack->GetIsDraw())
 	{
-		BasicDraw::Draw(*arg_lightMgr.lock(), m_modelObj, *arg_cam.lock(), m_drawParam);
+		BasicDraw::Instance()->Draw(*arg_lightMgr.lock(), m_modelObj, *arg_cam.lock(), m_drawParam);
 	}
 
 	//ƒˆ[ƒˆ[
