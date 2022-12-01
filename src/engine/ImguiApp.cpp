@@ -318,3 +318,22 @@ void ImguiApp::DebugMaterial(std::weak_ptr<Material> Material, const IMGUI_DEBUG
 
 	ImGui::End();
 }
+
+bool ImguiApp::WrappedCombo(const std::string arg_label, const std::string* arg_nameArray, const size_t arg_arraySize, int& arg_selectedIdx)
+{
+	assert(0 <= arg_selectedIdx && arg_selectedIdx < arg_arraySize);
+
+	int old = arg_selectedIdx;
+	std::string currentStr = arg_nameArray[arg_selectedIdx];
+	if (ImGui::BeginCombo(arg_label.c_str(), currentStr.c_str()))
+	{
+		for (int i = 0; i < static_cast<int>(arg_arraySize); ++i)
+		{
+			bool isSelected = arg_selectedIdx == i;
+			if (ImGui::Selectable(arg_nameArray[i].c_str(), isSelected))arg_selectedIdx = i;
+			if (isSelected)ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+	return old != arg_selectedIdx;
+}

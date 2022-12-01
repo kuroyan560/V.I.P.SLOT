@@ -7,6 +7,7 @@
 #include<stdio.h>
 #include<array>
 #include<string>
+#include<vector>
 
 enum IMGUI_DEBUG_MODE
 {
@@ -44,5 +45,15 @@ public:
 
 	//マテリアル情報調整
 	void DebugMaterial(std::weak_ptr<Material>Material, const IMGUI_DEBUG_MODE& Mode);
+
+	/// <summary>
+	/// imguiのCombo関数のラップ関数
+	/// </summary>
+	/// <param name="arg_label">ラベル名</param>
+	/// <param name="arg_nameArray">要素の名前配列</param>
+	/// <param name="arg_arraySize">配列サイズ</param>
+	/// <param name="arg_selectedIdx">現在選択されているインデックス参照</param>
+	/// <returns>変化したか</returns>
+	static bool WrappedCombo(const std::string arg_label, const std::string* arg_nameArray, const size_t arg_arraySize, int& arg_selectedIdx);
 };
 
