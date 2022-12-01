@@ -3,6 +3,7 @@
 #include"Timer.h"
 #include"Debugger.h"
 #include"Vec.h"
+#include"KuroMath.h"
 class TimeScale;
 class GameCamera;
 class Player;
@@ -15,12 +16,48 @@ class ClearWave : public Event, public Debugger
 	std::weak_ptr<Player>m_referPlayer;
 	TimeScale* m_referTimeScale;
 
-	enum STATUS { WAIT, CAM_WORK, SLOW, NUM }m_status;
+	//演出ステータス
+	enum STATUS { WAIT, CAM_WORK, END }m_status;
 
+	//時間計測
 	Timer m_timer;
-	std::vector<Vec3<float>>m_camWorkPosOffset;
+
+	//カメラワーク情報
+	struct CameraWork
+	{
+		//カメラ座標開始オフセット
+		Vec3<float>m_startPosOffset;
+		//カメラ座標終了オフセット
+		Vec3<float>m_endPosOffset;
+		//カメラターゲット座標開始オフセット
+		Vec3<float>m_startTargetOffset = { 0,0,0 };
+		//カメラターゲット座標終了オフセット
+		Vec3<float>m_endTargetOffset = { 0,0,0 };
+
+		//カメラ座標移動のイージングパラメータ
+		EasingParameter m_easeParam = { Out,Exp };
+	};
+	//カメラワーク配列
+	std::vector<CameraWork>m_camWorks;
+	//現在進行中のカメラワークインデックス
 	int m_camWorkIdx;
+
+	//停止からスローモーションに映る際のイージングパラメータ
+	EasingParameter m_slowEaseParam = { InOut,Circ };
+	//スローモーションタイムスケール
+	float m_slowTimeScale = 0.7f;
+
+	//カメラ
 	std::shared_ptr<Camera>m_cam;
+
+	//演出開始直後の待機時間
+	float m_startStopWaitInterval = 60.0f;
+	//カメラワークにかかる時間
+	float m_camWorkInterval = 25.0f;
+	//カメラワーク間の待機時間
+	float m_camWorkWaitInterval = 25.0f;
+	//カメラワーク終了後、スローの様子を映す待機時間
+	float m_slowWaitInterval = 120.0f;
 
 	bool m_debug = false;
 	bool m_preview = false;
@@ -28,7 +65,7 @@ class ClearWave : public Event, public Debugger
 	void OnStart()override;
 	void OnUpdate()override;
 	void OnFinish()override;
-	bool End()override { return m_status == NUM - 1 && m_timer.IsTimeUp(); }
+	bool End()override { return false; }
 	std::shared_ptr<Camera>GetMainCam()override { return m_cam; }
 	std::shared_ptr<Camera>GetSubCam()override;
 
