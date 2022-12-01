@@ -176,11 +176,27 @@ struct EasingParameter
     EASE_CHANGE_TYPE m_changeType = In;
     EASING_TYPE m_easeType = Quad;
 
-    float Calculate(float T, float TotalTime, float Min, float Max)
+    float Calculate(float T, float TotalTime, float Min, float Max)const
     {
         return KuroMath::Ease(m_changeType, m_easeType, T, TotalTime, Min, Max);
     }
-    float Calculate(float Rate, float Min, float Max)
+    Vec2<float> Calculate(float T, float TotalTime, Vec2<float> Min, Vec2<float> Max)const
+    {
+        return KuroMath::Ease(m_changeType, m_easeType, T, TotalTime, Min, Max);
+    }
+    Vec3<float> Calculate(float T, float TotalTime, Vec3<float> Min, Vec3<float> Max)const
+    {
+        return KuroMath::Ease(m_changeType, m_easeType, T, TotalTime, Min, Max);
+    }
+    float Calculate(float Rate, float Min, float Max)const
+    {
+        return KuroMath::Ease(m_changeType, m_easeType, Rate, Min, Max);
+    }
+    Vec2<float>Calculate(float Rate, Vec2<float> Min, Vec2<float> Max)const
+    {
+        return KuroMath::Ease(m_changeType, m_easeType, Rate, Min, Max);
+    }
+    Vec3<float>Calculate(float Rate, Vec3<float> Min, Vec3<float> Max)const
     {
         return KuroMath::Ease(m_changeType, m_easeType, Rate, Min, Max);
     }
