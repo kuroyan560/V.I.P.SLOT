@@ -400,9 +400,6 @@
     <ClCompile Include="src\user\Player\PlayersCounterAttackHitEffect.cpp">
       <Filter>src\user\Player</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\Others\Debugger.cpp">
-      <Filter>src\user\Others</Filter>
-    </ClCompile>
     <ClCompile Include="src\user\Event\ClearWave.cpp">
       <Filter>src\user\Event</Filter>
     </ClCompile>
@@ -411,6 +408,9 @@
     </ClCompile>
     <ClCompile Include="src\user\Others\HUDInterface.cpp">
       <Filter>src\user\Others</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LevelEditor\src\engine\Debugger.cpp">
+      <Filter>src\engine\ユーザー向け</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -762,9 +762,6 @@
     <ClInclude Include="src\user\Player\PlayersCounterAttackHitEffect.h">
       <Filter>src\user\Player</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\Others\Debugger.h">
-      <Filter>src\user\Others</Filter>
-    </ClInclude>
     <ClInclude Include="src\user\Event\ClearWave.h">
       <Filter>src\user\Event</Filter>
     </ClInclude>
@@ -773,6 +770,9 @@
     </ClInclude>
     <ClInclude Include="src\user\Others\HUDInterface.h">
       <Filter>src\user\Others</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LevelEditor\src\engine\Debugger.h">
+      <Filter>src\engine\ユーザー向け</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -109,6 +109,7 @@
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\LevelEditor\src\engine\Debugger.cpp" />
     <ClCompile Include="lib\imgui\imgui.cpp" />
     <ClCompile Include="lib\imgui\imgui_demo.cpp" />
     <ClCompile Include="lib\imgui\imgui_draw.cpp" />
@@ -184,7 +185,6 @@
     <ClCompile Include="src\user\Game\HandShake.cpp" />
     <ClCompile Include="src\user\Others\BasicDraw.cpp" />
     <ClCompile Include="src\user\Others\BasicDrawParameters.cpp" />
-    <ClCompile Include="src\user\Others\Debugger.cpp" />
     <ClCompile Include="src\user\Others\HUDInterface.cpp" />
     <ClCompile Include="src\user\Others\RandBox2D.cpp" />
     <ClCompile Include="src\user\Others\RenderTargetManager.cpp" />
@@ -213,6 +213,7 @@
     <ClCompile Include="src\user\Wave\WaveMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\LevelEditor\src\engine\Debugger.h" />
     <ClInclude Include="lib\dxcompiler\inc\d3d12shader.h" />
     <ClInclude Include="lib\dxcompiler\inc\dxcapi.h" />
     <ClInclude Include="lib\imgui\imconfig.h" />
@@ -306,7 +307,6 @@
     <ClInclude Include="src\user\Game\HandShake.h" />
     <ClInclude Include="src\user\Others\BasicDraw.h" />
     <ClInclude Include="src\user\Others\BasicDrawParameters.h" />
-    <ClInclude Include="src\user\Others\Debugger.h" />
     <ClInclude Include="src\user\Others\HUDInterface.h" />
     <ClInclude Include="src\user\Others\RandBox2D.h" />
     <ClInclude Include="src\user\Others\RenderTargetManager.h" />
