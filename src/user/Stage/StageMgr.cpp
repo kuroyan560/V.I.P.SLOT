@@ -33,15 +33,6 @@ void StageMgr::GenerateTerrian(std::string arg_stageDataPath, std::weak_ptr<Coll
 		m_scaffoldArray.back()->Init(0.0f, 5.2f * (i + 1), ConstParameter::Environment::FIELD_FLOOR_SIZE.x);
 	}
 
-	if (!m_generateTerrian)return;
-
-	using namespace ConstParameter::Environment;
-	using namespace ConstParameter::Stage;
-
-	//ブロック数上限肥えないようにする
-	if (MAX_BLOCK_NUM_AXIS.x < m_blockNum.x)m_blockNum.x = MAX_BLOCK_NUM_AXIS.x;
-	if (MAX_BLOCK_NUM_AXIS.y < m_blockNum.y)m_blockNum.y = MAX_BLOCK_NUM_AXIS.y;
-
 	//地形クリア
 	for (auto& terrianArray : m_terrianBlockArray)
 		for (auto& t : terrianArray)
@@ -52,6 +43,15 @@ void StageMgr::GenerateTerrian(std::string arg_stageDataPath, std::weak_ptr<Coll
 			DisappearBlock(t, arg_collisionMgr);
 		}
 	m_terrianBlockArray.clear();
+
+	if (!m_generateTerrian)return;
+
+	using namespace ConstParameter::Environment;
+	using namespace ConstParameter::Stage;
+
+	//ブロック数上限肥えないようにする
+	if (MAX_BLOCK_NUM_AXIS.x < m_blockNum.x)m_blockNum.x = MAX_BLOCK_NUM_AXIS.x;
+	if (MAX_BLOCK_NUM_AXIS.y < m_blockNum.y)m_blockNum.y = MAX_BLOCK_NUM_AXIS.y;
 
 	//地形構成
 	Vec2<float>scale = { 1.0f,1.0f };
