@@ -17,7 +17,7 @@ void Scaffold::Init(float arg_posX, float arg_posY,float arg_width)
 	Vec3<float>pos = { arg_posX,arg_posY,ConstParameter::Environment::FIELD_FLOOR_POS.z };
 	m_transform.SetPos(pos);
 	m_width = arg_width;
-	m_transform.SetScale({ arg_width,1,1 });
+	m_transform.SetScale({ arg_width,2.0f,1.0f });
 }
 
 #include"BasicDraw.h"
