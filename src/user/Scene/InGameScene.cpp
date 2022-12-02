@@ -120,7 +120,8 @@ void InGameScene::OnInitialize()
 		m_enemyEmitter.get(),
 		m_ligMgr.get(),
 		BasicDraw::Instance(),
-		&m_clearWaveEvent });
+		&m_clearWaveEvent,
+		this });
 
 	//ウェーブクリア時イベント
 	m_clearWaveEvent.Init(m_gameCam, m_player, &m_timeScale);
@@ -138,7 +139,8 @@ void InGameScene::OnUpdate()
 		this->Finalize();
 		this->Initialize();
 	}
-	if (UsersInput::Instance()->KeyOnTrigger(DIK_S))
+	if (UsersInput::Instance()->KeyOnTrigger(DIK_S)
+		|| UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::LB))
 	{
 		m_slotMachine->Booking();
 	}
@@ -236,18 +238,18 @@ void InGameScene::OnDraw()
 	}
 
 	//デバッグ描画
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	if (m_isDrawCollider)
 	{
 		m_collisionMgr->DebugDraw(*m_gameCam->GetMainCam());
 	}
-#endif
+//#endif
 
 	//デプスステンシルクリア
 	rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_STENCIL);
 
-	m_player->Draw2D(m_gameCam->GetMainCam());
-	m_stageMgr->Draw2D(m_gameCam->GetMainCam());
+	m_player->Draw2D(mainCam);
+	m_stageMgr->Draw2D(mainCam);
 	m_waveMgr->Draw2D();
 }
 
