@@ -137,6 +137,13 @@ namespace ConstParameter
 			NUM 
 		};
 
+		//エネミー属性のオブジェクト種別
+		enum struct ENEMY_TYPE
+		{
+			SLIDE_ENEMY,
+			SLIME_BATTERY_ENEMY,
+		};
+
 		//種別ごとのコライダー振る舞い名称
 		extern std::array<std::string, static_cast<int>(TYPE::NUM)>COLLIDER_ATTRIBUTE;
 
@@ -156,6 +163,20 @@ namespace ConstParameter
 		extern int OFFSET_Y_TIME_ON_DAMAGED;
 
 		void ImGuiDebug();
+	}
+
+	namespace Enemy
+	{
+		/*--- スライム固定砲台 ---*/
+		namespace SlimeBattery
+		{
+			//待機時間
+			extern float WAIT_INTERVAL;
+			//ジャンプにかかる時間
+			extern float JUMP_INTERVAL;
+			//ジャンプ力
+			extern float JUMP_POWER;
+		}
 	}
 
 	namespace Stage

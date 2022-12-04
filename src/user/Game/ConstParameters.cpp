@@ -145,6 +145,20 @@ namespace ConstParameter
         int OFFSET_Y_TIME_ON_DAMAGED = 15;
     }
 
+    namespace Enemy
+    {
+        /*--- スライム固定砲台 ---*/
+        namespace SlimeBattery
+        {
+            //待機時間
+            float WAIT_INTERVAL = 60.0f;
+            //ジャンプにかかる時間
+            float JUMP_INTERVAL = 60.0f;
+            //ジャンプ力
+            float JUMP_POWER = 0.5f;
+        }
+    }
+
     namespace Stage
     {
         //縦横の最大ブロック数

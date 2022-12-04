@@ -48,7 +48,7 @@ public:
 	GameObject(const std::shared_ptr<ObjectBreed>& arg_breed);
 
 	//‰Šú‰»
-	void Init();
+	void Init(Vec3<float>arg_initPos);
 	//XV
 	void Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	//•`‰æ

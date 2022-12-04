@@ -8,25 +8,30 @@ void EnemyEmitter::EmitEnemy(std::weak_ptr<ObjectManager>& arg_objMgr, std::weak
 {
 	if (arg_type == SLIDE_MOVE)
 	{
-		float y = KuroFunc::GetRand(ConstParameter::GameObject::POS_Y_MIN, ConstParameter::GameObject::POS_Y_MAX);
+		Vec3<float>initPos;
+		initPos.y = KuroFunc::GetRand(ConstParameter::GameObject::POS_Y_MIN, ConstParameter::GameObject::POS_Y_MAX);
 
 		arg_objMgr.lock()->AppearSlideMoveEnemy(
 			arg_colMgr,
 			0.2f,
-			y);
+			initPos);
 	}
 	else if (arg_type == SLIME_BATTERY)
 	{
-		float appearY = KuroFunc::GetRand(ConstParameter::GameObject::POS_Y_MIN, ConstParameter::GameObject::POS_Y_MAX);
+		Vec3<float>initPos;
+		initPos.y = KuroFunc::GetRand(ConstParameter::GameObject::POS_Y_MIN, ConstParameter::GameObject::POS_Y_MAX);
+		initPos.z = ConstParameter::Environment::FIELD_FLOOR_POS.z;
 		std::vector<float>destArray(KuroFunc::GetRand(3, 10));
 		for (auto& destX : destArray)
 		{
 			destX = KuroFunc::GetRand(-ConstParameter::Environment::FIELD_WIDTH / 2.0f, ConstParameter::Environment::FIELD_WIDTH / 2.0f);
 		}
 
+		initPos.x = ConstParameter::GameObject::POS_X_ABS * (destArray[0] < 0.0f ? -1.0f : 1.0f);
+
 		arg_objMgr.lock()->AppearSlimeBattery(
 			arg_colMgr,
-			appearY,
+			initPos,
 			destArray.data(),
 			destArray.size());
 	}

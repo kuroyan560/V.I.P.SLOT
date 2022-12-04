@@ -20,10 +20,10 @@ GameObject::GameObject(const std::shared_ptr<ObjectBreed>& arg_breed)
 	}
 }
 
-void GameObject::Init()
+void GameObject::Init(Vec3<float>arg_initPos)
 {
 	//‹““®§Œä‰Šú‰»
-	m_controller->OnInit(*this);
+	m_controller->OnInit(*this, arg_initPos);
 
 	//HPƒŠƒZƒbƒg
 	m_hp = m_breed.lock()->m_maxHp;

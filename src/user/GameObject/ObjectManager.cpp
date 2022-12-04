@@ -80,14 +80,12 @@ ObjectManager::ObjectManager(CollisionCallBack* arg_playersNormalAttackCallBack)
 			{ COLLIDER_ATTRIBUTE[objIdx] },
 			colPrimitiveArray);
 
-		std::array<float, OC_SlimeBattery::STATUS::NUM>intervalTimes = { 60,60,60,60 };
-
 		m_breeds[objIdx] = std::make_shared<ObjectBreed>(
 			objIdx,
 			Importer::Instance()->LoadModel("resource/user/model/", "enemy_test.glb"),
 			5,
 			10,
-			std::make_unique<OC_SlimeBattery>(intervalTimes.data(), 0.5f),
+			std::make_unique<OC_SlimeBattery_RouteDefined>(),
 			colliderArray
 			);
 	}
@@ -221,7 +219,7 @@ void ObjectManager::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr
 	m_dropCoinEffect.Draw(arg_lightMgr, arg_cam);
 }
 
-std::weak_ptr<GameObject> ObjectManager::AppearEnemyBullet(std::weak_ptr<CollisionManager> arg_collisionMgr, GameObject* arg_parentObj, Vec3<float> arg_startPos, Vec2<float> arg_moveDirXY, float arg_speed, bool arg_sinMeandeling, float arg_meandelingInterval, Angle arg_meandelingAngle)
+std::weak_ptr<GameObject> ObjectManager::AppearEnemyBullet(std::weak_ptr<CollisionManager> arg_collisionMgr, GameObject* arg_parentObj, Vec3<float> arg_initPos, Vec2<float> arg_moveDirXY, float arg_speed, bool arg_sinMeandeling, float arg_meandelingInterval, Angle arg_meandelingAngle)
 {
 	//敵種別番号取得
 	int typeIdx = static_cast<int>(OBJECT_TYPE::ENEMY_BULLET);
@@ -231,7 +229,6 @@ std::weak_ptr<GameObject> ObjectManager::AppearEnemyBullet(std::weak_ptr<Collisi
 
 	//パラメータ設定
 	((OC_DirectionMove*)newBullet->m_controller.get())->SetParameters(
-		arg_startPos,
 		arg_moveDirXY,
 		arg_speed,
 		arg_sinMeandeling,
@@ -240,13 +237,13 @@ std::weak_ptr<GameObject> ObjectManager::AppearEnemyBullet(std::weak_ptr<Collisi
 
 
 	//初期化
-	newBullet->Init();
+	newBullet->Init(arg_initPos);
 	newBullet->SetParentObj(arg_parentObj);
 
 	return newBullet;
 }
 
-std::weak_ptr<GameObject> ObjectManager::AppearSlideMoveEnemy(std::weak_ptr<CollisionManager> arg_collisionMgr, float arg_moveX, float arg_posY)
+std::weak_ptr<GameObject> ObjectManager::AppearSlideMoveEnemy(std::weak_ptr<CollisionManager> arg_collisionMgr, float arg_moveX, Vec3<float>arg_initPos)
 {
 	//敵種別番号取得
 	int typeIdx = static_cast<int>(OBJECT_TYPE::SLIDE_ENEMY);
@@ -271,7 +268,7 @@ std::weak_ptr<GameObject> ObjectManager::AppearSlideMoveEnemy(std::weak_ptr<Coll
 	}
 
 	//高さランダム
-	initPos.y = arg_posY;
+	initPos.y = arg_initPos.y;
 
 	//フィールドのZに合わせる
 	initPos.z = FIELD_FLOOR_POS.z;
@@ -280,17 +277,16 @@ std::weak_ptr<GameObject> ObjectManager::AppearSlideMoveEnemy(std::weak_ptr<Coll
 
 	//パラメータ設定
 	((OC_DirectionMove*)newEnemy->m_controller.get())->SetParameters(
-		initPos,
 		Vec2<float>(arg_moveX / speed, 0.0f),
 		speed);
 
 	//初期化
-	newEnemy->Init();
+	newEnemy->Init(initPos);
 
 	return newEnemy;
 }
 
-std::weak_ptr<GameObject> ObjectManager::AppearSlimeBattery(std::weak_ptr<CollisionManager> arg_collisionMgr, float arg_appearY, float arg_destinationXArray[], size_t arg_arraySize)
+std::weak_ptr<GameObject> ObjectManager::AppearSlimeBattery(std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float>arg_initPos, float arg_destinationXArray[], size_t arg_arraySize)
 {
 	//敵種別番号取得
 	int typeIdx = static_cast<int>(OBJECT_TYPE::SLIME_BATTERY_ENEMY);
@@ -299,15 +295,15 @@ std::weak_ptr<GameObject> ObjectManager::AppearSlimeBattery(std::weak_ptr<Collis
 	auto newEnemy = OnObjectAppear(typeIdx, arg_collisionMgr);
 
 	//パラメータ設定
-	((OC_SlimeBattery*)newEnemy->m_controller.get())->SetParameters(arg_appearY, arg_destinationXArray, arg_arraySize);
+	((OC_SlimeBattery_RouteDefined*)newEnemy->m_controller.get())->SetRouteX(arg_destinationXArray, arg_arraySize);
 
 	//初期化
-	newEnemy->Init();
+	newEnemy->Init(arg_initPos);
 
 	return newEnemy;
 }
 
-std::weak_ptr<GameObject> ObjectManager::AppearParryBullet(std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float> arg_startPos, GameObject* arg_target)
+std::weak_ptr<GameObject> ObjectManager::AppearParryBullet(std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float> arg_initPos, GameObject* arg_target)
 {
 	//敵種別番号取得
 	int typeIdx = static_cast<int>(OBJECT_TYPE::PARRY_BULLET);
@@ -316,10 +312,15 @@ std::weak_ptr<GameObject> ObjectManager::AppearParryBullet(std::weak_ptr<Collisi
 	auto newBullet = OnObjectAppear(typeIdx, arg_collisionMgr);
 
 	//パラメータ設定
-	((OC_TargetObjectEaseMove*)newBullet->m_controller.get())->SetParameters(arg_startPos, arg_target);
+	((OC_TargetObjectEaseMove*)newBullet->m_controller.get())->SetParameters(arg_target);
 
 	//初期化
-	newBullet->Init();
+	newBullet->Init(arg_initPos);
 
 	return newBullet;
+}
+
+std::weak_ptr<GameObject> ObjectManager::AppearEnemy(ConstParameter::GameObject::ENEMY_TYPE arg_type, std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float> arg_initPos)
+{
+	return std::weak_ptr<GameObject>();
 }
