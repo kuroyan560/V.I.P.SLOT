@@ -18,6 +18,7 @@
 #include"WaveMgr.h"
 #include"Debugger.h"
 #include"Event.h"
+#include"InGameMonitor.h"
 
 void InGameScene::OnImguiItems()
 {
@@ -74,6 +75,9 @@ InGameScene::InGameScene() : Debugger("InGame")
 
 	//ブロックの静的パラメータ設定
 	Block::StaticAwake(blockBrokenSE);
+
+	//参照用のポインタ窓口クラスにゲーム内情報のポインタセット
+	InGameMonitor::Set(m_player.get());
 }
 
 void InGameScene::OnInitialize()
@@ -156,7 +160,7 @@ void InGameScene::OnUpdate()
 	m_player->Update(m_slotMachine, m_timeScale);
 
 	//スロットマシン
-	m_slotMachine->Update(m_player, m_timeScale);
+	m_slotMachine->Update(m_timeScale);
 
 	//ステージマネージャ
 	m_stageMgr->Update(m_timeScale, m_player);
@@ -165,7 +169,7 @@ void InGameScene::OnUpdate()
 	m_enemyEmitter->TestRandEmit(m_timeScale, m_objMgr, m_collisionMgr);
 
 	//オブジェクトマネージャ
-	m_objMgr->Update(m_timeScale, m_collisionMgr, m_player);
+	m_objMgr->Update(m_timeScale, m_collisionMgr);
 
 	//イベント
 	Event::StaticUpdate();

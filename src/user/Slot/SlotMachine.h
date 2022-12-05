@@ -16,7 +16,6 @@ class ModelObject;
 class LightManager;
 class GameCamera;
 class TimeScale;
-class Player;
 class RenderTarget;
 
 class SlotMachine : public Debugger
@@ -80,7 +79,7 @@ public:
 	//‰Šú‰»
 	void Init(	);
 	//XV
-	void Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_timeScale);
+	void Update(const TimeScale& arg_timeScale);
 	//•`‰æ
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 

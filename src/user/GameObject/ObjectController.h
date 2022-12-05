@@ -5,6 +5,7 @@
 #include<array>
 #include"Angle.h"
 #include"KuroMath.h"
+#include"InGameMonitor.h"
 class GameObject;
 class ObjectManager;
 class CollisionManager;
@@ -12,7 +13,7 @@ class TimeScale;
 class LightManager;
 class Camera;
 
-class ObjectController
+class ObjectController : public InGameMonitor
 {
 	friend class GameObject;
 
@@ -208,30 +209,6 @@ public:
 	virtual ~OC_SlimeBattery() {}
 };
 
-//飛び跳ね＆弾を発射（スライム砲台、画面外から登場後飛び跳ね＆ショットで移動）※その場で。X移動しない
-class OC_SlimeBattery_FixedX : public OC_SlimeBattery
-{
-	int m_countMax = 3;
-	int m_count;
-
-	std::unique_ptr<ObjectController>Clone()override
-	{
-		return std::make_unique<OC_SlimeBattery_FixedX>();
-	}
-	void OnInit(GameObject& arg_obj, Vec3<float>arg_initPos)override
-	{
-		OC_SlimeBattery::OnInit(arg_obj, arg_initPos);
-		m_count = m_countMax;
-	}
-	void OnSlimeJump()override {}
-	bool OnDecideNextDetinationX(GameObject& arg_obj, float& arg_decideNextX)override;
-
-public:
-	//飛び跳ね回数
-	void SetJumpCountMax(int arg_countMax) { m_countMax = arg_countMax; }
-};
-
-
 //飛び跳ね＆弾を発射（スライム砲台、画面外から登場後飛び跳ね＆ショットで移動）※ルート指定
 class OC_SlimeBattery_RouteDefined : public OC_SlimeBattery
 {
@@ -244,7 +221,11 @@ class OC_SlimeBattery_RouteDefined : public OC_SlimeBattery
 	{
 		return std::make_unique<OC_SlimeBattery_RouteDefined>();
 	}
-	void OnInit(GameObject& arg_obj, Vec3<float>arg_initPos)override;
+	void OnInit(GameObject& arg_obj, Vec3<float>arg_initPos)override
+	{
+		m_spotXIdx = 0;
+		OC_SlimeBattery::OnInit(arg_obj, arg_initPos);
+	}
 	void OnSlimeJump()override
 	{
 		m_spotXIdx++;
@@ -262,6 +243,7 @@ class OC_SlimeBattery_RouteDefined : public OC_SlimeBattery
 	}
 
 public:
+	OC_SlimeBattery_RouteDefined() {}
 	/// <summary>
 	/// X軸方向ルート指定
 	/// </summary>
@@ -280,5 +262,39 @@ public:
 //飛び跳ね＆弾を発射（スライム砲台、画面外から登場後飛び跳ね＆ショットで移動）※プレイヤーを追う
 class OC_SlimeBattery_ChasePlayer : public OC_SlimeBattery
 {
+	int m_countMax;
+	int m_count;
 
+	std::unique_ptr<ObjectController>Clone()override
+	{
+		return std::make_unique<OC_SlimeBattery_ChasePlayer>();
+	}
+	void OnInit(GameObject& arg_obj, Vec3<float>arg_initPos)override
+	{
+		m_count = 0;
+		OC_SlimeBattery::OnInit(arg_obj, arg_initPos);
+	}
+	void OnSlimeJump()override
+	{
+		m_count++;
+	}
+	bool OnDecideNextDetinationX(GameObject& arg_obj, float& arg_decideNextX)override
+	{
+		bool existNext = m_count < m_countMax;
+		if (existNext)
+		{
+			//プレイヤーに向かう
+			arg_decideNextX = InGameMonitor::GetPlayer()->GetCenterPos().x;
+		}
+		return existNext;
+	}
+public:
+	/// <summary>
+	/// プレイヤーを追ってジャンプする回数のセッタ
+	/// </summary>
+	/// <param name="arg_count">ジャンする回数</param>
+	void SetChaseCount(int arg_count)
+	{
+		m_countMax = arg_count;
+	}
 };

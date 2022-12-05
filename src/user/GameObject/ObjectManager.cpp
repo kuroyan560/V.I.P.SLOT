@@ -28,7 +28,7 @@ std::shared_ptr<GameObject> ObjectManager::OnObjectAppear(int arg_objTypeIdx, st
 	return newEnemy;
 }
 
-void ObjectManager::OnObjectDead(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr, const std::weak_ptr<Player>& arg_player)
+void ObjectManager::OnObjectDead(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	//コライダー登録解除
 	for (auto& col : arg_obj->m_colliders)
@@ -66,9 +66,9 @@ ObjectManager::ObjectManager(CollisionCallBack* arg_playersNormalAttackCallBack)
 			);
 	}
 
-	//飛び跳ね＆弾を発射（スライム砲台、画面外から登場後飛び跳ね＆ショットで移動）
+	//飛び跳ね＆弾を発射（スライム砲台、ルート指定）
 	{
-		int objIdx = static_cast<int>(OBJECT_TYPE::SLIME_BATTERY_ENEMY);
+		int objIdx = static_cast<int>(OBJECT_TYPE::SLIME_BATTERY_ENEMY_ROUTE_DEFINED);
 
 		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
 		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(2.0f, Vec3<float>(0.0f, 0.0f, 0.0f)));
@@ -76,7 +76,7 @@ ObjectManager::ObjectManager(CollisionCallBack* arg_playersNormalAttackCallBack)
 		std::vector<std::unique_ptr<Collider>>colliderArray;
 		colliderArray.emplace_back(std::make_unique<Collider>());
 		colliderArray.back()->Generate(
-			"Slime_Battery_Enemy_0 - Body_Sphere",
+			"Slime_Battery_Enemy_RouteDefined_0 - Body_Sphere",
 			{ COLLIDER_ATTRIBUTE[objIdx] },
 			colPrimitiveArray);
 
@@ -86,6 +86,30 @@ ObjectManager::ObjectManager(CollisionCallBack* arg_playersNormalAttackCallBack)
 			5,
 			10,
 			std::make_unique<OC_SlimeBattery_RouteDefined>(),
+			colliderArray
+			);
+	}
+
+	//飛び跳ね＆弾を発射（スライム砲台、プレイヤー追従）
+	{
+		int objIdx = static_cast<int>(OBJECT_TYPE::SLIME_BATTERY_ENEMY_CHASE_PLAYER);
+
+		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
+		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(2.0f, Vec3<float>(0.0f, 0.0f, 0.0f)));
+
+		std::vector<std::unique_ptr<Collider>>colliderArray;
+		colliderArray.emplace_back(std::make_unique<Collider>());
+		colliderArray.back()->Generate(
+			"Slime_Battery_Enemy_ChasePlayer_0 - Body_Sphere",
+			{ COLLIDER_ATTRIBUTE[objIdx] },
+			colPrimitiveArray);
+
+		m_breeds[objIdx] = std::make_shared<ObjectBreed>(
+			objIdx,
+			Importer::Instance()->LoadModel("resource/user/model/", "enemy_test.glb"),
+			5,
+			10,
+			std::make_unique<OC_SlimeBattery_ChasePlayer>(),
 			colliderArray
 			);
 	}
@@ -159,7 +183,7 @@ void ObjectManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	{
 		for (auto& enemy : m_aliveObjectArray[typeIdx])
 		{
-			OnObjectDead(enemy, arg_collisionMgr, std::weak_ptr<Player>());
+			OnObjectDead(enemy, arg_collisionMgr);
 		}
 
 		//生存エネミー配列を空に
@@ -173,7 +197,7 @@ void ObjectManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 	m_dropCoinEffect.Init();
 }
 
-void ObjectManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player)
+void ObjectManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
 {
 	//更新
 	for (int objTypeIdx = 0; objTypeIdx < static_cast<int>(OBJECT_TYPE::NUM); ++objTypeIdx)
@@ -185,7 +209,7 @@ void ObjectManager::Update(const TimeScale& arg_timeScale, std::weak_ptr<Collisi
 			//死んでいたら
 			if (obj->IsDead())
 			{
-				OnObjectDead(obj, arg_collisionMgr, arg_player);
+				OnObjectDead(obj, arg_collisionMgr);
 				//死亡敵配列に追加
 				m_deadObjectArray[objTypeIdx].push_front(obj);
 			}
@@ -243,6 +267,23 @@ std::weak_ptr<GameObject> ObjectManager::AppearEnemyBullet(std::weak_ptr<Collisi
 	return newBullet;
 }
 
+std::weak_ptr<GameObject> ObjectManager::AppearParryBullet(std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float> arg_initPos, GameObject* arg_target)
+{
+	//敵種別番号取得
+	int typeIdx = static_cast<int>(OBJECT_TYPE::PARRY_BULLET);
+
+	//新規敵ポップ
+	auto newBullet = OnObjectAppear(typeIdx, arg_collisionMgr);
+
+	//パラメータ設定
+	((OC_TargetObjectEaseMove*)newBullet->m_controller.get())->SetParameters(arg_target);
+
+	//初期化
+	newBullet->Init(arg_initPos);
+
+	return newBullet;
+}
+
 std::weak_ptr<GameObject> ObjectManager::AppearSlideMoveEnemy(std::weak_ptr<CollisionManager> arg_collisionMgr, float arg_moveX, Vec3<float>arg_initPos)
 {
 	//敵種別番号取得
@@ -286,10 +327,10 @@ std::weak_ptr<GameObject> ObjectManager::AppearSlideMoveEnemy(std::weak_ptr<Coll
 	return newEnemy;
 }
 
-std::weak_ptr<GameObject> ObjectManager::AppearSlimeBattery(std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float>arg_initPos, float arg_destinationXArray[], size_t arg_arraySize)
+std::weak_ptr<GameObject> ObjectManager::AppearSlimeBatteryRouteDefined(std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float>arg_initPos, float arg_destinationXArray[], size_t arg_arraySize)
 {
 	//敵種別番号取得
-	int typeIdx = static_cast<int>(OBJECT_TYPE::SLIME_BATTERY_ENEMY);
+	int typeIdx = static_cast<int>(OBJECT_TYPE::SLIME_BATTERY_ENEMY_ROUTE_DEFINED);
 
 	//新規敵ポップ
 	auto newEnemy = OnObjectAppear(typeIdx, arg_collisionMgr);
@@ -303,24 +344,19 @@ std::weak_ptr<GameObject> ObjectManager::AppearSlimeBattery(std::weak_ptr<Collis
 	return newEnemy;
 }
 
-std::weak_ptr<GameObject> ObjectManager::AppearParryBullet(std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float> arg_initPos, GameObject* arg_target)
+std::weak_ptr<GameObject> ObjectManager::AppearSlimeBatteryChasePlayer(std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float> arg_initPos, int arg_chaseCount)
 {
 	//敵種別番号取得
-	int typeIdx = static_cast<int>(OBJECT_TYPE::PARRY_BULLET);
+	int typeIdx = static_cast<int>(OBJECT_TYPE::SLIME_BATTERY_ENEMY_CHASE_PLAYER);
 
 	//新規敵ポップ
-	auto newBullet = OnObjectAppear(typeIdx, arg_collisionMgr);
+	auto newEnemy = OnObjectAppear(typeIdx, arg_collisionMgr);
 
 	//パラメータ設定
-	((OC_TargetObjectEaseMove*)newBullet->m_controller.get())->SetParameters(arg_target);
+	((OC_SlimeBattery_ChasePlayer*)newEnemy->m_controller.get())->SetChaseCount(arg_chaseCount);
 
 	//初期化
-	newBullet->Init(arg_initPos);
+	newEnemy->Init(arg_initPos);
 
-	return newBullet;
-}
-
-std::weak_ptr<GameObject> ObjectManager::AppearEnemy(ConstParameter::GameObject::ENEMY_TYPE arg_type, std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float> arg_initPos)
-{
-	return std::weak_ptr<GameObject>();
+	return newEnemy;
 }

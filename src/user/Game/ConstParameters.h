@@ -128,27 +128,21 @@ namespace ConstParameter
 	namespace GameObject
 	{
 		//種別
-		enum struct TYPE
+		enum struct OBJ_TYPE
 		{
 			SLIDE_ENEMY,
-			SLIME_BATTERY_ENEMY, 
+			SLIME_BATTERY_ENEMY_ROUTE_DEFINED, 
+			SLIME_BATTERY_ENEMY_CHASE_PLAYER, 
 			ENEMY_BULLET,
 			PARRY_BULLET,
 			NUM 
 		};
 
-		//エネミー属性のオブジェクト種別
-		enum struct ENEMY_TYPE
-		{
-			SLIDE_ENEMY,
-			SLIME_BATTERY_ENEMY,
-		};
-
 		//種別ごとのコライダー振る舞い名称
-		extern std::array<std::string, static_cast<int>(TYPE::NUM)>COLLIDER_ATTRIBUTE;
+		extern std::array<std::string, static_cast<int>(OBJ_TYPE::NUM)>COLLIDER_ATTRIBUTE;
 
 		//種別ごとの最大数
-		extern std::array<int, static_cast<int>(TYPE::NUM)>INSTANCE_NUM_MAX;
+		extern std::array<int, static_cast<int>(OBJ_TYPE::NUM)>INSTANCE_NUM_MAX;
 
 		//敵がいる空間のX軸座標絶対値
 		extern float POS_X_ABS;
@@ -167,6 +161,26 @@ namespace ConstParameter
 
 	namespace Enemy
 	{
+		/*--- エネミー属性のオブジェクト種別 ---*/
+		//これらの敵の配置・数などでレベルデザイン
+		enum struct ENEMY_TYPE
+		{
+			SLIDE_ENEMY_SLOW,
+			SLIDE_ENEMY_FAST,
+			SLIME_BATTERY_ENEMY_NOMOVE,
+			SLIME_BATTERY_ENEMY_CHASE_PLAYER,
+			NUM
+		};
+
+		/*--- 横移動 ---*/
+		namespace Slide
+		{
+			//遅い敵の移動スピード
+			extern float SLOW_MOVE_SPEED;
+			//速い敵の移動スピード
+			extern float FAST_MOVE_SPEED;
+		}
+
 		/*--- スライム固定砲台 ---*/
 		namespace SlimeBattery
 		{

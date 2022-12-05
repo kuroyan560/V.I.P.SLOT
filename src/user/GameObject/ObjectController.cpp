@@ -232,20 +232,3 @@ void OC_SlimeBattery::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeSca
 
 	}
 }
-
-void OC_SlimeBattery_RouteDefined::OnInit(GameObject& arg_obj, Vec3<float> arg_initPos)
-{
-	//飛び跳ね位置インデックス初期化
-	m_spotXIdx = 0;
-	OC_SlimeBattery::OnInit(arg_obj, arg_initPos);
-}
-
-bool OC_SlimeBattery_FixedX::OnDecideNextDetinationX(GameObject& arg_obj, float& arg_decideNextX)
-{
-	//ジャンプ回数減少
-	m_count--;
-	//その場で固定
-	arg_decideNextX = arg_obj.m_transform.GetPos().x;
-	//ジャンプ回数が残っていたか
-	return 0 < (m_count + 1);
-}

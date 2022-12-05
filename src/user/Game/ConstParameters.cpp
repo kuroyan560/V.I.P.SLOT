@@ -121,15 +121,15 @@ namespace ConstParameter
     namespace GameObject
     {
         //種別ごとのコライダー振る舞い名称
-        std::array<std::string, static_cast<int>(TYPE::NUM)>COLLIDER_ATTRIBUTE =
+        std::array<std::string, static_cast<int>(OBJ_TYPE::NUM)>COLLIDER_ATTRIBUTE =
         {
-            "Enemy","Enemy","Enemy_Attack","Player_Attack"
+            "Enemy","Enemy","Enemy","Enemy_Attack","Player_Attack",
         };
 
         //種別ごとの最大数
-        std::array<int, static_cast<int>(TYPE::NUM)>INSTANCE_NUM_MAX =
+        std::array<int, static_cast<int>(OBJ_TYPE::NUM)>INSTANCE_NUM_MAX =
         {
-            30,30,100,100
+            30,30,30,50,50
         };
 
         //敵がいる空間のX軸座標絶対値
@@ -147,6 +147,15 @@ namespace ConstParameter
 
     namespace Enemy
     {
+        /*--- 横移動 ---*/
+        namespace Slide
+        {
+            //遅い敵の移動スピード
+            float SLOW_MOVE_SPEED = 0.2f;
+            //速い敵の移動スピード
+            float FAST_MOVE_SPEED = 0.4f;
+        }
+
         /*--- スライム固定砲台 ---*/
         namespace SlimeBattery
         {

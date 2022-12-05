@@ -19,7 +19,7 @@ class CollisionCallBack;
 //エネミーの定義、管理を行う
 class ObjectManager
 {
-	using OBJECT_TYPE = ConstParameter::GameObject::TYPE;
+	using OBJECT_TYPE = ConstParameter::GameObject::OBJ_TYPE;
 
 	//血統
 	std::array<std::shared_ptr<ObjectBreed>, static_cast<int>(OBJECT_TYPE::NUM)>m_breeds;
@@ -40,11 +40,11 @@ class ObjectManager
 	//敵の登場時に呼び出す
 	std::shared_ptr<GameObject> OnObjectAppear(int arg_objTypeIdx, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	//敵の死亡時に呼び出す
-	void OnObjectDead(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr, const std::weak_ptr<Player>&arg_player);
+	void OnObjectDead(std::shared_ptr<GameObject>& arg_obj, std::weak_ptr<CollisionManager>arg_collisionMgr);
 public:
 	ObjectManager(CollisionCallBack* arg_playersNormalAttackCallBack);
 	void Init(std::weak_ptr<CollisionManager>arg_collisionMgr);
-	void Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr, std::weak_ptr<Player>arg_player);
+	void Update(const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 
 	/// <summary>
@@ -70,6 +70,15 @@ public:
 		Angle arg_meandelingAngle = Angle(30));
 
 	/// <summary>
+/// パリーで返す弾
+/// </summary>
+/// <param name="arg_collisionMgr">コリジョンマネージャ</param>
+/// <param name="arg_initPos">初期位置</param>
+/// <param name="arg_target">ターゲットとなるオブジェクト</param>
+/// <returns>生成したオブジェクトのポインタ</returns>
+	std::weak_ptr<GameObject>AppearParryBullet(std::weak_ptr<CollisionManager>arg_collisionMgr, Vec3<float>arg_initPos, GameObject* arg_target);
+
+	/// <summary>
 	/// 横移動敵
 	/// </summary>
 	/// <param name="arg_collisionMgr">コリジョンマネージャ</param>
@@ -79,30 +88,21 @@ public:
 	std::weak_ptr<GameObject>AppearSlideMoveEnemy(std::weak_ptr<CollisionManager>arg_collisionMgr, float arg_moveX, Vec3<float>arg_initPos);
 
 	/// <summary>
-	/// スライム砲台
+	/// スライム砲台（ルート指定）
 	/// </summary>
 	/// <param name="arg_collisionMgr">コリジョンマネージャ</param>
 	/// <param name="arg_initPos">初期位置</param>
 	/// <param name="arg_destinationXArray">目標地点X座標配列</param>
 	/// <param name="arg_arraySize">配列の要素数</param>
 	/// <returns>生成したオブジェクトのポインタ</returns>
-	std::weak_ptr<GameObject> AppearSlimeBattery(std::weak_ptr<CollisionManager>arg_collisionMgr, Vec3<float>arg_initPos, float arg_destinationXArray[], size_t arg_arraySize);
+	std::weak_ptr<GameObject> AppearSlimeBatteryRouteDefined(std::weak_ptr<CollisionManager>arg_collisionMgr, Vec3<float>arg_initPos, float arg_destinationXArray[], size_t arg_arraySize);
 
 	/// <summary>
-	/// パリーで返す弾
+	/// スライム砲台（プレイヤー追従）
 	/// </summary>
 	/// <param name="arg_collisionMgr">コリジョンマネージャ</param>
 	/// <param name="arg_initPos">初期位置</param>
-	/// <param name="arg_target">ターゲットとなるオブジェクト</param>
+	/// <param name="arg_chaseCount">プレイヤーを追いかけて飛び跳ねる回数</param>
 	/// <returns>生成したオブジェクトのポインタ</returns>
-	std::weak_ptr<GameObject>AppearParryBullet(std::weak_ptr<CollisionManager>arg_collisionMgr, Vec3<float>arg_initPos, GameObject* arg_target);
-
-	/// <summary>
-	/// 敵オブジェクト出現
-	/// </summary>
-	/// <param name="arg_type">敵の種別</param>
-	/// <param name="arg_collisionMgr">コリジョンマネージャ</param>
-	/// <param name="arg_initPos">初期位置</param>
-	/// <returns>生成したオブジェクトのポインタ</returns>
-	std::weak_ptr<GameObject>AppearEnemy(ConstParameter::GameObject::ENEMY_TYPE arg_type, std::weak_ptr<CollisionManager>arg_collisionMgr, Vec3<float>arg_initPos);
+	std::weak_ptr<GameObject> AppearSlimeBatteryChasePlayer(std::weak_ptr<CollisionManager>arg_collisionMgr, Vec3<float>arg_initPos, int arg_chaseCount);
 };

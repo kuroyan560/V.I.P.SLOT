@@ -182,7 +182,7 @@ void SlotMachine::Init()
 	m_autoOperateTimeScale = 1.0f;
 }
 
-void SlotMachine::Update(std::weak_ptr<Player>arg_player, const TimeScale& arg_timeScale)
+void SlotMachine::Update(const TimeScale& arg_timeScale)
 {
 	using namespace ConstParameter::Slot;
 
