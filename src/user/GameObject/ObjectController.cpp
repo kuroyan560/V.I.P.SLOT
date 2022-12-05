@@ -144,6 +144,9 @@ void OC_SlimeBattery::OnInit(GameObject& arg_obj, Vec3<float>arg_initPos)
 	float nextX = 0.0f;
 	if (!OnDecideNextDetinationX(arg_obj, nextX))assert(0);
 	m_destinationX = nextX;
+
+	//退場フラグリセット
+	m_isLeave = false;
 }
 
 void OC_SlimeBattery::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)
