@@ -4,7 +4,7 @@
 #include"ConstParameters.h"
 #include"TimeScale.h"
 
-void EnemyEmitter::EmitEnemy(std::weak_ptr<ObjectManager>& arg_objMgr, std::weak_ptr<CollisionManager>& arg_colMgr, TYPE arg_type)
+void EnemyEmitter::RandEmitEnemy(TYPE arg_type)
 {
 	Vec3<float>initPos;
 	initPos.z = ConstParameter::Environment::FIELD_FLOOR_POS.z;
@@ -12,35 +12,21 @@ void EnemyEmitter::EmitEnemy(std::weak_ptr<ObjectManager>& arg_objMgr, std::weak
 	if (arg_type == TYPE::SLIDE_ENEMY_SLOW || arg_type == TYPE::SLIDE_ENEMY_FAST)
 	{
 		initPos.y = KuroFunc::GetRand(ConstParameter::GameObject::POS_Y_MIN, ConstParameter::GameObject::POS_Y_MAX);
-
-		arg_objMgr.lock()->AppearSlideMoveEnemy(
-			arg_colMgr,
-			m_customParams[arg_type]["speed"],
-			initPos);
 	}
 	else if (arg_type == TYPE::SLIME_BATTERY_ENEMY_NOMOVE)
 	{
 		initPos.x = KuroFunc::GetRand(-ConstParameter::Environment::FIELD_WIDTH / 2.0f, ConstParameter::Environment::FIELD_WIDTH / 2.0f);
 		initPos.y = KuroFunc::GetRand(ConstParameter::GameObject::POS_Y_MIN, ConstParameter::GameObject::POS_Y_MAX);
-		std::vector<float>destArray(static_cast<int>(m_customParams[arg_type]["count"]), initPos.x);
-
-		arg_objMgr.lock()->AppearSlimeBatteryRouteDefined(
-			arg_colMgr,
-			initPos,
-			destArray.data(),
-			destArray.size());
 	}
 	else if (arg_type == TYPE::SLIME_BATTERY_ENEMY_CHASE_PLAYER)
 	{
 		initPos.x = ConstParameter::GameObject::POS_X_ABS * static_cast<float>(KuroFunc::GetRandPlusMinus());
 		initPos.y = KuroFunc::GetRand(ConstParameter::GameObject::POS_Y_MIN, ConstParameter::GameObject::POS_Y_MAX);
-		int count = static_cast<int>(m_customParams[arg_type]["count"]);
-
-		arg_objMgr.lock()->AppearSlimeBatteryChasePlayer(arg_colMgr, initPos, count);
 	}
+	EmitEnemy(arg_type, initPos);
 }
 
-void EnemyEmitter::EmitEnemys(std::weak_ptr<ObjectManager>& arg_objMgr, std::weak_ptr<CollisionManager>& arg_colMgr)
+void EnemyEmitter::RandEmitEnemys()
 {
 	for (int num = 0; num < m_appearNum; ++num)
 	{
@@ -51,7 +37,7 @@ void EnemyEmitter::EmitEnemys(std::weak_ptr<ObjectManager>& arg_objMgr, std::wea
 			appearRate += m_appearRate[typeIdx];
 			if (par < appearRate)
 			{
-				EmitEnemy(arg_objMgr,arg_colMgr, (TYPE)typeIdx);
+				RandEmitEnemy((TYPE)typeIdx);
 				break;
 			}
 		}
@@ -139,17 +125,45 @@ EnemyEmitter::EnemyEmitter() : Debugger("EnemyEmitter", ImGuiWindowFlags_MenuBar
 	for (auto& appearRate : m_appearRate)appearRate = rate;
 }
 
-void EnemyEmitter::Init(std::weak_ptr<ObjectManager> arg_objMgr, std::weak_ptr<CollisionManager> arg_colMgr)
+void EnemyEmitter::Init()
 {
-	EmitEnemys(arg_objMgr, arg_colMgr);
+	RandEmitEnemys();
 	m_timer.Reset(m_appearSpan);
 }
 
-void EnemyEmitter::TestRandEmit(const TimeScale& arg_timeScale, std::weak_ptr<ObjectManager> arg_objMgr, std::weak_ptr<CollisionManager> arg_colMgr)
+void EnemyEmitter::EmitEnemy(TYPE arg_type, Vec3<float>arg_initPos)
+{
+	if (arg_type == TYPE::SLIDE_ENEMY_SLOW || arg_type == TYPE::SLIDE_ENEMY_FAST)
+	{
+		m_referObjMgr.lock()->AppearSlideMoveEnemy(
+			m_referCollisionMgr,
+			m_customParams[arg_type]["speed"],
+			arg_initPos);
+	}
+	else if (arg_type == TYPE::SLIME_BATTERY_ENEMY_NOMOVE)
+	{
+		std::vector<float>destArray(static_cast<int>(m_customParams[arg_type]["count"]), arg_initPos.x);
+
+		m_referObjMgr.lock()->AppearSlimeBatteryRouteDefined(
+			m_referCollisionMgr,
+			arg_initPos,
+			destArray.data(),
+			destArray.size());
+	}
+	else if (arg_type == TYPE::SLIME_BATTERY_ENEMY_CHASE_PLAYER)
+	{
+		m_referObjMgr.lock()->AppearSlimeBatteryChasePlayer(
+			m_referCollisionMgr, 
+			arg_initPos, 
+			static_cast<int>(m_customParams[arg_type]["count"]));
+	}
+}
+
+void EnemyEmitter::TestRandEmit(const TimeScale& arg_timeScale)
 {
 	if (m_timer.UpdateTimer(arg_timeScale.GetTimeScale()))
 	{
-		EmitEnemys(arg_objMgr, arg_colMgr);
+		RandEmitEnemys();
 		m_timer.Reset(m_appearSpan);
 	}
 }

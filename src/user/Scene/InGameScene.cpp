@@ -76,6 +76,9 @@ InGameScene::InGameScene() : Debugger("InGame")
 	//ブロックの静的パラメータ設定
 	Block::StaticAwake(blockBrokenSE);
 
+	//エネミーエミッターにオブジェクトマネージャとコリジョンマネージャを渡す
+	m_enemyEmitter->Awake(m_objMgr, m_collisionMgr);
+
 	//参照用のポインタ窓口クラスにゲーム内情報のポインタセット
 	InGameMonitor::Set(m_player.get());
 }
@@ -100,7 +103,7 @@ void InGameScene::OnInitialize()
 	m_objMgr->Init(m_collisionMgr);
 
 	//エネミーエミッター生成
-	m_enemyEmitter->Init(m_objMgr, m_collisionMgr);
+	m_enemyEmitter->Init();
 
 	//照明設定
 	m_dirLig.SetDir(Vec3<float>(0.0f, -0.09f, 0.03f));
@@ -166,7 +169,7 @@ void InGameScene::OnUpdate()
 	m_stageMgr->Update(m_timeScale, m_player);
 
 	//エネミーエミッター生成
-	m_enemyEmitter->TestRandEmit(m_timeScale, m_objMgr, m_collisionMgr);
+	m_enemyEmitter->TestRandEmit(m_timeScale);
 
 	//オブジェクトマネージャ
 	m_objMgr->Update(m_timeScale, m_collisionMgr);

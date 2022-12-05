@@ -12,6 +12,9 @@ class CollisionManager;
 class TimeScale;
 class EnemyEmitter : public Debugger
 {
+	std::weak_ptr<ObjectManager>m_referObjMgr;
+	std::weak_ptr<CollisionManager>m_referCollisionMgr;
+
 	using TYPE = ConstParameter::Enemy::ENEMY_TYPE;
 	//出現率（％）
 	std::array<int, static_cast<int>(TYPE::NUM)>m_appearRate;
@@ -28,15 +31,23 @@ class EnemyEmitter : public Debugger
 	/*--- 各種敵のパラメータ ---*/
 	std::map<TYPE, std::map<std::string, float>>m_customParams;
 
-	void EmitEnemy(std::weak_ptr<ObjectManager>& arg_objMgr, std::weak_ptr<CollisionManager>& arg_colMgr, TYPE arg_type);
-	void EmitEnemys(std::weak_ptr<ObjectManager>& arg_objMgr, std::weak_ptr<CollisionManager>& arg_colMgr);
+	void RandEmitEnemy(TYPE arg_type);
+	void RandEmitEnemys();
 	void UpdateAppearRate(int arg_fixRateTypeIdx);
 	void OnImguiItems()override;
 
 public:
 	EnemyEmitter();
-	void Init(std::weak_ptr<ObjectManager> arg_objMgr, std::weak_ptr<CollisionManager> arg_colMgr);
+	void Awake(std::weak_ptr<ObjectManager> arg_objMgr, std::weak_ptr<CollisionManager> arg_colMgr)
+	{
+		m_referObjMgr = arg_objMgr;
+		m_referCollisionMgr = arg_colMgr;
+	}
+	void Init();
+
+	//敵の出現
+	void EmitEnemy(TYPE arg_type, Vec3<float>arg_initPos);
 
 	//テスト用に適当に敵を出現させる
-	void TestRandEmit(const TimeScale& arg_timeScale, std::weak_ptr<ObjectManager>arg_objMgr, std::weak_ptr<CollisionManager>arg_colMgr);
+	void TestRandEmit(const TimeScale& arg_timeScale);
 };
