@@ -409,7 +409,10 @@
     <ClCompile Include="src\user\Others\HUDInterface.cpp">
       <Filter>src\user\Others</Filter>
     </ClCompile>
-    <ClCompile Include="..\LevelEditor\src\engine\Debugger.cpp">
+    <ClCompile Include="src\user\Game\InGameMonitor.cpp">
+      <Filter>src\user\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\Debugger.cpp">
       <Filter>src\engine\ユーザー向け</Filter>
     </ClCompile>
   </ItemGroup>
@@ -771,7 +774,10 @@
     <ClInclude Include="src\user\Others\HUDInterface.h">
       <Filter>src\user\Others</Filter>
     </ClInclude>
-    <ClInclude Include="..\LevelEditor\src\engine\Debugger.h">
+    <ClInclude Include="src\user\Game\InGameMonitor.h">
+      <Filter>src\user\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\Debugger.h">
       <Filter>src\engine\ユーザー向け</Filter>
     </ClInclude>
   </ItemGroup>

@@ -109,7 +109,6 @@
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\LevelEditor\src\engine\Debugger.cpp" />
     <ClCompile Include="lib\imgui\imgui.cpp" />
     <ClCompile Include="lib\imgui\imgui_demo.cpp" />
     <ClCompile Include="lib\imgui\imgui_draw.cpp" />
@@ -136,6 +135,7 @@
     <ClCompile Include="src\engine\D3D12App.cpp" />
     <ClCompile Include="src\engine\D3D12Data.cpp" />
     <ClCompile Include="src\engine\DebugCamera.cpp" />
+    <ClCompile Include="src\engine\Debugger.cpp" />
     <ClCompile Include="src\engine\DescriptorHeap.cpp" />
     <ClCompile Include="src\engine\DOF.cpp" />
     <ClCompile Include="src\engine\DrawFuncBillBoard.cpp" />
@@ -183,6 +183,7 @@
     <ClCompile Include="src\user\Game\GameCamera.cpp" />
     <ClCompile Include="src\user\Game\GameManager.cpp" />
     <ClCompile Include="src\user\Game\HandShake.cpp" />
+    <ClCompile Include="src\user\Game\InGameMonitor.cpp" />
     <ClCompile Include="src\user\Others\BasicDraw.cpp" />
     <ClCompile Include="src\user\Others\BasicDrawParameters.cpp" />
     <ClCompile Include="src\user\Others\HUDInterface.cpp" />
@@ -213,7 +214,6 @@
     <ClCompile Include="src\user\Wave\WaveMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\LevelEditor\src\engine\Debugger.h" />
     <ClInclude Include="lib\dxcompiler\inc\d3d12shader.h" />
     <ClInclude Include="lib\dxcompiler\inc\dxcapi.h" />
     <ClInclude Include="lib\imgui\imconfig.h" />
@@ -252,6 +252,7 @@
     <ClInclude Include="src\engine\D3D12App.h" />
     <ClInclude Include="src\engine\D3D12Data.h" />
     <ClInclude Include="src\engine\DebugCamera.h" />
+    <ClInclude Include="src\engine\Debugger.h" />
     <ClInclude Include="src\engine\DescriptorHeap.h" />
     <ClInclude Include="src\engine\DOF.h" />
     <ClInclude Include="src\engine\DrawFuncBillBoard.h" />
@@ -305,6 +306,7 @@
     <ClInclude Include="src\user\Game\GameCamera.h" />
     <ClInclude Include="src\user\Game\GameManager.h" />
     <ClInclude Include="src\user\Game\HandShake.h" />
+    <ClInclude Include="src\user\Game\InGameMonitor.h" />
     <ClInclude Include="src\user\Others\BasicDraw.h" />
     <ClInclude Include="src\user\Others\BasicDrawParameters.h" />
     <ClInclude Include="src\user\Others\HUDInterface.h" />

@@ -15,7 +15,7 @@ void Debugger::Draw()
 	for (auto& debugger : s_debuggerArray)
 	{
 		if (!debugger->m_active)continue;
-		ImGui::Begin(debugger->m_title.c_str());
+		ImGui::Begin(debugger->m_title.c_str(), nullptr, debugger->m_imguiWinFlags);
 		debugger->OnImguiItems();
 		ImGui::End();
 	}
