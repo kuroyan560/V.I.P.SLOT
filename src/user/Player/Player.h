@@ -131,8 +131,12 @@ public:
 	//プレイヤーのモデル中央に合わせた座標ゲッタ
 	Vec3<float>GetCenterPos()const;
 
-	//ダメージを受ける
-	void Damage(int arg_amount) { m_playerHp.Change(-arg_amount); }
+	/// <summary>
+	/// 被ダメージ
+	/// </summary>
+	/// <param name="arg_amount">ダメージ量</param>
+	/// <returns>ライフ(ハート)を消費したか</returns>
+	bool Damage(int arg_amount) { return m_playerHp.Change(-arg_amount); }
 	//回復
 	void Heal(int arg_amount) { m_playerHp.Change(arg_amount); }
 

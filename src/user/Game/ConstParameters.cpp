@@ -68,7 +68,9 @@ namespace ConstParameter
 
         /*--- 衝突判定 ---*/
         //ダメージを受けたときのヒットストップ時間
-        int HIT_STOP_TIME_ON_DAMAGED = 30;
+        int HIT_STOP_TIME_ON_DAMAGED = 10;
+        //ダメージを受けてライフ(ハート)消費したときのヒットストップ時間
+        int HIT_STOP_TIME_ON_DAMAGED_CONSUME_LIFE = 30;
         //ダメージを受けたときの落下速度
         float FALL_SPEED_ON_DAMAGED = -1.0f;
         //ダメージを受けた後の無敵時間

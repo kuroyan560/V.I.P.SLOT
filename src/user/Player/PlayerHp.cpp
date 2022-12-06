@@ -149,18 +149,11 @@ void PlayerHp::Update(const float& arg_timeScale)
 
 	if (m_damageEffect.m_active)
 	{
-		if (m_damageEffect.m_consumeLife)
-		{
-
-		}
-		else
-		{
-			float sizeRate = KuroMath::Ease(In, Sine,
-				m_damageEffect.m_drawChangeTimer.GetTimeRate(),
-				m_damageEffect.m_startHpRate,
-				m_damageEffect.m_endHpRate);
-			m_hpBarDamage.m_sprite->m_mesh.SetSize(CalculateHpBarSize(sizeRate));
-		}
+		float sizeRate = KuroMath::Ease(In, Sine,
+			m_damageEffect.m_drawChangeTimer.GetTimeRate(),
+			m_damageEffect.m_startHpRate,
+			m_damageEffect.m_endHpRate);
+		m_hpBarDamage.m_sprite->m_mesh.SetSize(CalculateHpBarSize(sizeRate));
 
 		for (auto& content : m_contents)
 		{
@@ -219,7 +212,7 @@ void PlayerHp::ImguiDebug()
 	ImGui::End();
 }
 
-void PlayerHp::Change(int arg_amount)
+bool PlayerHp::Change(int arg_amount)
 {
 	//変化前のHPレート
 	float beforeHpRate = static_cast<float>(m_hp) / static_cast<float>(ConstParameter::Player::MAX_HP);
@@ -247,7 +240,17 @@ void PlayerHp::Change(int arg_amount)
 	//ダメージ
 	if (arg_amount < 0)
 	{
-		//ダメージ演出
-		m_damageEffect.Start(beforeHpRate, afterHpRate, consumeLife);
+		//ライフ(ハート)消費
+		if (consumeLife)
+		{
+
+		}
+		else
+		{
+			//ダメージ演出
+			m_damageEffect.Start(beforeHpRate, afterHpRate);
+		}
 	}
+
+	return consumeLife;
 }

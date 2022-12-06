@@ -91,13 +91,13 @@ void DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter,
 	if (m_parent->IsAttack())return;
 
 	//HP減少
-	m_parent->Damage(1);
+	bool consumeLife = m_parent->Damage(1);
 
 	//無敵時間設定
 	m_invincibleTimer.Reset(INVINCIBLE_TIME_ON_DAMAGED);
 
 	//ヒットストップ
-	m_hitStopTimer.Reset(HIT_STOP_TIME_ON_DAMAGED);
+	m_hitStopTimer.Reset(consumeLife ? HIT_STOP_TIME_ON_DAMAGED_CONSUME_LIFE : HIT_STOP_TIME_ON_DAMAGED);
 
 	//ヒットストップSE再生
 	AudioApp::Instance()->PlayWave(m_hitStopSE);

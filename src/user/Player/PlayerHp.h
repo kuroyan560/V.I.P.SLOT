@@ -50,7 +50,7 @@ class PlayerHp : public HUDInterface
 	std::vector<DrawContents*>m_contents;
 
 	/*--- ダメージ演出 ---*/
-	struct DamageEffect
+	struct
 	{
 		bool m_active = false;
 		//待機時間
@@ -58,18 +58,17 @@ class PlayerHp : public HUDInterface
 		//描画での変化タイマー
 		Timer m_drawChangeTimer;
 		//揺れ
-		ImpactShake m_shake;
+		ImpactShake m_shake = ImpactShake(Vec3<float>(1.0f, 1.0f, 0.0f));
 
 		float m_startHpRate = 0.0f;
 		float m_endHpRate = 0.0f;
-		bool m_consumeLife;
 
 		void Init()
 		{
 			m_shake.Init();
 			m_active = false;
 		}
-		void Start(float arg_startHpRate, float arg_endHpRate, bool arg_consumeLife)
+		void Start(float arg_startHpRate, float arg_endHpRate)
 		{
 			m_active = true;
 			m_drawChangeTimer.Reset(30.0f);
@@ -77,7 +76,6 @@ class PlayerHp : public HUDInterface
 			m_shake.Shake(30.0f, 3.0f, 0.0f, 32.0f);
 			m_startHpRate = arg_startHpRate;
 			m_endHpRate = arg_endHpRate;
-			m_consumeLife = arg_consumeLife;
 		}
 		void Update(float arg_timeScale)
 		{
@@ -95,8 +93,6 @@ class PlayerHp : public HUDInterface
 			//※タイムスケールの影響を受けない
 			m_shake.Update(1.0f);
 		}
-
-		DamageEffect() :m_shake({ 1.0f,1.0f,0.0f }) {}
 	}m_damageEffect;
 
 	//HPバーサイズ取得
@@ -121,8 +117,12 @@ public:
 	//imguiデバッグ
 	void ImguiDebug();
 
-	//HP量変動
-	void Change(int arg_amount);
+	/// <summary>
+	/// HP量変動
+	/// </summary>
+	/// <param name="arg_amount">変動量</param>
+	/// <returns>ライフ(ハート)を消費したか</returns>
+	bool Change(int arg_amount);
 
 	//ライフゲッタ
 	const int& GetLife()const { return m_life; }
