@@ -26,8 +26,6 @@ class PlayerHp : public HUDInterface
 	DrawContents m_hpStr;
 	//HPバー
 	DrawContents m_hpBar;
-	//HPバー（ダメージ）
-	DrawContents m_hpBarDamage;
 	//HPバーフレーム
 	DrawContents m_hpBarFrame;
 
@@ -50,9 +48,10 @@ class PlayerHp : public HUDInterface
 	std::vector<DrawContents*>m_contents;
 
 	/*--- ダメージ演出 ---*/
-	struct
+	struct DamageEffect
 	{
-		bool m_active = false;
+		//HPバー（ダメージ）
+		DrawContents m_hpBarDamage;
 		//待機時間
 		Timer m_waitTimer;
 		//描画での変化タイマー
@@ -66,11 +65,11 @@ class PlayerHp : public HUDInterface
 		void Init()
 		{
 			m_shake.Init();
-			m_active = false;
+			m_hpBarDamage.m_active = false;
 		}
 		void Start(float arg_startHpRate, float arg_endHpRate)
 		{
-			m_active = true;
+			m_hpBarDamage.m_active = true;
 			m_drawChangeTimer.Reset(30.0f);
 			m_waitTimer.Reset(45.0f);
 			m_shake.Shake(30.0f, 3.0f, 0.0f, 32.0f);
@@ -81,7 +80,7 @@ class PlayerHp : public HUDInterface
 		{
 			if (m_drawChangeTimer.IsTimeUp())
 			{
-				m_active = false;
+				m_hpBarDamage.m_active = false;
 				return;
 			}
 
@@ -93,7 +92,49 @@ class PlayerHp : public HUDInterface
 			//※タイムスケールの影響を受けない
 			m_shake.Update(1.0f);
 		}
+		void Interruput() { Init(); }
 	}m_damageEffect;
+
+	/*--- HP回復演出 ---*/
+	struct HealEffect
+	{
+		//HPバー（回復）
+		DrawContents m_hpBarHeal;
+		//待機時間
+		Timer m_waitTimer;
+		//描画での変化タイマー
+		Timer m_drawChangeTimer;
+
+		float m_startHpRate = 0.0f;
+		float m_endHpRate = 0.0f;
+
+		void Init()
+		{
+			m_hpBarHeal.m_active = false;
+		}
+		void Start(float arg_startHpRate, float arg_endHpRate)
+		{
+			m_hpBarHeal.m_active = true;
+			m_drawChangeTimer.Reset(30.0f);
+			m_waitTimer.Reset(45.0f);
+			m_startHpRate = arg_startHpRate;
+			m_endHpRate = arg_endHpRate;
+		}
+		void Update(float arg_timeScale)
+		{
+			if (m_drawChangeTimer.IsTimeUp())
+			{
+				m_hpBarHeal.m_active = false;
+				return;
+			}
+
+			if (m_waitTimer.UpdateTimer(arg_timeScale))
+			{
+				m_drawChangeTimer.UpdateTimer(arg_timeScale);
+			}
+		}
+		void Interruput() { Init(); }
+	}m_healEffect;
 
 	/*--- ライフ消費演出 ---*/
 	struct ConsumeLifeEffect

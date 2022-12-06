@@ -35,7 +35,8 @@ namespace ConstParameter
         int MAX_LIFE = 6;
 
         //ゲームフロー開始時の能力値上の最大ライフ
-        int START_ABILITY_MAX_LIFE = 1;
+        //int START_ABILITY_MAX_LIFE = 1;
+        int START_ABILITY_MAX_LIFE = 3;
         //ゲームフロー開始時の能力値上の攻撃力
         int START_ABILITY_OFFSENSIVE = 1;
 

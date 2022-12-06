@@ -155,6 +155,16 @@ void InGameScene::OnUpdate()
 	{
 		m_slotMachine->Booking();
 	}
+	if (UsersInput::Instance()->KeyOnTrigger(DIK_UP)
+		|| UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::DPAD_UP))
+	{
+		m_player->Heal(1);
+	}
+	if (UsersInput::Instance()->KeyOnTrigger(DIK_DOWN)
+		|| UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::DPAD_DOWN))
+	{
+		m_player->Damage(1);
+	}
 
 	//コリジョンマネージャ
 	if (Event::CollisionFlg())m_collisionMgr->Update();
