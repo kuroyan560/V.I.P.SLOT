@@ -12,7 +12,7 @@ public:
 	{
 		for (auto& trans : s_transform2DList)
 		{
-			trans->m_dirty = false;
+			trans->m_frameDirty = false;
 		}
 	}
 private:
@@ -24,10 +24,12 @@ private:
 	Vec2<float>m_scale = { 1,1 };
 	Matrix m_rotate = XMMatrixIdentity();
 
+	bool m_frameDirty = true;
 	bool m_dirty = true;
 
 	void MatReset()
 	{
+		m_frameDirty = true;
 		m_dirty = true;
 	}
 
@@ -106,6 +108,11 @@ public:
 	//Dirtyフラグゲッタ
 	bool IsDirty()const
 	{
-		return m_dirty || (m_parent != nullptr && m_parent->IsDirty());
+		return m_dirty || (m_parent != nullptr && (m_parent->IsFrameDirty() || m_parent->IsDirty()));
+	}
+	//フレーム単位のDirtyフラグゲッタ
+	bool IsFrameDirty()const
+	{
+		return m_frameDirty || (m_parent != nullptr && m_parent->IsFrameDirty());
 	}
 };

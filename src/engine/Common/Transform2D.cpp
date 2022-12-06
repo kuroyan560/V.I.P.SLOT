@@ -14,6 +14,7 @@ void Transform2D::CalculateMat()
 	{
 		m_worldMat *= m_parent->GetWorldMat();
 	}
+	m_dirty = false;
 }
 
 const Matrix& Transform2D::GetLocalMat()

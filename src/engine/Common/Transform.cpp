@@ -12,6 +12,7 @@ void Transform::CalculateMat()
 	{
 		m_worldMat *= m_parent->GetWorldMat();
 	}
+	m_dirty = false;
 }
 
 const Matrix& Transform::GetLocalMat()
