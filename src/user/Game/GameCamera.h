@@ -41,7 +41,13 @@ class GameCamera
 	//衝撃によるカメラ振動
 	ImpactShake m_shake;
 
-	void SetPosAndTarget(Vec3<float>arg_lerpOffset, float arg_timeScale);
+	/// <summary>
+	/// 座標と注視点の決定
+	/// </summary>
+	/// <param name="arg_lerpOffset">Lerp補正するオフセット値</param>
+	/// <param name="arg_timeScale">タイムスケール</param>
+	/// <param name="arg_interpolation">現在のカメラ座標から目標値までLerp補間するか</param>
+	void SetPosAndTarget(Vec3<float>arg_lerpOffset, float arg_timeScale, bool arg_interpolation);
 
 public:
 	GameCamera();

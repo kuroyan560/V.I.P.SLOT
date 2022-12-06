@@ -3,7 +3,7 @@
 #include"KuroMath.h"
 #include<math.h>
 
-void GameCamera::SetPosAndTarget(Vec3<float>arg_lerpOffset, float arg_timeScale)
+void GameCamera::SetPosAndTarget(Vec3<float>arg_lerpOffset, float arg_timeScale, bool arg_interpolation)
 {
 	Vec3<float>offset = arg_lerpOffset;
 
@@ -12,12 +12,16 @@ void GameCamera::SetPosAndTarget(Vec3<float>arg_lerpOffset, float arg_timeScale)
 	offset.y += (1.0f - std::min(arg_lerpOffset.y / 10.0f, 1.0f)) * CORRECT_HEIGHT;
 
 	//ëOåiÉJÉÅÉâ
-	m_posLerpOffset = KuroMath::Lerp(m_posLerpOffset, offset, 0.05f * arg_timeScale);
-	auto newPos = KuroMath::Lerp(m_cam[MAIN]->GetPos() - m_oldShakeOffset, m_defaultPos[MAIN] + m_posLerpOffset, 0.1f * arg_timeScale);
+	m_posLerpOffset = KuroMath::Lerp(m_posLerpOffset, offset,
+		arg_interpolation ? 0.05f * arg_timeScale : 1.0f);
+
+	auto newPos = KuroMath::Lerp(m_cam[MAIN]->GetPos() - m_oldShakeOffset, m_defaultPos[MAIN] + m_posLerpOffset, 
+		arg_interpolation ? 0.1f * arg_timeScale : 1.0f);
 	m_cam[MAIN]->SetPos(newPos + m_shake.GetOffset());
 
 	m_targetLerpOffset = KuroMath::Lerp(m_targetLerpOffset, offset, 0.08f * arg_timeScale);
-	auto newTarget = KuroMath::Lerp(m_cam[MAIN]->GetTarget() - m_oldShakeOffset, m_targetPos[MAIN] + m_targetLerpOffset, 0.1f * arg_timeScale);
+	auto newTarget = KuroMath::Lerp(m_cam[MAIN]->GetTarget() - m_oldShakeOffset, m_targetPos[MAIN] + m_targetLerpOffset,
+		arg_interpolation ? 0.1f * arg_timeScale : 1.0f);
 	m_cam[MAIN]->SetTarget(newTarget + m_shake.GetOffset());
 
 	//îwåiÉJÉÅÉâ
@@ -42,9 +46,9 @@ void GameCamera::Init()
 	m_defaultPos[MAIN] = Vec3<float>(0.0f, 3.4f, -65.0f);
 	m_targetPos[MAIN] = Vec3<float>(0.0f, m_defaultPos[MAIN].y + 2.0f, 0.0f);
 	m_posLerpOffset = { 0,0,0 };
-	m_targetLerpOffset = { 0,0,0 };
+	m_targetLerpOffset = { 0.0f,-1.0f,0.0f };
 	m_shake.Init();
-	SetPosAndTarget({ 0,0,0 }, 1.0f);
+	SetPosAndTarget({ 0,0,0 }, 1.0f, false);
 }
 
 void GameCamera::Update(float arg_timeScale, Vec3<float>arg_playersDisplacement)
@@ -54,5 +58,5 @@ void GameCamera::Update(float arg_timeScale, Vec3<float>arg_playersDisplacement)
 
 	m_shake.Update(arg_timeScale);
 
-	SetPosAndTarget( arg_playersDisplacement,1.0f);
+	SetPosAndTarget(arg_playersDisplacement, 1.0f, true);
 }
