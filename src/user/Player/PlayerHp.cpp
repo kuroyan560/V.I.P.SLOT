@@ -3,6 +3,7 @@
 #include"D3D12App.h"
 #include"DrawFunc2D.h"
 #include"Sprite.h"
+#include"KuroEngine.h"
 
 Vec2<float> PlayerHp::CalculateHpBarSize(float arg_rate)
 {
@@ -44,6 +45,11 @@ PlayerHp::PlayerHp()
 	m_hpBar.m_sprite = std::make_shared<Sprite>(app->GenerateTextureBuffer(dir + "hp_bar.png"), "Sprite - HpBar");
 	m_hpBarDamage.m_sprite = std::make_shared<Sprite>(app->GenerateTextureBuffer(dir + "hp_bar_damage.png"), "Sprite - HpBarDamage");
 	m_hpBarFrame.m_sprite = std::make_shared<Sprite>(app->GenerateTextureBuffer(dir + "hp_bar_frame.png"), "Sprite - HpBarFrame");
+
+	//ダメージハート
+	m_consumeLifeEffect.m_damageHeart.m_sprite = std::make_shared<Sprite>(app->GenerateTextureBuffer(dir + "hp_heart_damage.png"), "Sprite - DamageHeart");
+	m_consumeLifeEffect.m_damageHeart.m_initPos = heartSpriteInitPos;
+
 	auto heartTex = app->GenerateTextureBuffer(dir + "hp_heart.png");
 	auto heartFrameTex = app->GenerateTextureBuffer(dir + "hp_heart_frame.png");
 
@@ -86,6 +92,8 @@ PlayerHp::PlayerHp()
 		heart.m_frame.m_sprite->m_transform.SetParent(&heart.m_offsetTransform);
 		heart.m_heart.m_sprite->m_transform.SetParent(&heart.m_offsetTransform);
 	}
+	m_consumeLifeEffect.m_damageHeart.m_sprite->m_transform.SetParent(&m_heartArray[0].m_offsetTransform);
+
 }
 
 void PlayerHp::Init(int arg_initMaxLife, int arg_initRemainLife)
@@ -105,7 +113,6 @@ void PlayerHp::Init(int arg_initMaxLife, int arg_initRemainLife)
 	m_transform.SetPos(m_uiInitPos);
 
 	//描画するスプライトを決定（追加順 = 描画順）
-	//HPバーと文字は必須
 	m_contents.clear();
 	m_contents.emplace_back(&m_hpBarFrame);
 	m_contents.emplace_back(&m_hpBarDamage);
@@ -133,6 +140,9 @@ void PlayerHp::Init(int arg_initMaxLife, int arg_initRemainLife)
 		m_heartArray[i].m_heart.m_active = (i < arg_initRemainLife);
 	}
 
+	//ダメージハート
+	m_contents.emplace_back(&m_consumeLifeEffect.m_damageHeart);
+
 	//スプライトの位置初期化
 	for (auto& content : m_contents)
 	{
@@ -141,6 +151,9 @@ void PlayerHp::Init(int arg_initMaxLife, int arg_initRemainLife)
 
 	//ダメージ演出初期化
 	m_damageEffect.Init();
+
+	//ライフ消費演出初期化
+	m_consumeLifeEffect.Init();
 }
 
 void PlayerHp::Update(const float& arg_timeScale)
@@ -160,6 +173,8 @@ void PlayerHp::Update(const float& arg_timeScale)
 			content->m_sprite->m_transform.SetPos(content->m_initPos + Vec2<float>(m_damageEffect.m_shake.GetOffset().x, m_damageEffect.m_shake.GetOffset().y));
 		}
 	}
+
+	m_consumeLifeEffect.Update(arg_timeScale, &m_hpBar);
 }
 
 
@@ -243,7 +258,8 @@ bool PlayerHp::Change(int arg_amount)
 		//ライフ(ハート)消費
 		if (consumeLife)
 		{
-
+			m_consumeLifeEffect.Start(&m_hpBar);
+			m_hpBar.m_active = false;
 		}
 		else
 		{
@@ -253,4 +269,22 @@ bool PlayerHp::Change(int arg_amount)
 	}
 
 	return consumeLife;
+}
+
+void PlayerHp::ConsumeLifeEffect::Start(DrawContents* arg_hpBar)
+{
+	m_damageHeart.m_active = true;
+	arg_hpBar->m_active = false;
+	m_damageHeart.m_sprite->m_transform.SetPos(m_damageHeart.m_initPos);
+}
+
+void PlayerHp::ConsumeLifeEffect::Update(float arg_timeScale, DrawContents* arg_hpBar)
+{
+	if (!m_damageHeart.m_active)return;
+
+	if (arg_timeScale)
+	{
+		m_damageHeart.m_active = false;
+		arg_hpBar->m_active = true;
+	}
 }

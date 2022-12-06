@@ -95,6 +95,20 @@ class PlayerHp : public HUDInterface
 		}
 	}m_damageEffect;
 
+	/*--- ライフ消費演出 ---*/
+	struct ConsumeLifeEffect
+	{
+		//メインライフ（ダメージ）
+		DrawContents m_damageHeart;
+
+		void Init()
+		{
+			m_damageHeart.m_active = false;
+		}
+		void Start(DrawContents* arg_hpBar);
+		void Update(float arg_timeScale, DrawContents* arg_hpBar);
+	}m_consumeLifeEffect;
+
 	//HPバーサイズ取得
 	Vec2<float>CalculateHpBarSize(float arg_rate);
 
