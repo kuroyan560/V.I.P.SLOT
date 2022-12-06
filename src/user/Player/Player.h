@@ -132,7 +132,9 @@ public:
 	Vec3<float>GetCenterPos()const;
 
 	//ダメージを受ける
-	void Damage() { m_playerHp.Damage(); }
+	void Damage(int arg_amount) { m_playerHp.Change(-arg_amount); }
+	//回復
+	void Heal(int arg_amount) { m_playerHp.Change(arg_amount); }
 
 	//ゲッタ
 	//攻撃中か

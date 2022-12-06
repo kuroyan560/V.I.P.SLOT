@@ -91,7 +91,7 @@ void DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter,
 	if (m_parent->IsAttack())return;
 
 	//HPŒ¸­
-	m_parent->Damage();
+	m_parent->Damage(1);
 
 	//–³“GŠÔİ’è
 	m_invincibleTimer.Reset(INVINCIBLE_TIME_ON_DAMAGED);

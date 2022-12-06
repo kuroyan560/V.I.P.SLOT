@@ -67,8 +67,8 @@ public:
 	//imguiデバッグ
 	void ImguiDebug();
 
-	//ダメージ
-	void Damage();
+	//HP量変動
+	void Change(int arg_amount);
 
 	//ライフゲッタ
 	const int& GetLife()const { return m_life; }

@@ -192,9 +192,10 @@ void PlayerHp::ImguiDebug()
 	ImGui::End();
 }
 
-void PlayerHp::Damage()
+void PlayerHp::Change(int arg_amount)
 {
-	m_hp = std::max(0, m_hp - 1);
+	//HP‚ªã‰ºŒÀŠE‚ğ’´‚¦‚È‚¢‚æ‚¤‚É‚·‚é
+	m_hp = std::max(0, std::min(ConstParameter::Player::MAX_HP, m_hp + arg_amount));
 
 	//HP‚ª‚È‚­‚È‚Á‚½‚çƒ‰ƒCƒtÁ”ï‚µ‚ÄHP‰ñ•œ
 	if (m_hp <= 0 && m_life)
