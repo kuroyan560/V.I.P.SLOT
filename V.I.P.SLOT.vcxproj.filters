@@ -415,6 +415,9 @@
     <ClCompile Include="src\engine\Debugger.cpp">
       <Filter>src\engine\ユーザー向け</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\Wave\Wave.cpp">
+      <Filter>src\user\Wave</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -779,6 +782,9 @@
     </ClInclude>
     <ClInclude Include="src\engine\Debugger.h">
       <Filter>src\engine\ユーザー向け</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Wave\Wave.h">
+      <Filter>src\user\Wave</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -112,7 +112,9 @@ void InGameScene::OnInitialize()
 	m_timeScale.Set(1.0f);
 
 	//ウェーブマネージャ
-	m_waveMgr->Init(10);
+	std::list<Wave>test;
+	test.emplace_back();
+	m_waveMgr->Init(test);
 
 	//イベント
 	Event::StaticInit();
@@ -168,8 +170,8 @@ void InGameScene::OnUpdate()
 	//ステージマネージャ
 	m_stageMgr->Update(m_timeScale, m_player);
 
-	//エネミーエミッター生成
-	m_enemyEmitter->TestRandEmit(m_timeScale);
+	//ウェーブマネージャ
+	m_waveMgr->Update(m_timeScale, m_enemyEmitter);
 
 	//オブジェクトマネージャ
 	m_objMgr->Update(m_timeScale, m_collisionMgr);
@@ -178,7 +180,7 @@ void InGameScene::OnUpdate()
 	Event::StaticUpdate();
 
 	//クリアしたか
-	if (m_waveMgr->IsClear(m_player->GetCoinNum()))
+	if (m_waveMgr->IsWaveClear(m_player->GetCoinNum()))
 	{
 		HUDInterface::s_draw = false;
 		m_clearWaveEvent.Start();

@@ -211,6 +211,7 @@
     <ClCompile Include="src\user\Stage\StageMgr.cpp" />
     <ClCompile Include="src\user\Title\TitleCamera.cpp" />
     <ClCompile Include="src\user\Title\TitleUI.cpp" />
+    <ClCompile Include="src\user\Wave\Wave.cpp" />
     <ClCompile Include="src\user\Wave\WaveMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -334,6 +335,7 @@
     <ClInclude Include="src\user\Stage\StageMgr.h" />
     <ClInclude Include="src\user\Title\TitleCamera.h" />
     <ClInclude Include="src\user\Title\TitleUI.h" />
+    <ClInclude Include="src\user\Wave\Wave.h" />
     <ClInclude Include="src\user\Wave\WaveMgr.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

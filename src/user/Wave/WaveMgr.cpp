@@ -2,43 +2,14 @@
 #include"Sprite.h"
 #include"D3D12App.h"
 #include"KuroFunc.h"
+#include"TimeScale.h"
+#include"EnemyEmitter.h"
 
 void WaveMgr::OnImguiItems()
 {
-	bool change = false;
-
-	auto strPos = m_normaStrSprite->m_transform.GetPos();
-	if (ImGui::DragFloat2("StrPos", (float*)&strPos))
-	{
-		m_normaStrSprite->m_transform.SetPos(strPos);
-		m_normaStrSprite->SendTransformBuff();
-	}
-	auto strScale = m_normaStrSprite->m_transform.GetScale().x;
-	if (ImGui::DragFloat("StrScale", &strScale, 0.05f))
-	{
-		m_normaStrSprite->m_transform.SetScale(strScale);
-		m_normaStrSprite->SendTransformBuff();
-	}
-
-	if (ImGui::DragFloat2("NumPos", (float*)&m_numPos))change = true;
-	if (ImGui::DragFloat2("NumOffset", (float*)&m_numPosOffset))change = true;
-	if (ImGui::DragFloat("NumScale", &m_numScale, 0.05f))change = true;
-
-	ImGui::Separator();
-
-	ImGui::Text("Norma : { %d }", m_norma);
-
-	ImGui::Separator();
-
 	ImGui::Checkbox("InfinityMode", &m_isInfinity);
-
-	int norma = m_norma;
-	if (ImGui::InputInt("Norma", &norma))change = true;
-
-	if (change)
-	{
-		Init(norma);
-	}
+	ImGui::Text("NowWaveIdx : { %d / %d }", m_nowWaveIdx, static_cast<int>(m_waves.size()));
+	ImGui::Text("Norma : { %d }", m_nowWave->m_norma);
 }
 
 WaveMgr::WaveMgr() : Debugger("WaveMgr")
@@ -69,13 +40,103 @@ WaveMgr::WaveMgr() : Debugger("WaveMgr")
 	app->GenerateTextureBuffer(m_normaTexArray.data(), normaTexDir + "norma_num.png", texNum, Vec2<int>(11, 1));
 }
 
-void WaveMgr::Init(int arg_norma)
+void WaveMgr::Init(std::list<Wave>arg_waves)
 {
-	m_norma = arg_norma;
-	if (m_norma <= 0)m_norma = 1;
+	//ウェーブ配列格納
+	m_waves = arg_waves;
+	//ウェーブインデックス初期化
+	m_nowWaveIdx = 0;
+	//全ウェーブクリアフラグ初期化
+	m_isAllWaveClear = false;
+
+	//ウェーブ進行時の初期化呼び出し
+	OnProceedWave();
+}
+
+void WaveMgr::Update(const TimeScale& arg_timeScale, std::weak_ptr<EnemyEmitter>arg_enemyEmitter)
+{
+	//情報が無ければテスト用のランダム出現
+	if (m_nowInfoArray.empty())
+	{
+		arg_enemyEmitter.lock()->TestRandEmit(arg_timeScale);
+		return;
+	}
+
+	m_time += arg_timeScale.GetTimeScale();
+
+	for (auto itr = m_nowInfoArray.begin(); itr != m_nowInfoArray.end();)
+	{
+		//出現タイミングでない
+		if (m_time < itr->m_info->m_appearTiming)continue;
+
+		//ループ出現でない
+		if (!itr->m_info->m_loopAppear)
+		{
+			//出現
+			arg_enemyEmitter.lock()->EmitEnemy(itr->m_info->m_type, itr->m_info->m_initPos);
+			//出現済なので出現情報を配列から削除
+			itr = m_nowInfoArray.erase(itr);
+			continue;
+		}
+
+		//ループ出現
+		if (itr->m_timer.UpdateTimer(arg_timeScale.GetTimeScale()))
+		{
+			//出現
+			arg_enemyEmitter.lock()->EmitEnemy(itr->m_info->m_type, itr->m_info->m_initPos);
+			//出現タイマーリセット
+			itr->m_timer.Reset(itr->m_info->m_appearTiming);
+		}
+	}
+}
+
+void WaveMgr::OnDraw2D()
+{
+	//ノルマ数字描画
+	for (int i = 0; i < m_useSpriteNum; ++i)
+	{
+		m_normaNumSpriteArray[i]->Draw();
+	}
+
+	//ノルマ文字
+	m_normaStrSprite->Draw();
+}
+
+void WaveMgr::OnProceedWave()
+{
+	//全ウェーブクリアしたか
+	if (static_cast<int>(m_waves.size()) <= m_nowWaveIdx)
+	{
+		m_isAllWaveClear = true;
+		return;
+	}
+
+	//ウェーブ時間初期化
+	m_time = 0.0f;
+
+	//ウェーブのポインタ取得
+	int offset = 0;
+	auto itr = m_waves.begin();
+	while (offset < m_nowWaveIdx)
+	{
+		itr++;
+		offset++;
+	}
+	m_nowWave = &(*itr);
+
+	/*--- 敵の出現情報配列用意 ---*/
+	m_nowInfoArray.clear();
+	for (const auto& info : m_nowWave->m_appearInfoList)
+	{
+		m_nowInfoArray.emplace_back();
+		m_nowInfoArray.back().m_info = &info;
+		m_nowInfoArray.back().m_timer.Reset(0.0f);
+	}
+
+	/*--- UI更新 ---*/
 
 	//桁数を調べて、必要なスプライト数を計算
-	int normaDigit = KuroFunc::GetDigit(m_norma);
+	int normaDigit = KuroFunc::GetDigit(m_nowWave->m_norma);
 	//「 / 」分追加
 	m_useSpriteNum = normaDigit + 1;
 
@@ -92,7 +153,7 @@ void WaveMgr::Init(int arg_norma)
 	//テクスチャのインデックス情報
 	for (int i = 1; i < m_useSpriteNum; ++i)
 	{
-		int num = KuroFunc::GetSpecifiedDigitNum(m_norma, m_useSpriteNum - i - 1, false);
+		int num = KuroFunc::GetSpecifiedDigitNum(m_nowWave->m_norma, m_useSpriteNum - i - 1, false);
 		m_normaNumSpriteArray[i]->SetTexture(m_normaTexArray[num]);
 	}
 
@@ -108,16 +169,4 @@ void WaveMgr::Init(int arg_norma)
 		m_normaNumSpriteArray[i]->m_transform.SetScale(m_numScale);
 		m_normaNumSpriteArray[i]->SendTransformBuff();
 	}
-}
-
-void WaveMgr::OnDraw2D()
-{
-	//ノルマ数字描画
-	for (int i = 0; i < m_useSpriteNum; ++i)
-	{
-		m_normaNumSpriteArray[i]->Draw();
-	}
-
-	//ノルマ文字
-	m_normaStrSprite->Draw();
 }

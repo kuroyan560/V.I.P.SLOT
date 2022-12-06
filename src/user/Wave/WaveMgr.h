@@ -4,13 +4,33 @@
 #include"Vec.h"
 #include"Debugger.h"
 #include"HUDInterface.h"
+#include"Wave.h"
 class Sprite;
 class TextureBuffer;
+class TimeScale;
+class EnemyEmitter;
 
 class WaveMgr : public Debugger, public HUDInterface
 {
-	//コインノルマ
-	int m_norma;
+	//ウェーブリスト
+	std::list<Wave>m_waves;
+	//現在のウェーブ
+	Wave* m_nowWave = nullptr;
+	//現在のウェーブインデックス
+	int m_nowWaveIdx;
+	//現在のウェーブの進行時間
+	float m_time;
+
+	struct NowAppearInfo
+	{
+		const Wave::AppearEnemyInfo* m_info = nullptr;
+		Timer m_timer;
+	};
+	std::vector<NowAppearInfo>m_nowInfoArray;
+
+	//全てのウェーブをクリアしたか
+	bool m_isAllWaveClear = false;
+
 	//デバッグ用、ノルマ達成判定を切る
 	bool m_isInfinity = false;
 
@@ -26,13 +46,22 @@ class WaveMgr : public Debugger, public HUDInterface
 	void OnImguiItems()override;
 	void OnDraw2D()override;
 
+	//ウェーブ進行時に呼び出し
+	void OnProceedWave();
+
 public:
 	WaveMgr();
-	void Init(int arg_norma);
+	void Init(std::list<Wave>arg_waves);
+	void Update(const TimeScale& arg_timeScale, std::weak_ptr<EnemyEmitter>arg_enemyEmitter);
 
-	//クリアしたか
-	bool IsClear(const int& arg_playersCoinNum)
+	//現在のウェーブをクリアしたか
+	bool IsWaveClear(const int& arg_playersCoinNum)const
 	{
-		return !m_isInfinity && m_norma <= arg_playersCoinNum;
+		return !m_isInfinity && m_nowWave->m_norma <= arg_playersCoinNum;
+	}
+	//全てのウェーブをクリアしたか
+	bool IsAllWaveClear()const
+	{
+		return m_isAllWaveClear;
 	}
 };
