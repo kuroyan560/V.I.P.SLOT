@@ -3,6 +3,8 @@
 
 void ImpactShake::Update(float arg_timeScale)
 {
+	if (!m_active)return;
+
 	//振動中
 	if (!m_activeTimer.UpdateTimer(arg_timeScale))
 	{
@@ -26,11 +28,15 @@ void ImpactShake::Update(float arg_timeScale)
 	{
 		//振動終わり
 		m_offset = { 0,0,0 };
+		m_active = false;
 	}
 }
 
 void ImpactShake::Shake(float arg_time, float arg_span, float arg_powerMin, float arg_powerMax)
 {
+	//アクティブ状態に
+	m_active = true;
+
 	//各種振動パラメータセット
 	m_activeTimer.Reset(arg_time);
 	m_spanTimer.Reset(arg_span);
