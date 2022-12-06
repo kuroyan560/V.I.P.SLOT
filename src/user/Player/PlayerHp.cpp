@@ -4,11 +4,11 @@
 #include"DrawFunc2D.h"
 #include"Sprite.h"
 
-void PlayerHp::UpdateHpBarSize()
+Vec2<float> PlayerHp::CalculateHpBarSize(float arg_rate)
 {
 	auto hpBarSize = m_hpBar.m_sprite->GetTex()->GetGraphSize().Float();
-	hpBarSize.x = static_cast<float>(m_hp) / static_cast<float>(ConstParameter::Player::MAX_HP) * hpBarSize.x;
-	m_hpBar.m_sprite->m_mesh.SetSize(hpBarSize);
+	hpBarSize.x = arg_rate * hpBarSize.x;
+	return hpBarSize;
 }
 
 PlayerHp::PlayerHp()
@@ -17,6 +17,7 @@ PlayerHp::PlayerHp()
 	m_uiInitPos = { 20.0f,640.0f };
 	m_hpStr.m_initPos = { 0.0f,-48.0f };
 	m_hpBar.m_initPos = { 13.0f,13.0f };
+	m_hpBarDamage.m_initPos = { 13.0f,13.0f };
 	m_hpBarFrame.m_initPos = { 0.0f,0.0f };
 	Vec2<float>heartSpriteInitPos = { 6.0f,4.0f };
 	Vec2<float>heartSpriteFrameInitPos = { 0.0f,0.0f };
@@ -41,6 +42,7 @@ PlayerHp::PlayerHp()
 	//スプライト生成、画像読み込み
 	m_hpStr.m_sprite = std::make_shared<Sprite>(app->GenerateTextureBuffer(dir + "hp_str.png"), "Sprite - HpStr");
 	m_hpBar.m_sprite = std::make_shared<Sprite>(app->GenerateTextureBuffer(dir + "hp_bar.png"), "Sprite - HpBar");
+	m_hpBarDamage.m_sprite = std::make_shared<Sprite>(app->GenerateTextureBuffer(dir + "hp_bar_damage.png"), "Sprite - HpBarDamage");
 	m_hpBarFrame.m_sprite = std::make_shared<Sprite>(app->GenerateTextureBuffer(dir + "hp_bar_frame.png"), "Sprite - HpBarFrame");
 	auto heartTex = app->GenerateTextureBuffer(dir + "hp_heart.png");
 	auto heartFrameTex = app->GenerateTextureBuffer(dir + "hp_heart_frame.png");
@@ -73,10 +75,10 @@ PlayerHp::PlayerHp()
 		m_heartArray[i].m_initScale = subHeartScale;
 	}
 
-
 	//トランスフォームの親子関係構築
 	m_hpStr.m_sprite->m_transform.SetParent(&m_transform);
 	m_hpBar.m_sprite->m_transform.SetParent(&m_transform);
+	m_hpBarDamage.m_sprite->m_transform.SetParent(&m_transform);
 	m_hpBarFrame.m_sprite->m_transform.SetParent(&m_transform);
 	for (auto& heart : m_heartArray)
 	{
@@ -97,18 +99,20 @@ void PlayerHp::Init(int arg_initMaxLife, int arg_initRemainLife)
 	m_hp = MAX_HP;
 
 	//HPバーサイズ更新
-	UpdateHpBarSize();
+	m_hpBar.m_sprite->m_mesh.SetSize(CalculateHpBarSize(1.0f));
 
 	//UI位置初期化
 	m_transform.SetPos(m_uiInitPos);
 
-	//描画するスプライトを決定
+	//描画するスプライトを決定（追加順 = 描画順）
+	//HPバーと文字は必須
 	m_contents.clear();
 	m_contents.emplace_back(&m_hpBarFrame);
+	m_contents.emplace_back(&m_hpBarDamage);
 	m_contents.emplace_back(&m_hpBar);
 	m_contents.emplace_back(&m_hpStr);
 
-	//ライフ関連↓
+	//ライフ関連↓（ハートの個数によって変動）
 	
 	//最大ライフを超えている
 	if (static_cast<int>(m_heartArray.size()) < arg_initMaxLife)assert(0);
@@ -134,11 +138,35 @@ void PlayerHp::Init(int arg_initMaxLife, int arg_initRemainLife)
 	{
 		content->m_sprite->m_transform.SetPos(content->m_initPos);
 	}
+
+	//ダメージ演出初期化
+	m_damageEffect.Init();
 }
 
 void PlayerHp::Update(const float& arg_timeScale)
 {
+	m_damageEffect.Update(arg_timeScale);
 
+	if (m_damageEffect.m_active)
+	{
+		if (m_damageEffect.m_consumeLife)
+		{
+
+		}
+		else
+		{
+			float sizeRate = KuroMath::Ease(In, Sine,
+				m_damageEffect.m_drawChangeTimer.GetTimeRate(),
+				m_damageEffect.m_startHpRate,
+				m_damageEffect.m_endHpRate);
+			m_hpBarDamage.m_sprite->m_mesh.SetSize(CalculateHpBarSize(sizeRate));
+		}
+
+		for (auto& content : m_contents)
+		{
+			content->m_sprite->m_transform.SetPos(content->m_initPos + Vec2<float>(m_damageEffect.m_shake.GetOffset().x, m_damageEffect.m_shake.GetOffset().y));
+		}
+	}
 }
 
 
@@ -165,7 +193,6 @@ void PlayerHp::ImguiDebug()
 		auto sp = content->m_sprite;
 		if (ImGui::TreeNode(sp->m_name.c_str()))
 		{
-
 			auto pos = sp->m_transform.GetPos();
 			if (ImGui::DragFloat2("Pos", (float*)&pos))sp->m_transform.SetPos(pos);
 
@@ -194,6 +221,11 @@ void PlayerHp::ImguiDebug()
 
 void PlayerHp::Change(int arg_amount)
 {
+	//変化前のHPレート
+	float beforeHpRate = static_cast<float>(m_hp) / static_cast<float>(ConstParameter::Player::MAX_HP);
+	//ハートを消費したか
+	bool consumeLife = false;
+
 	//HPが上下限界を超えないようにする
 	m_hp = std::max(0, std::min(ConstParameter::Player::MAX_HP, m_hp + arg_amount));
 
@@ -204,9 +236,18 @@ void PlayerHp::Change(int arg_amount)
 		m_heartArray[m_life - 1].m_heart.m_active = false;
 		m_life = std::max(0, m_life - 1);
 		m_hp = ConstParameter::Player::MAX_HP;
+		consumeLife = true;
 	}
 
+	//変化後のHPレート
+	float afterHpRate = static_cast<float>(m_hp) / static_cast<float>(ConstParameter::Player::MAX_HP);
 	//HPバーサイズ変更
-	UpdateHpBarSize();
-}
+	m_hpBar.m_sprite->m_mesh.SetSize(CalculateHpBarSize(afterHpRate));
 
+	//ダメージ
+	if (arg_amount < 0)
+	{
+		//ダメージ演出
+		m_damageEffect.Start(beforeHpRate, afterHpRate, consumeLife);
+	}
+}

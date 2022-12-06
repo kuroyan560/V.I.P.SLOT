@@ -30,7 +30,7 @@ void GameCamera::SetPosAndTarget(Vec3<float>arg_lerpOffset, float arg_timeScale,
 }
 
 
-GameCamera::GameCamera()
+GameCamera::GameCamera() : m_shake({ 1.0f,1.0f,0.0f })
 {
 	m_cam[SUB] = std::make_shared<Camera>("GameCamera - Back");
 	m_cam[MAIN] = std::make_shared<Camera>("GameCamera - Front");

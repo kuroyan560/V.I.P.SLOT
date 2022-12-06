@@ -3,6 +3,8 @@
 #include"Transform2D.h"
 #include<vector>
 #include"HUDInterface.h"
+#include"Timer.h"
+#include"ImpactShake.h"
 class TextureBuffer;
 class Sprite;
 
@@ -24,6 +26,8 @@ class PlayerHp : public HUDInterface
 	DrawContents m_hpStr;
 	//HPバー
 	DrawContents m_hpBar;
+	//HPバー（ダメージ）
+	DrawContents m_hpBarDamage;
 	//HPバーフレーム
 	DrawContents m_hpBarFrame;
 
@@ -45,8 +49,58 @@ class PlayerHp : public HUDInterface
 	//描画するスプライト情報の配列
 	std::vector<DrawContents*>m_contents;
 
-	//HPバーサイズ更新
-	void UpdateHpBarSize();
+	/*--- ダメージ演出 ---*/
+	struct DamageEffect
+	{
+		bool m_active = false;
+		//待機時間
+		Timer m_waitTimer;
+		//描画での変化タイマー
+		Timer m_drawChangeTimer;
+		//揺れ
+		ImpactShake m_shake;
+
+		float m_startHpRate = 0.0f;
+		float m_endHpRate = 0.0f;
+		bool m_consumeLife;
+
+		void Init()
+		{
+			m_shake.Init();
+			m_active = false;
+		}
+		void Start(float arg_startHpRate, float arg_endHpRate, bool arg_consumeLife)
+		{
+			m_active = true;
+			m_drawChangeTimer.Reset(30.0f);
+			m_waitTimer.Reset(45.0f);
+			m_shake.Shake(30.0f, 3.0f, 0.0f, 32.0f);
+			m_startHpRate = arg_startHpRate;
+			m_endHpRate = arg_endHpRate;
+			m_consumeLife = arg_consumeLife;
+		}
+		void Update(float arg_timeScale)
+		{
+			if (m_drawChangeTimer.IsTimeUp())
+			{
+				m_active = false;
+				return;
+			}
+
+			if (m_waitTimer.UpdateTimer(arg_timeScale))
+			{
+				m_drawChangeTimer.UpdateTimer(arg_timeScale);
+			}
+
+			//※タイムスケールの影響を受けない
+			m_shake.Update(1.0f);
+		}
+
+		DamageEffect() :m_shake({ 1.0f,1.0f,0.0f }) {}
+	}m_damageEffect;
+
+	//HPバーサイズ取得
+	Vec2<float>CalculateHpBarSize(float arg_rate);
 
 	//描画
 	void OnDraw2D()override;

@@ -18,7 +18,11 @@ class ImpactShake
 	//振動オフセット
 	Vec3<float>m_offset;
 
+	//オフセットに乗算
+	Vec3<float>m_mul = { 1.0f,1.0f,1.0f };
+
 public:
+	ImpactShake(Vec3<float>arg_mul) :m_mul(arg_mul) {}
 	void Init()
 	{
 		m_offset = { 0,0,0 };

@@ -20,6 +20,8 @@ void ImpactShake::Update(float arg_timeScale)
 				* shakePowerScale * KuroFunc::GetRandPlusMinus();
 			m_offset.y = KuroFunc::GetRand(m_powerMin, m_powerMax)
 				* shakePowerScale * KuroFunc::GetRandPlusMinus();
+			m_offset.z = KuroFunc::GetRand(m_powerMin, m_powerMax)
+				* shakePowerScale * KuroFunc::GetRandPlusMinus();
 
 			m_spanTimer.Reset();
 		}
@@ -46,4 +48,5 @@ void ImpactShake::Shake(float arg_time, float arg_span, float arg_powerMin, floa
 	//振動オフセット初期値計算
 	m_offset.x = KuroFunc::GetRand(arg_powerMin, arg_powerMax) * KuroFunc::GetRandPlusMinus();
 	m_offset.y = KuroFunc::GetRand(arg_powerMin, arg_powerMax) * KuroFunc::GetRandPlusMinus();
+	m_offset.z = KuroFunc::GetRand(arg_powerMin, arg_powerMax) * KuroFunc::GetRandPlusMinus();
 }
