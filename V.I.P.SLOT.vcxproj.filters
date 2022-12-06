@@ -307,9 +307,6 @@
     <ClCompile Include="src\user\Game\GameManager.cpp">
       <Filter>src\user\Game</Filter>
     </ClCompile>
-    <ClCompile Include="src\user\Game\HandShake.cpp">
-      <Filter>src\user\Game</Filter>
-    </ClCompile>
     <ClCompile Include="src\user\GameObject\GameObject.cpp">
       <Filter>src\user\GameObject</Filter>
     </ClCompile>
@@ -417,6 +414,12 @@
     </ClCompile>
     <ClCompile Include="src\user\Wave\Wave.cpp">
       <Filter>src\user\Wave</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\Others\HandShake.cpp">
+      <Filter>src\user\Others</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\Others\ImpactShake.cpp">
+      <Filter>src\user\Others</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -672,9 +675,6 @@
     <ClInclude Include="src\user\Game\GameManager.h">
       <Filter>src\user\Game</Filter>
     </ClInclude>
-    <ClInclude Include="src\user\Game\HandShake.h">
-      <Filter>src\user\Game</Filter>
-    </ClInclude>
     <ClInclude Include="src\user\GameObject\GameObject.h">
       <Filter>src\user\GameObject</Filter>
     </ClInclude>
@@ -785,6 +785,12 @@
     </ClInclude>
     <ClInclude Include="src\user\Wave\Wave.h">
       <Filter>src\user\Wave</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Others\HandShake.h">
+      <Filter>src\user\Others</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Others\ImpactShake.h">
+      <Filter>src\user\Others</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

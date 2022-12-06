@@ -3,6 +3,7 @@
 #include"Camera.h"
 #include<memory>
 #include"Timer.h"
+#include"ImpactShake.h"
 
 class GameCamera
 {
@@ -30,35 +31,15 @@ class GameCamera
 		45,60
 	};
 
-	//振動情報
-	struct Shake
-	{
-		//振動の総時間タイマー
-		Timer m_activeTimer;
-		//振動のスパン計測タイマー
-		Timer m_spanTimer;
-		//振動のスパン
-		int m_span;
-		//振動の強さ乱数下限
-		float m_powerMin;
-		//振動の強さ乱数上限
-		float m_powerMax;
-		//1フレーム前の振動オフセット
-		Vec3<float>m_oldOffset;
-		//振動オフセット
-		Vec3<float>m_offset;
-
-		void Init()
-		{
-			m_oldOffset = { 0,0,0 };
-			m_offset = { 0,0,0 };
-			m_activeTimer.Reset(0);
-		}
-	}m_shake;
+	//1フレーム前の振動オフセット
+	Vec3<float>m_oldShakeOffset;
 
 	//Lerpの目標値
 	Vec3<float>m_posLerpOffset;
 	Vec3<float>m_targetLerpOffset;
+
+	//衝撃によるカメラ振動
+	ImpactShake m_shake;
 
 	void SetPosAndTarget(Vec3<float>arg_lerpOffset, float arg_timeScale);
 
@@ -74,7 +55,10 @@ public:
 	void Update(float arg_timeScale, Vec3<float>arg_playersDisplacement);
 
 	//カメラ振動
-	void Shake(int arg_time, int arg_span, float arg_powerMin, float arg_powerMax);
+	void Shake(float arg_time, float arg_span, float arg_powerMin, float arg_powerMax)
+	{
+		m_shake.Shake(arg_time, arg_span, arg_powerMin, arg_powerMax);
+	}
 
 	//カメラゲッタ
 	std::shared_ptr<Camera>& GetSubCam() { return m_cam[SUB]; }
