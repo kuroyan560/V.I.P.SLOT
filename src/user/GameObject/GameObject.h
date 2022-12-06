@@ -61,6 +61,12 @@ public:
 	/// <returns>死亡した場合コイン数、死亡してなければ０を返す</returns>
 	int Damage(int arg_amount = 1);
 
+	/// <summary>
+	/// 一撃で殺す
+	/// </summary>
+	/// <returns>コイン数</returns>
+	int Kill();
+
 	//親オブジェクトセット
 	void SetParentObj(GameObject* arg_parentObj) { m_parentObj = arg_parentObj; }
 

@@ -8,6 +8,7 @@
 class TimeScale;
 class GameCamera;
 class WaveMgr;
+class EnemyEmitter;
 
 //ウェーブクリア時の演出
 class ClearWave : public Event, public Debugger, public InGameMonitor
@@ -15,6 +16,7 @@ class ClearWave : public Event, public Debugger, public InGameMonitor
 	//演出で参照するポインタの保持
 	std::weak_ptr<GameCamera>m_referGameCam;
 	std::weak_ptr<WaveMgr>m_referWaveMgr;
+	std::weak_ptr<EnemyEmitter>m_referEnemyEmitter;
 	TimeScale* m_referTimeScale;
 
 	//演出ステータス
@@ -78,12 +80,14 @@ public:
 	ClearWave();
 
 	//参照するパラメータを保持
-	void Init(std::weak_ptr<GameCamera>arg_gameCam,
+	void Awake(std::weak_ptr<GameCamera>arg_gameCam,
 		std::weak_ptr<WaveMgr>arg_waveMgr,
+		std::weak_ptr<EnemyEmitter>arg_enemyEmitter,
 		TimeScale* arg_timeScale) 
 	{
 		m_referGameCam = arg_gameCam; 
 		m_referWaveMgr = arg_waveMgr;
+		m_referEnemyEmitter = arg_enemyEmitter;
 		m_referTimeScale = arg_timeScale;
 	}
 };

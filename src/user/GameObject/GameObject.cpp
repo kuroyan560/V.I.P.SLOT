@@ -78,6 +78,11 @@ int GameObject::Damage(int arg_amount)
 	return 0;
 }
 
+int GameObject::Kill()
+{
+	return Damage(m_hp);
+}
+
 const int& GameObject::GetTypeID()
 {
 	return m_breed.lock()->m_typeID;

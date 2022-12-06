@@ -186,10 +186,10 @@ void ObjectManager::Init(std::weak_ptr<CollisionManager>arg_collisionMgr)
 			OnObjectDead(enemy, arg_collisionMgr);
 		}
 
-		//生存エネミー配列を空に
+		//生存オブジェクト配列を空に
 		m_aliveObjectArray[typeIdx].clear();
 
-		//死亡エネミー配列にエネミー配列コピー
+		//死亡オブジェクト配列にオブジェクト配列コピー
 		m_deadObjectArray[typeIdx] = m_objects[typeIdx];
 	}
 

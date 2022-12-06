@@ -81,6 +81,9 @@ InGameScene::InGameScene() : Debugger("InGame")
 
 	//参照用のポインタ窓口クラスにゲーム内情報のポインタセット
 	InGameMonitor::Set(m_player.get());
+
+	//ウェーブクリア時イベントにポインタを渡す
+	m_clearWaveEvent.Awake(m_gameCam, m_waveMgr, m_enemyEmitter, &m_timeScale);
 }
 
 void InGameScene::OnInitialize()
@@ -133,9 +136,6 @@ void InGameScene::OnInitialize()
 		BasicDraw::Instance(),
 		&m_clearWaveEvent,
 		this });
-
-	//ウェーブクリア時イベント
-	m_clearWaveEvent.Init(m_gameCam, m_waveMgr, &m_timeScale);
 
 	//HUD描画フラグ
 	HUDInterface::s_draw = true;

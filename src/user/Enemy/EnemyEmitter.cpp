@@ -3,6 +3,7 @@
 #include"ObjectManager.h"
 #include"ConstParameters.h"
 #include"TimeScale.h"
+#include"GameObject.h"
 
 void EnemyEmitter::RandEmitEnemy(TYPE arg_type)
 {
@@ -133,9 +134,10 @@ void EnemyEmitter::Init()
 
 void EnemyEmitter::EmitEnemy(TYPE arg_type, Vec3<float>arg_initPos)
 {
+	std::weak_ptr<GameObject>enemyObj;
 	if (arg_type == TYPE::SLIDE_ENEMY_SLOW || arg_type == TYPE::SLIDE_ENEMY_FAST)
 	{
-		m_referObjMgr.lock()->AppearSlideMoveEnemy(
+		enemyObj = m_referObjMgr.lock()->AppearSlideMoveEnemy(
 			m_referCollisionMgr,
 			m_customParams[arg_type]["speed"],
 			arg_initPos);
@@ -144,7 +146,7 @@ void EnemyEmitter::EmitEnemy(TYPE arg_type, Vec3<float>arg_initPos)
 	{
 		std::vector<float>destArray(static_cast<int>(m_customParams[arg_type]["count"]), arg_initPos.x);
 
-		m_referObjMgr.lock()->AppearSlimeBatteryRouteDefined(
+		enemyObj = m_referObjMgr.lock()->AppearSlimeBatteryRouteDefined(
 			m_referCollisionMgr,
 			arg_initPos,
 			destArray.data(),
@@ -152,11 +154,12 @@ void EnemyEmitter::EmitEnemy(TYPE arg_type, Vec3<float>arg_initPos)
 	}
 	else if (arg_type == TYPE::SLIME_BATTERY_ENEMY_CHASE_PLAYER)
 	{
-		m_referObjMgr.lock()->AppearSlimeBatteryChasePlayer(
+		enemyObj = m_referObjMgr.lock()->AppearSlimeBatteryChasePlayer(
 			m_referCollisionMgr, 
 			arg_initPos, 
 			static_cast<int>(m_customParams[arg_type]["count"]));
 	}
+	m_enemyObjList.push_front(enemyObj);
 }
 
 void EnemyEmitter::TestRandEmit(const TimeScale& arg_timeScale)
@@ -166,4 +169,14 @@ void EnemyEmitter::TestRandEmit(const TimeScale& arg_timeScale)
 		RandEmitEnemys();
 		m_timer.Reset(m_appearSpan);
 	}
+}
+
+int EnemyEmitter::KillAllEnemys()
+{
+	int coinNum = 0;
+	for (auto& obj : m_enemyObjList)
+	{
+		coinNum += obj.lock()->Kill();
+	}
+	return coinNum;
 }

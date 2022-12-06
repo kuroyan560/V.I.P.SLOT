@@ -6,14 +6,19 @@
 #include"Debugger.h"
 #include"ConstParameters.h"
 #include<map>
+#include<forward_list>
 
 class ObjectManager;
 class CollisionManager;
 class TimeScale;
+class GameObject;
 class EnemyEmitter : public Debugger
 {
 	std::weak_ptr<ObjectManager>m_referObjMgr;
 	std::weak_ptr<CollisionManager>m_referCollisionMgr;
+
+	//敵のオブジェクトポインタ配列
+	std::forward_list<std::weak_ptr<GameObject>>m_enemyObjList;
 
 	using TYPE = ConstParameter::Enemy::ENEMY_TYPE;
 	//出現率（％）
@@ -50,4 +55,10 @@ public:
 
 	//テスト用に適当に敵を出現させる
 	void TestRandEmit(const TimeScale& arg_timeScale);
+
+	/// <summary>
+	/// 全ての敵を一掃
+	/// </summary>
+	/// <returns>落としたコイン合計</returns>
+	int KillAllEnemys();
 };

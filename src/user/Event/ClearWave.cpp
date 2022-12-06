@@ -7,6 +7,7 @@
 #include"Player.h"
 #include"WaveMgr.h"
 #include"HUDInterface.h"
+#include"EnemyEmitter.h"
 
 void ClearWave::OnStart()
 {
@@ -27,7 +28,14 @@ void ClearWave::UpdateCameraWork()
 {
 	m_camWorkIdx++;
 	m_timer.Reset(m_camWorkInterval);
-	if (static_cast<int>(m_camWorks.size() - 1) <= m_camWorkIdx)m_timer.Reset(m_slowWaitInterval);
+
+	//ÅŒã‚ÌƒJƒƒ‰ƒ[ƒNŽž
+	if (static_cast<int>(m_camWorks.size() - 1) <= m_camWorkIdx)
+	{
+		m_timer.Reset(m_slowWaitInterval);
+		//“G‘SˆõŽ€–S
+		m_referEnemyEmitter.lock()->KillAllEnemys();
+	}
 }
 
 void ClearWave::OnUpdate()
