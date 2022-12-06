@@ -45,13 +45,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)lib\DirectXTex\inc;$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\engine;$(SolutionDir)src\user\Coin;$(SolutionDir)src\user\Enemy;$(SolutionDir)src\user\Game;$(SolutionDir)src\user\GameObject;$(SolutionDir)src\user\Others;$(SolutionDir)src\user\Player;$(SolutionDir)src\user\Scene;$(SolutionDir)src\user\Slot;$(SolutionDir)src\user\Slot\Pattern;$(SolutionDir)src\user\Stage;$(SolutionDir)src\user\Title;$(SolutionDir)src\user\Wave;$(SolutionDir)src\user\Event;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\imgui;$(IncludePath);$(SolutionDir)packages\rapidjson.temprelease.0.0.2.20\build\native\include</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\dxcompiler\lib\x64;$(SolutionDir)lib\DirectXTex\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)lib\DirectXTex\inc;$(SolutionDir)lib\GLTFSDK\inc;$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\engine;$(SolutionDir)src\user\Coin;$(SolutionDir)src\user\Enemy;$(SolutionDir)src\user\Game;$(SolutionDir)src\user\GameObject;$(SolutionDir)src\user\Others;$(SolutionDir)src\user\Player;$(SolutionDir)src\user\Scene;$(SolutionDir)src\user\Slot;$(SolutionDir)src\user\Slot\Pattern;$(SolutionDir)src\user\Stage;$(SolutionDir)src\user\Title;$(SolutionDir)src\user\Wave;$(SolutionDir)src\user\Event;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\imgui;$(IncludePath);$(SolutionDir)packages\rapidjson.temprelease.0.0.2.20\build\native\include</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\dxcompiler\lib\x64;$(SolutionDir)lib\DirectXTex\lib\$(Configuration);$(SolutionDir)lib\GLTFSDK\lib\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)lib\DirectXTex\inc;$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\engine;$(SolutionDir)src\user\Coin;$(SolutionDir)src\user\Enemy;$(SolutionDir)src\user\Game;$(SolutionDir)src\user\GameObject;$(SolutionDir)src\user\Others;$(SolutionDir)src\user\Player;$(SolutionDir)src\user\Scene;$(SolutionDir)src\user\Slot;$(SolutionDir)src\user\Slot\Pattern;$(SolutionDir)src\user\Stage;$(SolutionDir)src\user\Title;$(SolutionDir)src\user\Wave;$(SolutionDir)src\user\Event;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\imgui</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\dxcompiler\lib\x64;$(SolutionDir)lib\DirectXTex\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)lib\DirectXTex\inc;$(SolutionDir)lib\GLTFSDK\inc;$(SolutionDir)lib\magic_enum;$(SolutionDir)lib\dxcompiler\inc;$(SolutionDir)src\engine\Common;$(SolutionDir)src\engine;$(SolutionDir)src\user\Coin;$(SolutionDir)src\user\Enemy;$(SolutionDir)src\user\Game;$(SolutionDir)src\user\GameObject;$(SolutionDir)src\user\Others;$(SolutionDir)src\user\Player;$(SolutionDir)src\user\Scene;$(SolutionDir)src\user\Slot;$(SolutionDir)src\user\Slot\Pattern;$(SolutionDir)src\user\Stage;$(SolutionDir)src\user\Title;$(SolutionDir)src\user\Wave;$(SolutionDir)src\user\Event;$(SolutionDir)lib\glTF-SDK-master\GLTFSDK\Inc;$(SolutionDir)lib\DirectXTex;$(SolutionDir)lib\imgui</IncludePath>
+    <LibraryPath>$(SolutionDir)lib\dxcompiler\lib\x64;$(SolutionDir)lib\DirectXTex\lib\$(Configuration);$(SolutionDir)lib\GLTFSDK\lib\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -66,7 +66,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dxcompiler.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxcompiler.lib;DirectXTex.lib;GLTFSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
@@ -96,7 +96,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dxcompiler.lib;DirectXTex.lib;</AdditionalDependencies>
+      <AdditionalDependencies>dxcompiler.lib;DirectXTex.lib;GLTFSDK.lib;</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
@@ -335,11 +335,6 @@
     <ClInclude Include="src\user\Title\TitleCamera.h" />
     <ClInclude Include="src\user\Title\TitleUI.h" />
     <ClInclude Include="src\user\Wave\WaveMgr.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="lib\glTF-SDK-master\GLTFSDK\GLTFSDK.vcxproj">
-      <Project>{f656c078-7f2a-4753-9b92-5e959af80e26}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
