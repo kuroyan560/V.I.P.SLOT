@@ -114,6 +114,8 @@ void InGameScene::OnInitialize()
 	//ウェーブマネージャ
 	std::list<Wave>test;
 	test.emplace_back();
+	test.emplace_back();
+	test.back().m_norma = 30;
 	m_waveMgr->Init(test);
 
 	//イベント
@@ -133,7 +135,7 @@ void InGameScene::OnInitialize()
 		this });
 
 	//ウェーブクリア時イベント
-	m_clearWaveEvent.Init(m_gameCam, m_player, &m_timeScale);
+	m_clearWaveEvent.Init(m_gameCam, m_waveMgr, &m_timeScale);
 
 	//HUD描画フラグ
 	HUDInterface::s_draw = true;
@@ -179,11 +181,17 @@ void InGameScene::OnUpdate()
 	//イベント
 	Event::StaticUpdate();
 
-	//クリアしたか
+	//ウェーブクリアしたか
 	if (m_waveMgr->IsWaveClear(m_player->GetCoinNum()))
 	{
-		HUDInterface::s_draw = false;
 		m_clearWaveEvent.Start();
+	}
+
+	//全ウェーブクリアしたか
+	if (m_waveMgr->IsAllWaveClear())
+	{
+		//アウトゲームへ
+		KuroEngine::Instance()->ChangeScene("OutGame");
 	}
 
 	//死亡したか

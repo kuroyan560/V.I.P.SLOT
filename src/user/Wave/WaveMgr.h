@@ -20,6 +20,8 @@ class WaveMgr : public Debugger, public HUDInterface
 	int m_nowWaveIdx;
 	//現在のウェーブの進行時間
 	float m_time;
+	//通算ノルマ
+	int m_sumNorma;
 
 	struct NowAppearInfo
 	{
@@ -46,18 +48,21 @@ class WaveMgr : public Debugger, public HUDInterface
 	void OnImguiItems()override;
 	void OnDraw2D()override;
 
-	//ウェーブ進行時に呼び出し
-	void OnProceedWave();
+	//ウェーブごとの初期化処理
+	void WaveInit();
 
 public:
 	WaveMgr();
 	void Init(std::list<Wave>arg_waves);
 	void Update(const TimeScale& arg_timeScale, std::weak_ptr<EnemyEmitter>arg_enemyEmitter);
 
+	//ウェーブの進行
+	void ProceedWave();
+
 	//現在のウェーブをクリアしたか
 	bool IsWaveClear(const int& arg_playersCoinNum)const
 	{
-		return !m_isInfinity && m_nowWave->m_norma <= arg_playersCoinNum;
+		return !m_isInfinity && m_sumNorma <= arg_playersCoinNum;
 	}
 	//全てのウェーブをクリアしたか
 	bool IsAllWaveClear()const

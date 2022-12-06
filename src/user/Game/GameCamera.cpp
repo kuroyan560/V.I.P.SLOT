@@ -3,7 +3,7 @@
 #include"KuroMath.h"
 #include<math.h>
 
-void GameCamera::SetPosAndTarget(Vec3<float>arg_absOffset, Vec3<float>arg_lerpOffset, float arg_timeScale)
+void GameCamera::SetPosAndTarget(Vec3<float>arg_lerpOffset, float arg_timeScale)
 {
 	Vec3<float>offset = arg_lerpOffset;
 
@@ -13,14 +13,16 @@ void GameCamera::SetPosAndTarget(Vec3<float>arg_absOffset, Vec3<float>arg_lerpOf
 
 	//前景カメラ
 	m_posLerpOffset = KuroMath::Lerp(m_posLerpOffset, offset, 0.05f * arg_timeScale);
-	m_cam[MAIN]->SetPos(m_defaultPos[MAIN] + m_posLerpOffset + arg_absOffset);
+	auto newPos = KuroMath::Lerp(m_cam[MAIN]->GetPos() - m_shake.m_oldOffset, m_defaultPos[MAIN] + m_posLerpOffset, 0.1f * arg_timeScale);
+	m_cam[MAIN]->SetPos(newPos + m_shake.m_offset);
 
 	m_targetLerpOffset = KuroMath::Lerp(m_targetLerpOffset, offset, 0.08f * arg_timeScale);
-	m_cam[MAIN]->SetTarget(m_targetPos[MAIN] + m_targetLerpOffset + arg_absOffset);
+	auto newTarget = KuroMath::Lerp(m_cam[MAIN]->GetTarget() - m_shake.m_oldOffset, m_targetPos[MAIN] + m_targetLerpOffset, 0.1f * arg_timeScale);
+	m_cam[MAIN]->SetTarget(newTarget + m_shake.m_offset);
 
 	//背景カメラ
-	m_cam[SUB]->SetPos(m_defaultPos[SUB] + arg_absOffset);
-	m_cam[SUB]->SetTarget(m_targetPos[SUB] + arg_absOffset);
+	m_cam[SUB]->SetPos(m_defaultPos[SUB] + m_shake.m_offset);
+	m_cam[SUB]->SetTarget(m_targetPos[SUB] + m_shake.m_offset);
 }
 
 
@@ -41,12 +43,14 @@ void GameCamera::Init()
 	m_targetPos[MAIN] = Vec3<float>(0.0f, m_defaultPos[MAIN].y + 2.0f, 0.0f);
 	m_posLerpOffset = { 0,0,0 };
 	m_targetLerpOffset = { 0,0,0 };
-	SetPosAndTarget({ 0,0,0 }, { 0,0,0 },1.0f);
 	m_shake.Init();
+	SetPosAndTarget({ 0,0,0 }, 1.0f);
 }
 
 void GameCamera::Update(float arg_timeScale, Vec3<float>arg_playersDisplacement)
 {
+	//1フレーム前の振動オフセットを記録
+	m_shake.m_offset = m_shake.m_oldOffset;
 	//振動中
 	if (!m_shake.m_activeTimer.UpdateTimer(arg_timeScale))
 	{
@@ -72,7 +76,7 @@ void GameCamera::Update(float arg_timeScale, Vec3<float>arg_playersDisplacement)
 		m_shake.m_offset = { 0,0,0 };
 	}
 
-	SetPosAndTarget(m_shake.m_offset, arg_playersDisplacement,1.0f);
+	SetPosAndTarget( arg_playersDisplacement,1.0f);
 }
 
 void GameCamera::Shake(int arg_time, int arg_span, float arg_powerMin, float arg_powerMax)

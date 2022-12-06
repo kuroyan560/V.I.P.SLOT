@@ -9,7 +9,7 @@ void WaveMgr::OnImguiItems()
 {
 	ImGui::Checkbox("InfinityMode", &m_isInfinity);
 	ImGui::Text("NowWaveIdx : { %d / %d }", m_nowWaveIdx, static_cast<int>(m_waves.size()));
-	ImGui::Text("Norma : { %d }", m_nowWave->m_norma);
+	ImGui::Text("Norma : { %d }", m_sumNorma);
 }
 
 WaveMgr::WaveMgr() : Debugger("WaveMgr")
@@ -48,9 +48,11 @@ void WaveMgr::Init(std::list<Wave>arg_waves)
 	m_nowWaveIdx = 0;
 	//全ウェーブクリアフラグ初期化
 	m_isAllWaveClear = false;
+	//通算ノルマ初期化
+	m_sumNorma = 0;
 
 	//ウェーブ進行時の初期化呼び出し
-	OnProceedWave();
+	WaveInit();
 }
 
 void WaveMgr::Update(const TimeScale& arg_timeScale, std::weak_ptr<EnemyEmitter>arg_enemyEmitter)
@@ -90,6 +92,12 @@ void WaveMgr::Update(const TimeScale& arg_timeScale, std::weak_ptr<EnemyEmitter>
 	}
 }
 
+void WaveMgr::ProceedWave()
+{
+	m_nowWaveIdx++;
+	WaveInit();
+}
+
 void WaveMgr::OnDraw2D()
 {
 	//ノルマ数字描画
@@ -102,7 +110,7 @@ void WaveMgr::OnDraw2D()
 	m_normaStrSprite->Draw();
 }
 
-void WaveMgr::OnProceedWave()
+void WaveMgr::WaveInit()
 {
 	//全ウェーブクリアしたか
 	if (static_cast<int>(m_waves.size()) <= m_nowWaveIdx)
@@ -124,6 +132,9 @@ void WaveMgr::OnProceedWave()
 	}
 	m_nowWave = &(*itr);
 
+	//通算ノルマ更新
+	m_sumNorma += m_nowWave->m_norma;
+
 	/*--- 敵の出現情報配列用意 ---*/
 	m_nowInfoArray.clear();
 	for (const auto& info : m_nowWave->m_appearInfoList)
@@ -136,7 +147,7 @@ void WaveMgr::OnProceedWave()
 	/*--- UI更新 ---*/
 
 	//桁数を調べて、必要なスプライト数を計算
-	int normaDigit = KuroFunc::GetDigit(m_nowWave->m_norma);
+	int normaDigit = KuroFunc::GetDigit(m_sumNorma);
 	//「 / 」分追加
 	m_useSpriteNum = normaDigit + 1;
 
@@ -153,7 +164,7 @@ void WaveMgr::OnProceedWave()
 	//テクスチャのインデックス情報
 	for (int i = 1; i < m_useSpriteNum; ++i)
 	{
-		int num = KuroFunc::GetSpecifiedDigitNum(m_nowWave->m_norma, m_useSpriteNum - i - 1, false);
+		int num = KuroFunc::GetSpecifiedDigitNum(m_sumNorma, m_useSpriteNum - i - 1, false);
 		m_normaNumSpriteArray[i]->SetTexture(m_normaTexArray[num]);
 	}
 

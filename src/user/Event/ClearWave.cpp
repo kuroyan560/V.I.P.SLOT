@@ -5,6 +5,8 @@
 #include"Camera.h"
 #include"GameCamera.h"
 #include"Player.h"
+#include"WaveMgr.h"
+#include"HUDInterface.h"
 
 void ClearWave::OnStart()
 {
@@ -16,6 +18,9 @@ void ClearWave::OnStart()
 	m_camWorkIdx = -1;
 
 	m_referTimeScale->Set(0.0f);
+
+	//HUD非表示
+	HUDInterface::s_draw = false;
 }
 
 void ClearWave::UpdateCameraWork()
@@ -44,18 +49,22 @@ void ClearWave::OnUpdate()
 		//カメラワーク
 		if (0 <= m_camWorkIdx && m_camWorkIdx < static_cast<int>(m_camWorks.size()))
 		{
+			//現在のカメラワークの参照取得
 			const auto& camWork = m_camWorks[m_camWorkIdx];
+
+			//プレイヤー座標取得
+			auto playerPos = InGameMonitor::GetPlayer()->GetCenterPos();
 
 			//座標
 			Vec3<float>pos = camWork.m_easeParam.Calculate(m_timer.GetTimeRate(),
-				m_referPlayer.lock()->GetCenterPos() + camWork.m_startPosOffset,
-				m_referPlayer.lock()->GetCenterPos() + camWork.m_endPosOffset);
+				playerPos + camWork.m_startPosOffset,
+				playerPos + camWork.m_endPosOffset);
 			m_cam->SetPos(pos);
 
 			//注視点
 			Vec3<float>target = camWork.m_easeParam.Calculate(m_timer.GetTimeRate(),
-				m_referPlayer.lock()->GetCenterPos() + camWork.m_startTargetOffset,
-				m_referPlayer.lock()->GetCenterPos() + camWork.m_endTargetOffset);
+				playerPos + camWork.m_startTargetOffset,
+				playerPos + camWork.m_endTargetOffset);
 			m_cam->SetTarget(target);
 		}
 
@@ -73,7 +82,9 @@ void ClearWave::OnUpdate()
 			if (static_cast<int>(m_camWorks.size()) - 1 <= m_camWorkIdx)
 			{
 				m_status = END;
-				KuroEngine::Instance()->ChangeScene("OutGame");
+				m_referWaveMgr.lock()->ProceedWave();
+				*m_referGameCam.lock()->GetMainCam() = *this->m_cam;
+				m_referTimeScale->Set(1.0f);
 			}
 			//カメラワーク間の待機時間
 			else
@@ -93,6 +104,8 @@ void ClearWave::OnUpdate()
 }
 void ClearWave::OnFinish()
 {
+	//HUD表示
+	HUDInterface::s_draw = true;
 }
 
 std::shared_ptr<Camera> ClearWave::GetSubCam()
@@ -142,7 +155,7 @@ void ClearWave::OnImguiItems()
 			if (ImGui::DragFloat3("StartTarget", (float*)&m_camWorks[i].m_startTargetOffset, 0.02f))start = true;
 			if (ImGui::DragFloat3("EndTarget", (float*)&m_camWorks[i].m_endTargetOffset, 0.02f))end = true;
 
-			auto playerPos = m_referPlayer.lock()->GetCenterPos();
+			auto playerPos = InGameMonitor::GetPlayer()->GetCenterPos();
 			if (start)
 			{
 				m_cam->SetPos(playerPos + m_camWorks[i].m_startPosOffset);
@@ -173,7 +186,7 @@ void ClearWave::OnImguiItems()
 
 }
 
-ClearWave::ClearWave() : Event(false, false), Debugger("ClearWave")
+ClearWave::ClearWave() : Event(false), Debugger("ClearWave")
 {
 	m_cam = std::make_shared<Camera>("ClearWave - Event - Camera");
 	m_camWorks.emplace_back();

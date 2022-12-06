@@ -4,16 +4,17 @@
 #include"Debugger.h"
 #include"Vec.h"
 #include"KuroMath.h"
+#include"InGameMonitor.h"
 class TimeScale;
 class GameCamera;
-class Player;
+class WaveMgr;
 
 //ウェーブクリア時の演出
-class ClearWave : public Event, public Debugger
+class ClearWave : public Event, public Debugger, public InGameMonitor
 {
 	//演出で参照するポインタの保持
 	std::weak_ptr<GameCamera>m_referGameCam;
-	std::weak_ptr<Player>m_referPlayer;
+	std::weak_ptr<WaveMgr>m_referWaveMgr;
 	TimeScale* m_referTimeScale;
 
 	//演出ステータス
@@ -65,7 +66,7 @@ class ClearWave : public Event, public Debugger
 	void OnStart()override;
 	void OnUpdate()override;
 	void OnFinish()override;
-	bool End()override { return false; }
+	bool End()override { return m_status == END; }
 	std::shared_ptr<Camera>GetMainCam()override { return m_cam; }
 	std::shared_ptr<Camera>GetSubCam()override;
 
@@ -77,12 +78,12 @@ public:
 	ClearWave();
 
 	//参照するパラメータを保持
-	void Init(	std::weak_ptr<GameCamera>arg_gameCam,
-		std::weak_ptr<Player>arg_player,
+	void Init(std::weak_ptr<GameCamera>arg_gameCam,
+		std::weak_ptr<WaveMgr>arg_waveMgr,
 		TimeScale* arg_timeScale) 
 	{
 		m_referGameCam = arg_gameCam; 
-		m_referPlayer = arg_player;
+		m_referWaveMgr = arg_waveMgr;
 		m_referTimeScale = arg_timeScale;
 	}
 };

@@ -43,11 +43,15 @@ class GameCamera
 		float m_powerMin;
 		//振動の強さ乱数上限
 		float m_powerMax;
+		//1フレーム前の振動オフセット
+		Vec3<float>m_oldOffset;
 		//振動オフセット
 		Vec3<float>m_offset;
 
 		void Init()
 		{
+			m_oldOffset = { 0,0,0 };
+			m_offset = { 0,0,0 };
 			m_activeTimer.Reset(0);
 		}
 	}m_shake;
@@ -56,7 +60,7 @@ class GameCamera
 	Vec3<float>m_posLerpOffset;
 	Vec3<float>m_targetLerpOffset;
 
-	void SetPosAndTarget(Vec3<float>arg_absOffset, Vec3<float>arg_lerpOffset, float arg_timeScale);
+	void SetPosAndTarget(Vec3<float>arg_lerpOffset, float arg_timeScale);
 
 public:
 	GameCamera();

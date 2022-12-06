@@ -15,7 +15,7 @@ class Event
 
 protected:
 	//イベント中のパラメータを設定
-	Event(bool arg_collision, bool arg_drawUI) :m_collision(arg_collision) {}
+	Event(bool arg_collision) :m_collision(arg_collision) {}
 
 	//イベント開始時の処理
 	virtual void OnStart() = 0;
