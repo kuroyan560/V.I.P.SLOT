@@ -263,6 +263,9 @@ bool PlayerHp::Change(int arg_amount)
 		//ライフ(ハート)消費
 		if (consumeLife)
 		{
+			//ダメージ演出中断
+			m_damageEffect.Interruput();
+
 			m_consumeLifeEffect.Start(&m_hpBar);
 			m_hpBar.m_active = false;
 		}
@@ -305,15 +308,25 @@ void PlayerHp::ConsumeLifeEffect::Update(float arg_timeScale, DrawContents* arg_
 
 void PlayerHp::DamageEffect::Start(float arg_startHpRate, float arg_endHpRate, std::weak_ptr<Sprite> arg_hpBarSprite)
 {
+	m_endHpRate = arg_endHpRate;
+	//HPバーサイズ変更
+	arg_hpBarSprite.lock()->m_mesh.SetSize(CalculateHpBarSize(arg_hpBarSprite.lock()->GetTex()->GetGraphSize().Float(), arg_endHpRate));
+
+	//UI振動
+	m_shake.Shake(30.0f, 3.0f, 0.0f, 32.0f);
+
+	//既にアクティブ状態かつ待機状態（延長して終了）
+	if (m_hpBarDamage.m_active && !m_waitTimer.IsTimeUp())
+	{
+		//待機時間延長
+		m_waitTimer.Reset(45.0f);
+		return;
+	}
+
 	m_hpBarDamage.m_active = true;
 	m_drawChangeTimer.Reset(30.0f);
 	m_waitTimer.Reset(45.0f);
-	m_shake.Shake(30.0f, 3.0f, 0.0f, 32.0f);
 	m_startHpRate = arg_startHpRate;
-	m_endHpRate = arg_endHpRate;
-
-	//HPバーサイズ変更
-	arg_hpBarSprite.lock()->m_mesh.SetSize(CalculateHpBarSize(arg_hpBarSprite.lock()->GetTex()->GetGraphSize().Float(), arg_endHpRate));
 }
 
 void PlayerHp::DamageEffect::Update(float arg_timeScale)
@@ -390,7 +403,6 @@ void PlayerHp::HealEffect::Start(float arg_startHpRate, float arg_endHpRate)
 	//回復HPバーサイズ変更
 	m_hpBarHeal.m_sprite->m_mesh.SetSize(CalculateHpBarSize(
 		m_hpBarHeal.m_sprite->GetTex()->GetGraphSize().Float(), m_endHpRate));
-	
 
 	//既にアクティブ状態かつ待機状態（延長して終了）
 	if (m_hpBarHeal.m_active && !m_waitTimer.IsTimeUp())
