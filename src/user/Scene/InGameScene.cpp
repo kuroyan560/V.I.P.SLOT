@@ -19,6 +19,7 @@
 #include"Debugger.h"
 #include"Event.h"
 #include"InGameMonitor.h"
+#include"ParticleMgr2D.h"
 
 void InGameScene::OnImguiItems()
 {
@@ -139,6 +140,9 @@ void InGameScene::OnInitialize()
 
 	//HUD描画フラグ
 	HUDInterface::s_draw = true;
+
+	//パーティクルマネージャ2D
+	ParticleMgr2D::Instance()->Init();
 }
 
 void InGameScene::OnUpdate()
@@ -187,6 +191,9 @@ void InGameScene::OnUpdate()
 
 	//オブジェクトマネージャ
 	m_objMgr->Update(m_timeScale, m_collisionMgr);
+
+	//パーティクルマネージャ2D
+	ParticleMgr2D::Instance()->Update(m_timeScale.GetTimeScale());
 
 	//イベント
 	Event::StaticUpdate();
@@ -278,6 +285,9 @@ void InGameScene::OnDraw()
 	m_player->Draw2D(mainCam);
 	m_stageMgr->Draw2D(mainCam);
 	m_waveMgr->Draw2D();
+
+	//パーティクルマネージャ2D
+	ParticleMgr2D::Instance()->Draw();
 }
 
 void InGameScene::OnImguiDebug()

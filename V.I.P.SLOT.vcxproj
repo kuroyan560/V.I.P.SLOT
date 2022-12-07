@@ -188,6 +188,7 @@
     <ClCompile Include="src\user\Others\HandShake.cpp" />
     <ClCompile Include="src\user\Others\HUDInterface.cpp" />
     <ClCompile Include="src\user\Others\ImpactShake.cpp" />
+    <ClCompile Include="src\user\Others\ParticleMgr2D.cpp" />
     <ClCompile Include="src\user\Others\RandBox2D.cpp" />
     <ClCompile Include="src\user\Others\RenderTargetManager.cpp" />
     <ClCompile Include="src\user\Others\TexHitEffect.cpp" />
@@ -313,6 +314,7 @@
     <ClInclude Include="src\user\Others\HandShake.h" />
     <ClInclude Include="src\user\Others\HUDInterface.h" />
     <ClInclude Include="src\user\Others\ImpactShake.h" />
+    <ClInclude Include="src\user\Others\ParticleMgr2D.h" />
     <ClInclude Include="src\user\Others\RandBox2D.h" />
     <ClInclude Include="src\user\Others\RenderTargetManager.h" />
     <ClInclude Include="src\user\Others\TexHitEffect.h" />
