@@ -151,4 +151,7 @@ public:
 	const int& GetLife()const { return m_playerHp.GetLife(); }
 	//死亡したか
 	bool IsDead()const { return m_playerHp.IsDead(); }
+
+	//デバッグ用ダメージ関数
+	void DebugDamage() { m_damegedCallBack->Execute(); }
 };

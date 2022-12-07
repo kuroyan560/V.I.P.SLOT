@@ -79,8 +79,7 @@ void PlayersCounterAttack::OnCollisionTrigger(const Vec3<float>& arg_inter, std:
 }
 
 
-void DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter,
-	std::weak_ptr<Collider>arg_otherCollider)
+void DamagedCallBack::Execute()
 {
 	using namespace ConstParameter::Player;
 
@@ -104,6 +103,12 @@ void DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter,
 
 	//“_–Å
 	m_flashTimer.Reset(FLASH_SPAN_ON_DAMAGED_INVINCIBLE);
+}
+
+void DamagedCallBack::OnCollisionTrigger(const Vec3<float>& arg_inter,
+	std::weak_ptr<Collider>arg_otherCollider)
+{
+	this->Execute();
 }
 
 void DamagedCallBack::Update(TimeScale& arg_timeScale)

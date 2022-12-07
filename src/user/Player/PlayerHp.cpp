@@ -266,8 +266,8 @@ bool PlayerHp::Change(int arg_amount)
 			//ダメージ演出中断
 			m_damageEffect.Interruput();
 
+			//ハート消費演出
 			m_consumeLifeEffect.Start(&m_hpBar);
-			m_hpBar.m_active = false;
 		}
 		else
 		{
@@ -290,18 +290,24 @@ bool PlayerHp::Change(int arg_amount)
 
 void PlayerHp::ConsumeLifeEffect::Start(DrawContents* arg_hpBar)
 {
+	//ダメージハートアクティブに
 	m_damageHeart.m_active = true;
+	//HPバーが見えなくなる
 	arg_hpBar->m_active = false;
-	m_damageHeart.m_sprite->m_transform.SetPos(m_damageHeart.m_initPos);
+	//HPバー満タン状態にサイズ変更
+	arg_hpBar->m_sprite->m_mesh.SetSize(CalculateHpBarSize(arg_hpBar->m_sprite->GetTex()->GetGraphSize().Float(), 1.0f));
 }
 
 void PlayerHp::ConsumeLifeEffect::Update(float arg_timeScale, DrawContents* arg_hpBar)
 {
 	if (!m_damageHeart.m_active)return;
 
+	//時間が進みだした
 	if (arg_timeScale)
 	{
+		//ダメージハートを見えなくする
 		m_damageHeart.m_active = false;
+		//HPバーを見えるようにする
 		arg_hpBar->m_active = true;
 	}
 }

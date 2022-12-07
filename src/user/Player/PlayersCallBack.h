@@ -143,4 +143,7 @@ public:
 	void Update(TimeScale& arg_timeScale);
 
 	const bool& GetIsDraw()const { return m_isDraw; }
+
+	//デバッグ用に外部から呼び出せるように
+	void Execute();
 };

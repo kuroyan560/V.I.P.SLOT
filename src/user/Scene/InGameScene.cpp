@@ -167,7 +167,7 @@ void InGameScene::OnUpdate()
 	if (UsersInput::Instance()->KeyOnTrigger(DIK_DOWN)
 		|| UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::DPAD_DOWN))
 	{
-		m_player->Damage(1);
+		m_player->DebugDamage();
 	}
 
 	//コリジョンマネージャ
