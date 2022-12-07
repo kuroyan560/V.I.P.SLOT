@@ -6,6 +6,8 @@
 #include<vector>
 #include<string>
 #include"KuroMath.h"
+#include<map>
+#include"D3D12Data.h"
 
 class VertexBuffer;
 class ComputePipeline;
@@ -76,6 +78,8 @@ class ParticleMgr2D : public Singleton<ParticleMgr2D>
 		ParticleInitializer* m_defaultInitializer = nullptr;
 		//次に放出するパーティクルのインデックス
 		int m_nextEmitParticleIdx = 0;
+		//描画時のブレンドモード
+		AlphaBlendMode m_blendMode;
 
 		~DefineParticleInfo()
 		{
@@ -99,7 +103,7 @@ class ParticleMgr2D : public Singleton<ParticleMgr2D>
 	std::shared_ptr<ComputePipeline>m_commonComputePipeline;
 
 	//描画用グラフィックパイプライン
-	std::shared_ptr<GraphicsPipeline>m_graphicsPipeline;
+	std::map<AlphaBlendMode, std::shared_ptr<GraphicsPipeline>>m_graphicsPipeline;
 
 public:
 	void Init();
@@ -114,8 +118,14 @@ public:
 	/// <param name="arg_texArray">テクスチャ配列先頭ポインタ</param>
 	/// <param name="arg_texArraySize">テクスチャ配列サイズ</param>
 	/// <param name="arg_defaultInitializer">デフォルトの初期化情報</param>
+	/// <param name="arg_blendMode">描画時のブレンドモード</param>
 	/// <returns>パーティクルID：パーティクル情報のインデックス(Emit時に必要)</returns>
-	int Prepare(int arg_maxInstanceNum, std::string arg_computeShaderPath, std::shared_ptr<TextureBuffer>* arg_texArray, size_t arg_texArraySize, ParticleInitializer* arg_defaultInitializer = nullptr);
+	int Prepare(int arg_maxInstanceNum,
+		std::string arg_computeShaderPath,
+		std::shared_ptr<TextureBuffer>* arg_texArray,
+		size_t arg_texArraySize,
+		ParticleInitializer* arg_defaultInitializer = nullptr,
+		AlphaBlendMode arg_blendMode = AlphaBlendMode_Trans);
 
 	/// <summary>
 	/// パーティクル生成

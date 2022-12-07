@@ -1610,10 +1610,8 @@ std::shared_ptr<GraphicsPipeline>D3D12App::GenerateGraphicsPipeline(
 			{
 				//加算合成のブレンドステート作成
 				desc.BlendState.RenderTarget[idx].BlendEnable = true;
-				desc.BlendState.RenderTarget[idx].SrcBlend = D3D12_BLEND_ONE;
-				desc.BlendState.RenderTarget[idx].SrcBlendAlpha = D3D12_BLEND_ONE;
+				desc.BlendState.RenderTarget[idx].SrcBlend = D3D12_BLEND_SRC_ALPHA;
 				desc.BlendState.RenderTarget[idx].DestBlend = D3D12_BLEND_ONE;
-				desc.BlendState.RenderTarget[idx].DestBlendAlpha = D3D12_BLEND_ONE;
 				desc.BlendState.RenderTarget[idx].BlendOp = D3D12_BLEND_OP_ADD;
 			}
 			else desc.BlendState.RenderTarget[idx].BlendEnable = false;	//完全上書き

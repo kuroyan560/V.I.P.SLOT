@@ -75,15 +75,19 @@ ParticleMgr2D::ParticleMgr2D()
 			ROOT_PARAMETER.emplace_back(RootParam(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, ("テクスチャ情報 - " + std::to_string(i)).c_str()));
 		}
 
-		//レンダーターゲット描画先情報
-		static std::vector<RenderTargetInfo>RENDER_TARGET_INFO =
+		for (int i = 0; i < AlphaBlendModeNum; ++i)
 		{
-			//バックバッファのフォーマット、アルファブレンド
-			RenderTargetInfo(d3d12app->GetBackBuffFormat(),AlphaBlendMode_Trans),
-		};
+			auto blendMode = (AlphaBlendMode)i;
+			//レンダーターゲット描画先情報
+			std::vector<RenderTargetInfo>renderTargetInfo =
+			{
+				//バックバッファのフォーマット、アルファブレンド
+				RenderTargetInfo(d3d12app->GetBackBuffFormat(),blendMode),
+			};
 
-		//パイプライン生成
-		m_graphicsPipeline = d3d12app->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, INPUT_LAYOUT, ROOT_PARAMETER, RENDER_TARGET_INFO, { WrappedSampler(false, false) });
+			//パイプライン生成
+			m_graphicsPipeline[blendMode] = d3d12app->GenerateGraphicsPipeline(PIPELINE_OPTION, SHADERS, INPUT_LAYOUT, ROOT_PARAMETER, renderTargetInfo, {WrappedSampler(false, false)});
+		}
 	}
 }
 
@@ -158,7 +162,7 @@ void ParticleMgr2D::Draw()
 			descDatas.push_back({ tex ,SRV });
 		}
 
-		graphics.SetGraphicsPipeline(m_graphicsPipeline);
+		graphics.SetGraphicsPipeline(m_graphicsPipeline[info.m_blendMode]);
 		graphics.ObjectRender(
 			info.m_vertBuff,
 			descDatas,
@@ -168,7 +172,12 @@ void ParticleMgr2D::Draw()
 	}
 }
 
-int ParticleMgr2D::Prepare(int arg_maxInstanceNum, std::string arg_computeShaderPath, std::shared_ptr<TextureBuffer>* arg_texArray, size_t arg_texArraySize, ParticleInitializer* arg_defaultInitializer)
+int ParticleMgr2D::Prepare(int arg_maxInstanceNum, 
+	std::string arg_computeShaderPath, 
+	std::shared_ptr<TextureBuffer>* arg_texArray, 
+	size_t arg_texArraySize, 
+	ParticleInitializer* arg_defaultInitializer, 
+	AlphaBlendMode arg_blendMode)
 {
 	//セットできるテクスチャの最大数を超えている
 	assert(static_cast<int>(arg_texArraySize) < TEX_NUM_MAX);
@@ -218,6 +227,9 @@ int ParticleMgr2D::Prepare(int arg_maxInstanceNum, std::string arg_computeShader
 	{
 		info.m_defaultInitializer = new ParticleInitializer(*arg_defaultInitializer);
 	}
+
+	//ブレンドモード記録
+	info.m_blendMode = arg_blendMode;
 
 	return particleID;
 }
