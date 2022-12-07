@@ -136,7 +136,7 @@ public:
 	const D3D12_RESOURCE_STATES& GetResourceBarrier() { return m_barrier; }
 
 	//マッピング
-	void Mapping(const size_t& DataSize, const int& ElementNum, const void* SendData);
+	void Mapping(const size_t& DataSize, const int& ElementNum, const void* SendData, const int OffsetElementNum = 0);
 	//リソースバリアの変更
 	void ChangeBarrier(const ComPtr<ID3D12GraphicsCommandList>& CmdList, const D3D12_RESOURCE_STATES& NewBarrier);
 	//バッファのコピー（インスタンスは別物、引数にコピー元）
@@ -516,6 +516,14 @@ public:
 		m_resource = std::make_shared<GPUResource>(Buff, Barrier);
 		m_rwBuff = std::make_shared<RWStructuredBuffer>(m_resource, UAVHandle, m_vertexSize, m_sendVertexNum);
 	}
+	//一部データ送信
+	void Mapping(void* SendData, int SendElementNum, unsigned int OffsetElementNum)
+	{
+		//上限を超えている
+		assert(OffsetElementNum < m_sendVertexNum);
+		m_resource->Mapping(m_vertexSize, SendElementNum, SendData, OffsetElementNum);
+	}
+	//全データ送信
 	void Mapping(void* SendData)
 	{
 		m_resource->Mapping(m_vertexSize, m_sendVertexNum, SendData);

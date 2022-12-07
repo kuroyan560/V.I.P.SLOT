@@ -1,8 +1,8 @@
 #include"D3D12Data.h"
 
-void GPUResource::Mapping(const size_t& DataSize, const int& ElementNum, const void* SendData)
+void GPUResource::Mapping(const size_t& DataSize, const int& ElementNum, const void* SendData, const int OffsetElementNum)
 {
-	//送るデータがnullなら何もしない
+	//送るデータがnull
 	assert(SendData);
 
 	//まだマッピングしていなければマッピング
@@ -14,7 +14,8 @@ void GPUResource::Mapping(const size_t& DataSize, const int& ElementNum, const v
 		m_mapped = true;
 	}
 
-	memcpy(m_buffOnCPU, SendData, DataSize * ElementNum);
+	char* dest = (char*)m_buffOnCPU + DataSize * OffsetElementNum;
+	memcpy((void*)dest, SendData, DataSize * ElementNum);
 }
 
 void GPUResource::ChangeBarrier(const ComPtr<ID3D12GraphicsCommandList>& CmdList, const D3D12_RESOURCE_STATES& NewBarrier)
