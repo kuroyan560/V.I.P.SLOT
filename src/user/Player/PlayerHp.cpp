@@ -195,6 +195,10 @@ void PlayerHp::Update(const float& arg_timeScale)
 			m_healEffect.m_startHpRate,
 			m_healEffect.m_endHpRate);
 		m_hpBar.m_sprite->m_mesh.SetSize(CalculateHpBarSize(sizeRate));
+
+		//‰ñ•œ•ªHPƒo[“_–Å
+		float alpha = KuroMath::Ease(In, Liner, abs(cos(m_healEffect.m_flashRadian)), 1.0f, 0.5f);
+		m_healEffect.m_hpBarHeal.m_sprite->SetColor(Color(1.0f, 1.0f, 1.0f, alpha));
 	}
 
 	m_consumeLifeEffect.Update(arg_timeScale, &m_hpBar);

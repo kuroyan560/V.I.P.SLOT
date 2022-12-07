@@ -104,6 +104,8 @@ class PlayerHp : public HUDInterface
 		Timer m_waitTimer;
 		//描画での変化タイマー
 		Timer m_drawChangeTimer;
+		//点滅ラジアン
+		float m_flashRadian;
 
 		float m_startHpRate = 0.0f;
 		float m_endHpRate = 0.0f;
@@ -119,6 +121,7 @@ class PlayerHp : public HUDInterface
 			m_waitTimer.Reset(45.0f);
 			m_startHpRate = arg_startHpRate;
 			m_endHpRate = arg_endHpRate;
+			m_flashRadian = 0.0f;
 		}
 		void Update(float arg_timeScale)
 		{
@@ -127,6 +130,8 @@ class PlayerHp : public HUDInterface
 				m_hpBarHeal.m_active = false;
 				return;
 			}
+
+			m_flashRadian += Angle::ConvertToRadian(10.0f);
 
 			if (m_waitTimer.UpdateTimer(arg_timeScale))
 			{
