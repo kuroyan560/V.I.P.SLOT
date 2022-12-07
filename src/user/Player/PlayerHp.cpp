@@ -386,17 +386,26 @@ PlayerHp::HealEffect::HealEffect()
 
 void PlayerHp::HealEffect::Start(float arg_startHpRate, float arg_endHpRate)
 {
-	m_hpBarHeal.m_active = true;
-	m_drawChangeTimer.Reset(30.0f);
-	m_waitTimer.Reset(45.0f);
-	m_startHpRate = arg_startHpRate;
 	m_endHpRate = arg_endHpRate;
-	m_flashRadian = 0.0f;
-	m_ptEmitTimer.Reset(10.0f);
-
 	//回復HPバーサイズ変更
 	m_hpBarHeal.m_sprite->m_mesh.SetSize(CalculateHpBarSize(
 		m_hpBarHeal.m_sprite->GetTex()->GetGraphSize().Float(), m_endHpRate));
+	
+
+	//既にアクティブ状態かつ待機状態（延長して終了）
+	if (m_hpBarHeal.m_active && !m_waitTimer.IsTimeUp())
+	{
+		//待機時間延長
+		m_waitTimer.Reset(45.0f);
+		return;
+	}
+
+	m_hpBarHeal.m_active = true;
+	m_drawChangeTimer.Reset(30.0f);
+	m_startHpRate = arg_startHpRate;
+	m_flashRadian = 0.0f;
+	m_ptEmitTimer.Reset(10.0f);
+	m_waitTimer.Reset(45.0f);
 }
 
 void PlayerHp::HealEffect::Update(float arg_timeScale, Vec2<float>arg_uiPos, std::weak_ptr<Sprite>arg_hpBarSprite)
