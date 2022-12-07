@@ -50,8 +50,7 @@ class PlayerHp : public HUDInterface
 	/*--- ダメージ演出 ---*/
 	struct DamageEffect
 	{
-		//HPバー（ダメージ）
-		DrawContents m_hpBarDamage;
+	private:
 		//待機時間
 		Timer m_waitTimer;
 		//描画での変化タイマー
@@ -61,83 +60,57 @@ class PlayerHp : public HUDInterface
 
 		float m_startHpRate = 0.0f;
 		float m_endHpRate = 0.0f;
-
+	public:
+		//HPバー（ダメージ）
+		DrawContents m_hpBarDamage;
 		void Init()
 		{
 			m_shake.Init();
 			m_hpBarDamage.m_active = false;
 		}
-		void Start(float arg_startHpRate, float arg_endHpRate)
-		{
-			m_hpBarDamage.m_active = true;
-			m_drawChangeTimer.Reset(30.0f);
-			m_waitTimer.Reset(45.0f);
-			m_shake.Shake(30.0f, 3.0f, 0.0f, 32.0f);
-			m_startHpRate = arg_startHpRate;
-			m_endHpRate = arg_endHpRate;
-		}
-		void Update(float arg_timeScale)
-		{
-			if (m_drawChangeTimer.IsTimeUp())
-			{
-				m_hpBarDamage.m_active = false;
-				return;
-			}
-
-			if (m_waitTimer.UpdateTimer(arg_timeScale))
-			{
-				m_drawChangeTimer.UpdateTimer(arg_timeScale);
-			}
-
-			//※タイムスケールの影響を受けない
-			m_shake.Update(1.0f);
-		}
+		void Start(float arg_startHpRate, float arg_endHpRate, std::weak_ptr<Sprite>arg_hpBarSprite);
+		void Update(float arg_timeScale);
 		void Interruput() { Init(); }
+		Vec2<float>GetOffset()const
+		{
+			return { m_shake.GetOffset().x,m_shake.GetOffset().y };
+		}
 	}m_damageEffect;
 
 	/*--- HP回復演出 ---*/
 	struct HealEffect
 	{
-		//HPバー（回復）
-		DrawContents m_hpBarHeal;
+	private:
 		//待機時間
 		Timer m_waitTimer;
 		//描画での変化タイマー
 		Timer m_drawChangeTimer;
+		//パーティクルの放出スパン
+		Timer m_ptEmitTimer;
+
 		//点滅ラジアン
 		float m_flashRadian;
 
 		float m_startHpRate = 0.0f;
 		float m_endHpRate = 0.0f;
 
+		//ParticleMgrから受け取ったパーティクルID
+		int m_particleID;
+
+		void EmitParticle(Vec2<float>arg_basePos, float arg_randMaxPosX);
+
+	public:
+		//HPバー（回復）
+		DrawContents m_hpBarHeal;
+
+		HealEffect();
+
 		void Init()
 		{
 			m_hpBarHeal.m_active = false;
 		}
-		void Start(float arg_startHpRate, float arg_endHpRate)
-		{
-			m_hpBarHeal.m_active = true;
-			m_drawChangeTimer.Reset(30.0f);
-			m_waitTimer.Reset(45.0f);
-			m_startHpRate = arg_startHpRate;
-			m_endHpRate = arg_endHpRate;
-			m_flashRadian = 0.0f;
-		}
-		void Update(float arg_timeScale)
-		{
-			if (m_drawChangeTimer.IsTimeUp())
-			{
-				m_hpBarHeal.m_active = false;
-				return;
-			}
-
-			m_flashRadian += Angle::ConvertToRadian(10.0f);
-
-			if (m_waitTimer.UpdateTimer(arg_timeScale))
-			{
-				m_drawChangeTimer.UpdateTimer(arg_timeScale);
-			}
-		}
+		void Start(float arg_startHpRate, float arg_endHpRate);
+		void Update(float arg_timeScale, Vec2<float>arg_uiPos, std::weak_ptr<Sprite>arg_hpBarSprite);
 		void Interruput() { Init(); }
 	}m_healEffect;
 
@@ -156,7 +129,7 @@ class PlayerHp : public HUDInterface
 	}m_consumeLifeEffect;
 
 	//HPバーサイズ取得
-	Vec2<float>CalculateHpBarSize(float arg_rate);
+	static Vec2<float>CalculateHpBarSize(Vec2<float>arg_texSize, float arg_rate);
 
 	//描画
 	void OnDraw2D()override;

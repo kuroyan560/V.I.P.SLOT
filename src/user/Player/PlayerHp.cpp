@@ -4,10 +4,11 @@
 #include"DrawFunc2D.h"
 #include"Sprite.h"
 #include"KuroEngine.h"
+#include"ParticleMgr2D.h"
 
-Vec2<float> PlayerHp::CalculateHpBarSize(float arg_rate)
+Vec2<float> PlayerHp::CalculateHpBarSize(Vec2<float>arg_texSize, float arg_rate)
 {
-	auto hpBarSize = m_hpBar.m_sprite->GetTex()->GetGraphSize().Float();
+	auto hpBarSize = arg_texSize;
 	hpBarSize.x = arg_rate * hpBarSize.x;
 	return hpBarSize;
 }
@@ -110,7 +111,7 @@ void PlayerHp::Init(int arg_initMaxLife, int arg_initRemainLife)
 	m_hp = MAX_HP;
 
 	//HPバーサイズ更新
-	m_hpBar.m_sprite->m_mesh.SetSize(CalculateHpBarSize(1.0f));
+	m_hpBar.m_sprite->m_mesh.SetSize(CalculateHpBarSize(m_hpBar.m_sprite->GetTex()->GetGraphSize().Float(), 1.0f));
 
 	//UI位置初期化
 	m_transform.SetPos(m_uiInitPos);
@@ -165,43 +166,19 @@ void PlayerHp::Init(int arg_initMaxLife, int arg_initRemainLife)
 
 void PlayerHp::Update(const float& arg_timeScale)
 {
+	//ダメージ演出
 	m_damageEffect.Update(arg_timeScale);
 
-	//ダメージ演出によるHPバーサイズ変更
-	if (m_damageEffect.m_hpBarDamage.m_active)
-	{
-		//ダメージHPバーが小さくなっていく
-		float sizeRate = KuroMath::Ease(In, Sine,
-			m_damageEffect.m_drawChangeTimer.GetTimeRate(),
-			m_damageEffect.m_startHpRate,
-			m_damageEffect.m_endHpRate);
-		m_damageEffect.m_hpBarDamage.m_sprite->m_mesh.SetSize(CalculateHpBarSize(sizeRate));
-
-		//UI振動
-		for (auto& content : m_contents)
-		{
-			content->m_sprite->m_transform.SetPos(content->m_initPos + Vec2<float>(m_damageEffect.m_shake.GetOffset().x, m_damageEffect.m_shake.GetOffset().y));
-		}
-	}
-
-	m_healEffect.Update(arg_timeScale);
-
-	//回復演出によるHPバーサイズ変更
-	if (m_healEffect.m_hpBarHeal.m_active)
-	{
-		//HPバーが大きくなっていく
-		float sizeRate = KuroMath::Ease(In, Sine,
-			m_healEffect.m_drawChangeTimer.GetTimeRate(),
-			m_healEffect.m_startHpRate,
-			m_healEffect.m_endHpRate);
-		m_hpBar.m_sprite->m_mesh.SetSize(CalculateHpBarSize(sizeRate));
-
-		//回復分HPバー点滅
-		float alpha = KuroMath::Ease(In, Liner, abs(cos(m_healEffect.m_flashRadian)), 1.0f, 0.5f);
-		m_healEffect.m_hpBarHeal.m_sprite->SetColor(Color(1.0f, 1.0f, 1.0f, alpha));
-	}
+	//回復演出
+	m_healEffect.Update(arg_timeScale, m_transform.GetPos(), m_hpBar.m_sprite);
 
 	m_consumeLifeEffect.Update(arg_timeScale, &m_hpBar);
+
+	//UI振動
+	for (auto& content : m_contents)
+	{
+		content->m_sprite->m_transform.SetPos(content->m_initPos + m_damageEffect.GetOffset());
+	}
 }
 
 
@@ -280,9 +257,6 @@ bool PlayerHp::Change(int arg_amount)
 	//ダメージ
 	if (arg_amount < 0)
 	{
-		//HPバーサイズ変更
-		m_hpBar.m_sprite->m_mesh.SetSize(CalculateHpBarSize(afterHpRate));
-
 		//回復演出中断
 		m_healEffect.Interruput();
 
@@ -295,7 +269,7 @@ bool PlayerHp::Change(int arg_amount)
 		else
 		{
 			//ダメージ演出
-			m_damageEffect.Start(beforeHpRate, afterHpRate);
+			m_damageEffect.Start(beforeHpRate, afterHpRate, m_hpBar.m_sprite);
 		}
 	}
 	//回復
@@ -303,9 +277,6 @@ bool PlayerHp::Change(int arg_amount)
 	{
 		//ダメージ演出中断
 		m_damageEffect.Interruput();
-
-		//回復HPバーサイズ変更
-		m_healEffect.m_hpBarHeal.m_sprite->m_mesh.SetSize(CalculateHpBarSize(afterHpRate));
 
 		//回復演出
 		m_healEffect.Start(beforeHpRate, afterHpRate);
@@ -329,5 +300,154 @@ void PlayerHp::ConsumeLifeEffect::Update(float arg_timeScale, DrawContents* arg_
 	{
 		m_damageHeart.m_active = false;
 		arg_hpBar->m_active = true;
+	}
+}
+
+void PlayerHp::DamageEffect::Start(float arg_startHpRate, float arg_endHpRate, std::weak_ptr<Sprite> arg_hpBarSprite)
+{
+	m_hpBarDamage.m_active = true;
+	m_drawChangeTimer.Reset(30.0f);
+	m_waitTimer.Reset(45.0f);
+	m_shake.Shake(30.0f, 3.0f, 0.0f, 32.0f);
+	m_startHpRate = arg_startHpRate;
+	m_endHpRate = arg_endHpRate;
+
+	//HPバーサイズ変更
+	arg_hpBarSprite.lock()->m_mesh.SetSize(CalculateHpBarSize(arg_hpBarSprite.lock()->GetTex()->GetGraphSize().Float(), arg_endHpRate));
+}
+
+void PlayerHp::DamageEffect::Update(float arg_timeScale)
+{
+	if (!m_hpBarDamage.m_active)return;
+
+	if (m_drawChangeTimer.IsTimeUp())
+	{
+		m_hpBarDamage.m_active = false;
+		return;
+	}
+
+	if (m_waitTimer.UpdateTimer(arg_timeScale))
+	{
+		m_drawChangeTimer.UpdateTimer(arg_timeScale);
+	}
+
+	//※タイムスケールの影響を受けない
+	m_shake.Update(1.0f);
+
+	//ダメージHPバーが小さくなっていく
+	float sizeRate = KuroMath::Ease(In, Sine,
+		m_drawChangeTimer.GetTimeRate(),
+		m_startHpRate,
+		m_endHpRate);
+	m_hpBarDamage.m_sprite->m_mesh.SetSize(CalculateHpBarSize(m_hpBarDamage.m_sprite->GetTex()->GetGraphSize().Float(), sizeRate));
+}
+
+
+void PlayerHp::HealEffect::EmitParticle(Vec2<float> arg_basePos, float arg_randMaxPosX)
+{
+	auto defIni = ParticleMgr2D::Instance()->GetDefaultInitializer(m_particleID);
+	//基準の座標
+	defIni.m_pos = arg_basePos;
+	//乱数で位置をずらす
+	defIni.m_pos.x += KuroFunc::GetRand(arg_randMaxPosX);
+
+	static const float OFFSET_Y_MAX = 32.0f;
+	defIni.m_pos.y += KuroFunc::GetRand(-OFFSET_Y_MAX, OFFSET_Y_MAX);
+
+	static const float SCALE_MIN = 16.0f;
+	static const float SCALE_MAX = 48.0f;
+	//乱数でサイズ変動
+	defIni.m_scale = KuroFunc::GetRand(SCALE_MIN, SCALE_MAX);
+
+	ParticleMgr2D::Instance()->Emit(m_particleID, defIni);
+}
+
+PlayerHp::HealEffect::HealEffect()
+{
+	std::vector<std::shared_ptr<TextureBuffer>>particleTextures(3);
+	D3D12App::Instance()->GenerateTextureBuffer(
+		particleTextures.data(),
+		"resource/user/img/ui/hp/hp_heal_effect.png",
+		3,
+		{ 3,1 });
+
+	ParticleInitializer ini;
+	ini.m_lifeSpan = 20.0f;
+
+	m_particleID = ParticleMgr2D::Instance()->Prepare(
+		50,
+		"resource/user/shaders/Particle/PlayerHpHeal.hlsl",
+		particleTextures.data(),
+		particleTextures.size(),
+		&ini,
+		AlphaBlendMode_Add
+		);
+}
+
+void PlayerHp::HealEffect::Start(float arg_startHpRate, float arg_endHpRate)
+{
+	m_hpBarHeal.m_active = true;
+	m_drawChangeTimer.Reset(30.0f);
+	m_waitTimer.Reset(45.0f);
+	m_startHpRate = arg_startHpRate;
+	m_endHpRate = arg_endHpRate;
+	m_flashRadian = 0.0f;
+	m_ptEmitTimer.Reset(10.0f);
+
+	//回復HPバーサイズ変更
+	m_hpBarHeal.m_sprite->m_mesh.SetSize(CalculateHpBarSize(
+		m_hpBarHeal.m_sprite->GetTex()->GetGraphSize().Float(), m_endHpRate));
+}
+
+void PlayerHp::HealEffect::Update(float arg_timeScale, Vec2<float>arg_uiPos, std::weak_ptr<Sprite>arg_hpBarSprite)
+{
+	if (!m_hpBarHeal.m_active)return;
+
+	if (m_drawChangeTimer.IsTimeUp())
+	{
+		m_hpBarHeal.m_active = false;
+		return;
+	}
+
+	m_flashRadian += Angle::ConvertToRadian(10.0f);
+
+	if (m_waitTimer.UpdateTimer(arg_timeScale))
+	{
+		m_drawChangeTimer.UpdateTimer(arg_timeScale);
+	}
+
+	//HPバーが大きくなっていく
+	float sizeRate = KuroMath::Ease(In, Sine,
+		m_drawChangeTimer.GetTimeRate(),
+		m_startHpRate,
+		m_endHpRate);
+	Vec2<float>hpBarSize = CalculateHpBarSize(arg_hpBarSprite.lock()->GetTex()->GetGraphSize().Float(), sizeRate);
+	arg_hpBarSprite.lock()->m_mesh.SetSize(hpBarSize);
+
+	//回復分HPバー点滅
+	float alpha = KuroMath::Ease(In, Liner, abs(cos(m_flashRadian)), 1.0f, 0.5f);
+	m_hpBarHeal.m_sprite->SetColor(Color(1.0f, 1.0f, 1.0f, alpha));
+
+	if (m_ptEmitTimer.UpdateTimer(arg_timeScale))
+	{
+		//1度に放出するパーティクルの数を乱数で決定
+		int ptNum = KuroFunc::GetRand(1, 3);
+
+		//HPバーの縦方向真ん中
+		hpBarSize.y /= 2.0f;
+
+		//延長分のHPバーの長さ
+		float extendHpBarDifferX = CalculateHpBarSize(arg_hpBarSprite.lock()->GetTex()->GetGraphSize().Float(), m_endHpRate).x - hpBarSize.x;
+
+		//出現位置の乱数オフセット最大範囲を増やす
+		static const float EXPAND_RAND_X = 16.0f;
+
+		for (int i = 0; i < ptNum; ++i)
+		{
+			//変化するHPバーの右端の座標基準にパーティクル放出
+			EmitParticle(arg_uiPos + arg_hpBarSprite.lock()->m_transform.GetPos() + hpBarSize, extendHpBarDifferX + EXPAND_RAND_X);
+		}
+
+		m_ptEmitTimer.Reset();
 	}
 }
