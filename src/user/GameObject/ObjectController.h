@@ -53,6 +53,9 @@ protected:
 	bool IsOutOfScreen(GameObject& arg_obj)const;
 	//対象オブジェクトのローカルタイムスケール
 	float GetLocalTimeScale(GameObject& arg_obj)const;
+
+public:
+	virtual ~ObjectController() {}
 };
 
 //指定した方向に移動
@@ -128,6 +131,7 @@ protected:
 public:
 	OC_DestinationEaseMove(EASE_CHANGE_TYPE arg_easeChangeType,EASING_TYPE arg_easeType, float arg_interval)
 		:m_easeChangeType(arg_easeChangeType),m_easeType(arg_easeType), m_interval(arg_interval) {}
+	virtual ~OC_DestinationEaseMove() {}
 
 	/// <summary>
 	/// パラメータ設定
