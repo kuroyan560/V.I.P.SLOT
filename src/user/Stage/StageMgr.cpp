@@ -124,7 +124,7 @@ void StageMgr::OnImguiItems()
 	if (ImGui::Checkbox("GenerateTerrian", &m_generateTerrian))
 	{
 		Finalize();
-		Init("", m_collisionMgr);
+		Init("");
 	}
 
 	bool changeRate = ImGui::DragFloat("BlockGenerateRate", &m_generateBlockRate, 0.5f, 0.0f, 100.0f);
@@ -138,7 +138,7 @@ void StageMgr::OnImguiItems()
 	if (changeRate || changeX || changeY)
 	{
 		Finalize();
-		Init("", m_collisionMgr);
+		Init("");
 	}
 }
 
@@ -230,17 +230,32 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine) :Debugge
 	}
 	//地形評価の「＋」画像
 	m_terrianValuationPlusTex = app->GenerateTextureBuffer(terrianValuationTexDir + "plus.png");
+
+	//床生成
+	m_floorModelObj = std::make_shared<ModelObject>("resource/user/model/", "floor_square.glb");
+	m_floorModelObj->m_transform.SetPos(ConstParameter::Player::INIT_POS);	//プレイヤー初期位置に合わせる
+	//床のコライダー生成
+	auto floorColPrimitive = std::make_shared<CollisionAABB>(m_floorModelObj->m_model->GetAllMeshPosMinMax());
+	m_floorCollider = std::make_shared<Collider>();
+	m_floorCollider->Generate("Floor", { "Floor" }, { floorColPrimitive });
+	m_floorCollider->SetParentTransform(&m_floorModelObj->m_transform);
 }
 
-void StageMgr::Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr)
+void StageMgr::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr)
 {
-	GenerateTerrian(arg_stageDataPath, arg_collisionMgr, 4);
+	//コリジョンマネージャのポインタ保持
+	m_collisionMgr = arg_collisionMgr;
+	//床のコライダーを登録
+	m_collisionMgr.lock()->Register(m_floorCollider);
+}
+
+void StageMgr::Init(std::string arg_stageDataPath)
+{
+	//地形生成
+	GenerateTerrian(arg_stageDataPath, m_collisionMgr, 4);
 
 	//地形評価UI
 	m_terrianEvaluationUI.Init();
-
-	//コリジョンマネージャのポインタ保持
-	m_collisionMgr = arg_collisionMgr;
 }
 
 void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<Player>arg_player)
@@ -336,6 +351,9 @@ void StageMgr::BlockDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr
 
 void StageMgr::ScaffoldDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)
 {
+	//床描画
+	BasicDraw::Instance()->Draw(*arg_lightMgr.lock(), m_floorModelObj, *arg_cam.lock());
+
 	//足場描画
 	for (auto& scaffold : m_scaffoldArray)
 	{

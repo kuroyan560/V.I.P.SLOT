@@ -29,9 +29,6 @@ class InGameScene : public BaseScene, public Debugger
 	std::shared_ptr<LightManager>m_ligMgr;
 	Light::Direction m_dirLig;
 
-	//°
-	std::shared_ptr<ModelObject>m_squareFloorObj;
-
 	//”wŒi‰æ‘œ
 	std::shared_ptr<TextureBuffer>m_backGround;
 

@@ -51,11 +51,6 @@ InGameScene::InGameScene() : Debugger("InGame")
 	m_ligMgr = std::make_shared<LightManager>();
 	m_ligMgr->RegisterDirLight(&m_dirLig);
 
-	//床生成
-	m_squareFloorObj = std::make_shared<ModelObject>("resource/user/model/", "floor_square.glb");
-	m_squareFloorObj->m_transform.SetPos(ConstParameter::Player::INIT_POS);	//プレイヤー初期位置に合わせる
-	m_squareFloorObj->GetTransformBuff();	//マッピングのためバッファ呼び出し
-
 	//背景画像読み込み
 	m_backGround = D3D12App::Instance()->GenerateTextureBuffer("resource/user/img/backGround.png");
 
@@ -85,6 +80,9 @@ InGameScene::InGameScene() : Debugger("InGame")
 
 	//ウェーブクリア時イベントにポインタを渡す
 	m_clearWaveEvent.Awake(m_gameCam, m_waveMgr, m_enemyEmitter, &m_timeScale);
+
+	//ステージマネージャにコリジョンマネージャを渡す
+	m_stageMgr->Awake(m_collisionMgr);
 }
 
 void InGameScene::OnInitialize()
@@ -101,7 +99,7 @@ void InGameScene::OnInitialize()
 	m_gameCam->Init();
 
 	//ステージマネージャ
-	m_stageMgr->Init("",m_collisionMgr);
+	m_stageMgr->Init("");
 
 	//オブジェクトマネージャ
 	m_objMgr->Init(m_collisionMgr);
@@ -239,19 +237,13 @@ void InGameScene::OnDraw()
 	if (subCam == nullptr)subCam = Event::GetSubEventCamera();
 
 	//スロットマシン
-	//m_slotMachine->Draw(m_ligMgr, m_gameCam->GetSubCam());
 	m_slotMachine->Draw(m_ligMgr, mainCam);
 
 	//ステージマネージャ（ブロック）
 	m_stageMgr->BlockDraw(m_ligMgr, mainCam);
 
-	//DrawFunc3D::DrawNonShadingModel(m_squareFloorObj, *m_gameCam->GetMainCam(), 1.0f, AlphaBlendMode_None);
-
 	//デプスステンシルクリア
 	rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_STENCIL);
-
-	//床
-	BasicDraw::Instance()->Draw(*m_ligMgr, m_squareFloorObj, *mainCam);
 
 	//ステージマネージャ（足場）
 	m_stageMgr->ScaffoldDraw(m_ligMgr, mainCam);

@@ -11,6 +11,7 @@
 #include"Color.h"
 #include"Scaffold.h"
 #include"Debugger.h"
+#include"Object.h"
 class SlotBlock;
 class CoinBlock;
 class SlotMachine;
@@ -125,12 +126,17 @@ class StageMgr : public Debugger
 	//地形評価の「＋」画像
 	std::shared_ptr<TextureBuffer>m_terrianValuationPlusTex;
 
+	//床
+	std::shared_ptr<ModelObject>m_floorModelObj;
+	std::shared_ptr<Collider>m_floorCollider;
+
 	void DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void GenerateTerrian(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr, int arg_slotBlockNum);
 	void OnImguiItems()override;
 public:
 	StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine);
-	void Init(std::string arg_stageDataPath, std::weak_ptr<CollisionManager>arg_collisionMgr);
+	void Awake(std::weak_ptr<CollisionManager>arg_collisionMgr);
+	void Init(std::string arg_stageDataPath);
 	void Update(TimeScale& arg_timeScale, std::weak_ptr<Player>arg_player);
 	void BlockDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);
 	void ScaffoldDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);
