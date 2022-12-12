@@ -9,13 +9,9 @@ class Event
 	//進行中のイベント
 	static Event* s_nowEvent;
 
-	//イベント進行中のパラメータ
-	//衝突判定フラグ
-	const bool m_collision;
-
 protected:
 	//イベント中のパラメータを設定
-	Event(bool arg_collision) :m_collision(arg_collision) {}
+	Event() {}
 
 	//イベント開始時の処理
 	virtual void OnStart() = 0;
@@ -60,13 +56,6 @@ public:
 			s_nowEvent->OnFinish();
 			s_nowEvent = nullptr;
 		}
-	}
-
-	//当たり判定を行うか
-	static bool CollisionFlg() 
-	{
-		if (s_nowEvent == nullptr)return true;
-		return s_nowEvent->m_collision;
 	}
 
 	//メイン（近景）イベントカメラゲッタ

@@ -141,6 +141,9 @@ public:
 	//回復
 	void Heal(int arg_amount) { m_playerHp.Change(arg_amount); }
 
+	//被ダメージ用コライダーのアクティブフラグ変更
+	void SetDamageColldierActive(bool arg_active);
+
 	//ゲッタ
 	//攻撃中か
 	bool IsAttack()const;	

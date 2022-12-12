@@ -22,6 +22,9 @@ void ClearWave::OnStart()
 
 	//HUD非表示
 	HUDInterface::s_draw = false;
+
+	//プレイヤーの被ダメージコライダーオフ
+	m_referPlayer.lock()->SetDamageColldierActive(false);
 }
 
 void ClearWave::UpdateCameraWork()
@@ -61,7 +64,7 @@ void ClearWave::OnUpdate()
 			const auto& camWork = m_camWorks[m_camWorkIdx];
 
 			//プレイヤー座標取得
-			auto playerPos = InGameMonitor::GetPlayer()->GetCenterPos();
+			auto playerPos = m_referPlayer.lock()->GetCenterPos();
 
 			//座標
 			Vec3<float>pos = camWork.m_easeParam.Calculate(m_timer.GetTimeRate(),
@@ -114,6 +117,9 @@ void ClearWave::OnFinish()
 {
 	//HUD表示
 	HUDInterface::s_draw = true;
+
+	//プレイヤーの被ダメージコライダーオン
+	m_referPlayer.lock()->SetDamageColldierActive(true);
 }
 
 std::shared_ptr<Camera> ClearWave::GetSubCam()
@@ -163,7 +169,7 @@ void ClearWave::OnImguiItems()
 			if (ImGui::DragFloat3("StartTarget", (float*)&m_camWorks[i].m_startTargetOffset, 0.02f))start = true;
 			if (ImGui::DragFloat3("EndTarget", (float*)&m_camWorks[i].m_endTargetOffset, 0.02f))end = true;
 
-			auto playerPos = InGameMonitor::GetPlayer()->GetCenterPos();
+			auto playerPos = m_referPlayer.lock()->GetCenterPos();
 			if (start)
 			{
 				m_cam->SetPos(playerPos + m_camWorks[i].m_startPosOffset);
@@ -194,7 +200,7 @@ void ClearWave::OnImguiItems()
 
 }
 
-ClearWave::ClearWave() : Event(false), Debugger("ClearWave")
+ClearWave::ClearWave() :Debugger("ClearWave")
 {
 	m_cam = std::make_shared<Camera>("ClearWave - Event - Camera");
 	m_camWorks.emplace_back();

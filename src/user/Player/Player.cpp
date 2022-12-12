@@ -121,7 +121,7 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 		m_bodySphereCollider->SetCallBack("Enemy", m_damegedCallBack.get());
 		m_bodySphereCollider->SetCallBack("Enemy_Attack", m_damegedCallBack.get());
 
-		//colliders.emplace_back(m_bodySphereCollider);
+		colliders.emplace_back(m_bodySphereCollider);
 	}
 	//モデル全体を覆うAABBコライダー
 	{
@@ -341,28 +341,6 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	//移動量加算
 	pos += m_move * timeScale;
 
-	/*
-	//押し戻し（床）
-	if (pos.y < FIELD_FLOOR_TOP_SURFACE_HEIGHT + MODEL_SIZE.y / 2.0f)
-	{
-		pos.y = FIELD_FLOOR_TOP_SURFACE_HEIGHT + MODEL_SIZE.y / 2.0f;
-		OnLanding(true);
-	}
-
-	//押し戻し（ステージ端）
-	const float FIELD_WIDTH_HALF = FIELD_FLOOR_SIZE.x / 2.0f;
-	if (pos.x < -FIELD_WIDTH_HALF)
-	{
-		pos.x = -FIELD_WIDTH_HALF;
-		m_move.x = 0.0f;
-	}
-	else if(FIELD_WIDTH_HALF < pos.x)
-	{
-		pos.x = FIELD_WIDTH_HALF;
-		m_move.x = 0.0f;
-	}
-	*/
-
 	//更新した座標の反映
 	m_modelObj->m_transform.SetPos(pos);
 
@@ -423,6 +401,11 @@ void Player::Draw2D(std::weak_ptr<Camera> arg_cam)
 Vec3<float> Player::GetCenterPos() const
 {
 	return m_modelObj->m_transform.GetPos();
+}
+
+void Player::SetDamageColldierActive(bool arg_active)
+{
+	m_bodySphereCollider->SetActive(arg_active);
 }
 
 bool Player::IsAttack() const

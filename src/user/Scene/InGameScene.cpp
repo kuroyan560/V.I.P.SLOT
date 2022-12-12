@@ -79,7 +79,7 @@ InGameScene::InGameScene() : Debugger("InGame")
 	InGameMonitor::Set(m_player.get());
 
 	//ウェーブクリア時イベントにポインタを渡す
-	m_clearWaveEvent.Awake(m_gameCam, m_waveMgr, m_enemyEmitter, &m_timeScale);
+	m_clearWaveEvent.Awake(m_gameCam, m_waveMgr, m_enemyEmitter, m_player, &m_timeScale);
 
 	//ステージマネージャにコリジョンマネージャを渡す
 	m_stageMgr->Awake(m_collisionMgr);
@@ -194,7 +194,7 @@ void InGameScene::OnUpdate()
 	Event::StaticUpdate();
 
 	//コリジョンマネージャ
-	if (Event::CollisionFlg())m_collisionMgr->Update();
+	m_collisionMgr->Update();
 
 	//ウェーブクリアしたか
 	if (m_waveMgr->IsWaveClear(m_player->GetCoinNum()))
