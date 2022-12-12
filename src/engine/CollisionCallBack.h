@@ -31,7 +31,7 @@ protected:
 
 public:
 	virtual ~CollisionCallBack() {}
-	virtual CollisionCallBack* Clone()
+	virtual CollisionCallBack* CallBackClone()
 	{
 		//設定なし、クローン生成出来ない
 		assert(0);
