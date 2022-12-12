@@ -80,15 +80,18 @@ void PlayersCounterAttack::OnCollisionTrigger(const CollisionResultInfo& arg_inf
 }
 
 
-void DamagedCallBack::Execute()
+void DamagedCallBack::Execute(bool arg_overlapped)
 {
 	using namespace ConstParameter::Player;
 
-	//–³“GŽžŠÔ’†‚©
-	if (!m_invincibleTimer.IsTimeUp())return;
+	if (!arg_overlapped)
+	{
+		//–³“GŽžŠÔ’†‚©
+		if (!m_invincibleTimer.IsTimeUp())return;
 
-	//UŒ‚’†‚©
-	if (m_parent->IsAttack())return;
+		//UŒ‚’†‚©
+		if (m_parent->IsAttack())return;
+	}
 
 	//HPŒ¸­
 	bool consumeLife = m_parent->Damage(1);
@@ -108,7 +111,7 @@ void DamagedCallBack::Execute()
 
 void DamagedCallBack::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider>arg_otherCollider)
 {
-	this->Execute();
+	this->Execute(false);
 }
 
 void DamagedCallBack::Update(TimeScale& arg_timeScale)

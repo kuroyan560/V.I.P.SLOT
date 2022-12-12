@@ -144,8 +144,11 @@ public:
 
 	const bool& GetIsDraw()const { return m_isDraw; }
 
-	//デバッグ用に外部から呼び出せるように
-	void Execute();
+	/// <summary>
+	/// ダメージ処理実行
+	/// </summary>
+	/// <param name="arg_overlapped">重ねがけを受け付けるか</param>
+	void Execute(bool arg_overlapped);
 };
 
 //押し戻し処理

@@ -114,6 +114,9 @@ class Player : public ColliderParentObject, public Debugger
 	void OnLanding(bool arg_isGround);
 
 	void OnImguiItems()override;
+
+	//座標関連の初期化
+	void InitMovement();
 	
 public:
 	Player();
@@ -157,5 +160,5 @@ public:
 	bool IsDead()const { return m_playerHp.IsDead(); }
 
 	//デバッグ用ダメージ関数
-	void DebugDamage() { m_damegedCallBack->Execute(); }
+	void DebugDamage() { m_damegedCallBack->Execute(true); }
 };

@@ -41,6 +41,34 @@ void Player::OnImguiItems()
 	m_yoYo->AddImguiDebugItem();
 }
 
+void Player::InitMovement()
+{
+	using namespace ConstParameter::Player;
+
+	//スタート位置に移動
+	m_modelObj->m_transform.SetPos(INIT_POS);
+
+	m_oldPos = INIT_POS;
+
+	//移動速度
+	m_move = { 0,0,0 };
+
+	//落下速度初期化
+	m_fallSpeed = 0.0f;
+
+	//接地フラグ初期化
+	m_isOnGround = true;
+
+	//ヨーヨー
+	m_yoYo->Init();
+
+	//デフォルト右向き
+	m_vecX = 1.0f;
+
+	//足場から降りる処理初期化
+	m_stepDown = false;
+}
+
 Player::Player() : Debugger("Player")
 {
 	//モデル読み込み
@@ -162,34 +190,13 @@ void Player::Init(PlayersAbility arg_ability, int arg_initRemainLife, int arg_in
 	//所持金リセット
 	m_coinVault.Set(arg_initCoinNum);
 
-	//スタート位置に移動
-	m_modelObj->m_transform.SetPos(INIT_POS);
-
-	m_oldPos = INIT_POS;
-
-	//移動速度
-	m_move = { 0,0,0 };
-
-	//落下速度初期化
-	m_fallSpeed = 0.0f;
-
-	//接地フラグ初期化
-	m_isOnGround = true;
-
 	//所持金リセット
 	m_coinVault.Set(0);
 
 	//被ダメージコールバック
 	m_damegedCallBack->Init();
 
-	//ヨーヨー
-	m_yoYo->Init();
-
-	//デフォルト右向き
-	m_vecX = 1.0f;
-
-	//足場から降りる処理初期化
-	m_stepDown = false;
+	InitMovement();
 
 	//ヒットエフェクト
 	m_hitEffect->Init();
@@ -343,6 +350,14 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 
 	//更新した座標の反映
 	m_modelObj->m_transform.SetPos(pos);
+
+	//落下ダメージ判定
+	if (pos.y < FALL_LIMIT_HEIGHT)
+	{
+		m_damegedCallBack->Execute(true);
+		InitMovement();
+	}
+
 
 	//被ダメージコールバック
 	m_damegedCallBack->Update(arg_timeScale);

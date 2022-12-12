@@ -63,6 +63,8 @@ namespace ConstParameter
 		extern float GRAVITY_WHILE_ATTACK;
 		//落下速度の下限
 		extern float FALL_SPEED_MIN;
+		//落下判定となる高さ
+		extern float FALL_LIMIT_HEIGHT;
 
 		/*--- 衝突判定 ---*/
 		//ダメージを受けたときのヒットストップ時間

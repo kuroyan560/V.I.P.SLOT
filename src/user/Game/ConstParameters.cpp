@@ -63,9 +63,10 @@ namespace ConstParameter
         float GRAVITY_WHILE_FALL = 0.0015f;
         //攻撃中の重力
         float GRAVITY_WHILE_ATTACK = GRAVITY_WHILE_FALL * 0.4f;
-
         //落下速度の下限
         float FALL_SPEED_MIN = -0.2f;
+        //落下判定となる高さ
+        float FALL_LIMIT_HEIGHT = -18.0f;
 
         /*--- 衝突判定 ---*/
         //ダメージを受けたときのヒットストップ時間
