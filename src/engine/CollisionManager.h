@@ -7,6 +7,7 @@
 #include<vector>
 #include"Vec.h"
 #include"Debugger.h"
+class CollisionResultInfo;
 class Collider;
 class Camera;
 
@@ -27,7 +28,7 @@ class CollisionManager : public Debugger
 	std::list<std::shared_ptr<Collider>>m_colliderList;
 
 	//Õ“Ë‚µ‚Ä‚¢‚½ê‡‚Ìˆ—
-	void OnHit(const std::shared_ptr<Collider>& arg_myCollider, const std::shared_ptr<Collider>& arg_otherCollider, const Vec3<float>& arg_inter);
+	void OnHit(const std::shared_ptr<Collider>& arg_myCollider, const std::shared_ptr<Collider>& arg_otherCollider, const CollisionResultInfo& arg_info);
 	void OnImguiItems()override;
 
 public:

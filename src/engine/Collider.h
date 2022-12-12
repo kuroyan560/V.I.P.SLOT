@@ -9,6 +9,7 @@ class Camera;
 class CollisionPrimitive;
 class CollisionCallBack;
 class ColliderParentObject;
+class CollisionResultInfo;
 
 class Collider
 {
@@ -65,7 +66,7 @@ public:
 		const std::vector<std::shared_ptr<CollisionPrimitive>>& arg_primitiveArray);
 
 	//“–‚½‚è”»’èiÕ“Ë“_‚ğ•Ô‚·j
-	bool CheckHitCollision(std::weak_ptr<Collider> arg_other, Vec3<float>* arg_inter = nullptr);
+	bool CheckHitCollision(std::weak_ptr<Collider> arg_other, CollisionResultInfo* arg_info = nullptr);
 
 	//“–‚½‚è”»’è•`‰æ
 	void DebugDraw(Camera& arg_cam);

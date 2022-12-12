@@ -237,6 +237,7 @@
     <ClInclude Include="src\engine\Collision.h" />
     <ClInclude Include="src\engine\CollisionCallBack.h" />
     <ClInclude Include="src\engine\CollisionManager.h" />
+    <ClInclude Include="src\engine\CollisionResultInfo.h" />
     <ClInclude Include="src\engine\Common\Angle.h" />
     <ClInclude Include="src\engine\Common\Color.h" />
     <ClInclude Include="src\engine\Common\Command.h" />

@@ -1,5 +1,6 @@
 #include "Collider.h"
 #include"Collision.h"
+#include"CollisionResultInfo.h"
 
 int Collider::s_id = 0;
 
@@ -32,15 +33,15 @@ void Collider::Generate(const std::string& arg_name,
 	m_primitiveArray = arg_primitiveArray;
 }
 
-bool Collider::CheckHitCollision(std::weak_ptr<Collider> Other, Vec3<float>* Inter)
+bool Collider::CheckHitCollision(std::weak_ptr<Collider> arg_other, CollisionResultInfo* arg_info)
 {
-	auto other = Other.lock();
+	auto other = arg_other.lock();
 
 	//いずれかのコライダーが有効でない
 	if (!this->m_isActive || !other->m_isActive)return false;
 
 	//判定
-	Vec3<float>inter;
+	CollisionResultInfo info;
 	bool hit = false;
 
 	for (auto& primitiveA : this->m_primitiveArray)
@@ -51,12 +52,12 @@ bool Collider::CheckHitCollision(std::weak_ptr<Collider> Other, Vec3<float>* Int
 				this->GetTransformMat(),
 				other->GetTransformMat(),
 				primitiveB.get(),
-				&inter);
+				&info);
 			if (hit)break;
 		}
 	}
 
-	if (Inter)*Inter = inter;
+	if (arg_info)*arg_info = info;
 	return hit;
 }
 

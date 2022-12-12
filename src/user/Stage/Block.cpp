@@ -10,13 +10,13 @@
 
 int Block::s_hitSE = 0;
 
-void Block::OnCollisionTrigger(const Vec3<float>& arg_inter, std::weak_ptr<Collider> arg_otherCollider)
+void Block::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider> arg_otherCollider)
 {
 	//ヒットSE呼び出し
 	AudioApp::Instance()->PlayWave(s_hitSE);
 
 	//ヒットエフェクト
-	m_hitEffect.lock()->Emit(arg_inter);
+	m_hitEffect.lock()->Emit(arg_info.m_inter);
 
 	//ヒット回数インクリメント
 	m_hitCount++;

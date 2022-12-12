@@ -5,9 +5,8 @@
 #include"Transform.h"
 #include<memory>
 #include"D3D12Data.h"
+#include"CollisionResultInfo.h"
 class Camera;
-
-
 
 class CollisionPrimitive
 {
@@ -43,14 +42,14 @@ protected:
 	ダブルディスパッチでプリミティブ形状判定して関数呼び出し
 	※当たり判定が用意されていなかった場合エラー
 	*/
-	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionPoint* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
-	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionLine* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
-	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionSphere* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
-	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionPlane* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
-	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionCapsule* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
-	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionAABB* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
-	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionMesh* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
-	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionFloorMesh* arg_other, Vec3<float>* arg_inter) { assert(0); return false; }
+	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionPoint* arg_other, CollisionResultInfo* arg_info) { assert(0); return false; }
+	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionLine* arg_other, CollisionResultInfo* arg_info) { assert(0); return false; }
+	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionSphere* arg_other, CollisionResultInfo* arg_info) { assert(0); return false; }
+	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionPlane* arg_other, CollisionResultInfo* arg_info) { assert(0); return false; }
+	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionCapsule* arg_other, CollisionResultInfo* arg_info) { assert(0); return false; }
+	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionAABB* arg_other, CollisionResultInfo* arg_info) { assert(0); return false; }
+	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionMesh* arg_other, CollisionResultInfo* arg_info) { assert(0); return false; }
+	virtual bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionFloorMesh* arg_other, CollisionResultInfo* arg_info) { assert(0); return false; }
 
 public:
 	virtual ~CollisionPrimitive() {}
@@ -58,7 +57,7 @@ public:
 	//クローンの生成
 	virtual CollisionPrimitive* Clone() = 0;
 
-	virtual bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter) = 0;
+	virtual bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, CollisionResultInfo* arg_info) = 0;
 };
 
 //ポイント
@@ -67,7 +66,7 @@ class CollisionPoint : public CollisionPrimitive
 private:
 	std::shared_ptr<ConstantBuffer>m_constBuff;
 	void DebugDraw(const bool& arg_hit, Camera& arg_cam, const Matrix& arg_parentMat, const float& arg_depth)override;
-	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionFloorMesh* arg_other, Vec3<float>* arg_inter)override;
+	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionFloorMesh* arg_other, CollisionResultInfo* arg_info)override;
 
 public:
 	Vec3<float>m_offset;
@@ -83,9 +82,9 @@ public:
 		return new CollisionPoint(m_offset);
 	}
 
-	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, CollisionResultInfo* arg_info)override
 	{
-		return arg_other->HitCheck(arg_myMat, arg_otherMat, this, arg_inter);
+		return arg_other->HitCheck(arg_myMat, arg_otherMat, this, arg_info);
 	}
 };
 
@@ -121,9 +120,9 @@ public:
 		return new CollisionLine(m_start, m_dir, m_len);
 	}
 
-	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, CollisionResultInfo* arg_info)override
 	{
-		return arg_other->HitCheck(arg_otherMat, arg_myMat, this, arg_inter);
+		return arg_other->HitCheck(arg_otherMat, arg_myMat, this, arg_info);
 	}
 };
 
@@ -138,12 +137,12 @@ private:
 	std::shared_ptr<ConstantBuffer>m_constBuff;
 	void DebugDraw(const bool& arg_hit, Camera& arg_cam, const Matrix& arg_parentMat, const float& arg_depth)override;
 	
-	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionSphere* arg_other, Vec3<float>* arg_inter)override;
-	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionPlane* arg_other, Vec3<float>* arg_inter)override;
-	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionLine* arg_other, Vec3<float>* arg_inter)override;
-	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionAABB* arg_other, Vec3<float>* arg_inter)override;
+	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionSphere* arg_other, CollisionResultInfo* arg_info)override;
+	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionPlane* arg_other, CollisionResultInfo* arg_info)override;
+	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat,CollisionLine* arg_other, CollisionResultInfo* arg_info)override;
+	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionAABB* arg_other, CollisionResultInfo* arg_info)override;
 	Vec3<float> ClosestPtPoint2Triangle(const Vec3<float>& Pt, const CollisionTriangle& Tri, const Matrix& MeshWorld);
-	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionMesh* arg_other, Vec3<float>* arg_inter)override;
+	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionMesh* arg_other, CollisionResultInfo* arg_info)override;
 
 public:
 	Vec3<float>m_offset = { 0,0,0 };
@@ -161,9 +160,9 @@ public:
 		return new CollisionSphere(m_radius, m_offset);
 	}
 
-	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, CollisionResultInfo* arg_info)override
 	{
-		return arg_other->HitCheck(arg_otherMat, arg_myMat, this, arg_inter);
+		return arg_other->HitCheck(arg_otherMat, arg_myMat, this, arg_info);
 	}
 };
 
@@ -189,9 +188,9 @@ public:
 		return new CollisionPlane(m_normal, m_distance);
 	}
 
-	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, CollisionResultInfo* arg_info)override
 	{
-		return arg_other->HitCheck(arg_myMat, arg_otherMat, this, arg_inter);
+		return arg_other->HitCheck(arg_myMat, arg_otherMat, this, arg_info);
 	}
 };
 
@@ -219,9 +218,9 @@ public:
 		return new CollisionCapsule(m_sPoint, m_ePoint, m_radius, m_offset);
 	}
 
-	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, CollisionResultInfo* arg_info)override
 	{
-		return arg_other->HitCheck(arg_myMat, arg_otherMat, this, arg_inter);
+		return arg_other->HitCheck(arg_myMat, arg_otherMat, this, arg_info);
 	}
 };
 
@@ -240,10 +239,12 @@ private:
 	std::shared_ptr<ConstantBuffer>m_constBuff;
 	void DebugDraw(const bool& arg_hit, Camera& arg_cam, const Matrix& arg_parentMat, const float& arg_depth)override;
 
-	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionSphere* arg_other, Vec3<float>* arg_inter)override
+	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionSphere* arg_other, CollisionResultInfo* arg_info)override
 	{
-		return this->HitCheckDispatch(arg_myMat, arg_otherMat, arg_other, arg_inter);
+		return this->HitCheckDispatch(arg_myMat, arg_otherMat, arg_other, arg_info);
 	}
+	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionLine* arg_other, CollisionResultInfo* arg_info)override;
+
 
 	//頂点バッファ
 	std::shared_ptr<VertexBuffer>m_vertBuff;
@@ -264,9 +265,9 @@ public:
 		return new CollisionAABB(m_pValues);
 	}
 
-	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, CollisionResultInfo* arg_info)override
 	{
-		return arg_other->HitCheck(arg_otherMat, arg_myMat, this, arg_inter);
+		return arg_other->HitCheck(arg_otherMat, arg_myMat, this, arg_info);
 	}
 };
 
@@ -317,7 +318,12 @@ private:
 	std::shared_ptr<ConstantBuffer>m_constBuff;
 	std::vector<CollisionTriangle>m_triangles;
 
+	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionSphere* arg_other, CollisionResultInfo* arg_info)override
+	{
+		return this->HitCheckDispatch(arg_myMat, arg_otherMat, arg_other, arg_info);
+	}
 	void DebugDraw(const bool& arg_hit, Camera& arg_cam, const Matrix& arg_parentMat, const float& arg_depth)override;
+
 public:
 	CollisionMesh(const std::vector<CollisionTriangle>& Triangles)
 	{
@@ -335,9 +341,9 @@ public:
 	{
 		return new CollisionMesh(m_triangles);
 	}
-	virtual bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	virtual bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, CollisionResultInfo* arg_info)override
 	{
-		return arg_other->HitCheck(arg_myMat, arg_otherMat, this, arg_inter);
+		return arg_other->HitCheck(arg_myMat, arg_otherMat, this, arg_info);
 	}
 
 };
@@ -345,8 +351,8 @@ public:
 class CollisionFloorMesh : public CollisionMesh
 {
 public:
-	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, Vec3<float>* arg_inter)override
+	bool HitCheckDispatch(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPrimitive* arg_other, CollisionResultInfo* arg_info)override
 	{
-		return arg_other->HitCheck(arg_myMat, arg_otherMat, this, arg_inter);
+		return arg_other->HitCheck(arg_myMat, arg_otherMat, this, arg_info);
 	}
 };

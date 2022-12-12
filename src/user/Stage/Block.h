@@ -38,11 +38,11 @@ private:
 	}m_explosion;
 
 	void OnCollisionEnter(
-		const Vec3<float>& arg_inter,
+		const CollisionResultInfo& arg_info,
 		std::weak_ptr<Collider>arg_otherCollider)override {}
 
 	void OnCollisionTrigger(
-		const Vec3<float>& arg_inter,
+		const CollisionResultInfo& arg_info,
 		std::weak_ptr<Collider>arg_otherCollider)override;
 
 protected:

@@ -4,7 +4,7 @@
 #include"Collision.h"
 #include<stdexcept>
 
-void CollisionManager::OnHit(const std::shared_ptr<Collider>& arg_myCollider, const std::shared_ptr<Collider>& arg_otherCollider, const Vec3<float>& arg_inter)
+void CollisionManager::OnHit(const std::shared_ptr<Collider>& arg_myCollider, const std::shared_ptr<Collider>& arg_otherCollider, const CollisionResultInfo& arg_info)
 {
 	arg_myCollider->m_isHit = true;
 
@@ -22,8 +22,8 @@ void CollisionManager::OnHit(const std::shared_ptr<Collider>& arg_myCollider, co
 			{
 				if (!callBack)continue;
 
-				callBack->OnCollisionEnter(arg_inter, arg_otherCollider);
-				if (!arg_myCollider->m_oldIsHit)callBack->OnCollisionTrigger(arg_inter, arg_otherCollider);
+				callBack->OnCollisionEnter(arg_info, arg_otherCollider);
+				if (!arg_myCollider->m_oldIsHit)callBack->OnCollisionTrigger(arg_info, arg_otherCollider);
 			}
 		}
 	}
@@ -84,11 +84,11 @@ void CollisionManager::Update()
 			//お互いにコールバック関数が用意されていないなら、当たっても何も起こらないので判定を行う必要は無い
 			if (!colA->HaveCallBack(colB) && !colB->HaveCallBack(colA))continue;
 
-			Vec3<float>inter;
-			if (colA->CheckHitCollision(colB, &inter))
+			CollisionResultInfo info;
+			if (colA->CheckHitCollision(colB, &info))
 			{
-				OnHit(*itrA, *itrB, inter);
-				OnHit(*itrB, *itrA, inter);
+				OnHit(*itrA, *itrB, info);
+				OnHit(*itrB, *itrA, info);
 			}
 		}
 	}
@@ -116,7 +116,7 @@ bool CollisionManager::RaycastHit(Vec3<float> arg_start, Vec3<float> arg_dir, Ra
 	//レイをコリジョン線分に返還
 	CollisionLine ray(arg_start, arg_dir, arg_maxDist);
 	//衝突点の一時格納先
-	Vec3<float>inter;
+	CollisionResultInfo info;
 
 	//全てのコライダーと総当たり
 	for (auto it = m_colliderList.begin(); it != m_colliderList.end(); ++it)
@@ -134,16 +134,16 @@ bool CollisionManager::RaycastHit(Vec3<float> arg_start, Vec3<float> arg_dir, Ra
 		for (auto& primitive : col->m_primitiveArray)
 		{
 			//当たっていないならスルー
-			if (!ray.HitCheckDispatch(XMMatrixIdentity(), col->GetTransformMat(), primitive.get(), &inter))continue;
+			if (!ray.HitCheckDispatch(XMMatrixIdentity(), col->GetTransformMat(), primitive.get(), &info))continue;
 
 			//距離を取得
-			float dist = arg_start.Distance(inter);
+			float dist = arg_start.Distance(info.m_inter);
 			//最短でないならスルー
 			if (nearestDist < dist)continue;
 
 			//衝突情報更新
 			nearestCol = col;
-			nearestInter = inter;
+			nearestInter = info.m_inter;
 			nearestDist = dist;
 			result = true;
 		}

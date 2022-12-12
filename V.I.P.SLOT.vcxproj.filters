@@ -798,5 +798,8 @@
     <ClInclude Include="src\user\Others\ParticleMgr2D.h">
       <Filter>src\user\Others</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\CollisionResultInfo.h">
+      <Filter>src\engine\ユーザー向け\Collision</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

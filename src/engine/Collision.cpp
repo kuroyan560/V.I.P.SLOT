@@ -48,7 +48,7 @@ void CollisionPoint::DebugDraw(const bool& arg_hit, Camera& arg_cam, const Matri
 	DrawFuncBillBoard::Box(arg_cam, GetWorldPos(arg_parentMat), {0.4f,0.4f }, arg_hit ? Color(1.0f, 0.0f, 0.0f, 1.0f) : Color());
 }
 
-bool CollisionPoint::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionFloorMesh* arg_other, Vec3<float>* arg_inter)
+bool CollisionPoint::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionFloorMesh* arg_other, CollisionResultInfo* arg_info)
 {
 	for (auto& tri : arg_other->GetTriangles())
 	{
@@ -69,7 +69,11 @@ bool CollisionPoint::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMa
 		//床より上なのでめり込んでいない
 		if (floorY < pt.y)continue;
 
-		if (arg_inter)*arg_inter = { pt.x,floorY,pt.z };
+		if (arg_info)
+		{
+			arg_info->m_inter = { pt.x,floorY,pt.z };
+			arg_info->m_hitOtherPrimitive = arg_other;
+		}
 		return true;
 	}
 	return false;
@@ -155,7 +159,7 @@ void CollisionSphere::DebugDraw(const bool& Hit,Camera& Cam, const Matrix& arg_p
 		true);
 }
 
-bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionSphere* arg_other, Vec3<float>* arg_inter)
+bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionSphere* arg_other, CollisionResultInfo* arg_info)
 {
 	//２つの球のワールド中心座標を求める
 	const auto centerA = this->GetCenter(arg_myMat);
@@ -167,17 +171,18 @@ bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherM
 
 	if (distSq <= radius2)
 	{
-		if (arg_inter)
+		if (arg_info)
 		{
 			//２つの中心間の中心点
-			*arg_inter = centerA.GetCenter(centerB);
+			arg_info->m_inter = centerA.GetCenter(centerB);
+			arg_info->m_hitOtherPrimitive = arg_other;
 		}
 		return true;
 	}
 	return false;
 }
 
-bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPlane* arg_other, Vec3<float>* arg_inter)
+bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionPlane* arg_other, CollisionResultInfo* arg_info)
 {
 	//球のワールド中心座標を求める
 	const auto center = this->GetCenter(arg_myMat);
@@ -189,15 +194,16 @@ bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherM
 	if (fabsf(dist) > this->m_radius)	return false;
 
 	// 擬似交点を計算
-	if (arg_inter)
+	if (arg_info)
 	{
 		// 平面上の再接近点を、疑似交点とする
-		*arg_inter = arg_other->m_normal * -dist + center;
+		arg_info->m_inter = arg_other->m_normal * -dist + center;
+		arg_info->m_hitOtherPrimitive = arg_other;
 	}
 	return true;
 }
 
-bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionLine* arg_other, Vec3<float>* arg_inter)
+bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionLine* arg_other, CollisionResultInfo* arg_info)
 {
 	auto lineStart = arg_other->GetStartWorldPos(arg_otherMat);
 	XMVECTOR m = lineStart - this->GetCenter(arg_myMat);
@@ -223,14 +229,16 @@ bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherM
 	//レイの長さより遠ければ外れている
 	if (arg_other->m_len < t)return false;
 
-	if (arg_inter) {
-		*arg_inter = lineStart + arg_other->m_dir * t;
+	if (arg_info) 
+	{
+		arg_info->m_inter = lineStart + arg_other->m_dir * t;
+		arg_info->m_hitOtherPrimitive = arg_other;
 	}
 
 	return true;
 }
 
-bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionAABB* arg_other, Vec3<float>* arg_inter)
+bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionAABB* arg_other, CollisionResultInfo* arg_info)
 {
 	//球の中心座標とAABBとの最短距離を求める
 	const auto spCenter = KuroMath::TransformVec3(this->m_offset, arg_myMat);
@@ -260,10 +268,11 @@ bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherM
 
 	if (distSq <= pow(this->m_radius, 2))
 	{
-		if (arg_inter)
+		if (arg_info)
 		{
 			//球の中心とAABBの中心間の中心点
-			*arg_inter = spCenter.GetCenter(ptMin.GetCenter(ptMax));
+			arg_info->m_inter = spCenter.GetCenter(ptMin.GetCenter(ptMax));
+			arg_info->m_hitOtherPrimitive = arg_other;
 		}
 		return true;
 	}
@@ -328,7 +337,7 @@ Vec3<float> CollisionSphere::ClosestPtPoint2Triangle(const Vec3<float>& Pt, cons
 	return p0 + p0_p1 * v + p0_p2 * w;
 }
 
-bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionMesh* arg_other, Vec3<float>* arg_inter)
+bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionMesh* arg_other, CollisionResultInfo* arg_info)
 {
 	const auto spCenter = KuroMath::TransformVec3(this->m_offset, arg_myMat);
 
@@ -341,7 +350,11 @@ bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherM
 
 		if (pow(this->m_radius, 2.0f) < distSq)continue;
 
-		if (arg_inter)*arg_inter = closest;
+		if (arg_info)
+		{
+			arg_info->m_inter = closest;
+			arg_info->m_hitOtherPrimitive = arg_other;
+		}
 		return true;
 	}
 
@@ -387,6 +400,68 @@ void CollisionAABB::DebugDraw(const bool& arg_hit, Camera& arg_cam, const Matrix
 		}, 
 		arg_depth, 
 		true);
+}
+
+bool CollisionAABB::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionLine* arg_other, CollisionResultInfo* arg_info)
+{
+	Matrix invMat = XMMatrixInverse(nullptr, arg_myMat);
+
+	auto p_l = KuroMath::TransformVec3(arg_other->m_start, invMat);
+	invMat.r[3].m128_f32[0] = 0.0f;
+	invMat.r[3].m128_f32[1] = 0.0f;
+	invMat.r[3].m128_f32[2] = 0.0f;
+	auto dir_l = KuroMath::TransformVec3(arg_other->m_dir, invMat);
+
+	//交差判定
+	float p[3] = { p_l.x,p_l.y,p_l.z };
+	float d[3] = { dir_l.x,dir_l.y,dir_l.z };
+	float min[3] = { m_pValues.x.m_min,m_pValues.y.m_min ,m_pValues.z.m_min };
+	float max[3] = { m_pValues.x.m_max,m_pValues.y.m_max ,m_pValues.z.m_max };
+
+	float t = -arg_other->m_len;
+	float t_max = arg_other->m_len;
+
+	for (int i = 0; i < 3; ++i)
+	{
+		if (FLT_EPSILON < abs(d[i]))
+		{
+			if (p[i] < min[i] || max[i] < p[i])
+			{
+				//交差していない
+				return false;
+			}
+			else
+			{
+				float odd = 1.0f / d[i];
+				float t1 = (min[i] - p[i]) * odd;
+				float t2 = (max[i] - p[i]) * odd;
+				if (t2 < t1)
+				{
+					float tmp = t1;
+					t1 = t2;
+					t2 = tmp;
+				}
+				if (t < t1)t = t1;
+				if (t2 < t_max)t_max = t2;
+
+				if (t_max <= t)return false;
+			}
+		}
+	}
+
+	//交差している点
+	Vec3<float>inter = arg_other->m_start + arg_other->m_dir * t;
+
+	//距離が足りていない
+	//if (arg_other->m_len < t)return false;
+
+	if (arg_info)
+	{
+		arg_info->m_inter = inter;
+		arg_info->m_hitOtherPrimitive = arg_other;
+	}
+
+	return true;
 }
 
 void CollisionAABB::StructBox(const Vec3<ValueMinMax>& PValues)

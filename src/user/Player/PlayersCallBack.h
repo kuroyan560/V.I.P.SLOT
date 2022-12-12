@@ -24,11 +24,11 @@ class PlayersNormalAttack : public CollisionCallBack
 	int m_killSE;
 
 	void OnCollisionEnter(
-		const Vec3<float>& arg_inter,
+		const CollisionResultInfo& arg_info,
 		std::weak_ptr<Collider>arg_otherCollider)override {};
 
 	void OnCollisionTrigger(
-		const Vec3<float>& arg_inter,
+		const CollisionResultInfo& arg_info,
 		std::weak_ptr<Collider>arg_otherCollider)override;
 public:
 	PlayersNormalAttack(
@@ -53,11 +53,11 @@ class PlayersParryAttack : public CollisionCallBack
 	int m_parrySE;
 
 	void OnCollisionEnter(
-		const Vec3<float>& arg_inter,
+		const CollisionResultInfo& arg_info,
 		std::weak_ptr<Collider>arg_otherCollider)override {};
 
 	void OnCollisionTrigger(
-		const Vec3<float>& arg_inter,
+		const CollisionResultInfo& arg_info,
 		std::weak_ptr<Collider>arg_otherCollider)override;
 
 public:
@@ -86,11 +86,11 @@ class PlayersCounterAttack : public CollisionCallBack
 	int m_hitCount = 0;
 
 	void OnCollisionEnter(
-		const Vec3<float>& arg_inter,
+		const CollisionResultInfo& arg_info,
 		std::weak_ptr<Collider>arg_otherCollider)override {};
 
 	void OnCollisionTrigger(
-		const Vec3<float>& arg_inter,
+		const CollisionResultInfo& arg_info,
 		std::weak_ptr<Collider>arg_otherCollider)override;
 public:
 	PlayersCounterAttack(
@@ -124,11 +124,11 @@ class DamagedCallBack : public CollisionCallBack
 	int m_damageSE;
 
 	void OnCollisionEnter(
-		const Vec3<float>& arg_inter,
+		const CollisionResultInfo& arg_info,
 		std::weak_ptr<Collider>arg_otherCollider)override {};
 
 	void OnCollisionTrigger(
-		const Vec3<float>& arg_inter,
+		const CollisionResultInfo& arg_info,
 		std::weak_ptr<Collider>arg_otherCollider)override;
 
 public:
@@ -146,4 +146,32 @@ public:
 
 	//デバッグ用に外部から呼び出せるように
 	void Execute();
+};
+
+//押し戻し処理
+class PushBackCallBack : public CollisionCallBack
+{
+	Player* m_player;
+
+	/*--- 足場から降りる動作 ---*/
+	//足場から降りる入力があったとき、足場との押し戻しをしないための時間
+	Timer m_notPushBackWithScaffoldTimer;
+
+	void OnCollisionEnter(
+		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_otherCollider)override;
+
+	void OnCollisionTrigger(
+		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_otherCollider)override;
+public:
+	PushBackCallBack(Player* arg_player) :m_player(arg_player) {}
+	void Update(float arg_timeScale)
+	{
+		m_notPushBackWithScaffoldTimer.UpdateTimer(arg_timeScale);
+	}
+	void NotPushBackWithScaffold(float arg_interval)
+	{
+		m_notPushBackWithScaffoldTimer.Reset(arg_interval);
+	}
 };
