@@ -21,6 +21,9 @@ namespace ConstParameter
 		//フィールドのY軸下限
 		extern float FIELD_HEIGHT_MIN;
 
+		//落下判定となる高さ
+		extern float FALL_LIMIT_HEIGHT;
+
 		void ImGuiDebug();
 	};
 
@@ -63,8 +66,6 @@ namespace ConstParameter
 		extern float GRAVITY_WHILE_ATTACK;
 		//落下速度の下限
 		extern float FALL_SPEED_MIN;
-		//落下判定となる高さ
-		extern float FALL_LIMIT_HEIGHT;
 
 		/*--- 衝突判定 ---*/
 		//ダメージを受けたときのヒットストップ時間
@@ -139,6 +140,7 @@ namespace ConstParameter
 			SLIME_BATTERY_ENEMY_CHASE_PLAYER, 
 			ENEMY_BULLET,
 			PARRY_BULLET,
+			HEAL_KIT,
 			NUM 
 		};
 
@@ -159,6 +161,15 @@ namespace ConstParameter
 		extern int INVINCIBLE_TIME_ON_DAMAGED;
 		//被ダメージ時の下降時間
 		extern int OFFSET_Y_TIME_ON_DAMAGED;
+
+		/*--- 回復キット ---*/
+		namespace HealKit
+		{
+			//寿命
+			extern float LIFE_SPAN;
+			//重力
+			extern float GRAVITY;
+		}
 
 		void ImGuiDebug();
 	}

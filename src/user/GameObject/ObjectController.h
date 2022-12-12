@@ -6,6 +6,7 @@
 #include"Angle.h"
 #include"KuroMath.h"
 #include"InGameMonitor.h"
+#include"CollisionCallBack.h"
 class GameObject;
 class ObjectManager;
 class CollisionManager;
@@ -56,6 +57,46 @@ protected:
 
 public:
 	virtual ~ObjectController() {}
+};
+
+//フロア上に放り投げられる
+class OC_EmitThrowOnFloor : public ObjectController, public CollisionCallBack
+{
+	//速度
+	Vec3<float>m_vel;
+	//重力
+	float m_gravity;
+	//寿命
+	Timer m_life;
+	//落下して消えた
+	bool m_fall = false;
+
+	void OnInit(GameObject& arg_obj, Vec3<float>arg_initPos)override;
+	void OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)override;
+	std::unique_ptr<ObjectController>Clone()override;
+	bool IsLeave(GameObject& arg_obj)const override { return m_life.IsTimeUp() || m_fall; }
+
+	void OnCollisionEnter(
+		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_otherCollider)override {};
+	void OnCollisionTrigger(
+		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_otherCollider)override;
+
+public:
+	OC_EmitThrowOnFloor(float arg_gravity, float arg_lifeSpan) :m_gravity(arg_gravity)
+	{
+		m_life.Reset(arg_lifeSpan);
+	}
+
+	/// <summary>
+	/// 速度設定
+	/// </summary>
+	/// <param name="arg_velocity">速度</param>
+	void SetVelocity(Vec3<float>arg_velocity)
+	{
+		m_vel = arg_velocity;
+	}
 };
 
 //指定した方向に移動

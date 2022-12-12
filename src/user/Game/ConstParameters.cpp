@@ -20,6 +20,9 @@ namespace ConstParameter
         float FIELD_HEIGHT_MAX = 32.0f;
         //フィールドのY軸下限
         float FIELD_HEIGHT_MIN = -1.0f;
+
+        //落下判定となる高さ
+        float FALL_LIMIT_HEIGHT = -18.0f;
     };
 
     namespace Player
@@ -65,8 +68,6 @@ namespace ConstParameter
         float GRAVITY_WHILE_ATTACK = GRAVITY_WHILE_FALL * 0.4f;
         //落下速度の下限
         float FALL_SPEED_MIN = -0.2f;
-        //落下判定となる高さ
-        float FALL_LIMIT_HEIGHT = -18.0f;
 
         /*--- 衝突判定 ---*/
         //ダメージを受けたときのヒットストップ時間
@@ -127,13 +128,13 @@ namespace ConstParameter
         //種別ごとのコライダー振る舞い名称
         std::array<std::string, static_cast<int>(OBJ_TYPE::NUM)>COLLIDER_ATTRIBUTE =
         {
-            "Enemy","Enemy","Enemy","Enemy_Attack","Player_Attack",
+            "Enemy","Enemy","Enemy","Enemy_Attack","Player_Attack","Heal_Kit"
         };
 
         //種別ごとの最大数
         std::array<int, static_cast<int>(OBJ_TYPE::NUM)>INSTANCE_NUM_MAX =
         {
-            30,30,30,50,50
+            30,30,30,50,50,10
         };
 
         //敵がいる空間のX軸座標絶対値
@@ -147,6 +148,15 @@ namespace ConstParameter
         int INVINCIBLE_TIME_ON_DAMAGED = 20;
         //被ダメージ時の下降時間
         int OFFSET_Y_TIME_ON_DAMAGED = 15;
+
+        /*--- 回復キット ---*/
+        namespace HealKit
+        {
+            //寿命
+            float LIFE_SPAN = 300.0f;
+            //重力
+            float GRAVITY = 0.03f;
+        }
     }
 
     namespace Enemy

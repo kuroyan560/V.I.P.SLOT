@@ -36,6 +36,43 @@ float ObjectController::GetLocalTimeScale(GameObject& arg_obj)const
 	return KuroMath::Ease(In, Sine, arg_obj.m_damageTimer.GetTimeRate(), 0.0f, 1.0f);
 }
 
+void OC_EmitThrowOnFloor::OnInit(GameObject& arg_obj, Vec3<float> arg_initPos)
+{
+	arg_obj.m_transform.SetPos(arg_initPos);
+	m_life.Reset();
+	m_fall = false;
+}
+
+void OC_EmitThrowOnFloor::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager> arg_collisionMgr)
+{
+	//éıñΩåoâﬂ
+	m_life.UpdateTimer(arg_timeScale.GetTimeScale());
+
+	//èdóÕâ¡éZ
+	m_vel.y -= m_gravity;
+
+	//à⁄ìÆó â¡éZ
+	auto pos = arg_obj.m_transform.GetPos();
+	pos += m_vel;
+	arg_obj.m_transform.SetPos(pos);
+
+	//óéâ∫îªíË
+	if (pos.y < ConstParameter::Environment::FALL_LIMIT_HEIGHT)
+	{
+		m_fall = true;
+	}
+}
+
+std::unique_ptr<ObjectController> OC_EmitThrowOnFloor::Clone()
+{
+	auto clone = std::make_unique<OC_EmitThrowOnFloor>(m_gravity, m_life.GetIntervalTime());
+	return clone;
+}
+
+void OC_EmitThrowOnFloor::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider>arg_otherCollider)
+{
+}
+
 void OC_DirectionMove::OnInit(GameObject& arg_obj, Vec3<float>arg_initPos)
 {
 	arg_obj.m_transform.SetPos(arg_initPos);
@@ -235,3 +272,5 @@ void OC_SlimeBattery::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeSca
 
 	}
 }
+
+

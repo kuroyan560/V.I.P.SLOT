@@ -162,6 +162,30 @@ ObjectManager::ObjectManager(CollisionCallBack* arg_playersNormalAttackCallBack)
 			);
 	}
 
+	//回復キット
+	{
+		int objIdx = static_cast<int>(OBJECT_TYPE::HEAL_KIT);
+		std::vector<std::shared_ptr<CollisionPrimitive>>colPrimitiveArray;
+		colPrimitiveArray.emplace_back(std::make_shared<CollisionSphere>(2.0f, Vec3<float>(0.0f, 0.0f, 0.0f)));
+
+		std::vector<std::unique_ptr<Collider>>colliderArray;
+		colliderArray.emplace_back(std::make_unique<Collider>());
+		colliderArray.back()->Generate(
+			"Heal_Kit - Sphere",
+			{ COLLIDER_ATTRIBUTE[objIdx] },
+			colPrimitiveArray);
+
+		m_breeds[objIdx] = std::make_shared<ObjectBreed>(
+			objIdx,
+			Importer::Instance()->LoadModel("resource/user/model/", "heal_kit.glb"),
+			1,
+			1,
+			std::make_unique<OC_EmitThrowOnFloor>(HealKit::GRAVITY, HealKit::LIFE_SPAN),
+			colliderArray
+			);
+		m_breeds[objIdx]->m_originCollider.back()->SetCallBack("Floor", (CollisionCallBack*)m_breeds[objIdx]->m_controller.get());
+	}
+
 	/*--- ---*/
 
 	//インスタンス生成
