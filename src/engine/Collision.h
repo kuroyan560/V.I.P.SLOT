@@ -244,6 +244,7 @@ private:
 		return this->HitCheckDispatch(arg_myMat, arg_otherMat, arg_other, arg_info);
 	}
 	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionLine* arg_other, CollisionResultInfo* arg_info)override;
+	bool HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionAABB* arg_other, CollisionResultInfo* arg_info)override;
 
 
 	//頂点バッファ
@@ -256,6 +257,21 @@ public:
 
 	//ゲッタ
 	const Vec3<ValueMinMax>& GetPtValue() { return m_pValues; }
+	Vec3<float>GetTransformedSize(const Matrix& arg_mat)const
+	{
+		auto max = GetTransformedMax(arg_mat);
+		auto min = GetTransformedMin(arg_mat);
+		return max - min;
+	}
+	Vec3<float>GetTransformedMin(const Matrix& arg_mat)const
+	{
+		return KuroMath::TransformVec3({ m_pValues.x.m_min,m_pValues.y.m_min,m_pValues.z.m_min }, arg_mat);
+	}
+	Vec3<float>GetTransformedMax(const Matrix& arg_mat)const
+	{
+		return KuroMath::TransformVec3({ m_pValues.x.m_max,m_pValues.y.m_max,m_pValues.z.m_max }, arg_mat);
+	}
+
 	//セッタ
 	void StructBox(const Vec3<ValueMinMax>& PValues);
 

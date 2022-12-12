@@ -72,7 +72,7 @@ bool CollisionPoint::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMa
 		if (arg_info)
 		{
 			arg_info->m_inter = { pt.x,floorY,pt.z };
-			arg_info->m_hitOtherPrimitive = arg_other;
+			arg_info->m_hitOtherPrimitive = this;
 		}
 		return true;
 	}
@@ -175,7 +175,7 @@ bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherM
 		{
 			//２つの中心間の中心点
 			arg_info->m_inter = centerA.GetCenter(centerB);
-			arg_info->m_hitOtherPrimitive = arg_other;
+			arg_info->m_hitOtherPrimitive = this;
 		}
 		return true;
 	}
@@ -198,7 +198,7 @@ bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherM
 	{
 		// 平面上の再接近点を、疑似交点とする
 		arg_info->m_inter = arg_other->m_normal * -dist + center;
-		arg_info->m_hitOtherPrimitive = arg_other;
+		arg_info->m_hitOtherPrimitive = this;
 	}
 	return true;
 }
@@ -232,7 +232,7 @@ bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherM
 	if (arg_info) 
 	{
 		arg_info->m_inter = lineStart + arg_other->m_dir * t;
-		arg_info->m_hitOtherPrimitive = arg_other;
+		arg_info->m_hitOtherPrimitive = this;
 	}
 
 	return true;
@@ -272,7 +272,7 @@ bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherM
 		{
 			//球の中心とAABBの中心間の中心点
 			arg_info->m_inter = spCenter.GetCenter(ptMin.GetCenter(ptMax));
-			arg_info->m_hitOtherPrimitive = arg_other;
+			arg_info->m_hitOtherPrimitive = this;
 		}
 		return true;
 	}
@@ -353,7 +353,7 @@ bool CollisionSphere::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherM
 		if (arg_info)
 		{
 			arg_info->m_inter = closest;
-			arg_info->m_hitOtherPrimitive = arg_other;
+			arg_info->m_hitOtherPrimitive = this;
 		}
 		return true;
 	}
@@ -458,7 +458,49 @@ bool CollisionAABB::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat
 	if (arg_info)
 	{
 		arg_info->m_inter = inter;
-		arg_info->m_hitOtherPrimitive = arg_other;
+		arg_info->m_hitOtherPrimitive = this;
+	}
+
+	return true;
+}
+
+bool CollisionAABB::HitCheck(const Matrix& arg_myMat, const Matrix& arg_otherMat, CollisionAABB* arg_other, CollisionResultInfo* arg_info)
+{
+	Vec3<float>thisMinPt = this->GetTransformedMin(arg_myMat);
+	Vec3<float>thisMaxPt = this->GetTransformedMax(arg_myMat);
+	Vec3<float>otherMinPt = arg_other->GetTransformedMin(arg_otherMat);
+	Vec3<float>otherMaxPt = arg_other->GetTransformedMax(arg_otherMat);
+
+	float thisPt[3][2] =
+	{
+		{thisMinPt.x,thisMaxPt.x},
+		{thisMinPt.y,thisMaxPt.y},
+		{thisMinPt.z,thisMaxPt.z},
+	};
+
+	float otherPt[3][2] =
+	{
+		{otherMinPt.x,otherMaxPt.x},
+		{otherMinPt.y,otherMaxPt.y},
+		{otherMinPt.z,otherMaxPt.z},
+	};
+
+	static const int MIN = 0;
+	static const int MAX = 1;
+
+	for (int i = 0; i < 3; ++i)
+	{
+		if (!(otherPt[i][MIN] < thisPt[i][MAX]))return false;
+		if (!(thisPt[i][MIN] < otherPt[i][MAX]))return false;
+	}
+
+	if (arg_info)
+	{
+		//双方の中心を結んだ線の中間地点
+		const auto myCenter = thisMinPt.GetCenter(thisMaxPt);
+		const auto otherCenter = otherMinPt.GetCenter(otherMaxPt);
+		arg_info->m_inter = myCenter.GetCenter(otherCenter);
+		arg_info->m_hitOtherPrimitive = this;
 	}
 
 	return true;
