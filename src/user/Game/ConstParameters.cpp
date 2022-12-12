@@ -9,7 +9,7 @@ namespace ConstParameter
     namespace Environment
     {
         //ステージサイズ（縦幅・横幅）
-        Vec2<float>FIELD_FLOOR_SIZE = { 60.0f,1.0f };
+        Vec2<float>FIELD_FLOOR_SIZE = { 60.0f,2.0f };
         //ステージ床座標
         Vec3<float>FIELD_FLOOR_POS = { 0.0f,-2.0f,-25.0f };
         //ステージ床上面の高さ

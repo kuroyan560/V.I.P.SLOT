@@ -23,6 +23,10 @@ void StageMgr::DisappearBlock(std::shared_ptr<Block>& arg_block, std::weak_ptr<C
 void StageMgr::GenerateTerrian(std::string arg_stageDataPath, std::weak_ptr<CollisionManager> arg_collisionMgr, int arg_slotBlockNum)
 {
 	//足場生成
+	for (auto& scaffold : m_scaffoldArray)
+	{
+		scaffold->Disappear(arg_collisionMgr);
+	}
 	m_scaffoldArray.clear();
 
 	int scaffoldNum = 4;
@@ -30,7 +34,7 @@ void StageMgr::GenerateTerrian(std::string arg_stageDataPath, std::weak_ptr<Coll
 	for (int i = 0; i < scaffoldNum; ++i)
 	{
 		m_scaffoldArray.emplace_back(m_scaffolds[i]);
-		m_scaffoldArray.back()->Init(0.0f, 5.2f * (i + 1), ConstParameter::Environment::FIELD_FLOOR_SIZE.x);
+		m_scaffoldArray.back()->Init(0.0f, 5.2f * (i + 1), ConstParameter::Environment::FIELD_FLOOR_SIZE.x, arg_collisionMgr);
 	}
 
 	//地形クリア
@@ -233,8 +237,9 @@ StageMgr::StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine) :Debugge
 
 	//床生成
 	m_floorModelObj = std::make_shared<ModelObject>("resource/user/model/", "floor_square.glb");
-	m_floorModelObj->m_transform.SetPos(ConstParameter::Player::INIT_POS);	//プレイヤー初期位置に合わせる
+	m_floorModelObj->m_transform.SetPos(ConstParameter::Environment::FIELD_FLOOR_POS);
 	//床のコライダー生成
+	//auto floorColPrimitive = std::make_shared<CollisionMesh>(m_floorModelObj->m_model->m_meshes[0].GetCollisionTriangles());
 	auto floorColPrimitive = std::make_shared<CollisionAABB>(m_floorModelObj->m_model->GetAllMeshPosMinMax());
 	m_floorCollider = std::make_shared<Collider>();
 	m_floorCollider->Generate("Floor", { "Floor" }, { floorColPrimitive });
