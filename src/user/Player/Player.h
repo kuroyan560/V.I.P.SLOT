@@ -23,6 +23,7 @@ class Collider;
 class CollisionManager;
 class GameCamera;
 class CollisionSphere;
+class CollisionAABB;
 class YoYo;
 class Scaffold;
 class ObjectManager;
@@ -30,6 +31,8 @@ class TextureBuffer;
 
 class Player : public ColliderParentObject, public Debugger
 {
+	friend class PushBackCallBack;
+
 	//HP管理
 	PlayerHp m_playerHp;
 
@@ -64,10 +67,11 @@ class Player : public ColliderParentObject, public Debugger
 	PlayersCoinUI m_coinUI;
 
 	//モデル全体を覆う球
-	std::shared_ptr<CollisionSphere>m_bodySphereCol;
-
-	//コライダー
-	std::shared_ptr<Collider>m_bodyCollider;
+	std::shared_ptr<CollisionSphere>m_bodySphereColPrim;
+	std::shared_ptr<Collider>m_bodySphereCollider;
+	//モデル全体を覆うAABB
+	std::shared_ptr<CollisionAABB>m_bodyAABBColPrim;
+	std::shared_ptr<Collider>m_bodyAABBCollider;
 
 	//ヒットエフェクト
 	std::shared_ptr<TexHitEffect>m_hitEffect;
@@ -84,6 +88,8 @@ class Player : public ColliderParentObject, public Debugger
 	std::shared_ptr<PlayersCounterAttack>m_counterAttackCallBack;
 	//被ダメージ
 	std::shared_ptr<DamagedCallBack>m_damegedCallBack;
+	//押し戻し
+	std::shared_ptr<PushBackCallBack>m_pushBackCallBack;
 
 	//操作がキーボードかコントローラーか
 	enum struct INPUT_CONFIG { KEY_BOARD, CONTROLLER };
@@ -96,8 +102,6 @@ class Player : public ColliderParentObject, public Debugger
 	float m_vecX;
 
 	/* --- 足場から降りる動作 --- */
-	//足場との当たり判定を取らない時間計測
-	Timer m_stepDownTimer;
 	//足場から降りているか
 	bool m_stepDown;
 	//足場から降りたときの落下スピード
@@ -124,9 +128,6 @@ public:
 	void Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam);
 	//エフェクト描画
 	void Draw2D(std::weak_ptr<Camera>arg_cam);
-
-	//足場との当たり判定
-	void HitCheckWithScaffold(const std::weak_ptr<Scaffold>arg_scaffold);
 
 	//プレイヤーのモデル中央に合わせた座標ゲッタ
 	Vec3<float>GetCenterPos()const;

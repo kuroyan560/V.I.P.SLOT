@@ -172,40 +172,55 @@ void PushBackCallBack::OnCollisionEnter(const CollisionResultInfo& arg_info, std
 	{
 		//足場との判定を切っている
 		if (!m_notPushBackWithScaffoldTimer.IsTimeUp())return;
-		//落下していない
-		if (0.0f <= playerMove.y)return;
 	}
 
-	
-	//移動ベクトルとの衝突点を求める
-	CollisionResultInfo info;
-	CollisionLine moveRay(arg_info.m_inter - playerMove, playerMove.GetNormal(), 20.0f);
-	moveRay.HitCheckDispatch(XMMatrixIdentity(),
-		arg_otherCollider.lock()->GetTransformMat(),
-		arg_info.m_hitOtherPrimitive,
-		&info);
+	const auto otherAABB = (CollisionAABB*)arg_info.m_hitOtherPrimitive;
+	const auto otherMinPt = otherAABB->GetTransformedMin(arg_otherCollider.lock()->GetTransformMat());
+	const auto otherMaxPt = otherAABB->GetTransformedMax(arg_otherCollider.lock()->GetTransformMat());
 
-	float radius = m_player->m_bodySphereCol->m_radius;
-	auto offset = m_player->m_bodySphereCol->m_offset;
-	auto aabb = (CollisionAABB*)arg_info.m_hitOtherPrimitive;
+	const auto myMinPt = m_player->m_bodyAABBColPrim->GetTransformedMin(m_player->m_bodyAABBCollider->GetTransformMat());
+	const auto myMaxPt = m_player->m_bodyAABBColPrim->GetTransformedMax(m_player->m_bodyAABBCollider->GetTransformMat());
+	const auto myAABBSizeHalf = m_player->m_bodyAABBColPrim->GetTransformedSize(arg_otherCollider.lock()->GetTransformMat()) * 0.5f;
 
-	//足場はY軸方向、落下時のみ押し戻し
+	//足場でない、床
 	if (!isScaffold)
 	{
-		//X軸方向押し戻し
-		if (playerMove.x && (m_player->m_oldPos.x < aabb->GetPtValue().x.m_min || aabb->GetPtValue().x.m_max < m_player->m_oldPos.x))pos.x = info.m_inter.x + radius * -(playerMove.GetNormal().x / abs(playerMove.GetNormal().x));
-		//if (playerMove.x)pos.x = arg_info.m_inter.x + m_player->m_bodySphereCol->m_radius * -(playerMove.GetNormal().x / abs(playerMove.GetNormal().x));
-		//Z軸方向押し戻し
-		if (playerMove.z)pos.z = info.m_inter.z + radius * -(playerMove.GetNormal().z / abs(playerMove.GetNormal().z));
-		//if (playerMove.z)pos.z = arg_info.m_inter.z + m_player->m_bodySphereCol->m_radius * -(playerMove.GetNormal().z / abs(playerMove.GetNormal().z));
+		//X軸方向押し戻し(左)
+		if ((myMaxPt.x - playerMove.x) <= otherMinPt.x && otherMinPt.x <= myMaxPt.x)
+		{
+			//pos.x = otherMinPt.x - myAABBSizeHalf.x;
+			pos.x -= abs(otherMinPt.x - myMaxPt.x);
+		}
+		//X軸方向押し戻し(右)
+		else if (otherMaxPt.x <= (myMinPt.x - playerMove.x) && myMinPt.x <= otherMaxPt.x)
+		{
+			//pos.x = otherMaxPt.x + myAABBSizeHalf.x;
+			pos.x += abs(otherMaxPt.x - myMinPt.x);
+		}
+		//Y軸方向押し戻し(下）
+		if ((myMaxPt.y - playerMove.y) <= otherMinPt.y && otherMinPt.y <= myMaxPt.y)
+		{
+			//pos.y = otherMinPt.y - myAABBSizeHalf.y;
+			pos.y -= abs(otherMinPt.y - myMaxPt.y);
+		}
+		//Y軸方向押し戻し(上）
+		else if (otherMaxPt.y <= (myMinPt.y - playerMove.y) && myMinPt.y <= otherMaxPt.y)
+		{
+			//pos.y = otherMaxPt.y + myAABBSizeHalf.y;
+			pos.y += abs(otherMaxPt.y - myMinPt.y);
+			m_player->OnLanding(true);
+		}
 	}
-	//Y軸方向押し戻し
-	if (playerMove.y)pos.y = info.m_inter.y + radius * -(playerMove.GetNormal().y / abs(playerMove.GetNormal().y));
-	//if (playerMove.y)pos.y = arg_info.m_inter.y + m_player->m_bodySphereCol->m_radius * -(playerMove.GetNormal().y / abs(playerMove.GetNormal().y));
-	
-	pos += offset;
-
-	m_player->OnLanding(!isScaffold);
+	//足場はY軸方向、落下時のみ押し戻し
+	else
+	{
+		//Y軸方向押し戻し(上）
+		if (otherMaxPt.y <= (myMinPt.y - playerMove.y) && myMinPt.y <= otherMaxPt.y)
+		{
+			pos.y += abs(otherMaxPt.y - myMinPt.y);
+			m_player->OnLanding(false);
+		}
+	}
 
 	//押し戻し後の座標適用
 	m_player->m_modelObj->m_transform.SetPos(pos);

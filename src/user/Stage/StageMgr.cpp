@@ -30,11 +30,14 @@ void StageMgr::GenerateTerrian(std::string arg_stageDataPath, std::weak_ptr<Coll
 	m_scaffoldArray.clear();
 
 	int scaffoldNum = 4;
-	float offsetY = 4.0f;
+	float offsetY = 4.6f;
 	for (int i = 0; i < scaffoldNum; ++i)
 	{
 		m_scaffoldArray.emplace_back(m_scaffolds[i]);
-		m_scaffoldArray.back()->Init(0.0f, 5.2f * (i + 1), ConstParameter::Environment::FIELD_FLOOR_SIZE.x, arg_collisionMgr);
+		m_scaffoldArray.back()->Init(0.0f,
+			ConstParameter::Environment::FIELD_FLOOR_TOP_SURFACE_HEIGHT + offsetY * (i + 1),
+			ConstParameter::Environment::FIELD_FLOOR_SIZE.x,
+			arg_collisionMgr);
 	}
 
 	//地形クリア
@@ -263,7 +266,7 @@ void StageMgr::Init(std::string arg_stageDataPath)
 	m_terrianEvaluationUI.Init();
 }
 
-void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<Player>arg_player)
+void StageMgr::Update(TimeScale& arg_timeScale)
 {
 	//すべてのコイン排出済か
 	bool isAllCoinEmit = true;
@@ -309,12 +312,6 @@ void StageMgr::Update(TimeScale& arg_timeScale, std::weak_ptr<Player>arg_player)
 			60.0f, 35.0f);
 
 		GenerateTerrian("", m_collisionMgr,evaluation);
-	}
-
-	//足場との判定
-	for (auto& scaffold : m_scaffoldArray)
-	{
-		arg_player.lock()->HitCheckWithScaffold(scaffold);
 	}
 }
 

@@ -85,9 +85,13 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 
 	/*--- コライダー用プリミティブ生成 ---*/
 	//モデル全体を覆う球
-	m_bodySphereCol = std::make_shared<CollisionSphere>(
+	m_bodySphereColPrim = std::make_shared<CollisionSphere>(
 		1.4f,
 		Vec3<float>(0.0f, -0.2f, 0.0f));
+
+	//モデル全体を覆うAABB
+	m_bodyAABBColPrim = std::make_shared<CollisionAABB>(
+		m_modelObj->m_model->GetAllMeshPosMinMax());
 
 	//足元の当たり判定球
 	std::shared_ptr<CollisionPrimitive>footSphereCol = std::make_shared<CollisionSphere>(
@@ -99,26 +103,38 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 	m_parryAttackCallBack = std::make_shared<PlayersParryAttack>(&m_ability.m_offensive, arg_objMgr, arg_collisionMgr, parrySE);
 	//被ダメージコールバック
 	m_damegedCallBack = std::make_shared<DamagedCallBack>(this, arg_cam, onDamagedHitStopSE, onDamagedSE);
+	//押し戻し
+	m_pushBackCallBack = std::make_shared<PushBackCallBack>(this);
 
 	/*--- コライダー生成（判定順） ---*/
 
 	std::vector<std::shared_ptr<Collider>>colliders;
 
-	//モデル全体を覆うコライダー
+	//モデル全体を覆う球コライダー
 	{
-		std::vector<std::shared_ptr<CollisionPrimitive>>coverModelPrimitiveArray =
-		{
-			m_bodySphereCol
-		};
-		m_bodyCollider = std::make_shared<Collider>();
-		m_bodyCollider->Generate("Player_Body", { "Player" }, coverModelPrimitiveArray);
-		m_bodyCollider->SetParentObject(this);
-		m_bodyCollider->SetParentTransform(&m_modelObj->m_transform);
+		m_bodySphereCollider = std::make_shared<Collider>();
+		m_bodySphereCollider->Generate("Player_Body_Sphere", { "Player" }, { m_bodySphereColPrim });
+		m_bodySphereCollider->SetParentObject(this);
+		m_bodySphereCollider->SetParentTransform(&m_modelObj->m_transform);
 
 		//被ダメージコールバックアタッチ
-		m_bodyCollider->SetCallBack("Enemy", m_damegedCallBack.get());
-		m_bodyCollider->SetCallBack("Enemy_Attack", m_damegedCallBack.get());
-		colliders.emplace_back(m_bodyCollider);
+		m_bodySphereCollider->SetCallBack("Enemy", m_damegedCallBack.get());
+		m_bodySphereCollider->SetCallBack("Enemy_Attack", m_damegedCallBack.get());
+
+		//colliders.emplace_back(m_bodySphereCollider);
+	}
+	//モデル全体を覆うAABBコライダー
+	{
+		m_bodyAABBCollider = std::make_shared<Collider>();
+		m_bodyAABBCollider->Generate("Player_Body_AABB", { "Player" }, { m_bodyAABBColPrim });
+		m_bodyAABBCollider->SetParentObject(this);
+		m_bodyAABBCollider->SetParentTransform(&m_modelObj->m_transform);
+
+		//押し戻しコールバックアタッチ
+		m_bodyAABBCollider->SetCallBack("Scaffold", m_pushBackCallBack.get());
+		m_bodyAABBCollider->SetCallBack("Floor", m_pushBackCallBack.get());
+
+		colliders.emplace_back(m_bodyAABBCollider);
 	}
 
 	/*--- コライダー配列登録 ---*/
@@ -173,7 +189,6 @@ void Player::Init(PlayersAbility arg_ability, int arg_initRemainLife, int arg_in
 	m_vecX = 1.0f;
 
 	//足場から降りる処理初期化
-	m_stepDownTimer.Reset(3);
 	m_stepDown = false;
 
 	//ヒットエフェクト
@@ -278,14 +293,14 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	}
 
 	//足場との当たり判定を切る時間更新
-	m_stepDownTimer.UpdateTimer(timeScale);
+	m_pushBackCallBack->Update(timeScale);
 	//足場から降りる
 	bool stepDownInput = (-moveInput.y < 0.0f);
 	if (stepDownInput)
 	{
 		if (!m_stepDown && m_isOnScaffold)
 		{
-			m_stepDownTimer.Reset();
+			m_pushBackCallBack->NotPushBackWithScaffold(3.0f);
 			m_stepDown = true;
 			m_isOnScaffold = false;
 			m_fallSpeed = m_stepDownFallSpeed;
@@ -326,6 +341,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	//移動量加算
 	pos += m_move * timeScale;
 
+	/*
 	//押し戻し（床）
 	if (pos.y < FIELD_FLOOR_TOP_SURFACE_HEIGHT + MODEL_SIZE.y / 2.0f)
 	{
@@ -345,6 +361,7 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 		pos.x = FIELD_WIDTH_HALF;
 		m_move.x = 0.0f;
 	}
+	*/
 
 	//更新した座標の反映
 	m_modelObj->m_transform.SetPos(pos);
@@ -401,64 +418,6 @@ void Player::Draw2D(std::weak_ptr<Camera> arg_cam)
 
 	//所持金コインUI
 	m_coinUI.Draw2D();
-}
-
-void Player::HitCheckWithScaffold(const std::weak_ptr<Scaffold> arg_scaffold)
-{
-	//足場との判定を切っている
-	if (!m_stepDownTimer.IsTimeUp())return;
-
-	//自身の座標取得
-	auto pos = m_modelObj->m_transform.GetPos();
-
-	//落下していない
-	if (m_oldPos.y <= pos.y)return;
-
-	//足場ポインタ取得
-	auto scaffold = arg_scaffold.lock();
-
-	//１フレーム前の座標
-	auto oldPos = m_oldPos;
-
-	//当たり判定
-	auto scaffoldPos = scaffold->GetPos();
-	auto scaffoldNormal = scaffold->GetNormal();
-
-	float myRadius = m_bodySphereCol->m_radius;
-	auto v1 = pos + Vec3<float>(0.0f, -myRadius, 0.0f) - scaffoldPos;
-	auto v2 = oldPos+ Vec3<float>(0.0f, -myRadius, 0.0f) - scaffoldPos;
-
-	//足場面と衝突してない
-	if (0.0f < v1.Dot(scaffoldNormal) * v2.Dot(scaffoldNormal))return;
-
-	//足場面までの距離
-	auto d1 = abs(scaffoldNormal.Dot(v1));
-	auto d2 = abs(scaffoldNormal.Dot(v2));
-	float a = d1 / (d1 + d2);
-	auto v3 = v1 * (1 - a) + v2 * a;
-
-	//衝突点
-	auto inter = v3 + scaffoldPos;
-
-	//衝突点が足場面上に含まれているか
-	auto scaffoldWidth = scaffold->GetWidth();
-	//足場の各角
-	Vec3<float>p1 = scaffoldPos + Vec3<float>(-scaffoldWidth / 2.0f, 0.0f, 0.5f);
-	Vec3<float>p2 = scaffoldPos + Vec3<float>(scaffoldWidth / 2.0f, 0.0f, 0.5f);
-	Vec3<float>p3 = scaffoldPos + Vec3<float>(-scaffoldWidth / 2.0f, 0.0f, -0.5f);
-	Vec3<float>p4 = scaffoldPos + Vec3<float>(scaffoldWidth / 2.0f, 0.0f, -0.5f);
-	
-	if ((inter - p1).Cross(p1 - p2).GetNormal() != scaffoldNormal)return;
-	if ((inter - p2).Cross(p2 - p4).GetNormal() != scaffoldNormal)return;
-	if ((inter - p4).Cross(p4 - p3).GetNormal() != scaffoldNormal)return;
-	if ((inter - p3).Cross(p3 - p1).GetNormal() != scaffoldNormal)return;
-
-	//押し戻し
-	pos.y = inter.y + myRadius + 0.01f;
-	m_modelObj->m_transform.SetPos(pos);
-
-	//着地時の処理
-	OnLanding(false);
 }
 
 Vec3<float> Player::GetCenterPos() const

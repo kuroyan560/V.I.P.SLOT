@@ -137,7 +137,7 @@ public:
 	StageMgr(const std::shared_ptr<SlotMachine>& arg_slotMachine);
 	void Awake(std::weak_ptr<CollisionManager>arg_collisionMgr);
 	void Init(std::string arg_stageDataPath);
-	void Update(TimeScale& arg_timeScale, std::weak_ptr<Player>arg_player);
+	void Update(TimeScale& arg_timeScale);
 	void BlockDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);
 	void ScaffoldDraw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam);
 	void Finalize();

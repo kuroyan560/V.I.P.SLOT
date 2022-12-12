@@ -182,7 +182,7 @@ void InGameScene::OnUpdate()
 	m_slotMachine->Update(m_timeScale);
 
 	//ステージマネージャ
-	m_stageMgr->Update(m_timeScale, m_player);
+	m_stageMgr->Update(m_timeScale);
 
 	//ウェーブマネージャ
 	m_waveMgr->Update(m_timeScale, m_enemyEmitter);
