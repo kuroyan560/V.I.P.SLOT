@@ -166,10 +166,7 @@ void InGameScene::OnUpdate()
 		|| UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::DPAD_DOWN))
 	{
 		m_player->DebugDamage();
-	}
-
-	//コリジョンマネージャ
-	if (Event::CollisionFlg())m_collisionMgr->Update();
+	} 
 
 	//カメラ
 	m_gameCam->Update(m_timeScale.GetTimeScale(),
@@ -195,6 +192,9 @@ void InGameScene::OnUpdate()
 
 	//イベント
 	Event::StaticUpdate();
+
+	//コリジョンマネージャ
+	if (Event::CollisionFlg())m_collisionMgr->Update();
 
 	//ウェーブクリアしたか
 	if (m_waveMgr->IsWaveClear(m_player->GetCoinNum()))
