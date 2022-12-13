@@ -238,7 +238,7 @@ void InGameScene::OnDraw()
 	auto& rtMgr = *RenderTargetManager::Instance();
 
 	//レンダーターゲットクリア
-	rtMgr.Clear();
+	rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_MAP);
 
 	//レンダーターゲットセット
 	rtMgr.Set(true);
@@ -258,7 +258,7 @@ void InGameScene::OnDraw()
 	m_stageMgr->BlockDraw(m_ligMgr, mainCam);
 
 	//デプスステンシルクリア
-	rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_STENCIL);
+	//rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_STENCIL);
 
 	//ステージマネージャ（足場）
 	m_stageMgr->ScaffoldDraw(m_ligMgr, mainCam);
