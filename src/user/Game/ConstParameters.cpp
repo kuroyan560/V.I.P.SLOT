@@ -13,7 +13,7 @@ namespace ConstParameter
         //ステージ床座標
         Vec3<float>FIELD_FLOOR_POS = { 0.0f,-2.0f,-25.0f };
         //ステージ床上面の高さ
-        float FIELD_FLOOR_TOP_SURFACE_HEIGHT = FIELD_FLOOR_POS.y + FIELD_FLOOR_SIZE.y / 2.0f;
+        float FIELD_FLOOR_TOP_SURFACE_HEIGHT = FIELD_FLOOR_POS.y;
         //フィールドのX軸幅
         float FIELD_WIDTH = 64.0f;
         //フィールドのY軸上限
@@ -27,11 +27,11 @@ namespace ConstParameter
 
     namespace Player
     {
-        //初期位置
-        Vec3<float>INIT_POS = { 0,Environment::FIELD_FLOOR_TOP_SURFACE_HEIGHT,Environment::FIELD_FLOOR_POS.z };
-
         //モデルサイズ
         Vec3<float>MODEL_SIZE = { 1.0f,2.0f,1.0f };
+
+        //初期位置
+        Vec3<float>INIT_POS = { 0,Environment::FIELD_FLOOR_TOP_SURFACE_HEIGHT + MODEL_SIZE.y * 0.5f,Environment::FIELD_FLOOR_POS.z };
 
         //最大ライフ
         //　※UI表示的には６が限界。ゲーム的にもそれくらいかな？
