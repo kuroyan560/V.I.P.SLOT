@@ -11,7 +11,7 @@
 #include"CoinVault.h"
 #include"Object.h"
 
-void PlayersNormalAttack::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider> arg_otherCollider)
+void PlayersNormalAttack::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider>arg_myCollider, std::weak_ptr<Collider> arg_otherCollider)
 {
 	//コライダーの親に設定されているオブジェクトのポインタ取得
 	auto obj = arg_otherCollider.lock()->GetParentObject<GameObject>();
@@ -32,7 +32,7 @@ void PlayersNormalAttack::OnCollisionTrigger(const CollisionResultInfo& arg_info
 	}
 }
 
-void PlayersParryAttack::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider> arg_otherCollider)
+void PlayersParryAttack::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider>arg_myCollider, std::weak_ptr<Collider> arg_otherCollider)
 {
 	//コライダーの親に設定されているオブジェクトのポインタ取得
 	auto obj = arg_otherCollider.lock()->GetParentObject<GameObject>();
@@ -53,7 +53,7 @@ void PlayersParryAttack::OnCollisionTrigger(const CollisionResultInfo& arg_info,
 	AudioApp::Instance()->PlayWave(m_parrySE);
 }
 
-void PlayersCounterAttack::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider> arg_otherCollider)
+void PlayersCounterAttack::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider>arg_myCollider, std::weak_ptr<Collider> arg_otherCollider)
 {
 	//コライダーの親に設定されているオブジェクトのポインタ取得
 	auto obj = arg_otherCollider.lock()->GetParentObject<GameObject>();
@@ -109,7 +109,7 @@ void DamagedCallBack::Execute(bool arg_overlapped)
 	m_flashTimer.Reset(FLASH_SPAN_ON_DAMAGED_INVINCIBLE);
 }
 
-void DamagedCallBack::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider>arg_otherCollider)
+void DamagedCallBack::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider>arg_myCollider, std::weak_ptr<Collider>arg_otherCollider)
 {
 	this->Execute(false);
 }
@@ -152,12 +152,7 @@ void DamagedCallBack::Update(TimeScale& arg_timeScale)
 	}
 }
 
-void PushBackCallBack::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider> arg_otherCollider)
-{
-
-}
-
-void PushBackCallBack::OnCollisionEnter(const CollisionResultInfo& arg_info, std::weak_ptr<Collider> arg_otherCollider)
+void PushBackCallBack::OnCollisionEnter(const CollisionResultInfo& arg_info, std::weak_ptr<Collider>arg_myCollider, std::weak_ptr<Collider> arg_otherCollider)
 {
 	//プレイヤーの座標取得
 	auto pos = m_player->m_modelObj->m_transform.GetPos();

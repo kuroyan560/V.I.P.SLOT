@@ -17,6 +17,7 @@ GameObject::GameObject(const std::shared_ptr<ObjectBreed>& arg_breed)
 	for (auto& colOrigin : arg_breed->m_originCollider)
 	{
 		m_colliders.emplace_back(std::make_shared<Collider>(colOrigin->Clone(&m_transform, this)));
+		m_colliders.back()->SetParentObject(this);
 	}
 }
 

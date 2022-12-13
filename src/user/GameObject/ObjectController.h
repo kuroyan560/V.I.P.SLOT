@@ -35,7 +35,7 @@ protected:
 	//更新
 	virtual void OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr) = 0;
 	//クローンの生成
-	virtual std::unique_ptr<ObjectController>Clone() = 0;
+	virtual std::shared_ptr<ObjectController>Clone() = 0;
 
 	//仮想関数（アレンジ可能）
 	//デフォルトではただモデルを描画するだけ
@@ -54,13 +54,15 @@ protected:
 	bool IsOutOfScreen(GameObject& arg_obj)const;
 	//対象オブジェクトのローカルタイムスケール
 	float GetLocalTimeScale(GameObject& arg_obj)const;
+	//ゲームオブジェクトのコントローラー取得
+	static std::shared_ptr<ObjectController>GetController(GameObject& arg_obj);
 
 public:
 	virtual ~ObjectController() {}
 };
 
 //フロア上に放り投げられる
-class OC_EmitThrowOnFloor : public ObjectController, public CollisionCallBack
+class OC_EmitThrowOnFloor : public ObjectController
 {
 	//速度
 	Vec3<float>m_vel;
@@ -71,19 +73,34 @@ class OC_EmitThrowOnFloor : public ObjectController, public CollisionCallBack
 	//落下して消えた
 	bool m_fall = false;
 
+	//スピン
+	Angle m_spin;
+
 	void OnInit(GameObject& arg_obj, Vec3<float>arg_initPos)override;
 	void OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)override;
-	std::unique_ptr<ObjectController>Clone()override;
+	std::shared_ptr<ObjectController>Clone()override;
 	bool IsLeave(GameObject& arg_obj)const override { return m_life.IsTimeUp() || m_fall; }
 
-	void OnCollisionEnter(
-		const CollisionResultInfo& arg_info,
-		std::weak_ptr<Collider>arg_otherCollider)override {};
-	void OnCollisionTrigger(
-		const CollisionResultInfo& arg_info,
-		std::weak_ptr<Collider>arg_otherCollider)override;
+	struct Bound : public CollisionCallBack
+	{
+		void OnCollisionEnter(
+			const CollisionResultInfo& arg_info,
+			std::weak_ptr<Collider>arg_myCollider,
+			std::weak_ptr<Collider>arg_otherCollider)override {};
+
+		void OnCollisionTrigger(
+			const CollisionResultInfo& arg_info,
+			std::weak_ptr<Collider>arg_myCollider,
+			std::weak_ptr<Collider>arg_otherCollider)override;
+	};
 
 public:
+	static CollisionCallBack* GetCallBack()
+	{
+		static std::shared_ptr< Bound>s_callBack = std::make_shared<Bound>();
+		return s_callBack.get();
+	}
+
 	OC_EmitThrowOnFloor(float arg_gravity, float arg_lifeSpan) :m_gravity(arg_gravity)
 	{
 		m_life.Reset(arg_lifeSpan);
@@ -119,7 +136,7 @@ class OC_DirectionMove : public ObjectController
 
 	void OnInit(GameObject& arg_obj, Vec3<float>arg_initPos)override;
 	void OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)override;
-	std::unique_ptr<ObjectController>Clone()override;
+	std::shared_ptr<ObjectController>Clone()override;
 	bool IsLeave(GameObject& arg_obj)const override { return IsOutOfScreen(arg_obj); }
 
 public:
@@ -166,7 +183,7 @@ protected:
 
 	void OnInit(GameObject& arg_obj, Vec3<float>arg_initPos)override;
 	void OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)override;
-	std::unique_ptr<ObjectController>Clone()override;
+	std::shared_ptr<ObjectController>Clone()override;
 	bool IsLeave(GameObject& arg_obj)const override { return m_isGoal; }
 
 public:
@@ -191,7 +208,7 @@ class OC_TargetObjectEaseMove : public OC_DestinationEaseMove
 	GameObject* m_target;
 
 	void OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager>arg_collisionMgr)override;
-	std::unique_ptr<ObjectController>Clone()override;
+	std::shared_ptr<ObjectController>Clone()override;
 
 public:
 	OC_TargetObjectEaseMove(EASE_CHANGE_TYPE arg_easeChangeType, EASING_TYPE arg_easeType, float arg_interval)
@@ -238,7 +255,7 @@ private:
 protected:
 	OC_SlimeBattery() {}
 
-	virtual std::unique_ptr<ObjectController>Clone() = 0;
+	virtual std::shared_ptr<ObjectController>Clone() = 0;
 	virtual void OnInit(GameObject& arg_obj, Vec3<float>arg_initPos)override;
 	//飛び跳ね時に呼び出す処理
 	virtual void OnSlimeJump() = 0;
@@ -262,7 +279,7 @@ class OC_SlimeBattery_RouteDefined : public OC_SlimeBattery
 	//現在の座標基準Xインデックス
 	int m_spotXIdx = 0;
 
-	std::unique_ptr<ObjectController>Clone()override
+	std::shared_ptr<ObjectController>Clone()override
 	{
 		return std::make_unique<OC_SlimeBattery_RouteDefined>();
 	}
@@ -310,7 +327,7 @@ class OC_SlimeBattery_ChasePlayer : public OC_SlimeBattery
 	int m_countMax;
 	int m_count;
 
-	std::unique_ptr<ObjectController>Clone()override
+	std::shared_ptr<ObjectController>Clone()override
 	{
 		return std::make_unique<OC_SlimeBattery_ChasePlayer>();
 	}

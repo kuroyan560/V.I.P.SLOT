@@ -70,13 +70,22 @@ public:
 		Angle arg_meandelingAngle = Angle(30));
 
 	/// <summary>
-/// パリーで返す弾
-/// </summary>
-/// <param name="arg_collisionMgr">コリジョンマネージャ</param>
-/// <param name="arg_initPos">初期位置</param>
-/// <param name="arg_target">ターゲットとなるオブジェクト</param>
-/// <returns>生成したオブジェクトのポインタ</returns>
+	/// パリーで返す弾
+	/// </summary>
+	/// <param name="arg_collisionMgr">コリジョンマネージャ</param>
+	/// <param name="arg_initPos">初期位置</param>
+	/// <param name="arg_target">ターゲットとなるオブジェクト</param>
+	/// <returns>生成したオブジェクトのポインタ</returns>
 	std::weak_ptr<GameObject>AppearParryBullet(std::weak_ptr<CollisionManager>arg_collisionMgr, Vec3<float>arg_initPos, GameObject* arg_target);
+
+	/// <summary>
+	/// 回復キット
+	/// </summary>
+	/// <param name="arg_collisionMgr">コリジョンマネージャ</param>
+	/// <param name="arg_initPos">初期位置</param>
+	/// <param name="arg_vel">初期速度</param>
+	/// <returns>生成したオブジェクトのポインタ</returns>
+	std::weak_ptr<GameObject>AppearHealKit(std::weak_ptr<CollisionManager>arg_collisionMgr, Vec3<float>arg_initPos, Vec3<float>arg_vel);
 
 	/// <summary>
 	/// 横移動敵

@@ -25,11 +25,14 @@ class PlayersNormalAttack : public CollisionCallBack
 
 	void OnCollisionEnter(
 		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
 		std::weak_ptr<Collider>arg_otherCollider)override {};
 
 	void OnCollisionTrigger(
 		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
 		std::weak_ptr<Collider>arg_otherCollider)override;
+
 public:
 	PlayersNormalAttack(
 		int* arg_offensive,
@@ -54,10 +57,12 @@ class PlayersParryAttack : public CollisionCallBack
 
 	void OnCollisionEnter(
 		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
 		std::weak_ptr<Collider>arg_otherCollider)override {};
 
 	void OnCollisionTrigger(
 		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
 		std::weak_ptr<Collider>arg_otherCollider)override;
 
 public:
@@ -87,11 +92,19 @@ class PlayersCounterAttack : public CollisionCallBack
 
 	void OnCollisionEnter(
 		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
 		std::weak_ptr<Collider>arg_otherCollider)override {};
 
 	void OnCollisionTrigger(
 		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
 		std::weak_ptr<Collider>arg_otherCollider)override;
+
+	CollisionCallBack* CallBackClone()override
+	{
+		return new PlayersCounterAttack(m_offensive, m_playersVault, m_hitEffect, m_hitSE, m_killSE);
+	}
+
 public:
 	PlayersCounterAttack(
 		int* arg_offensive,
@@ -125,10 +138,12 @@ class DamagedCallBack : public CollisionCallBack
 
 	void OnCollisionEnter(
 		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
 		std::weak_ptr<Collider>arg_otherCollider)override {};
 
 	void OnCollisionTrigger(
 		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
 		std::weak_ptr<Collider>arg_otherCollider)override;
 
 public:
@@ -162,11 +177,13 @@ class PushBackCallBack : public CollisionCallBack
 
 	void OnCollisionEnter(
 		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
 		std::weak_ptr<Collider>arg_otherCollider)override;
 
 	void OnCollisionTrigger(
 		const CollisionResultInfo& arg_info,
-		std::weak_ptr<Collider>arg_otherCollider)override;
+		std::weak_ptr<Collider>arg_myCollider,
+		std::weak_ptr<Collider>arg_otherCollider)override {};
 public:
 	PushBackCallBack(Player* arg_player) :m_player(arg_player) {}
 	void Update(float arg_timeScale)

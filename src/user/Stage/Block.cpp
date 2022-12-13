@@ -10,7 +10,7 @@
 
 int Block::s_hitSE = 0;
 
-void Block::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider> arg_otherCollider)
+void Block::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider>arg_myCollider, std::weak_ptr<Collider> arg_otherCollider)
 {
 	//ƒqƒbƒgSEŒÄ‚Ño‚µ
 	AudioApp::Instance()->PlayWave(s_hitSE);

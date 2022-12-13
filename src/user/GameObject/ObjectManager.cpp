@@ -183,7 +183,7 @@ ObjectManager::ObjectManager(CollisionCallBack* arg_playersNormalAttackCallBack)
 			std::make_unique<OC_EmitThrowOnFloor>(HealKit::GRAVITY, HealKit::LIFE_SPAN),
 			colliderArray
 			);
-		m_breeds[objIdx]->m_originCollider.back()->SetCallBack("Floor", (CollisionCallBack*)m_breeds[objIdx]->m_controller.get());
+		m_breeds[objIdx]->m_originCollider.back()->SetCallBack("Floor", OC_EmitThrowOnFloor::GetCallBack());
 	}
 
 	/*--- ---*/
@@ -191,7 +191,7 @@ ObjectManager::ObjectManager(CollisionCallBack* arg_playersNormalAttackCallBack)
 	//インスタンス生成
 	for (int typeIdx = 0; typeIdx < static_cast<int>(OBJECT_TYPE::NUM); ++typeIdx)
 	{
-		for (int enemyCount = 0; enemyCount < ConstParameter::GameObject::INSTANCE_NUM_MAX[typeIdx]; ++enemyCount)
+		for (int instanceCount = 0; instanceCount < ConstParameter::GameObject::INSTANCE_NUM_MAX[typeIdx]; ++instanceCount)
 		{
 			m_objects[typeIdx].emplace_front(std::make_shared<GameObject>(m_breeds[typeIdx]));
 		}
@@ -306,6 +306,23 @@ std::weak_ptr<GameObject> ObjectManager::AppearParryBullet(std::weak_ptr<Collisi
 	newBullet->Init(arg_initPos);
 
 	return newBullet;
+}
+
+std::weak_ptr<GameObject> ObjectManager::AppearHealKit(std::weak_ptr<CollisionManager> arg_collisionMgr, Vec3<float> arg_initPos, Vec3<float> arg_vel)
+{
+	//敵種別番号取得
+	int typeIdx = static_cast<int>(OBJECT_TYPE::HEAL_KIT);
+
+	//新規敵ポップ
+	auto newHealKit = OnObjectAppear(typeIdx, arg_collisionMgr);
+
+	//パラメータ設定
+	((OC_EmitThrowOnFloor*)newHealKit->m_controller.get())->SetVelocity(arg_vel);
+
+	//初期化
+	newHealKit->Init(arg_initPos);
+
+	return newHealKit;
 }
 
 std::weak_ptr<GameObject> ObjectManager::AppearSlideMoveEnemy(std::weak_ptr<CollisionManager> arg_collisionMgr, float arg_moveX, Vec3<float>arg_initPos)

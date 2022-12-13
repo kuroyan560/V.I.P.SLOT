@@ -69,4 +69,11 @@ public:
 	{
 		return m_isAllWaveClear;
 	}
+
+	//回復キットの放出個数
+	int GetHealKitNum()const
+	{
+		if (m_isAllWaveClear)return 0;
+		return m_nowWave->m_healKitNum;
+	}
 };

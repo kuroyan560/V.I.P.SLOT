@@ -36,11 +36,19 @@ float ObjectController::GetLocalTimeScale(GameObject& arg_obj)const
 	return KuroMath::Ease(In, Sine, arg_obj.m_damageTimer.GetTimeRate(), 0.0f, 1.0f);
 }
 
+std::shared_ptr<ObjectController> ObjectController::GetController(GameObject& arg_obj)
+{
+	return arg_obj.m_controller;
+}
+
 void OC_EmitThrowOnFloor::OnInit(GameObject& arg_obj, Vec3<float> arg_initPos)
 {
 	arg_obj.m_transform.SetPos(arg_initPos);
 	m_life.Reset();
 	m_fall = false;
+
+	m_spin = Angle::ConvertToRadian(KuroFunc::GetRand(360.0f));
+	arg_obj.m_transform.SetRotate(Vec3<float>(0.0f, 1.0f, 0.0f), m_spin);
 }
 
 void OC_EmitThrowOnFloor::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager> arg_collisionMgr)
@@ -56,6 +64,11 @@ void OC_EmitThrowOnFloor::OnUpdate(GameObject& arg_obj, const TimeScale& arg_tim
 	pos += m_vel;
 	arg_obj.m_transform.SetPos(pos);
 
+	//回転速度
+	float addSpinAngle = KuroMath::Ease(Out, Circ, m_life.GetTimeRate(), 20.0f, 0.0f);
+	m_spin += Angle::ConvertToRadian(addSpinAngle) * (m_vel.x <= 0.0f ? -1.0f : 1.0f);
+	arg_obj.m_transform.SetRotate(Vec3<float>(0.0f, 1.0f, 0.0f), m_spin);
+
 	//落下判定
 	if (pos.y < ConstParameter::Environment::FALL_LIMIT_HEIGHT)
 	{
@@ -63,14 +76,17 @@ void OC_EmitThrowOnFloor::OnUpdate(GameObject& arg_obj, const TimeScale& arg_tim
 	}
 }
 
-std::unique_ptr<ObjectController> OC_EmitThrowOnFloor::Clone()
+std::shared_ptr<ObjectController> OC_EmitThrowOnFloor::Clone()
 {
-	auto clone = std::make_unique<OC_EmitThrowOnFloor>(m_gravity, m_life.GetIntervalTime());
+	auto clone = std::make_shared<OC_EmitThrowOnFloor>(m_gravity, m_life.GetIntervalTime());
 	return clone;
 }
 
-void OC_EmitThrowOnFloor::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider>arg_otherCollider)
+void OC_EmitThrowOnFloor::Bound::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider> arg_myCollider, std::weak_ptr<Collider> arg_otherCollider)
 {
+	//クローン元のコールバックなのでコライダーを通じて対応するコントローラーを取得する必要がある
+	auto controller = dynamic_pointer_cast<OC_EmitThrowOnFloor>(GetController(*arg_myCollider.lock()->GetParentObject<GameObject>()));
+	controller->m_vel.y *= -0.8f;
 }
 
 void OC_DirectionMove::OnInit(GameObject& arg_obj, Vec3<float>arg_initPos)
@@ -101,9 +117,9 @@ void OC_DirectionMove::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeSc
 	arg_obj.m_transform.SetPos(pos);
 }
 
-std::unique_ptr<ObjectController> OC_DirectionMove::Clone()
+std::shared_ptr<ObjectController> OC_DirectionMove::Clone()
 {
-	auto clone = std::make_unique<OC_DirectionMove>();
+	auto clone = std::make_shared<OC_DirectionMove>();
 	clone->SetParameters(m_moveDirXY, m_speed, m_sinMeandeling);
 	return clone;
 }
@@ -125,9 +141,9 @@ void OC_DestinationEaseMove::OnUpdate(GameObject& arg_obj, const TimeScale& arg_
 	arg_obj.m_transform.SetPos(pos);
 }
 
-std::unique_ptr<ObjectController> OC_DestinationEaseMove::Clone()
+std::shared_ptr<ObjectController> OC_DestinationEaseMove::Clone()
 {
-	return std::make_unique<OC_DestinationEaseMove>(m_easeChangeType, m_easeType, m_interval);
+	return std::make_shared<OC_DestinationEaseMove>(m_easeChangeType, m_easeType, m_interval);
 }
 
 void OC_TargetObjectEaseMove::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeScale, std::weak_ptr<CollisionManager> arg_collisionMgr)
@@ -147,9 +163,9 @@ void OC_TargetObjectEaseMove::OnUpdate(GameObject& arg_obj, const TimeScale& arg
 	arg_obj.m_transform.SetPos(pos);
 }
 
-std::unique_ptr<ObjectController> OC_TargetObjectEaseMove::Clone()
+std::shared_ptr<ObjectController> OC_TargetObjectEaseMove::Clone()
 {
-	return std::make_unique<OC_TargetObjectEaseMove>(m_easeChangeType, m_easeType, m_interval);
+	return std::make_shared<OC_TargetObjectEaseMove>(m_easeChangeType, m_easeType, m_interval);
 }
 
 void OC_TargetObjectEaseMove::SetParameters(GameObject* arg_target)
@@ -272,5 +288,4 @@ void OC_SlimeBattery::OnUpdate(GameObject& arg_obj, const TimeScale& arg_timeSca
 
 	}
 }
-
 

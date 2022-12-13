@@ -9,6 +9,8 @@ class GameCamera;
 class WaveMgr;
 class EnemyEmitter;
 class Player;
+class ObjectManager;
+class CollisionManager;
 
 //ウェーブクリア時の演出
 class ClearWave : public Event, public Debugger
@@ -18,6 +20,8 @@ class ClearWave : public Event, public Debugger
 	std::weak_ptr<WaveMgr>m_referWaveMgr;
 	std::weak_ptr<EnemyEmitter>m_referEnemyEmitter;
 	std::weak_ptr<Player>m_referPlayer;
+	std::weak_ptr<ObjectManager>m_referObjMgr;
+	std::weak_ptr<CollisionManager>m_referCollisionMgr;
 	TimeScale* m_referTimeScale;
 
 	//演出ステータス
@@ -77,6 +81,9 @@ class ClearWave : public Event, public Debugger
 
 	void UpdateCameraWork();
 
+	//回復キットの放出
+	void EmitHealKit(int arg_num);
+
 public:
 	ClearWave();
 
@@ -85,13 +92,22 @@ public:
 		std::weak_ptr<WaveMgr>arg_waveMgr,
 		std::weak_ptr<EnemyEmitter>arg_enemyEmitter,
 		std::weak_ptr<Player>arg_player,
-		TimeScale* arg_timeScale) 
+		std::weak_ptr<ObjectManager>arg_objMgr,
+		std::weak_ptr<CollisionManager>arg_colMgr,
+		TimeScale* arg_timeScale)
 	{
 		m_referGameCam = arg_gameCam; 
 		m_referWaveMgr = arg_waveMgr;
 		m_referEnemyEmitter = arg_enemyEmitter;
 		m_referPlayer = arg_player;
+		m_referObjMgr = arg_objMgr;
+		m_referCollisionMgr = arg_colMgr;
 		m_referTimeScale = arg_timeScale;
+	}
+
+	void DebugHealKitEmit(int arg_num)
+	{
+		EmitHealKit(arg_num);
 	}
 };
 

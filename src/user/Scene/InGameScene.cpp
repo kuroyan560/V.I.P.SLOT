@@ -79,7 +79,14 @@ InGameScene::InGameScene() : Debugger("InGame")
 	InGameMonitor::Set(m_player.get());
 
 	//ウェーブクリア時イベントにポインタを渡す
-	m_clearWaveEvent.Awake(m_gameCam, m_waveMgr, m_enemyEmitter, m_player, &m_timeScale);
+	m_clearWaveEvent.Awake(
+		m_gameCam,
+		m_waveMgr,
+		m_enemyEmitter,
+		m_player,
+		m_objMgr,
+		m_collisionMgr,
+		&m_timeScale);
 
 	//ステージマネージャにコリジョンマネージャを渡す
 	m_stageMgr->Awake(m_collisionMgr);
@@ -116,8 +123,10 @@ void InGameScene::OnInitialize()
 	//ウェーブマネージャ
 	std::list<Wave>test;
 	test.emplace_back();
+	test.back().m_healKitNum = 3;
 	test.emplace_back();
 	test.back().m_norma = 30;
+	test.back().m_healKitNum = 0;
 	m_waveMgr->Init(test);
 
 	//イベント
@@ -167,6 +176,11 @@ void InGameScene::OnUpdate()
 	{
 		m_player->DebugDamage();
 	} 
+	if (UsersInput::Instance()->KeyOnTrigger(DIK_H)
+		|| UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::Y))
+	{
+		m_clearWaveEvent.DebugHealKitEmit(3);
+	}
 
 	//カメラ
 	m_gameCam->Update(m_timeScale.GetTimeScale(),

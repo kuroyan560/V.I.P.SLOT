@@ -39,10 +39,12 @@ private:
 
 	void OnCollisionEnter(
 		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
 		std::weak_ptr<Collider>arg_otherCollider)override {}
 
 	void OnCollisionTrigger(
 		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
 		std::weak_ptr<Collider>arg_otherCollider)override;
 
 protected:

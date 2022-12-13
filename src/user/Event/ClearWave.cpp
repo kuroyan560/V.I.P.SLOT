@@ -8,6 +8,7 @@
 #include"WaveMgr.h"
 #include"HUDInterface.h"
 #include"EnemyEmitter.h"
+#include"ObjectManager.h"
 
 void ClearWave::OnStart()
 {
@@ -38,6 +39,24 @@ void ClearWave::UpdateCameraWork()
 		m_timer.Reset(m_slowWaitInterval);
 		//ìGëSàıéÄñS
 		m_referEnemyEmitter.lock()->KillAllEnemys();
+	}
+}
+
+void ClearWave::EmitHealKit(int arg_num)
+{
+	const float EMIT_POWER_X = 0.15f;
+	const float EMIT_POWER_Y_MIN = 0.7f;
+	const float EMIT_POWER_Y_MAX = 1.0f;
+
+	for (int i = 0; i < arg_num; ++i)
+	{
+		Vec3<float>initVel;
+		initVel.x = KuroFunc::GetRand(-EMIT_POWER_X, EMIT_POWER_X);
+		initVel.y = KuroFunc::GetRand(EMIT_POWER_Y_MIN, EMIT_POWER_Y_MAX);
+		m_referObjMgr.lock()->AppearHealKit(
+			m_referCollisionMgr,
+			Vec3<float>(0.0f, 6.0f, ConstParameter::Environment::FIELD_FLOOR_POS.z),
+			initVel);
 	}
 }
 
@@ -92,6 +111,7 @@ void ClearWave::OnUpdate()
 			//èIóπ
 			if (static_cast<int>(m_camWorks.size()) - 1 <= m_camWorkIdx)
 			{
+				EmitHealKit(m_referWaveMgr.lock()->GetHealKitNum());
 				m_status = END;
 				m_referWaveMgr.lock()->ProceedWave();
 				*m_referGameCam.lock()->GetMainCam() = *this->m_cam;

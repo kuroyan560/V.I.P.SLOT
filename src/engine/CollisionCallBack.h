@@ -15,18 +15,22 @@ protected:
 	/// 衝突中呼び出される
 	/// </summary>
 	/// <param name="arg_info">衝突結果情報</param>
+	/// <param name="arg_myCollider">自分側のコライダー</param>
 	/// <param name="arg_otherCollider">相手側のコライダー</param>
 	virtual void OnCollisionEnter(
 		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
 		std::weak_ptr<Collider>arg_otherCollider) = 0;
 
 	/// <summary>
 	/// 衝突した瞬間呼び出される
 	/// </summary>
 	/// <param name="arg_info">衝突結果情報</param>
+	/// <param name="arg_myCollider">自分側のコライダー</param>
 	/// <param name="arg_otherCollider">相手側のコライダー</param>
 	virtual void OnCollisionTrigger(
 		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
 		std::weak_ptr<Collider>arg_otherCollider) = 0;
 
 public:

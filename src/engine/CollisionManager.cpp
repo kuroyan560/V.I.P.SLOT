@@ -22,8 +22,8 @@ void CollisionManager::OnHit(const std::shared_ptr<Collider>& arg_myCollider, co
 			{
 				if (!callBack)continue;
 
-				callBack->OnCollisionEnter(arg_info, arg_otherCollider);
-				if (!arg_myCollider->m_oldIsHit)callBack->OnCollisionTrigger(arg_info, arg_otherCollider);
+				callBack->OnCollisionEnter(arg_info, arg_myCollider, arg_otherCollider);
+				if (!arg_myCollider->m_oldIsHit)callBack->OnCollisionTrigger(arg_info, arg_myCollider, arg_otherCollider);
 			}
 		}
 	}
@@ -80,6 +80,9 @@ void CollisionManager::Update()
 		for (; itrB != m_colliderList.end(); ++itrB)
 		{
 			auto colB = (*itrB);
+
+			bool aa = colB->HaveTag("Heal_Kit");
+			bool bb = colA->HaveTag("Floor");
 
 			//お互いにコールバック関数が用意されていないなら、当たっても何も起こらないので判定を行う必要は無い
 			if (!colA->HaveCallBack(colB) && !colB->HaveCallBack(colA))continue;

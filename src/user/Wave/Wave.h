@@ -5,7 +5,11 @@
 
 struct Wave
 {
+	//ノルマ
 	int m_norma = 10;
+
+	//放出する回復キットの個数
+	int m_healKitNum = 3;
 
 	struct AppearEnemyInfo
 	{

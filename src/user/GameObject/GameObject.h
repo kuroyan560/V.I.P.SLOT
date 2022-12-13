@@ -21,7 +21,7 @@ private:
 	friend class ObjectController;
 
 	//コントローラー
-	std::unique_ptr<ObjectController>m_controller;
+	std::shared_ptr<ObjectController>m_controller;
 
 	//コライダー配列
 	std::vector<std::shared_ptr<Collider>>m_colliders;
