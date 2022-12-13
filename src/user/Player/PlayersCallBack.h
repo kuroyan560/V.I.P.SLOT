@@ -195,3 +195,21 @@ public:
 		m_notPushBackWithScaffoldTimer.Reset(arg_interval);
 	}
 };
+
+//‰ñ•œƒLƒbƒg‰ñŽû
+class GetHealKitCallBack : public CollisionCallBack
+{
+	Player* m_player;
+
+	void OnCollisionEnter(
+		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
+		std::weak_ptr<Collider>arg_otherCollider)override;
+
+	void OnCollisionTrigger(
+		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
+		std::weak_ptr<Collider>arg_otherCollider)override {};
+public:
+	GetHealKitCallBack(Player* arg_player) :m_player(arg_player) {}
+};

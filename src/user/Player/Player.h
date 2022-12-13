@@ -90,6 +90,8 @@ class Player : public ColliderParentObject, public Debugger
 	std::shared_ptr<DamagedCallBack>m_damegedCallBack;
 	//押し戻し
 	std::shared_ptr<PushBackCallBack>m_pushBackCallBack;
+	//回復キット回収
+	std::shared_ptr<GetHealKitCallBack>m_getHealKitCallBack;
 
 	//操作がキーボードかコントローラーか
 	enum struct INPUT_CONFIG { KEY_BOARD, CONTROLLER };

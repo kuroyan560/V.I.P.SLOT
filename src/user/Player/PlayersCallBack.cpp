@@ -223,3 +223,12 @@ void PushBackCallBack::OnCollisionEnter(const CollisionResultInfo& arg_info, std
 	//押し戻し後の座標適用
 	m_player->m_modelObj->m_transform.SetPos(pos);
 }
+
+void GetHealKitCallBack::OnCollisionEnter(const CollisionResultInfo& arg_info, std::weak_ptr<Collider> arg_myCollider, std::weak_ptr<Collider> arg_otherCollider)
+{
+	m_player->Heal(1);
+
+	//コライダーの親に設定されているオブジェクトのポインタ取得
+	auto obj = arg_otherCollider.lock()->GetParentObject<GameObject>();
+	obj->Kill();
+}

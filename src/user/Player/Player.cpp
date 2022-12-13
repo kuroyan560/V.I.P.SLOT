@@ -133,6 +133,8 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 	m_damegedCallBack = std::make_shared<DamagedCallBack>(this, arg_cam, onDamagedHitStopSE, onDamagedSE);
 	//押し戻し
 	m_pushBackCallBack = std::make_shared<PushBackCallBack>(this);
+	//回復キット回収
+	m_getHealKitCallBack = std::make_shared<GetHealKitCallBack>(this);
 
 	/*--- コライダー生成（判定順） ---*/
 
@@ -148,6 +150,9 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 		//被ダメージコールバックアタッチ
 		m_bodySphereCollider->SetCallBack("Enemy", m_damegedCallBack.get());
 		m_bodySphereCollider->SetCallBack("Enemy_Attack", m_damegedCallBack.get());
+
+		//回復キット回収コールバックアタッチ
+		m_bodySphereCollider->SetCallBack("Heal_Kit", m_getHealKitCallBack.get());
 
 		colliders.emplace_back(m_bodySphereCollider);
 	}
