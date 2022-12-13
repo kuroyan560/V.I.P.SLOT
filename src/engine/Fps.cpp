@@ -1,8 +1,11 @@
 #include"Fps.h"
 #include <profileapi.h>
 
-Fps::Fps(const int& FrameRate) : m_frameRate(FrameRate), m_minFrameTime(1.0f / (float)m_frameRate)
+void Fps::LoopInit(const int& FrameRate)
 {
+	m_frameRate = FrameRate;
+	m_minFrameTime = 1.0f / (float)m_frameRate;
+
 	// メインループに入る前に精度を取得しておく
 	if (QueryPerformanceFrequency(&m_timeFreq) == FALSE) { // この関数で0(FALSE)が帰る時は未対応
 		// そもそもQueryPerformanceFrequencyが使えない様な(古い)PCではどうせ色々キツイだろうし
@@ -36,4 +39,9 @@ void Fps::Update()
 		m_fps = (m_fps * 0.99f) + (0.01f / m_frameTime); // 平均fpsを計算
 	}
 	m_timeStart = m_timeEnd; // 入れ替え
+}
+
+void Fps::OnImguiItems()
+{
+	ImGui::Text("%.6f", m_fps);
 }

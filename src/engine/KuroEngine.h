@@ -107,9 +107,6 @@ private:
 	std::string m_nextScene = "";	//次のシーンキー
 	SceneTransition *m_nowSceneTransition;	//現在セットされているシーン遷移
 
-	//FPS固定
-	std::shared_ptr<Fps>m_fps;
-
 	//終了フラグ
 	bool m_end = false;
 
@@ -145,9 +142,6 @@ public:
 
 	//グラフィックスマネージャゲッタ
 	GraphicsManager &Graphics() { return m_gManager; }
-
-	//FPS管理ゲッタ
-	const float& GetFps()const;
 
 	//平行投影行列定数バッファ
 	const std::shared_ptr<ConstantBuffer> &GetParallelMatProjBuff()

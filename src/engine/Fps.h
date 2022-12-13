@@ -2,13 +2,18 @@
 #include <Windows.h>
 #include <tchar.h>
 #include <sstream>
+#include"Debugger.h"
+#include"Singleton.h"
 
 #include <mmsystem.h>
 #pragma comment(lib,"winmm.lib")
-class Fps
+class Fps : public Debugger, public Singleton<Fps>
 {
-	const int m_frameRate;
-	const float m_minFrameTime;
+	friend class Singleton<Fps>;
+	Fps() :Debugger("Fps") {}
+
+	int m_frameRate;
+	float m_minFrameTime;
 	float m_frameTime = 0;
 	LARGE_INTEGER m_timeStart;
 	LARGE_INTEGER m_timeEnd;
@@ -17,8 +22,10 @@ class Fps
 	float m_fps = 0;
 
 public:
-	Fps(const int& FrameRate);
+	//メインループ前に呼び出し
+	void LoopInit(const int& FrameRate);
 	void Update();
 
 	const float& GetNowFps()const { return m_fps; }
+	void OnImguiItems()override;
 };

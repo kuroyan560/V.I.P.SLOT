@@ -23,6 +23,7 @@
 
 void InGameScene::OnImguiItems()
 {
+	ImGui::Text("TimeScale : { %.6f }", m_timeScale.GetTimeScale());
 	ImGui::Checkbox("IsDrawCollider", &m_isDrawCollider);
 	ImGui::Checkbox("IsDrawEdge", &m_isDrawEdge);
 }

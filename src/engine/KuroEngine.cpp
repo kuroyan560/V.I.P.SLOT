@@ -103,7 +103,7 @@ void KuroEngine::Initialize(const EngineOption& Option)
 	m_imguiApp = std::make_unique<ImguiApp>(m_d3d12App->GetDevice(), m_winApp->GetHwnd());
 
 	//FPS固定機能
-	m_fps = std::make_shared<Fps>(Option.m_frameRate);
+	Fps::Instance()->LoopInit(Option.m_frameRate);
 
 
 	//平行投影行列定数バッファ生成
@@ -127,7 +127,7 @@ void KuroEngine::SetSceneList(const std::map<std::string, BaseScene*>& SceneList
 void KuroEngine::Update()
 {
 	//FPS更新
-	m_fps->Update();
+	Fps::Instance()->Update();
 
 	//音声関連アプリ更新
 	m_audioApp->Update();
@@ -169,9 +169,4 @@ void KuroEngine::Update()
 void KuroEngine::Draw()
 {
 	m_d3d12App->Render(this);
-}
-
-const float& KuroEngine::GetFps() const
-{
-	return m_fps->GetNowFps();
 }
