@@ -81,9 +81,6 @@ void CollisionManager::Update()
 		{
 			auto colB = (*itrB);
 
-			bool aa = colB->HaveTag("Heal_Kit");
-			bool bb = colA->HaveTag("Floor");
-
 			//お互いにコールバック関数が用意されていないなら、当たっても何も起こらないので判定を行う必要は無い
 			if (!colA->HaveCallBack(colB) && !colB->HaveCallBack(colA))continue;
 
