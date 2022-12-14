@@ -9,12 +9,13 @@
 #include"HUDInterface.h"
 #include"EnemyEmitter.h"
 #include"ObjectManager.h"
+#include"StartWave.h"
 
 void ClearWave::OnStart()
 {
 	m_status = START_WAIT;
 
-	m_waitTimer.Reset(m_startStopWaitInterval);
+	m_waitTimer.Reset(m_startWaitInterval);
 	*m_cam = *m_referGameCam.lock()->GetMainCam();
 
 	m_referTimeScale->Set(0.0f);
@@ -99,10 +100,31 @@ void ClearWave::OnUpdate()
 		//カメラワーク切り替え時
 		if (nowCamWorkEnd)
 		{
-			//終了
+			//カメラワーク終了直後の待機状態へ
 			if (m_camWork.IsEnd())
 			{
-				m_status = END;
+				m_status = END_WAIT;
+
+				//待機時間設定
+				m_waitTimer.Reset(m_endWaitInterval);
+
+				//HUD表示
+				HUDInterface::s_draw = true;
+
+				//プレイヤーの被ダメージコライダーオン
+				m_referPlayer.lock()->SetDamageColldierActive(true);
+
+				//回復キット放出
+				EmitHealKit(m_referWaveMgr.lock()->GetHealKitNum());
+
+				//ウェーブ進行
+				m_referWaveMgr.lock()->ProceedWave();
+
+				//最後のカメラの状態をゲーム内メインカメラに反映
+				*m_referGameCam.lock()->GetMainCam() = *this->m_cam;
+
+				//タイムスケールリセット
+				m_referTimeScale->Set(1.0f);
 			}
 			//カメラワーク間の待機状態へ
 			else
@@ -111,6 +133,10 @@ void ClearWave::OnUpdate()
 				m_waitTimer.Reset(m_camWorkWaitInterval);
 			}
 		}
+	}
+	else if (m_status == END_WAIT)
+	{
+		if (m_waitTimer.UpdateTimer())m_status = END;
 	}
 
 	//デバッグモード
@@ -122,23 +148,13 @@ void ClearWave::OnUpdate()
 }
 void ClearWave::OnFinish()
 {
-	//HUD表示
-	HUDInterface::s_draw = true;
+	//ウェーブ開始時イベント開始
+	m_referStartWaveEvent.lock()->SetNextEvent();
+}
 
-	//プレイヤーの被ダメージコライダーオン
-	m_referPlayer.lock()->SetDamageColldierActive(true);
-
-	//回復キット放出
-	EmitHealKit(m_referWaveMgr.lock()->GetHealKitNum());
-
-	//ウェーブ進行
-	m_referWaveMgr.lock()->ProceedWave();
-
-	//最後のカメラの状態をゲーム内メインカメラに反映
-	*m_referGameCam.lock()->GetMainCam() = *this->m_cam;
-
-	//タイムスケールリセット
-	m_referTimeScale->Set(1.0f);
+std::shared_ptr<Camera> ClearWave::GetMainCam()
+{
+	return (m_status != END_WAIT ? m_cam : m_referGameCam.lock()->GetMainCam());
 }
 
 std::shared_ptr<Camera> ClearWave::GetSubCam()
@@ -150,7 +166,7 @@ void ClearWave::OnImguiItems()
 {
 	if (ImGui::Checkbox("Debug", &m_debug))
 	{
-		if (m_debug)this->Start();
+		if (m_debug)this->SetNextEvent();
 		else
 		{
 			m_referTimeScale->Set(1.0f);
@@ -160,13 +176,13 @@ void ClearWave::OnImguiItems()
 	if (ImGui::Button("Preview"))
 	{
 		m_preview = true;
-		this->Start();
+		this->SetNextEvent();
 	}
 
 	if (!m_debug)return;
 
 	ImGui::Separator();
-	ImGui::DragFloat("StartStopWaitInterval", &m_startStopWaitInterval, 0.5f, 1.0f);
+	ImGui::DragFloat("StartStopWaitInterval", &m_startWaitInterval, 0.5f, 1.0f);
 	ImGui::DragFloat("CamWorkWaitInterval", &m_camWorkWaitInterval, 0.5f, 1.0f);
 	ImGui::DragFloat("SlowWaitInterval", &m_slowWaitInterval, 0.5f, 1.0f);
 

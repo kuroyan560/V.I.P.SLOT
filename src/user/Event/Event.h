@@ -8,6 +8,8 @@ class Event
 {
 	//進行中のイベント
 	static Event* s_nowEvent;
+	//次のイベント
+	static Event* s_nextEvent;
 
 protected:
 	//イベント中のパラメータを設定
@@ -34,20 +36,36 @@ protected:
 public:
 	virtual ~Event() {}
 	//イベント開始
-	void Start()
+	void SetNextEvent()
 	{
-		if (s_nowEvent != nullptr)return;
-		s_nowEvent = this;
+		if (s_nextEvent != nullptr)return;
+		s_nextEvent = this;
 		OnStart();
 	}
 
 	//イベントの初期化
-	static void StaticInit() { s_nowEvent = nullptr; }
+	static void StaticInit() 
+	{ 
+		s_nowEvent = nullptr; 
+		s_nextEvent = nullptr;
+	}
 
 	//進行中のイベントの更新
 	static void StaticUpdate()
 	{
-		if (s_nowEvent == nullptr)return;
+		//イベント進行中でない
+		if (s_nowEvent == nullptr)
+		{
+			//次のイベントがセットされている
+			if (s_nextEvent != nullptr)
+			{
+				//次のイベント開始
+				s_nowEvent = s_nextEvent;
+				s_nowEvent->OnStart();
+				s_nextEvent = nullptr;
+			}
+			return;
+		}
 
 		s_nowEvent->Update();
 
@@ -56,6 +74,12 @@ public:
 			s_nowEvent->OnFinish();
 			s_nowEvent = nullptr;
 		}
+	}
+
+	//イベントが進行中か
+	bool IsProceed()const
+	{
+		return s_nowEvent != nullptr && s_nowEvent == this;
 	}
 
 	//メイン（近景）イベントカメラゲッタ

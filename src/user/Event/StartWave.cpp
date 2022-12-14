@@ -112,7 +112,7 @@ void StartWave::OnImguiItems()
 {
     if (ImGui::Button("Preview"))
     {
-        this->Start();
+        this->SetNextEvent();
     }
 
     ImGui::DragFloat3("DefaultPosOffset", (float*)&m_defaultPosOffset, 0.05f);

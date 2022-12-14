@@ -196,7 +196,7 @@ void InGameScene::OnUpdate()
 	if (UsersInput::Instance()->KeyOnTrigger(DIK_H)
 		|| UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::Y))
 	{
-		m_startWaveEvent->Start();
+		m_startWaveEvent->SetNextEvent();
 	}
 
 	//カメラ
@@ -228,9 +228,9 @@ void InGameScene::OnUpdate()
 	m_collisionMgr->Update();
 
 	//ウェーブクリアしたか
-	if (m_waveMgr->IsWaveClear(m_player->GetCoinNum()))
+	if (m_waveMgr->IsWaveClear(m_player->GetCoinNum()) && !m_clearWaveEvent->IsProceed())
 	{
-		m_clearWaveEvent->Start();
+		m_clearWaveEvent->SetNextEvent();
 	}
 
 	//全ウェーブクリアしたか

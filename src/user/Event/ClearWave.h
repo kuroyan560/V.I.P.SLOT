@@ -28,7 +28,7 @@ class ClearWave : public Event, public Debugger
 	TimeScale* m_referTimeScale;
 
 	//演出ステータス
-	enum STATUS { START_WAIT, WAIT, CAM_WORK, END }m_status;
+	enum STATUS { START_WAIT, WAIT, CAM_WORK, END_WAIT, END }m_status;
 
 	//待機時間計測
 	Timer m_waitTimer;
@@ -45,11 +45,13 @@ class ClearWave : public Event, public Debugger
 	MotionWork m_camWork;
 
 	//演出開始直後の待機時間
-	float m_startStopWaitInterval = 60.0f;
+	float m_startWaitInterval = 60.0f;
 	//カメラワーク間の待機時間
 	float m_camWorkWaitInterval = 25.0f;
 	//カメラワーク終了後、スローの様子を映す待機時間
 	float m_slowWaitInterval = 120.0f;
+	//演出終了直後の待機時間
+	float m_endWaitInterval = 60.0f;
 
 	bool m_enemyKill;
 
@@ -60,7 +62,7 @@ class ClearWave : public Event, public Debugger
 	void OnUpdate()override;
 	void OnFinish()override;
 	bool End()override { return m_status == END; }
-	std::shared_ptr<Camera>GetMainCam()override { return m_cam; }
+	std::shared_ptr<Camera>GetMainCam()override;
 	std::shared_ptr<Camera>GetSubCam()override;
 
 	void OnImguiItems()override;
