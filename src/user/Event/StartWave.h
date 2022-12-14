@@ -36,6 +36,9 @@ class StartWave : public Event, public InGameMonitor, public Debugger
 	//スクリーンのY軸回転
 	float m_ySpinRadianMax = Angle::ROUND() * 2.0f;
 
+	//敵の出現進行フラグ
+	bool m_enemyEmit = false;
+
 	void OnStart()override;
 	void OnUpdate()override;
 	void OnFinish()override;
@@ -58,4 +61,8 @@ public:
 		m_referScreen = arg_screen;
 		m_referGameCam = arg_gameCam;
 	}
+
+	//敵の出現進行フラグ
+	const bool& GetEmitEnemy()const { return m_enemyEmit; }
+
 };

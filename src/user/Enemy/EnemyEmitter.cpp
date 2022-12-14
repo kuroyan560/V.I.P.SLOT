@@ -128,8 +128,7 @@ EnemyEmitter::EnemyEmitter() : Debugger("EnemyEmitter", ImGuiWindowFlags_MenuBar
 
 void EnemyEmitter::Init()
 {
-	RandEmitEnemys();
-	m_timer.Reset(m_appearSpan);
+	m_timer.Reset(0);
 }
 
 void EnemyEmitter::EmitEnemy(TYPE arg_type, Vec3<float>arg_initPos)

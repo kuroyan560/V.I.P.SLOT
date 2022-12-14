@@ -14,6 +14,9 @@ void StartWave::OnStart()
     m_appearScreenWork.Start(true);
 
     m_referScreen.lock()->m_modelObj->m_transform.SetRotate(Vec3<float>::GetYAxis(), m_ySpinRadianMax);
+
+    //敵を出現させない
+    m_enemyEmit = false;
 }
 
 void StartWave::OnUpdate()
@@ -88,6 +91,8 @@ void StartWave::OnFinish()
 {
     //描画フラグオフに
     m_referScreen.lock()->SetDrawFlg(false);
+    //敵出現許可
+    m_enemyEmit = true;
 }
 
 bool StartWave::End()

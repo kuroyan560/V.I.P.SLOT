@@ -167,6 +167,9 @@ void InGameScene::OnInitialize()
 
 	//パーティクルマネージャ2D
 	ParticleMgr2D::Instance()->Init();
+
+	//ウェーブ開始イベント
+	m_startWaveEvent->SetNextEvent();
 }
 
 void InGameScene::OnUpdate()
@@ -199,6 +202,9 @@ void InGameScene::OnUpdate()
 		m_startWaveEvent->SetNextEvent();
 	}
 
+	//イベント
+	Event::StaticUpdate();
+
 	//カメラ
 	m_gameCam->Update(m_timeScale.GetTimeScale(),
 		m_player->GetCenterPos() - ConstParameter::Player::INIT_POS);
@@ -213,16 +219,13 @@ void InGameScene::OnUpdate()
 	m_stageMgr->Update(m_timeScale);
 
 	//ウェーブマネージャ
-	m_waveMgr->Update(m_timeScale, m_enemyEmitter);
+	if (m_startWaveEvent->GetEmitEnemy())m_waveMgr->Update(m_timeScale, m_enemyEmitter);
 
 	//オブジェクトマネージャ
 	m_objMgr->Update(m_timeScale, m_collisionMgr);
 
 	//パーティクルマネージャ2D
 	ParticleMgr2D::Instance()->Update(m_timeScale.GetTimeScale());
-
-	//イベント
-	Event::StaticUpdate();
 
 	//コリジョンマネージャ
 	m_collisionMgr->Update();
