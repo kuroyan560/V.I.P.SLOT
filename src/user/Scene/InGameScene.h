@@ -4,6 +4,7 @@
 #include"Timer.h"
 #include"Light.h"
 #include"Debugger.h"
+#include"StartWave.h"
 #include"ClearWave.h"
 class Player;
 class SlotMachine;
@@ -16,6 +17,7 @@ class CollisionManager;
 class StageMgr;
 class EnemyEmitter;
 class WaveMgr;
+class Screen;
 
 class InGameScene : public BaseScene, public Debugger
 {
@@ -54,6 +56,12 @@ class InGameScene : public BaseScene, public Debugger
 
 	//エネミーエミッター
 	std::shared_ptr<EnemyEmitter>m_enemyEmitter;
+
+	//大型スクリーン
+	std::shared_ptr<Screen>m_screen;
+
+	//ウェーブスタート時のイベント
+	StartWave m_startWaveEvent;
 
 	//ウェーブクリア時のイベント
 	ClearWave m_clearWaveEvent;

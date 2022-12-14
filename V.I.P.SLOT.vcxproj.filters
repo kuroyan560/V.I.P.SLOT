@@ -424,6 +424,15 @@
     <ClCompile Include="src\user\Others\ParticleMgr2D.cpp">
       <Filter>src\user\Others</Filter>
     </ClCompile>
+    <ClCompile Include="src\user\Event\MotionWork.cpp">
+      <Filter>src\user\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\Event\StartWave.cpp">
+      <Filter>src\user\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\Stage\Screen.cpp">
+      <Filter>src\user\Stage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -800,6 +809,15 @@
     </ClInclude>
     <ClInclude Include="src\engine\CollisionResultInfo.h">
       <Filter>src\engine\ユーザー向け\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Event\MotionWork.h">
+      <Filter>src\user\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Event\StartWave.h">
+      <Filter>src\user\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\Stage\Screen.h">
+      <Filter>src\user\Stage</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

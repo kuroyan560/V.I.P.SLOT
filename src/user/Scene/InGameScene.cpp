@@ -20,6 +20,7 @@
 #include"Event.h"
 #include"InGameMonitor.h"
 #include"ParticleMgr2D.h"
+#include"Screen.h"
 
 void InGameScene::OnImguiItems()
 {
@@ -64,6 +65,9 @@ InGameScene::InGameScene() : Debugger("InGame")
 	//エネミーエミッター生成
 	m_enemyEmitter = std::make_shared<EnemyEmitter>();
 
+	//スクリーン生成
+	m_screen = std::make_shared<Screen>();
+
 	//オブジェクト挙動操作クラスにオブジェクトマネージャを渡す
 	ObjectController::AttachObjectManager(m_objMgr);
 	
@@ -78,6 +82,12 @@ InGameScene::InGameScene() : Debugger("InGame")
 
 	//参照用のポインタ窓口クラスにゲーム内情報のポインタセット
 	InGameMonitor::Set(m_player.get());
+
+	//ウェーブスタート時イベントにポインタを渡す
+	m_startWaveEvent.Awake(
+		m_waveMgr,
+		m_screen,
+		m_gameCam);
 
 	//ウェーブクリア時イベントにポインタを渡す
 	m_clearWaveEvent.Awake(
@@ -143,6 +153,7 @@ void InGameScene::OnInitialize()
 		m_enemyEmitter.get(),
 		m_ligMgr.get(),
 		BasicDraw::Instance(),
+		&m_startWaveEvent,
 		&m_clearWaveEvent,
 		this });
 
@@ -180,7 +191,7 @@ void InGameScene::OnUpdate()
 	if (UsersInput::Instance()->KeyOnTrigger(DIK_H)
 		|| UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::Y))
 	{
-		m_clearWaveEvent.DebugHealKitEmit(3);
+		m_startWaveEvent.Start();
 	}
 
 	//カメラ
@@ -253,6 +264,9 @@ void InGameScene::OnDraw()
 
 	//スロットマシン
 	m_slotMachine->Draw(m_ligMgr, mainCam);
+
+	//大型スクリーン
+	m_screen->Draw(m_ligMgr, mainCam);
 
 	//ステージマネージャ（ブロック）
 	m_stageMgr->BlockDraw(m_ligMgr, mainCam);
