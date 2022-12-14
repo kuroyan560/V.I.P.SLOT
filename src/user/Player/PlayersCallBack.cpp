@@ -159,9 +159,6 @@ void PushBackCallBack::OnCollisionEnter(const CollisionResultInfo& arg_info, std
 	//プレイヤーの座標の変化量取得
 	Vec3<float>playerMove = pos - m_player->m_oldPos;
 
-	//移動していない
-	if (playerMove.Length() <= FLT_EPSILON)return;
-
 	//足場化
 	bool isScaffold = arg_otherCollider.lock()->HaveTag("Scaffold");
 
@@ -184,27 +181,23 @@ void PushBackCallBack::OnCollisionEnter(const CollisionResultInfo& arg_info, std
 	if (!isScaffold)
 	{
 		//X軸方向押し戻し(左)
-		if ((myMaxPt.x - playerMove.x) <= otherMinPt.x && otherMinPt.x <= myMaxPt.x)
+		if ((myMaxPt.x - playerMove.x) <= otherMinPt.x + FLT_EPSILON && otherMinPt.x - FLT_EPSILON <= myMaxPt.x)
 		{
-			//pos.x = otherMinPt.x - myAABBSizeHalf.x;
 			pos.x -= abs(otherMinPt.x - myMaxPt.x);
 		}
 		//X軸方向押し戻し(右)
-		else if (otherMaxPt.x <= (myMinPt.x - playerMove.x) && myMinPt.x <= otherMaxPt.x)
+		else if (otherMaxPt.x - FLT_EPSILON <= (myMinPt.x - playerMove.x) && myMinPt.x <= otherMaxPt.x + FLT_EPSILON)
 		{
-			//pos.x = otherMaxPt.x + myAABBSizeHalf.x;
 			pos.x += abs(otherMaxPt.x - myMinPt.x);
 		}
 		//Y軸方向押し戻し(下）
-		if ((myMaxPt.y - playerMove.y) <= otherMinPt.y && otherMinPt.y <= myMaxPt.y)
+		if ((myMaxPt.y - playerMove.y) <= otherMinPt.y + FLT_EPSILON && otherMinPt.y - FLT_EPSILON <= myMaxPt.y)
 		{
-			//pos.y = otherMinPt.y - myAABBSizeHalf.y;
 			pos.y -= abs(otherMinPt.y - myMaxPt.y);
 		}
 		//Y軸方向押し戻し(上）
-		else if (otherMaxPt.y <= (myMinPt.y - playerMove.y) && myMinPt.y <= otherMaxPt.y)
+		else if (otherMaxPt.y - FLT_EPSILON <= (myMinPt.y - playerMove.y) && myMinPt.y <= otherMaxPt.y + FLT_EPSILON)
 		{
-			//pos.y = otherMaxPt.y + myAABBSizeHalf.y;
 			pos.y += abs(otherMaxPt.y - myMinPt.y);
 			m_player->OnLanding(true);
 		}
@@ -213,7 +206,7 @@ void PushBackCallBack::OnCollisionEnter(const CollisionResultInfo& arg_info, std
 	else
 	{
 		//Y軸方向押し戻し(上）
-		if (otherMaxPt.y <= (myMinPt.y - playerMove.y) && myMinPt.y <= otherMaxPt.y)
+		if (otherMaxPt.y - FLT_EPSILON <= (myMinPt.y - playerMove.y) && myMinPt.y <= otherMaxPt.y + FLT_EPSILON)
 		{
 			pos.y += abs(otherMaxPt.y - myMinPt.y);
 			m_player->OnLanding(false);
