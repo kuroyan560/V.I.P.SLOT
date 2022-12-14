@@ -53,7 +53,7 @@ void MotionWork::ImguiDebugItems(std::string arg_tag, const Vec3<float>* arg_cha
 	arg_changeTarget = nullptr;
 
 	int eraseIdx = -1;
-	ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(250, 220), ImGuiWindowFlags_NoTitleBar);
+	ImGui::BeginChild(arg_tag.c_str(), ImVec2(250, 120), ImGuiWindowFlags_NoTitleBar);
 	for (int i = 0; i < static_cast<int>(m_motions.size()); ++i)
 	{
 		std::string numLabel = std::to_string(i);

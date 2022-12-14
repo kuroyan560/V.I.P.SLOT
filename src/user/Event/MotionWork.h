@@ -58,7 +58,7 @@ public:
 	//終了しているか
 	bool IsEnd()
 	{
-		return static_cast<int>(m_motions.size() - 1) <= m_motionWorkIdx;
+		return m_timer.IsTimeUp() && static_cast<int>(m_motions.size() - 1) <= m_motionWorkIdx;
 	}
 	//最後のモーションか
 	bool IsLastMotion()const
@@ -72,6 +72,14 @@ public:
 		m_motions.emplace_back(arg_motion);
 	}
 
+	//指定したインデックスのモーションへの参照取得
+	Motion& GetMotion(int arg_motionWorkIdx)
+	{
+		assert(0 <= arg_motionWorkIdx && arg_motionWorkIdx < static_cast<int>(m_motions.size()));
+		return m_motions[arg_motionWorkIdx];
+	}
+
+	//ゲッタ
 	const Vec3<float>& GetPos()const { return m_nowPos; }
 	const Vec3<float>& GetTarget()const { return m_nowTarget; }
 	float GetTimeRate() { return m_timer.GetTimeRate(); }
