@@ -489,30 +489,30 @@ void DrawFunc2D::DrawRadialWipeGraph2D(
 	s_DrawRadialWipeGraphCount++;
 }
 
-void DrawFunc2D::DrawNumber2D(const int& Num, const Vec2<float>& Pos, const std::array<std::shared_ptr<TextureBuffer>, 10>& NumTex, const Vec2<float>& ExpRate,
-	const float& LetterSpace, const HORIZONTAL_ALIGN& HorizontalAlign, const VERTICAL_ALIGN& VerticalAlign)
+void DrawFunc2D::DrawNumber2D(const int& arg_num, const Vec2<float>& arg_pos, const std::shared_ptr<TextureBuffer>* arg_numTexArray, const Vec2<float>& arg_expRate,
+	const float& arg_letterSpace, const HORIZONTAL_ALIGN& arg_horizontalAlign, const VERTICAL_ALIGN& arg_verticalAlign)
 {
-	const auto graphSize = NumTex[0]->GetGraphSize().Float() * ExpRate;
-	const auto numStr = std::to_string(Num);
-	const auto letterSpace = graphSize.x + LetterSpace;
+	const auto graphSize = arg_numTexArray[0]->GetGraphSize().Float() * arg_expRate;
+	const auto numStr = std::to_string(arg_num);
+	const auto letterSpace = graphSize.x + arg_letterSpace;
 
-	float startX = Pos.x;	//ç∂ëµÇ¶
-	if (HorizontalAlign == HORIZONTAL_ALIGN::CENTER)	//íÜëµÇ¶
+	float startX = arg_pos.x;	//ç∂ëµÇ¶
+	if (arg_horizontalAlign == HORIZONTAL_ALIGN::CENTER)	//íÜëµÇ¶
 	{
 		startX -= numStr.size() / 2.0f * graphSize.x;
-		startX -= floor(numStr.size() / 2.0f) * (LetterSpace / 2.0f);
+		startX -= floor(numStr.size() / 2.0f) * (arg_letterSpace / 2.0f);
 	}
-	else if (HorizontalAlign == HORIZONTAL_ALIGN::RIGHT)	//âEëµÇ¶
+	else if (arg_horizontalAlign == HORIZONTAL_ALIGN::RIGHT)	//âEëµÇ¶
 	{
 		startX += numStr.size() * letterSpace;
 	}
 
-	float y = Pos.y;	//è„ëµÇ¶
-	if (VerticalAlign == VERTICAL_ALIGN::CENTER)	//íÜëµÇ¶
+	float y = arg_pos.y;	//è„ëµÇ¶
+	if (arg_verticalAlign == VERTICAL_ALIGN::CENTER)	//íÜëµÇ¶
 	{
 		y -= graphSize.y / 2.0f;
 	}
-	else if (VerticalAlign == VERTICAL_ALIGN::BOTTOM)	//â∫ëµÇ¶
+	else if (arg_verticalAlign == VERTICAL_ALIGN::BOTTOM)	//â∫ëµÇ¶
 	{
 		y -= graphSize.y;
 	}
@@ -520,8 +520,7 @@ void DrawFunc2D::DrawNumber2D(const int& Num, const Vec2<float>& Pos, const std:
 	for (int numIdx = 0; numIdx < numStr.size(); ++numIdx)
 	{
 		float x = startX + numIdx * letterSpace;
-		//DrawGraph({ x,y }, NumTex[numStr[numIdx] - '0']);
 		Vec2<float>pos = { x,y };
-		DrawExtendGraph2D(pos, pos + graphSize, NumTex[numStr[numIdx] - '0']);
+		DrawExtendGraph2D(pos, pos + graphSize, arg_numTexArray[numStr[numIdx] - '0']);
 	}
 }

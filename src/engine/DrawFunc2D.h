@@ -135,6 +135,22 @@ public:
 		const std::shared_ptr<TextureBuffer>& arg_tex,
 		const AlphaBlendMode& BlendMode = AlphaBlendMode_Trans);
 
-	static void DrawNumber2D(const int& Num, const Vec2<float>& Pos, const std::array<std::shared_ptr<TextureBuffer>, 10>& NumTex, const Vec2<float>& ExpRate = { 1.0f,1.0f },
-		const float& LetterSpace = 0.0f, const HORIZONTAL_ALIGN& HorizontalAlign = HORIZONTAL_ALIGN::LEFT, const VERTICAL_ALIGN& VerticalAlign = VERTICAL_ALIGN::TOP);
+	/// <summary>
+	/// 2D数値描画
+	/// </summary>
+	/// <param name="arg_num">数字</param>
+	/// <param name="arg_pos">座標</param>
+	/// <param name="arg_numTexArray">数字テクスチャ配列</param>
+	/// <param name="arg_expRate">拡大率</param>
+	/// <param name="arg_letterSpace">字間</param>
+	/// <param name="arg_horizontalAlign">水平方向アライメント（揃え方）</param>
+	/// <param name="arg_verticalAlign">垂直方向アライメント（揃え方）</param>
+	static void DrawNumber2D(
+		const int& arg_num, 
+		const Vec2<float>& arg_pos,
+		const std::shared_ptr<TextureBuffer>* arg_numTexArray, 
+		const Vec2<float>& arg_expRate = { 1.0f,1.0f },
+		const float& arg_letterSpace = 0.0f, 
+		const HORIZONTAL_ALIGN& arg_horizontalAlign = HORIZONTAL_ALIGN::LEFT, 
+		const VERTICAL_ALIGN& arg_verticalAlign = VERTICAL_ALIGN::TOP);
 };
