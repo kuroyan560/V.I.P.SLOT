@@ -1605,6 +1605,9 @@ std::shared_ptr<GraphicsPipeline>D3D12App::GenerateGraphicsPipeline(
 				desc.BlendState.RenderTarget[idx].SrcBlend = D3D12_BLEND_SRC_ALPHA;
 				desc.BlendState.RenderTarget[idx].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
 				desc.BlendState.RenderTarget[idx].BlendOp = D3D12_BLEND_OP_ADD;
+
+				desc.BlendState.RenderTarget[idx].SrcBlendAlpha = D3D12_BLEND_SRC_ALPHA;
+				desc.BlendState.RenderTarget[idx].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
 			}
 			else if (info.m_blendMode == AlphaBlendMode_Add)	//â¡éZçáê¨
 			{
