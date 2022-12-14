@@ -147,6 +147,10 @@ struct Vec3
 	T y = 0;
 	T z = 0;
 
+	static Vec3<T>GetXAxis() { return Vec3<float>(1, 0, 0); }
+	static Vec3<T>GetYAxis() { return Vec3<float>(0, 1, 0); }
+	static Vec3<T>GetZAxis() { return Vec3<float>(0, 0, 1); }
+
 	Vec3() {};
 	Vec3(T X, T Y, T Z) :x(X), y(Y), z(Z) {};
 	float Length()const {
