@@ -68,6 +68,10 @@ InGameScene::InGameScene() : Debugger("InGame")
 	//スクリーン生成
 	m_screen = std::make_shared<Screen>();
 
+	//イベント生成
+	m_startWaveEvent = std::make_shared<StartWave>();
+	m_clearWaveEvent = std::make_shared<ClearWave>();
+
 	//オブジェクト挙動操作クラスにオブジェクトマネージャを渡す
 	ObjectController::AttachObjectManager(m_objMgr);
 	
@@ -84,19 +88,20 @@ InGameScene::InGameScene() : Debugger("InGame")
 	InGameMonitor::Set(m_player.get());
 
 	//ウェーブスタート時イベントにポインタを渡す
-	m_startWaveEvent.Awake(
+	m_startWaveEvent->Awake(
 		m_waveMgr,
 		m_screen,
 		m_gameCam);
 
 	//ウェーブクリア時イベントにポインタを渡す
-	m_clearWaveEvent.Awake(
+	m_clearWaveEvent->Awake(
 		m_gameCam,
 		m_waveMgr,
 		m_enemyEmitter,
 		m_player,
 		m_objMgr,
 		m_collisionMgr,
+		m_startWaveEvent,
 		&m_timeScale);
 
 	//ステージマネージャにコリジョンマネージャを渡す
@@ -153,8 +158,8 @@ void InGameScene::OnInitialize()
 		m_enemyEmitter.get(),
 		m_ligMgr.get(),
 		BasicDraw::Instance(),
-		&m_startWaveEvent,
-		&m_clearWaveEvent,
+		m_startWaveEvent.get(),
+		m_clearWaveEvent.get(),
 		this });
 
 	//HUD描画フラグ
@@ -191,7 +196,7 @@ void InGameScene::OnUpdate()
 	if (UsersInput::Instance()->KeyOnTrigger(DIK_H)
 		|| UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::Y))
 	{
-		m_startWaveEvent.Start();
+		m_startWaveEvent->Start();
 	}
 
 	//カメラ
@@ -225,7 +230,7 @@ void InGameScene::OnUpdate()
 	//ウェーブクリアしたか
 	if (m_waveMgr->IsWaveClear(m_player->GetCoinNum()))
 	{
-		m_clearWaveEvent.Start();
+		m_clearWaveEvent->Start();
 	}
 
 	//全ウェーブクリアしたか

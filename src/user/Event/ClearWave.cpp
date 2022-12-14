@@ -102,11 +102,7 @@ void ClearWave::OnUpdate()
 			//終了
 			if (m_camWork.IsEnd())
 			{
-				EmitHealKit(m_referWaveMgr.lock()->GetHealKitNum());
 				m_status = END;
-				m_referWaveMgr.lock()->ProceedWave();
-				*m_referGameCam.lock()->GetMainCam() = *this->m_cam;
-				m_referTimeScale->Set(1.0f);
 			}
 			//カメラワーク間の待機状態へ
 			else
@@ -131,6 +127,18 @@ void ClearWave::OnFinish()
 
 	//プレイヤーの被ダメージコライダーオン
 	m_referPlayer.lock()->SetDamageColldierActive(true);
+
+	//回復キット放出
+	EmitHealKit(m_referWaveMgr.lock()->GetHealKitNum());
+
+	//ウェーブ進行
+	m_referWaveMgr.lock()->ProceedWave();
+
+	//最後のカメラの状態をゲーム内メインカメラに反映
+	*m_referGameCam.lock()->GetMainCam() = *this->m_cam;
+
+	//タイムスケールリセット
+	m_referTimeScale->Set(1.0f);
 }
 
 std::shared_ptr<Camera> ClearWave::GetSubCam()

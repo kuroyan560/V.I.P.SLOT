@@ -61,10 +61,10 @@ class InGameScene : public BaseScene, public Debugger
 	std::shared_ptr<Screen>m_screen;
 
 	//ウェーブスタート時のイベント
-	StartWave m_startWaveEvent;
+	std::shared_ptr<StartWave>m_startWaveEvent;
 
 	//ウェーブクリア時のイベント
-	ClearWave m_clearWaveEvent;
+	std::shared_ptr<ClearWave>m_clearWaveEvent;
 
 	//コライダーのデバッグ描画フラグ
 	bool m_isDrawCollider = false;

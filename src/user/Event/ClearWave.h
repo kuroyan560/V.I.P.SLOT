@@ -12,6 +12,7 @@ class EnemyEmitter;
 class Player;
 class ObjectManager;
 class CollisionManager;
+class StartWave;
 
 //ウェーブクリア時の演出
 class ClearWave : public Event, public Debugger
@@ -23,6 +24,7 @@ class ClearWave : public Event, public Debugger
 	std::weak_ptr<Player>m_referPlayer;
 	std::weak_ptr<ObjectManager>m_referObjMgr;
 	std::weak_ptr<CollisionManager>m_referCollisionMgr;
+	std::weak_ptr<StartWave>m_referStartWaveEvent;
 	TimeScale* m_referTimeScale;
 
 	//演出ステータス
@@ -76,6 +78,7 @@ public:
 		std::weak_ptr<Player>arg_player,
 		std::weak_ptr<ObjectManager>arg_objMgr,
 		std::weak_ptr<CollisionManager>arg_colMgr,
+		std::weak_ptr<StartWave>arg_referStartWaveEvent,
 		TimeScale* arg_timeScale)
 	{
 		m_referGameCam = arg_gameCam; 
@@ -84,6 +87,7 @@ public:
 		m_referPlayer = arg_player;
 		m_referObjMgr = arg_objMgr;
 		m_referCollisionMgr = arg_colMgr;
+		m_referStartWaveEvent = arg_referStartWaveEvent;
 		m_referTimeScale = arg_timeScale;
 	}
 
