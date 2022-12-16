@@ -200,7 +200,7 @@ ClearWave::ClearWave() :Debugger("ClearWave")
 {
 	m_cam = std::make_shared<Camera>("ClearWave - Event - Camera");
 	
-	Motion motion;
+	Motion3D motion;
 	motion.m_startPos = { -8.62f, 4.76f, -19.96f };
 	motion.m_endPos = { -8.62f, 4.76f, -19.96f };
 	motion.m_startTarget = { 0,0,0 };

@@ -42,7 +42,7 @@ class ClearWave : public Event, public Debugger
 	std::shared_ptr<Camera>m_cam;
 
 	//カメラワーク
-	MotionWork m_camWork;
+	MotionWork3D m_camWork;
 
 	//演出開始直後の待機時間
 	float m_startWaitInterval = 60.0f;
