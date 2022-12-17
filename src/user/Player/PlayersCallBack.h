@@ -115,6 +115,24 @@ public:
 		:m_offensive(arg_offensive), m_playersVault(arg_playersVault), m_hitEffect(arg_hitEffect), m_hitSE(arg_hitSE), m_killSE(arg_killSE) {}
 };
 
+//“G‚Ì“¥‚İ‚Â‚¯
+class StepCallBack :public CollisionCallBack
+{
+	Player* m_parent;
+
+	void OnCollisionEnter(
+		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
+		std::weak_ptr<Collider>arg_otherCollider)override {};
+
+	void OnCollisionTrigger(
+		const CollisionResultInfo& arg_info,
+		std::weak_ptr<Collider>arg_myCollider,
+		std::weak_ptr<Collider>arg_otherCollider)override;
+public:
+	StepCallBack(Player* arg_player) :m_parent(arg_player) {}
+};
+
 //”íƒ_ƒ[ƒW
 class DamagedCallBack : public CollisionCallBack
 {

@@ -79,6 +79,11 @@ void PlayersCounterAttack::OnCollisionTrigger(const CollisionResultInfo& arg_inf
 	m_hitEffect->Emit(arg_info.m_inter, m_hitCount);
 }
 
+void StepCallBack::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider> arg_myCollider, std::weak_ptr<Collider> arg_otherCollider)
+{
+	m_parent->Jump();
+}
+
 
 void DamagedCallBack::Execute(bool arg_overlapped)
 {

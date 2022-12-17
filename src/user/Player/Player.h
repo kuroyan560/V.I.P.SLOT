@@ -32,6 +32,7 @@ class TextureBuffer;
 class Player : public ColliderParentObject, public Debugger
 {
 	friend class PushBackCallBack;
+	friend class StepCallBack;
 
 	//HP管理
 	PlayerHp m_playerHp;
@@ -72,6 +73,9 @@ class Player : public ColliderParentObject, public Debugger
 	//モデル全体を覆うAABB
 	std::shared_ptr<CollisionAABB>m_bodyAABBColPrim;
 	std::shared_ptr<Collider>m_bodyAABBCollider;
+	//モデルの足元の球
+	std::shared_ptr<CollisionSphere>m_footSphereColPrim;
+	std::shared_ptr<Collider>m_footSphereCollider;
 
 	//ヒットエフェクト
 	std::shared_ptr<TexHitEffect>m_hitEffect;
@@ -92,6 +96,8 @@ class Player : public ColliderParentObject, public Debugger
 	std::shared_ptr<PushBackCallBack>m_pushBackCallBack;
 	//回復キット回収
 	std::shared_ptr<GetHealKitCallBack>m_getHealKitCallBack;
+	//踏みつけジャンプ
+	std::shared_ptr<StepCallBack>m_stepCallBack;
 
 	//操作がキーボードかコントローラーか
 	enum struct INPUT_CONFIG { KEY_BOARD, CONTROLLER };
@@ -110,7 +116,7 @@ class Player : public ColliderParentObject, public Debugger
 	float m_stepDownFallSpeed = -0.06f;
 
 	//ジャンプ
-	void Jump(Vec3<float>* arg_rockOnPos = nullptr);
+	void Jump();
 
 	//地面着地時に呼び出す
 	void OnLanding(bool arg_isGround);

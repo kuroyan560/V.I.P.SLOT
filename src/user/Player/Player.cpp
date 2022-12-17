@@ -16,7 +16,7 @@
 #include"BasicDraw.h"
 #include"PlayersCounterAttackHitEffect.h"
 
-void Player::Jump(Vec3<float>* arg_rockOnPos)
+void Player::Jump()
 {
 	m_move.y = 0.0f;
 	m_fallSpeed = ConstParameter::Player::JUMP_POWER;
@@ -122,7 +122,7 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 		m_modelObj->m_model->GetAllMeshPosMinMax());
 
 	//足元の当たり判定球
-	std::shared_ptr<CollisionPrimitive>footSphereCol = std::make_shared<CollisionSphere>(
+	m_footSphereColPrim = std::make_shared<CollisionSphere>(
 		1.0f,
 		Vec3<float>(0.0f, -1.5f, 0.0f));
 
@@ -135,6 +135,8 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 	m_pushBackCallBack = std::make_shared<PushBackCallBack>(this);
 	//回復キット回収
 	m_getHealKitCallBack = std::make_shared<GetHealKitCallBack>(this);
+	//踏みつけジャンプ
+	m_stepCallBack = std::make_shared<StepCallBack>(this);
 
 	/*--- コライダー生成（判定順） ---*/
 
@@ -168,6 +170,18 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 		m_bodyAABBCollider->SetCallBack("Floor", m_pushBackCallBack.get());
 
 		colliders.emplace_back(m_bodyAABBCollider);
+	}
+	//モデルの足元の球コライダー
+	{
+		m_footSphereCollider = std::make_shared<Collider>();
+		m_footSphereCollider->Generate("Player_Foot_Sphere", { "Player" }, { m_footSphereColPrim });
+		m_footSphereCollider->SetParentObject(this);
+		m_footSphereCollider->SetParentTransform(&m_modelObj->m_transform);
+
+		//踏みつけジャンプコールバック
+		m_footSphereCollider->SetCallBack("Enemy", m_stepCallBack.get());
+
+		colliders.emplace_back(m_footSphereCollider);
 	}
 
 	/*--- コライダー配列登録 ---*/
