@@ -94,6 +94,14 @@ public:
 		return m_motions[arg_motionWorkIdx];
 	}
 
+	//モーションワーク全体にかかる時間
+	float GetFullInterval()
+	{
+		float interval = 0.0f;
+		for (auto& m : m_motions)interval += m.m_interval;
+		return interval;
+	}
+
 	//ゲッタ
 	const Vec2<float>& GetPos()const { return m_nowPos; }
 	float GetTimeRate() { return m_timer.GetTimeRate(); }
