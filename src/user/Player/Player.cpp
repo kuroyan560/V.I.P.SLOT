@@ -16,12 +16,20 @@
 #include"BasicDraw.h"
 #include"PlayersCounterAttackHitEffect.h"
 
+void Player::OnAir()
+{
+	m_isOnGround = false;
+	m_isOnScaffold = false;
+
+	//敵踏みつけコライダーオン
+	m_footSphereCollider->SetActive(true);
+}
+
 void Player::Jump()
 {
 	m_move.y = 0.0f;
 	m_fallSpeed = ConstParameter::Player::JUMP_POWER;
-	m_isOnGround = false;
-	m_isOnScaffold = false;
+	OnAir();
 }
 
 void Player::OnLanding(bool arg_isGround)
@@ -30,6 +38,9 @@ void Player::OnLanding(bool arg_isGround)
 	m_move.y = 0.0f;
 	if (arg_isGround)m_isOnGround = true;
 	else m_isOnScaffold = true;
+
+	//敵踏みつけコライダーオフ
+	m_footSphereCollider->SetActive(false);
 }
 
 void Player::OnImguiItems()
@@ -328,8 +339,8 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 		{
 			m_pushBackCallBack->NotPushBackWithScaffold(3.0f);
 			m_stepDown = true;
-			m_isOnScaffold = false;
 			m_fallSpeed = m_stepDownFallSpeed;
+			OnAir();
 		}
 	}
 	//入力をし直さないと足場降りを実行しない
@@ -377,7 +388,6 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 		InitMovement();
 	}
 
-
 	//被ダメージコールバック
 	m_damegedCallBack->Update(arg_timeScale);
 
@@ -407,11 +417,11 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 	//プレイヤーHPUI
 	m_playerHp.Update(timeScale);
 
-	//着地フラグfalseに（当たり判定でtrueに）
+	//足場がない
 	if (!m_bodyAABBCollider->GetIsHit())
 	{
-		m_isOnGround = false;
-		m_isOnScaffold = false;
+		//空中状態に
+		OnAir();
 	}
 }
 

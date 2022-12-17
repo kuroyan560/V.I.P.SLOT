@@ -115,6 +115,9 @@ class Player : public ColliderParentObject, public Debugger
 	//足場から降りたときの落下スピード
 	float m_stepDownFallSpeed = -0.06f;
 
+	//空中にいる状態に切替
+	void OnAir();
+
 	//ジャンプ
 	void Jump();
 
