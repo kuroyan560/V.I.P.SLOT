@@ -46,9 +46,9 @@ void GameCamera::Init()
 	m_defaultPos[MAIN] = Vec3<float>(0.0f, 3.4f, -65.0f);
 	m_targetPos[MAIN] = Vec3<float>(0.0f, m_defaultPos[MAIN].y + 2.0f, 0.0f);
 	m_posLerpOffset = { 0,0,0 };
-	m_targetLerpOffset = { 0.0f,-1.0f,0.0f };
+	m_targetLerpOffset = { 0.0f,-1.0f,120.0f };
 	m_shake.Init();
-	SetPosAndTarget({ 0,0,0 }, 1.0f, false);
+	SetPosAndTarget({ 0,0,100 }, 1.0f, false);
 }
 
 void GameCamera::Update(float arg_timeScale, Vec3<float>arg_playersDisplacement)
