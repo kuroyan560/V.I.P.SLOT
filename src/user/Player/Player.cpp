@@ -406,6 +406,13 @@ void Player::Update(std::weak_ptr<SlotMachine> arg_slotMachine, TimeScale& arg_t
 
 	//プレイヤーHPUI
 	m_playerHp.Update(timeScale);
+
+	//着地フラグfalseに（当たり判定でtrueに）
+	if (!m_bodyAABBCollider->GetIsHit())
+	{
+		m_isOnGround = false;
+		m_isOnScaffold = false;
+	}
 }
 
 void Player::Draw(std::weak_ptr<LightManager>arg_lightMgr, std::weak_ptr<Camera>arg_cam)
