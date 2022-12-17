@@ -94,7 +94,17 @@ void WaveMgr::Update(const TimeScale& arg_timeScale, std::weak_ptr<EnemyEmitter>
 
 void WaveMgr::ProceedWave()
 {
+	//全ウェーブクリアしたか
+	if (static_cast<int>(m_waves.size()) <= m_nowWaveIdx + 1)
+	{
+		m_isAllWaveClear = true;
+		return;
+	}
+
+	//ウェーブ進行
 	m_nowWaveIdx++;
+
+	//ウェーブ初期化
 	WaveInit();
 }
 
@@ -112,13 +122,6 @@ void WaveMgr::OnDraw2D()
 
 void WaveMgr::WaveInit()
 {
-	//全ウェーブクリアしたか
-	if (static_cast<int>(m_waves.size()) <= m_nowWaveIdx)
-	{
-		m_isAllWaveClear = true;
-		return;
-	}
-
 	//ウェーブ時間初期化
 	m_time = 0.0f;
 

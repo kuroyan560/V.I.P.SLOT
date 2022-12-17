@@ -76,4 +76,10 @@ public:
 		if (m_isAllWaveClear)return 0;
 		return m_nowWave->m_healKitNum;
 	}
+
+	//現在のウェーブのインデックス
+	const int& GetNowWaveIdx()const
+	{
+		return m_nowWaveIdx;
+	}
 };

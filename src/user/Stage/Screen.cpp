@@ -16,6 +16,7 @@ Screen::Screen()
 		Color(0, 0, 0, 0),
 		m_clearTex->GetGraphSize(),
 		L"Screen - RenderTarget");
+	m_modelObj->m_model->m_meshes[0].material->texBuff[COLOR_TEX] = m_renderTarget;
 }
 
 void Screen::Draw(std::weak_ptr<LightManager> arg_lightMgr, std::weak_ptr<Camera> arg_cam)

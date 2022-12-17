@@ -3,6 +3,8 @@
 #include"Screen.h"
 #include"Object.h"
 #include"Angle.h"
+#include"WaveMgr.h"
+#include"DrawFunc2D.h"
 
 void StartWave::OnStart()
 {
@@ -13,10 +15,14 @@ void StartWave::OnStart()
     //登場モーションワーク開始
     m_appearScreenWork.Start(true);
 
-    m_referScreen.lock()->m_modelObj->m_transform.SetRotate(Vec3<float>::GetYAxis(), m_ySpinRadianMax);
-
     //敵を出現させない
     m_enemyEmit = false;
+
+    //ウェーブ表示のスクロール量リセット
+    m_wavePosScrollX = 0.0f;
+
+    //スクリーンの画面クリア
+    m_referScreen.lock()->ClearTarget();
 }
 
 void StartWave::OnUpdate()
@@ -41,10 +47,6 @@ void StartWave::OnUpdate()
         //登場モーションワークからスクリーンの座標適用
         screenTransform.SetPos(m_appearScreenWork.GetPos());
 
-        //スクリーンの回転
-        float ySpin = KuroMath::Ease(Out, Back, m_appearScreenWork.GetTimeRate(), m_ySpinRadianMax, 0.0f);
-        screenTransform.SetRotate(Vec3<float>::GetYAxis(), ySpin);
-
         //スケール変更
         float scale = KuroMath::Ease(Out, Back, m_appearScreenWork.GetTimeRate(), 0.0f, 1.0f);
         screenTransform.SetScale(scale);
@@ -56,6 +58,8 @@ void StartWave::OnUpdate()
             m_status = WAIT;
             //待機時間セット
             m_waitTimer.Reset(m_waitInterval);
+            //ウェーブ表示のモーションワーク開始
+            m_screenWaveDraw.Start(true);
         }
     }
     else if (m_status == WAIT)
@@ -77,13 +81,43 @@ void StartWave::OnUpdate()
         //退場モーションワークからスクリーンの座標適用
         screenTransform.SetPos(m_disappearScreenWork.GetPos());
 
-        //スクリーンの回転
-        float ySpin = KuroMath::Ease(In, Back, m_disappearScreenWork.GetTimeRate(), 0.0f, -m_ySpinRadianMax);
-        screenTransform.SetRotate(Vec3<float>::GetYAxis(), ySpin);
-
         //スケール変更
         float scale = KuroMath::Ease(In, Back, m_disappearScreenWork.GetTimeRate(), 1.0f, 0.0f);
         screenTransform.SetScale(scale);
+    }
+
+    if (m_status != APPEAR)
+    {
+        m_screenWaveDraw.Update(1.0f);
+        float waveExpY = 1.0f;
+
+        /*--- 大型スクリーンにに描画 ---*/
+        //大型スクリーンのレンダーターゲットセット
+        m_referScreen.lock()->ClearTarget();
+        m_referScreen.lock()->SetTarget();
+
+        //ウェーブ表示スクロール
+        m_wavePosScrollX -= 2.0f;
+
+        //ウェーブ表示位置
+        Vec2<float>drawPos = m_screenWaveDraw.GetPos() + Vec2<float>(m_wavePosScrollX, 0.0f);
+        DrawFunc2D::DrawRotaGraph2D(
+            drawPos,
+            { 1.0f,waveExpY },
+            0.0f,
+            m_waveStrTex
+        );
+
+        //ウェーブ数字描画位置のオフセット
+        Vec2<float>numPosOffset = { m_waveStrTex->GetGraphSize().Float().x * 0.7f,0.0f };
+        DrawFunc2D::DrawNumber2D(
+            m_referWaveMgr.lock()->GetNowWaveIdx() + 1,
+            drawPos + numPosOffset,
+            m_waveNumTex.data(),
+            { 1.0f,waveExpY },
+            8.0f,
+            HORIZONTAL_ALIGN::LEFT,
+            VERTICAL_ALIGN::CENTER);
     }
 }
 
@@ -131,15 +165,27 @@ void StartWave::OnImguiItems()
 
     m_appearScreenWork.ImguiDebugItems("AppearWork");
     m_disappearScreenWork.ImguiDebugItems("DisppearWork");
+    m_screenWaveDraw.ImguiDebugItems("ScreenWaveDraw");
 }
 
 StartWave::StartWave() : Debugger("StartWave")
 {
-    Motion motion;
+    //テクスチャ読み込み
+    std::string dir = "resource/user/img/ui/screen/";
+    m_goodLuckTex = D3D12App::Instance()->GenerateTextureBuffer(dir + "wave_good_luck.png");
+    D3D12App::Instance()->GenerateTextureBuffer(
+        m_waveNumTex.data(),
+        dir + "wave_num.png",
+        10,
+        { 10,1 });
+    m_waveStrTex = D3D12App::Instance()->GenerateTextureBuffer(dir + "wave_str.png");
+
+    //モーションワーク設定
+    Motion3D motion;
     motion.m_startPos = { 15.0f,5.0f,0.0f };
     motion.m_startTarget = { 1,0,0 };
     motion.m_endTarget = { 0,0,1 };
-    motion.m_interval = 90.0f;
+    motion.m_interval = 40.0f;
     motion.m_easeParam.m_changeType = Out;
     motion.m_easeParam.m_easeType = Circ;
     m_appearScreenWork.Add(motion);
@@ -147,8 +193,32 @@ StartWave::StartWave() : Debugger("StartWave")
     motion.m_startTarget = motion.m_endTarget;
     motion.m_endTarget = { -1,0,0 };
     motion.m_endPos = { -15.0f,5.0f,0.0f };
-    motion.m_interval = 90.0f;
+    motion.m_interval = 40.0f;
     motion.m_easeParam.m_changeType = In;
     motion.m_easeParam.m_easeType = Circ;
     m_disappearScreenWork.Add(motion);
+
+    Motion2D motion2D;
+    motion2D.m_startPos = { 1280.0f,680.0f };
+    motion2D.m_endPos = { 940.0f,650.0f };
+    motion2D.m_interval = 60.0f;
+    motion2D.m_easeParam.m_changeType = Out;
+    motion2D.m_easeParam.m_easeType = Circ;
+    m_screenWaveDraw.Add(motion2D);
+
+    motion2D.m_startPos = motion2D.m_endPos;
+    motion2D.m_endPos.x = 880.0f;
+    motion2D.m_interval = 120.0f;
+    motion2D.m_easeParam.m_changeType = In;
+    motion2D.m_easeParam.m_easeType = Liner;
+    m_screenWaveDraw.Add(motion2D);
+
+    motion2D.m_startPos = motion2D.m_endPos;
+    motion2D.m_endPos = { 0.0f,680.0f };
+    motion2D.m_interval = 30.0f;
+    motion2D.m_easeParam.m_changeType = In;
+    motion2D.m_easeParam.m_easeType = Circ;
+    m_screenWaveDraw.Add(motion2D);
+    
+    m_waitInterval = m_screenWaveDraw.GetFullInterval() - 10.0f;
 }
