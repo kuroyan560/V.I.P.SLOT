@@ -81,6 +81,9 @@ void PlayersCounterAttack::OnCollisionTrigger(const CollisionResultInfo& arg_inf
 
 void StepCallBack::OnCollisionTrigger(const CollisionResultInfo& arg_info, std::weak_ptr<Collider> arg_myCollider, std::weak_ptr<Collider> arg_otherCollider)
 {
+	//—‰º’†‚Å‚È‚¢‚È‚çƒXƒ‹[
+	if (0.0f <= m_parent->m_move.y)return;
+
 	m_parent->Jump();
 }
 

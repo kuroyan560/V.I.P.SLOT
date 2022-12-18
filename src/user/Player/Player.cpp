@@ -64,11 +64,8 @@ void Player::InitMovement()
 	//移動速度
 	m_move = { 0,0,0 };
 
-	//落下速度初期化
-	m_fallSpeed = 0.0f;
-
-	//接地フラグ初期化
-	m_isOnGround = true;
+	//接地時の処理
+	OnLanding(true);
 
 	//ヨーヨー
 	m_yoYo->Init();
@@ -135,7 +132,7 @@ void Player::Awake(std::weak_ptr<CollisionManager> arg_collisionMgr, std::weak_p
 	//足元の当たり判定球
 	m_footSphereColPrim = std::make_shared<CollisionSphere>(
 		1.0f,
-		Vec3<float>(0.0f, -1.5f, 0.0f));
+		Vec3<float>(0.0f, m_bodyAABBColPrim->GetPtValue().y.m_min + 0.9f, 0.0f));
 
 	/*--- コールバック生成 ---*/
 	//パリィ攻撃コールバック
