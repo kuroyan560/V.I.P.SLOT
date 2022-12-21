@@ -131,6 +131,8 @@ public:
 	Vec3<float>m_nowTarget;
 	bool m_auto;
 
+	float m_easeRate;
+
 public:
 	/// <summary>
 	/// モーション初期化
@@ -187,6 +189,7 @@ public:
 		if (m_motionWorkIdx < 0)return 0.0f;
 		return m_timer.GetTimeRate(); 
 	}
+	const float& GetEaseRate()const { return m_easeRate; }
 
 	/// <summary>
 	/// Imguiデバッグで項目追加

@@ -84,6 +84,7 @@ void MotionWork3D::Init()
 	{
 		m_nowPos = m_motions[0].m_startPos;
 		m_nowTarget = m_motions[0].m_startTarget;
+		m_easeRate = 0.0f;
 	}
 	m_motionWorkIdx = -1;
 }
@@ -99,7 +100,7 @@ bool MotionWork3D::Update(float arg_timeScale)
 	const auto& nowWork = m_motions[m_motionWorkIdx];
 
 	//イージングのレート計算
-	float easeRate = nowWork.m_easeParam.Calculate(
+	m_easeRate = nowWork.m_easeParam.Calculate(
 		m_timer.GetTimeRate(),
 		0.0f,
 		1.0f);
@@ -108,13 +109,13 @@ bool MotionWork3D::Update(float arg_timeScale)
 	m_nowPos = KuroMath::Lerp(
 		nowWork.m_startPos,
 		nowWork.m_endPos,
-		easeRate);
+		m_easeRate);
 
 	//球面補間
 	m_nowTarget = KuroMath::Slerp(
 		nowWork.m_startTarget - nowWork.m_startPos,
 		nowWork.m_endTarget - nowWork.m_endPos,
-		easeRate) + m_nowPos;
+		m_easeRate) + m_nowPos;
 
 	//自動で次のモーションへ
 	if (end && m_auto)
