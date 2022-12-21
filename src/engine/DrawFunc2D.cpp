@@ -252,9 +252,9 @@ void DrawFunc2D::DrawCircle2D(const Vec2<float>& Center, const float& Radius, co
 	s_DrawCircleCount++;
 }
 
-void DrawFunc2D::DrawGraph(const Vec2<float>& LeftUpPos, const std::shared_ptr<TextureBuffer>& Tex, const float& Alpha, const AlphaBlendMode& BlendMode, const Vec2<bool>& Miror)
+void DrawFunc2D::DrawGraph(const Vec2<float>& LeftUpPos, const std::shared_ptr<TextureBuffer>& Tex, const float& Alpha, const float& Scale, const AlphaBlendMode& BlendMode, const Vec2<bool>& Miror)
 {
-	DrawExtendGraph2D(LeftUpPos, LeftUpPos + Tex->GetGraphSize().Float(), Tex, Alpha, BlendMode, Miror);
+	DrawExtendGraph2D(LeftUpPos, LeftUpPos + Tex->GetGraphSize().Float() * Scale, Tex, Alpha, BlendMode, Miror);
 }
 
 void DrawFunc2D::DrawExtendGraph2D(const Vec2<float>& LeftUpPos, const Vec2<float>& RightBottomPos, const std::shared_ptr<TextureBuffer>& Tex, const float& Alpha, const AlphaBlendMode& BlendMode, const Vec2<bool>& Miror)
