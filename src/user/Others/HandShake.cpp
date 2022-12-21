@@ -9,7 +9,7 @@ void HandShake::Init()
 
 void HandShake::Update(float arg_timeScale,const Matrix& arg_rotate)
 {
-	m_t += 1.0f / static_cast<float>(m_interval);
+	m_t += 1.0f / m_interval * arg_timeScale;
 
 	//ŽèƒuƒŒ
 	Vec3<float>handShake = { 1.0f,1.0f,0.0f };

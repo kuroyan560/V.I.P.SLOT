@@ -8,11 +8,15 @@
 #include"LightManager.h"
 #include"Model.h"
 #include"Debugger.h"
+#include"BasicDraw.h"
 
-TitleScene::TitleScene()
+void TitleScene::OnImguiItems()
+{
+}
+
+TitleScene::TitleScene() : Debugger("TitleScene")
 {
 	m_signBoard = std::make_shared<ModelObject>("resource/user/model/", "signboard.glb");
-	m_signBoard->m_model->m_meshes[0].material->texBuff[0] = D3D12App::Instance()->GenerateTextureBuffer(Color(1.0f, 1.0f, 1.0f, 1.0f));
 
 	m_debugCam = std::make_shared<DebugCamera>();
 	m_titleCam = std::make_shared<TitleCamera>();
@@ -38,14 +42,13 @@ TitleScene::TitleScene()
 
 	//看板
 	m_signBoard->m_transform.SetPos({ 2.0f,0.0f,-4.0f });
-	m_signBoard->m_transform.SetFront(KuroMath::TransformVec3(Vec3<float>(0, 0, 1), KuroMath::RotateMat(0.0f, 45.0f, 0.0f)));
+	m_signBoard->m_transform.SetFront(KuroMath::TransformVec3(Vec3<float>(0, 0, 1), KuroMath::RotateMat(0.0f, -45.0f, 0.0f)));
 
 	//看板に向けたスポットライト
-	m_signSpot.SetPos({ 0.15f,3.57f,-6.83f });
-	m_signSpot.SetTarget({ 4.93f,-1.38f,-2.08f });
-	m_signSpot.SetInfluenceRange(11.0f);
-	m_signSpot.SetAngle(Angle(73));
-	m_signSpot.SetTarget(m_signBoard->m_transform.GetPos());
+	m_signSpot.SetPos({ -3.08f,2.12f,-6.5f });
+	m_signSpot.SetTarget({ 4.14f,5.42f,-4.17f });
+	m_signSpot.SetInfluenceRange(39.0f);
+	m_signSpot.SetAngle(Angle(42));
 }
 
 void TitleScene::OnInitialize()
@@ -57,7 +60,14 @@ void TitleScene::OnInitialize()
 
 	m_titleUI.Init();
 
-	Debugger::Register({ m_lightMgr.get(),m_titleCam.get(),&m_titleUI });
+	Debugger::Register(
+		{ 
+			this,
+			m_lightMgr.get(),
+			m_titleCam.get(),
+			&m_titleUI,
+			BasicDraw::Instance(),
+		});
 }
 
 void TitleScene::OnUpdate()
@@ -106,17 +116,21 @@ void TitleScene::OnDraw()
 	auto& rtMgr = *RenderTargetManager::Instance();
 
 	//レンダーターゲットクリア
+	//rtMgr.Clear(DRAW_TARGET_TAG::DEPTH_MAP);
 	rtMgr.Clear();
 
 	//レンダーターゲットセット
-	rtMgr.Set(true, { DRAW_TARGET_TAG::BACK_BUFF });
+	rtMgr.Set(true);
 
-	//DrawFunc3D::DrawNonShadingModel(m_signBoard, *m_titleCam);
-	DrawFunc3D::DrawADSShadingModel(*m_lightMgr, m_signBoard, *m_titleCam);
-	//DrawFunc3D::DrawPBRShadingModel(*m_lightMgr, m_signBoard, *m_titleCam,
-		//nullptr,AlphaBlendMode_None);
+	BasicDraw::Instance()->Draw(*m_lightMgr, m_signBoard, *m_titleCam);
 
 	m_titleUI.Draw(m_item);
+
+	//↓↓↓以降、エミッシブマップとデプスマップへの描画をしない↓↓↓
+	rtMgr.Set(true, { DRAW_TARGET_TAG::BACK_BUFF });
+
+	//エッジの描画
+	BasicDraw::Instance()->DrawEdge(rtMgr.GetDepthMap(), rtMgr.GetEdgeColorMap());
 }
 
 void TitleScene::OnImguiDebug()

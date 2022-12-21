@@ -6,8 +6,9 @@ class TitleCamera;
 class DebugCamera;
 #include"RandBox2D.h"
 #include"TitleUI.h"
+#include"Debugger.h"
 
-class TitleScene : public BaseScene
+class TitleScene : public BaseScene, public Debugger
 {
 	enum ITEM { GAME_START, EXIT, NUM };
 	ITEM m_item = GAME_START;
@@ -21,6 +22,8 @@ class TitleScene : public BaseScene
 	std::shared_ptr<TitleCamera>m_titleCam;
 
 	TitleUI m_titleUI;
+
+	void OnImguiItems()override;
 
 public:
 	TitleScene();
