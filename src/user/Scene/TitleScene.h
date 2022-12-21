@@ -10,8 +10,11 @@ class DebugCamera;
 
 class TitleScene : public BaseScene, public Debugger
 {
-	enum ITEM { GAME_START, EXIT, NUM };
-	ITEM m_item = GAME_START;
+	//タイトル表示
+	bool m_drawTitle = true;
+
+	enum ITEM { GAME_START, EXIT, NUM, NONE };
+	ITEM m_item = NONE;
 
 	std::shared_ptr<ModelObject> m_signBoard;
 	

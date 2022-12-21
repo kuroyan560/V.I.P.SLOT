@@ -49,44 +49,72 @@ void TitleUI::Awake(const std::vector<TitleItemTex>& arg_tex)
 
 void TitleUI::Init()
 {
+	m_appear = false;
 	m_randBox.Init();
 }
 
 void TitleUI::Update()
 {
+	//登場していない
+	if (!m_appear)return;
+
+	if (m_appearWaitTimer.UpdateTimer(1.0f))
+	{
+		m_appearTimer.UpdateTimer(1.0f);
+	}
+
 	m_randBox.Update();
 }
 
 #include"DrawFunc2D.h"
-void TitleUI::Draw(int arg_selectIdx)
+void TitleUI::Draw(int arg_selectIdx, bool arg_isSelect)
 {
+	//登場していない
+	if (!m_appear)return;
+
+	Vec2<float>appearOffset =
+	{
+		KuroMath::Ease(Out,Elastic,m_appearTimer.GetTimeRate(),-300.0f,0.0f),
+		0.0f
+	};
+	appearOffset = { 0,0 };
+
+	Vec2<float>scale =
+	{
+		KuroMath::Ease(Out, Elastic, m_appearTimer.GetTimeRate(), 0.0f, 1.0f),
+		KuroMath::Ease(Out, Elastic, m_appearTimer.GetTimeRate(), 0.0f, 1.0f),
+	};
+
 	for (int itemIdx = 0; itemIdx < static_cast<int>(m_items.size()); ++itemIdx)
 	{
 		//選択中の項目ならスルー
-		if (itemIdx == arg_selectIdx)continue;
+		if (arg_isSelect && itemIdx == arg_selectIdx)continue;
 
 		const auto& item = m_items[itemIdx];
 
 		//バック画像
-		DrawFunc2D::DrawGraph(m_itemBasePos + item.m_posOffset, item.m_tex.m_back);
+		DrawFunc2D::DrawRotaGraph2D(m_itemBasePos + item.m_posOffset + appearOffset, scale, 0.0f, item.m_tex.m_back);
 		//フロント画像
-		DrawFunc2D::DrawGraph(m_itemBasePos + item.m_posOffset, item.m_tex.m_front);
+		DrawFunc2D::DrawRotaGraph2D(m_itemBasePos + item.m_posOffset + appearOffset, scale, 0.0f, item.m_tex.m_front);
 	}
 
 	//選択中の項目は描画順最後
-	const auto& item = m_items[arg_selectIdx];
+	//バック画像とフロント画像の間に歪み四角描画を挟む
+	if (arg_isSelect)
+	{
+		const auto& item = m_items[arg_selectIdx];
 
-	//バック画像
-	DrawFunc2D::DrawGraph(m_itemBasePos + item.m_posOffset, item.m_tex.m_back);
+		//バック画像
+		DrawFunc2D::DrawRotaGraph2D(m_itemBasePos + item.m_posOffset + appearOffset, scale, 0.0f, item.m_tex.m_back);
 
-	//選択強調の歪み四角
-	auto backGraphSize = item.m_tex.m_back->GetGraphSize().Float();
-	m_randBox.Transform().SetPos({ m_itemBasePos + item.m_posOffset + Vec2<float>(backGraphSize.x / 2.0f , backGraphSize.y / 2.0f) });
-	m_randBox.SetSize(backGraphSize * 0.8f);
-	m_randBox.SetAnchorPoint({ 0.5f,0.5f });
-	m_randBox.Draw();
+		//選択強調の歪み四角
+		auto backGraphSize = item.m_tex.m_back->GetGraphSize().Float();
+		m_randBox.Transform().SetPos(m_itemBasePos + item.m_posOffset + appearOffset);
+		m_randBox.SetSize(backGraphSize * 0.8f);
+		m_randBox.SetAnchorPoint({ 0.5f,0.5f });
+		m_randBox.Draw();
 
-	//フロント画像
-	DrawFunc2D::DrawGraph(m_itemBasePos + item.m_posOffset, item.m_tex.m_front);
-
+		//フロント画像
+		DrawFunc2D::DrawRotaGraph2D(m_itemBasePos + item.m_posOffset + appearOffset, scale, 0.0f, item.m_tex.m_front);
+	}
 }

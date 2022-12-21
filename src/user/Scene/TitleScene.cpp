@@ -53,7 +53,9 @@ TitleScene::TitleScene() : Debugger("TitleScene")
 
 void TitleScene::OnInitialize()
 {
-	m_item = GAME_START;
+	m_drawTitle = true;
+
+	m_item = NONE;
 
 	m_debugCam->Init({ 0,1,0 }, { 0,1,1 });
 	m_titleCam->Init();
@@ -72,6 +74,14 @@ void TitleScene::OnInitialize()
 
 void TitleScene::OnUpdate()
 {
+	//デバッグ用
+	if (UsersInput::Instance()->KeyOnTrigger(DIK_I)
+		|| UsersInput::Instance()->ControllerOnTrigger(0, XBOX_BUTTON::BACK))
+	{
+		this->Finalize();
+		this->Initialize();
+	}
+
 	//入力取得
 	auto input = UsersInput::Instance();
 	//上入力
@@ -83,23 +93,45 @@ void TitleScene::OnUpdate()
 	//決定入力
 	bool enter = input->ControllerOnTrigger(0, XBOX_BUTTON::A);
 
-	//項目下へ
-	if (m_item < NUM - 1 && down)m_item = (ITEM)(m_item + 1);
-	//項目上へ
-	else if (0 < m_item && up)m_item = (ITEM)(m_item - 1);
-
-	//決定
-	if (enter)
+	//タイトル表示
+	if (m_drawTitle)
 	{
-		switch (m_item)
+		//看板から注目をはずす
+		if (enter)
 		{
-		case GAME_START:
-			KuroEngine::Instance()->ChangeScene("InGame");
-			GameManager::Instance()->FlowStart();
-			break;
-		case EXIT:
-			KuroEngine::Instance()->GameEnd();
-			break;
+			m_titleCam->StartMotion();
+			m_titleUI.Appear(70.0f);
+			m_drawTitle = false;
+		}
+	}
+	//メニュー選択
+	else if (m_titleUI.AppearEnd())	//UI登場演出が完了しているか
+	{
+		if (m_item == NONE && (down || up || enter))
+		{
+			m_item = GAME_START;
+		}
+		else
+		{
+			//項目下へ
+			if (m_item < NUM - 1 && down)m_item = (ITEM)(m_item + 1);
+			//項目上へ
+			else if (0 < m_item && up)m_item = (ITEM)(m_item - 1);
+
+			//項目の決定
+			if (enter)
+			{
+				switch (m_item)
+				{
+				case GAME_START:
+					KuroEngine::Instance()->ChangeScene("InGame");
+					GameManager::Instance()->FlowStart();
+					break;
+				case EXIT:
+					KuroEngine::Instance()->GameEnd();
+					break;
+				}
+			}
 		}
 	}
 
@@ -124,7 +156,7 @@ void TitleScene::OnDraw()
 
 	BasicDraw::Instance()->Draw(*m_lightMgr, m_signBoard, *m_titleCam);
 
-	m_titleUI.Draw(m_item);
+	m_titleUI.Draw(m_item, m_item != NONE);
 
 	//↓↓↓以降、エミッシブマップとデプスマップへの描画をしない↓↓↓
 	rtMgr.Set(true, { DRAW_TARGET_TAG::BACK_BUFF });

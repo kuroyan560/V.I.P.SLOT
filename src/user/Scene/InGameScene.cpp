@@ -263,7 +263,7 @@ void InGameScene::OnDraw()
 	rtMgr.Set(true);
 
 	//2Dîwåi
-	DrawFunc2D::DrawGraph({ 0,0 }, m_backGround, 1.0f, AlphaBlendMode_None);
+	DrawFunc2D::DrawGraph({ 0,0 }, m_backGround, 1.0f, 1.0f, AlphaBlendMode_None);
 
 	auto mainCam = Event::GetMainEventCamera();
 	auto subCam = Event::GetSubEventCamera();
