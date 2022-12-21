@@ -1,17 +1,18 @@
 #pragma once
 #include"KuroEngine.h"
 #include"LightManager.h"
-class ModelObject;
-class TitleCamera;
-class DebugCamera;
 #include"RandBox2D.h"
 #include"TitleUI.h"
 #include"Debugger.h"
+class ModelObject;
+class TitleCamera;
+class DebugCamera;
 
 class TitleScene : public BaseScene, public Debugger
 {
 	//タイトル表示
 	bool m_drawTitle = true;
+	Timer m_signBoardTimer;
 
 	enum ITEM { GAME_START, EXIT, NUM, NONE };
 	ITEM m_item = NONE;

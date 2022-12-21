@@ -70,6 +70,8 @@ void TitleScene::OnInitialize()
 			&m_titleUI,
 			BasicDraw::Instance(),
 		});
+
+	m_signBoardTimer.Reset(20.0f);
 }
 
 void TitleScene::OnUpdate()
@@ -99,8 +101,10 @@ void TitleScene::OnUpdate()
 		//ŠÅ”Â‚©‚ç’–Ú‚ð‚Í‚¸‚·
 		if (enter)
 		{
-			m_titleCam->StartMotion();
-			m_titleUI.Appear(70.0f);
+			m_signBoardTimer.Reset(30.0f);
+			m_titleCam->StartMotion(8.0f);
+			m_titleUI.Appear(100.0f);
+
 			m_drawTitle = false;
 		}
 	}
@@ -135,6 +139,11 @@ void TitleScene::OnUpdate()
 		}
 	}
 
+	if (!m_drawTitle)
+	{
+		m_signBoardTimer.UpdateTimer(1.0f);
+	}
+
 	m_debugCam->Move();
 	m_titleCam->Update(1.0f);
 
@@ -163,6 +172,13 @@ void TitleScene::OnDraw()
 
 	//ƒGƒbƒW‚Ì•`‰æ
 	BasicDraw::Instance()->DrawEdge(rtMgr.GetDepthMap(), rtMgr.GetEdgeColorMap());
+
+	//ŠÅ”Â‚Ì‰æ–Ê’¼Ú•`‰æ
+	DrawFunc2D::DrawExtendGraph2D(
+		{ 0.0f,0.0f },
+		WinApp::Instance()->GetExpandWinSize(),
+		m_signBoard->m_model->m_meshes[0].material->texBuff[COLOR_TEX],
+		1.0f - m_signBoardTimer.GetTimeRate());
 }
 
 void TitleScene::OnImguiDebug()

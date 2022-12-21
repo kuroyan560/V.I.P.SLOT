@@ -11,6 +11,8 @@ class TitleCamera : public Debugger
 	HandShake m_handShake;
 
 	MotionWork3D m_motion;
+	bool m_motionStart = false;
+	Timer m_waitTimer;
 
 	void OnImguiItems()override;
 
@@ -18,7 +20,7 @@ public:
 	TitleCamera();
 	void Init();
 	void Update(float arg_timeScale);
-	void StartMotion();
+	void StartMotion(float arg_waitInterval);
 
 	operator std::shared_ptr<Camera>& ()
 	{
