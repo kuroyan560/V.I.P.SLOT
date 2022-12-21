@@ -214,6 +214,7 @@
     <ClCompile Include="src\user\Stage\Scaffold.cpp" />
     <ClCompile Include="src\user\Stage\Screen.cpp" />
     <ClCompile Include="src\user\Stage\StageMgr.cpp" />
+    <ClCompile Include="src\user\Title\SignBoard.cpp" />
     <ClCompile Include="src\user\Title\TitleCamera.cpp" />
     <ClCompile Include="src\user\Title\TitleUI.cpp" />
     <ClCompile Include="src\user\Wave\Wave.cpp" />
@@ -344,6 +345,7 @@
     <ClInclude Include="src\user\Stage\Scaffold.h" />
     <ClInclude Include="src\user\Stage\Screen.h" />
     <ClInclude Include="src\user\Stage\StageMgr.h" />
+    <ClInclude Include="src\user\Title\SignBoard.h" />
     <ClInclude Include="src\user\Title\TitleCamera.h" />
     <ClInclude Include="src\user\Title\TitleUI.h" />
     <ClInclude Include="src\user\Wave\Wave.h" />

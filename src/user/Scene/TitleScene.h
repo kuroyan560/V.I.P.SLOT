@@ -4,6 +4,7 @@
 #include"RandBox2D.h"
 #include"TitleUI.h"
 #include"Debugger.h"
+#include"SignBoard.h"
 class ModelObject;
 class TitleCamera;
 class DebugCamera;
@@ -17,8 +18,8 @@ class TitleScene : public BaseScene, public Debugger
 	enum ITEM { GAME_START, EXIT, NUM, NONE };
 	ITEM m_item = NONE;
 
-	std::shared_ptr<ModelObject> m_signBoard;
-	
+	SignBoard m_signBoard;
+
 	std::shared_ptr<LightManager>m_lightMgr;
 	Light::Spot m_signSpot;
 

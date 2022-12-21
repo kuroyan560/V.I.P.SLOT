@@ -16,8 +16,6 @@ void TitleScene::OnImguiItems()
 
 TitleScene::TitleScene() : Debugger("TitleScene")
 {
-	m_signBoard = std::make_shared<ModelObject>("resource/user/model/", "signboard.glb");
-
 	m_debugCam = std::make_shared<DebugCamera>();
 	m_titleCam = std::make_shared<TitleCamera>();
 
@@ -39,10 +37,6 @@ TitleScene::TitleScene() : Debugger("TitleScene")
 	itemTex.back().m_back = D3D12App::Instance()->GenerateTextureBuffer(imgFileDir + "exit_back.png");
 	//タイトル項目設定
 	m_titleUI.Awake(itemTex);
-
-	//看板
-	m_signBoard->m_transform.SetPos({ 2.0f,0.0f,-4.0f });
-	m_signBoard->m_transform.SetFront(KuroMath::TransformVec3(Vec3<float>(0, 0, 1), KuroMath::RotateMat(0.0f, -45.0f, 0.0f)));
 
 	//看板に向けたスポットライト
 	m_signSpot.SetPos({ -3.08f,2.12f,-6.5f });
@@ -163,7 +157,7 @@ void TitleScene::OnDraw()
 	//レンダーターゲットセット
 	rtMgr.Set(true);
 
-	BasicDraw::Instance()->Draw(*m_lightMgr, m_signBoard, *m_titleCam);
+	BasicDraw::Instance()->Draw(*m_lightMgr, m_signBoard.m_modelObj, *m_titleCam);
 
 	m_titleUI.Draw(m_item, m_item != NONE);
 
@@ -177,7 +171,7 @@ void TitleScene::OnDraw()
 	DrawFunc2D::DrawExtendGraph2D(
 		{ 0.0f,0.0f },
 		WinApp::Instance()->GetExpandWinSize(),
-		m_signBoard->m_model->m_meshes[0].material->texBuff[COLOR_TEX],
+		m_signBoard.GetScreenTex(),
 		1.0f - m_signBoardTimer.GetTimeRate());
 }
 
