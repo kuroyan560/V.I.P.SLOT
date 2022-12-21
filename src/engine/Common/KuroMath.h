@@ -126,6 +126,25 @@ public:
         return Ease(In, Liner, T, TotalTime, Min, Max);
     }
 
+    static Vec3<float> Slerp(Vec3<float> Min, Vec3<float> Max, float Rate)
+    {
+        //各単位ベクトルを求める
+        Vec3<float>s = Min.GetNormal(), e = Max.GetNormal();
+
+        //2ベクトル間の角度（鋭角側）
+        float angle = acos(s.Dot(e));
+
+        //sinθ
+        float sinTh = sin(angle);
+
+        //補間係数
+        float ps = sin(angle * (1 - Rate));
+        float pe = sin(angle * Rate);
+
+        return ((s * ps + e * pe) / sinTh).GetNormal();
+    }
+
+
     static float GetSpline(const float& T, const int& P1Idx, const std::vector<float>& Array, bool Loop = false);
     static float GetSpline(const int& Timer, const int& TotalTime, const int& P1Idx, const std::vector<float>& Array, bool Loop = false);
     static Vec2<float> GetSpline(const float& T, const int& P1Idx, const std::vector<Vec2<float>>& Array, bool Loop = false);
