@@ -60,6 +60,12 @@ public:
 		return IsTimeUp();
 	}
 
+	//強制的に時間経過完了
+	void ForciblyTimeUp()
+	{
+		m_elaspedTime = m_intervalTime;
+	}
+
 	//リセット
 	void Reset() { m_elaspedTime = 0.0f; }
 	void Reset(float arg_interval)
