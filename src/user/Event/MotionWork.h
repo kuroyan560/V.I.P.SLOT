@@ -16,7 +16,7 @@ struct Motion2D
 	EasingParameter m_easeParam = { Out,Exp };
 
 	//かかる時間
-	float m_interval;
+	float m_interval = 60.0f;
 };
 
 //3D用動きの制御単位モーション
@@ -36,7 +36,7 @@ struct Motion3D
 	EasingParameter m_easeParam = { Out,Exp };
 
 	//かかる時間
-	float m_interval;
+	float m_interval = 60.0f;
 };
 
 //2D動きの制御（カメラワークなど）
@@ -123,7 +123,7 @@ public:
 	//動きの配列
 	std::vector<Motion3D>m_motions;
 	//現在進行中のモーションインデックス
-	int m_motionWorkIdx;
+	int m_motionWorkIdx = -1;
 	//時間計測
 	Timer m_timer;
 
@@ -132,6 +132,11 @@ public:
 	bool m_auto;
 
 public:
+	/// <summary>
+	/// モーション初期化
+	/// </summary>
+	void Init();
+
 	/// <summary>
 	/// モーション更新
 	/// </summary>
@@ -163,6 +168,8 @@ public:
 	void Add(Motion3D& arg_motion)
 	{
 		m_motions.emplace_back(arg_motion);
+		m_nowPos = m_motions[0].m_startPos;
+		m_nowTarget = m_motions[0].m_startTarget;
 	}
 
 	//指定したインデックスのモーションへの参照取得
@@ -175,7 +182,11 @@ public:
 	//ゲッタ
 	const Vec3<float>& GetPos()const { return m_nowPos; }
 	const Vec3<float>& GetTarget()const { return m_nowTarget; }
-	float GetTimeRate() { return m_timer.GetTimeRate(); }
+	float GetTimeRate() 
+	{ 
+		if (m_motionWorkIdx < 0)return 0.0f;
+		return m_timer.GetTimeRate(); 
+	}
 
 	/// <summary>
 	/// Imguiデバッグで項目追加

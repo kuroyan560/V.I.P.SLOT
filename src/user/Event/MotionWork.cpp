@@ -78,6 +78,16 @@ void MotionWork2D::ImguiDebugItems(std::string arg_tag, const Vec2<float>* arg_c
 }
 
 
+void MotionWork3D::Init()
+{
+	if (!m_motions.empty())
+	{
+		m_nowPos = m_motions[0].m_startPos;
+		m_nowTarget = m_motions[0].m_startTarget;
+	}
+	m_motionWorkIdx = -1;
+}
+
 bool MotionWork3D::Update(float arg_timeScale)
 {
 	if (m_motionWorkIdx < 0)return false;
@@ -87,15 +97,24 @@ bool MotionWork3D::Update(float arg_timeScale)
 
 	//現在進行中のモーションの参照取得
 	const auto& nowWork = m_motions[m_motionWorkIdx];
-	m_nowPos = nowWork.m_easeParam.Calculate(
-		m_timer.GetTimeRate(),
-		nowWork.m_startPos,
-		nowWork.m_endPos);
 
-	m_nowTarget = nowWork.m_easeParam.Calculate(
+	//イージングのレート計算
+	float easeRate = nowWork.m_easeParam.Calculate(
 		m_timer.GetTimeRate(),
-		nowWork.m_startTarget,
-		nowWork.m_endTarget);
+		0.0f,
+		1.0f);
+
+	//線形補間
+	m_nowPos = KuroMath::Lerp(
+		nowWork.m_startPos,
+		nowWork.m_endPos,
+		easeRate);
+
+	//球面補間
+	m_nowTarget = KuroMath::Slerp(
+		nowWork.m_startTarget - nowWork.m_startPos,
+		nowWork.m_endTarget - nowWork.m_endPos,
+		easeRate) + m_nowPos;
 
 	//自動で次のモーションへ
 	if (end && m_auto)
