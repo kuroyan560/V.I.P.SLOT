@@ -119,7 +119,6 @@ void GaussianBlur::Register(const std::shared_ptr<TextureBuffer>& arg_srcTex)
         m_blurResult[FINAL - 1],1.0f,AlphaBlendMode_None);
 }
 
-#include"KuroEngine.h"
 void GaussianBlur::DrawResult(const AlphaBlendMode& arg_alphaBlend)
 {
     DrawFunc2D::DrawExtendGraph2D({ 0,0 }, WinApp::Instance()->GetExpandWinSize(), m_blurResult[FINAL], 1.0f, arg_alphaBlend);
