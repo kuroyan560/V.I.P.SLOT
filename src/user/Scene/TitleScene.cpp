@@ -142,6 +142,8 @@ void TitleScene::OnUpdate()
 	m_titleCam->Update(1.0f);
 
 	m_titleUI.Update();
+
+	m_signBoard.UpdateScreen();
 }
 
 #include"DrawFunc3D.h"

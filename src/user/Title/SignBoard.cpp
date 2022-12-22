@@ -11,27 +11,37 @@ SignBoard::SignBoard()
 
 	m_renderTarget = D3D12App::Instance()->GenerateRenderTarget(
 		m_clearTex->GetDesc().Format,
-		Color(0, 0, 0, 0),
-		m_clearTex->GetGraphSize(),
+		Color(50, 49, 59, 255),
+		D3D12App::Instance()->GetBackBuffRenderTarget()->GetGraphSize(),
 		L"Screen - RenderTarget");
-	m_modelObj->m_model->m_meshes[0].material->texBuff[COLOR_TEX] = m_renderTarget;
+	m_modelObj->m_model->m_meshes[0].material->texBuff[COLOR_TEX] = m_crt.GetResultTex();
 
 	//看板
 	m_modelObj->m_transform.SetPos({ 2.0f,0.0f,-4.0f });
 	m_modelObj->m_transform.SetFront(KuroMath::TransformVec3(Vec3<float>(0, 0, 1), KuroMath::RotateMat(0.0f, -45.0f, 0.0f)));
 
-	//画面クリア
-	m_renderTarget->CopyTexResource(
-		D3D12App::Instance()->GetCmdList(),
-		m_clearTex.get());
+	m_titleTex = D3D12App::Instance()->GenerateTextureBuffer("resource/user/img/title/title.png");
 }
 
+#include"DrawFunc2D.h"
 void SignBoard::UpdateScreen()
 {
+	m_renderTarget->Clear(D3D12App::Instance()->GetCmdList());
 
+	//レンダーターゲットセット
+	KuroEngine::Instance()->Graphics().SetRenderTargets({ m_renderTarget });
+
+
+	DrawFunc2D::DrawRotaGraph2D(
+		WinApp::Instance()->GetExpandWinCenter(),
+		{ 1.0f,1.0f },
+		0.0f,
+		m_titleTex);
+
+	m_crt.Register(m_renderTarget);
 }
 
 std::shared_ptr<TextureBuffer> SignBoard::GetScreenTex()
 {
-	return m_renderTarget;
+	return m_crt.GetResultTex();
 }
