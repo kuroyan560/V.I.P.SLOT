@@ -436,6 +436,9 @@
     <ClCompile Include="src\user\Title\SignBoard.cpp">
       <Filter>src\user\Title</Filter>
     </ClCompile>
+    <ClCompile Include="src\engine\CRT.cpp">
+      <Filter>src\engine\ユーザー向け\ポストエフェクト</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\D3D12App.h">
@@ -824,6 +827,9 @@
     </ClInclude>
     <ClInclude Include="src\user\Title\SignBoard.h">
       <Filter>src\user\Title</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\CRT.h">
+      <Filter>src\engine\ユーザー向け\ポストエフェクト</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
