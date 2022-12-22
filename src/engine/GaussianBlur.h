@@ -9,7 +9,7 @@ class GaussianBlur
 private:
 	enum PROCESS { X_BLUR, Y_BLUR, FINAL, PROCESS_NUM };
 	static const int s_weightNum = 8;
-	static void GeneratePipeline(std::array<std::shared_ptr<GraphicsPipeline>, PROCESS_NUM - 1>& DestPipeline, const DXGI_FORMAT& Format);
+	static void GeneratePipeline(std::array<std::shared_ptr<GraphicsPipeline>, PROCESS_NUM - 1>& arg_destPipeline, const DXGI_FORMAT& arg_format);
 
 private:
 	//重みテーブル
@@ -29,15 +29,15 @@ private:
 
 public:
 	//ソース画像 & 結果描画先設定、ぼかし強さ
-	GaussianBlur(const Vec2<int>& Size, const DXGI_FORMAT& Format, const float& BlurPower = 8.0f);
+	GaussianBlur(const Vec2<int>& arg_size, const DXGI_FORMAT& arg_format, const float& arg_blurPower = 8.0f);
 	//ボケ具合
-	void SetBlurPower(const float& BlurPower);
+	void SetBlurPower(const float& arg_blurPower);
 	//グラフィックスマネージャに登録
-	void Register(const std::shared_ptr<TextureBuffer>& SourceTex);
+	void Register(const std::shared_ptr<TextureBuffer>& arg_srcTex);
 
 	//結果のテクスチャ取得
 	std::shared_ptr<RenderTarget>& GetResultTex() { return m_blurResult[FINAL]; }
 
 	//ウィンドウサイズで結果を描画
-	void DrawResult(const AlphaBlendMode& AlphaBlend);
+	void DrawResult(const AlphaBlendMode& arg_alphaBlend);
 };
