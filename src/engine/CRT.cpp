@@ -12,6 +12,11 @@ CRT::CRT()
 	m_spriteMesh->SetSize(WinApp::Instance()->GetExpandWinSize());
 }
 
+void CRT::Update()
+{
+	//m_crtInfo.m_time += 1.0f;
+}
+
 void CRT::Register(const std::shared_ptr<TextureBuffer>& arg_srcTex)
 {
 	static std::shared_ptr<GraphicsPipeline>PIPELINE;
@@ -54,6 +59,10 @@ void CRT::Register(const std::shared_ptr<TextureBuffer>& arg_srcTex)
 			RENDER_TARGET_INFO,
 			{ WrappedSampler(false, false) });
 	}
+
+	m_crtInfo.m_screenSizeX = m_resultTex->GetGraphSize().Float().x;
+	m_crtInfo.m_screenSizeY = m_resultTex->GetGraphSize().Float().y;
+	m_crtInfoBuff->Mapping(&m_crtInfo);
 
 	KuroEngine::Instance()->Graphics().SetRenderTargets({ m_resultTex });
 	KuroEngine::Instance()->Graphics().SetGraphicsPipeline(PIPELINE);

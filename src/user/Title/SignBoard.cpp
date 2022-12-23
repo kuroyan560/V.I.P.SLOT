@@ -28,6 +28,8 @@ void SignBoard::UpdateScreen()
 {
 	m_renderTarget->Clear(D3D12App::Instance()->GetCmdList());
 
+	m_crt.Update();
+
 	//レンダーターゲットセット
 	KuroEngine::Instance()->Graphics().SetRenderTargets({ m_renderTarget });
 

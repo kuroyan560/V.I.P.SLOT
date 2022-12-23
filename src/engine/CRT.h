@@ -9,23 +9,12 @@ class CRT
 {
 	struct Info
 	{
-		float m_noiseX = 0.0f;
-		float m_rgbNoise = 0.0f;
-		//float sinNoiseScale = 1.0f;
-		float m_sinNoiseScale = 0.0f;
-		//float sinNoiseWidth = 1.0f;
-		float m_sinNoiseWidth = 0.0f;
-
-		//float sinNoiseOffset = 1.0f;
-		float m_sinNoiseOffset = 0.0f;
-		float m_scanLineSpeed = 100.0f;
-		float m_scanLineTail = 0.5f;
-		float m_time = 0;
-
-		Vec2<float>m_offset = { 0,0 };
-		float m_screenParamX;
-		float m_pad;
-		//float barrelPower = 1;
+		//画面サイズ
+		float m_screenSizeX = 1280.0f;
+		float m_screenSizeY = 720.0f;
+		//画面歪み強さ
+		float m_screenDistort = 0.1f;
+		float pad;
 	}m_crtInfo;
 
 	std::shared_ptr<SpriteMesh>m_spriteMesh;
@@ -34,6 +23,8 @@ class CRT
 
 public:
 	CRT();
+
+	void Update();
 
 	//グラフィックスマネージャに登録
 	void Register(const std::shared_ptr<TextureBuffer>& arg_srcTex);
