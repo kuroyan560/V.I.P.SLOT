@@ -10,11 +10,11 @@ class CRT
 	struct Info
 	{
 		//画面サイズ
-		float m_screenSizeX = 1280.0f;
-		float m_screenSizeY = 720.0f;
+		Vec2<float>m_screenSize;
 		//画面歪み強さ
 		float m_screenDistort = 0.1f;
-		float pad;
+		//ガウシアンフィルタをかけてサンプリングする際の重み
+		float gaussianSampleWeight = 16.0f;
 	}m_crtInfo;
 
 	std::shared_ptr<SpriteMesh>m_spriteMesh;

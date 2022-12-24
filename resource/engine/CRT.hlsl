@@ -14,10 +14,11 @@ cbuffer cbuff0 : register(b0)
 cbuffer cbuff1 : register(b1)
 {
     //画面サイズ
-    float screenSizeX;
-    float screenSizeY;
+    float2 screenSize;
 	//画面歪み強さ
     float screenDistort;
+    //ガウシアンフィルタをかけてサンプリングする際の重み
+    float gaussianSampleWeight;
 }
 
 Texture2D<float4> tex : register(t0);
@@ -38,48 +39,68 @@ float Rand(float2 co)
     return frac(sin(dot(co.xy, float2(12.9898, 78.233))) * 43578.5453);
 }
 
-//UVを画面が歪曲しているように歪ませる
-float2 Distort(float2 uv, float rate)
+//3x3のガウシアンフィルタをかけてサンプリング
+float4 GaussianSample(float2 uv, float2 dx, float2 dy, float weight)
 {
-    uv /= 1 - length(uv) * rate;
-    return uv;
+    float4 col = float4(0, 0, 0, 0);
+    //左上
+    col += tex.Sample(smp, uv - dx - dy) * (weight / pow(2, 4)) / weight;
+    //左
+    col += tex.Sample(smp, uv - dx) * (weight / pow(2, 3)) / weight;
+    //左下
+    col += tex.Sample(smp, uv - dx + dy) * (weight / pow(2, 4)) / weight;
+    //上
+    col += tex.Sample(smp, uv - dy) * (weight / pow(2, 3)) / weight;
+    //真ん中
+    col += tex.Sample(smp, uv) * (weight / pow(2, 2)) / weight;
+    //下
+    col += tex.Sample(smp, uv + dy) * (weight / pow(2, 3)) / weight;
+    //右上
+    col += tex.Sample(smp, uv + dx - dy) * (weight / pow(2, 4)) / weight;
+    //右
+    col += tex.Sample(smp, uv + dx) * (weight / pow(2, 3)) / weight;
+    //右下
+    col += tex.Sample(smp, uv + dx + dy) * (weight / pow(2, 4)) / weight;
+    return col;
 }
 
-float2 NoiseSamplingUV(float2 inUV,float2 screenSize,float2 texUV)
+float CRTEase(const float x,const float base,const float offset)
 {
-    const float floorX = frac(inUV.x * screenSize.x / 3.0f);
-    const float isR = step(0.3f, floorX);
-    const float isG = step(0.6f, floorX) * (1 - isR);
-    const float isB = step(floorX, 0.6f) * (1 - isG);
-    
-    const float dx = float2(1.0f / screenSize.x, 0.0f);
-    const float dy = float2(0.0f, 1.0f / screenSize.y);
-    
-    texUV += isR * -1.0f * dy;
-    texUV += isG * 0.0f * dy;
-    texUV += isB * 1.0f * dy;
-    return texUV;
+    float tmp = frac(x + offset);
+    float xx = 1 - abs(tmp * 2 - 1);
+    float ease = Easing_Cubic_InOut(xx, 1.0f, 0.0f, 1.0f);
+    return ease * base + base * 0.8f;
 }
 
 float4 PSmain(VSOutput input) : SV_TARGET
 {
     float2 inUV = input.uv;
     
-    //画面を歪ませた際のUV ( -0.5f ~ 0.5f )
-    float2 distortUV = Distort(input.uv - 0.5f, screenDistort);
+    const float floorX = frac(inUV.x * screenSize.x / 3.0f);
+    const float isR = step(floorX, 0.3f);
+    const float isG = step(floorX, 0.6f) * (1 - isR);
+    const float isB = step(0.6f, floorX) * (1 - isR) * (1 - isG);
     
-    //画面外なら黒
-    if (max(abs(distortUV.x) - 0.5f, abs(distortUV.y) - 0.5f) > 0)
-    {
-        return float4(0, 0, 0, 1);
-    }
+    const float2 dx = float2(1.0f / screenSize.x, 0.0f);
+    const float2 dy = float2(0.0f, 1.0f / screenSize.y);
     
-    //テクスチャのサンプリングをするUV ( 0.0f ~ 1.0f )
-    float2 texUV = distortUV + 0.5f;
+    float2 texUV = inUV;
+    texUV += isR * -1.0f * dy;
+    texUV += isG * 0.0f * dy;
+    texUV += isB * 1.0f * dy;
     
-    texUV = NoiseSamplingUV(inUV, float2(screenSizeX, screenSizeY), texUV);
+    float4 col = GaussianSample(texUV, dx, dy, gaussianSampleWeight);
     
-    return tex.Sample(smp, texUV);
+    const float floorY = frac(texUV.y * screenSize.y / 6.0f);
+    const float easeR = CRTEase(floorY, col.r, Rand(texUV) * 0.1f);
+    const float easeG = CRTEase(floorY, col.g, Rand(texUV) * 0.1f);
+    const float easeB = CRTEase(floorY, col.b, Rand(texUV) * 0.1f);
+    
+    float r = isR * easeR;
+    float g = isG * easeG;
+    float b = isB * easeB;
+    
+    return float4(r, g, b, 1.0f);
 }
 
 float4 main( float4 pos : POSITION ) : SV_POSITION

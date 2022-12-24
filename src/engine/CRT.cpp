@@ -60,8 +60,7 @@ void CRT::Register(const std::shared_ptr<TextureBuffer>& arg_srcTex)
 			{ WrappedSampler(false, false) });
 	}
 
-	m_crtInfo.m_screenSizeX = m_resultTex->GetGraphSize().Float().x;
-	m_crtInfo.m_screenSizeY = m_resultTex->GetGraphSize().Float().y;
+	m_crtInfo.m_screenSize = m_resultTex->GetGraphSize().Float();
 	m_crtInfoBuff->Mapping(&m_crtInfo);
 
 	KuroEngine::Instance()->Graphics().SetRenderTargets({ m_resultTex });
